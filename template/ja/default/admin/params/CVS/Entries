@@ -1,0 +1,20 @@
+/admin.html.tmpl/1.4/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/attachment.html.tmpl/1.4/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/auth.html.tmpl/1.4/Wed Dec  5 00:48:30 2007//TBUGZILLA-3_2-BRANCH
+/bugchange.html.tmpl/1.6/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/bugfields.html.tmpl/1.4/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/bugmove.html.tmpl/1.3/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/common.html.tmpl/1.6/Fri Mar 14 00:05:37 2008//TBUGZILLA-3_2-BRANCH
+/core.html.tmpl/1.11/Thu Apr  3 20:40:14 2008//TBUGZILLA-3_2-BRANCH
+/dependencygraph.html.tmpl/1.2/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/editparams.html.tmpl/1.8/Mon Oct 22 21:42:01 2007//TBUGZILLA-3_2-BRANCH
+/groupsecurity.html.tmpl/1.5/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/index.html.tmpl/1.2/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/ldap.html.tmpl/1.7.2.1/Wed May 21 23:03:24 2008//TBUGZILLA-3_2-BRANCH
+/mta.html.tmpl/1.12/Fri Mar 14 00:05:37 2008//TBUGZILLA-3_2-BRANCH
+/patchviewer.html.tmpl/1.3/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/query.html.tmpl/1.4/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/radius.html.tmpl/1.2/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/shadowdb.html.tmpl/1.2/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+/usermatch.html.tmpl/1.3/Mon Aug 20 18:24:50 2007//TBUGZILLA-3_2-BRANCH
+D
