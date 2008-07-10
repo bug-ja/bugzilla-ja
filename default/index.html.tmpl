@@ -49,7 +49,7 @@ function addSidebar() {
   }
   else
   {
-    var rv = window.confirm ("Your browser does not support the sidebar extension.  " + "Would you like to upgrade now?");
+    var rv = window.confirm ("あなたのお使いのブラウザはサイドバーをサポートしていません。" + "対応ブラウザにアップグレードしますか ?");
     if (rv)
       document.location.href = "http://www.mozilla.org/";
   }
@@ -61,30 +61,35 @@ function addSidebar() {
   <div id="new_release">
     [% IF release.data %]
       [% IF release.deprecated %]
-        <p>[% terms.Bugzilla %] [%+ release.deprecated FILTER html %] is no longer
-        supported. You are highly encouraged to upgrade in order to keep your
-        system secure.</p>
+        <p>[% terms.Bugzilla %] [%+ release.deprecated FILTER html %] 
+        はもはやサポートされていません。
+        あなたのシステムの安全性のためにも、アップグレードを強くお勧めします。</p>
       [% END %]
 
-      <p>A new [% terms.Bugzilla %] version ([% release.data.latest_ver FILTER html %])
-      is available at
-      <a href="[% release.data.url FILTER html %]">[% release.data.url FILTER html %]</a>.<br>
-      Release date: [% release.data.date FILTER html %]</p>
+      <p>新しい [% terms.Bugzilla %] のバージョン ([% release.data.latest_ver FILTER html %])
+      が
+      <a href="[% release.data.url FILTER html %]">[% release.data.url FILTER html %]</a>
+      から利用可能です。<br>
+      リリース日は [% release.data.date FILTER html %] です。</p>
 
-      <p class="notice">This message is only shown to logged in users with admin privs.
-      You can configure this notification from the
-      <a href="editparams.cgi?section=core#upgrade_notification">Parameters</a> page.</p>
+      <p class="notice">
+        このメッセージは管理者権限を持つログインユーザにのみ表示されます。
+        このメッセージの表示に関しては、
+      <a href="editparams.cgi?section=core#upgrade_notification">パラメータ</a> 
+        ページから設定できます。</p>
     [% ELSIF release.error == "missing_package" %]
-      <p>Missing package '[% release.package FILTER html %]'. This package is required to
-      <a href="editparams.cgi?section=core#upgrade_notification">notify you about new releases</a>.</p>
+      <p>パッケージ '[% release.package FILTER html %]' が見つかりません。
+        このパッケージは、
+      <a href="editparams.cgi?section=core#upgrade_notification">新バージョンリリース通知機能</a>
+        のために必要です。</p>
     [% ELSIF release.error == "cannot_download" %]
-      <p>The local XML file '[% release.xml_file FILTER html %]' cannot be created.
-      Please make sure the web server can write in this directory and that you can access
-      the web. If you are behind a proxy, set the
-      <a href="editparams.cgi?section=core#proxy_url">proxy_url</a> parameter correctly.</p>
+      <p>ローカルに XML ファイル '[% release.xml_file FILTER html %]' を作成できません。
+      ウェブサーバの設定を見直して、ディレクトリに書き込み可能でサーバからウェブに接続可能かを確認してください。
+      プロキシの内部にあるサーバの場合は、
+      <a href="editparams.cgi?section=core#proxy_url">proxy_url</a> パラメータが正しいか確認してください。</p>
     [% ELSIF release.error == "no_update" %]
-      <p>The local XML file '[% release.xml_file FILTER html %]' cannot be updated.
-      Please make sure the web server can edit this file.</p>
+      <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' をアップデートできません。
+      ウェブサーバがこのファイルを編集できることを確認してください。</p>
     [% ELSIF release.error == "no_access" %]
       <p>The local XML file '[% release.xml_file FILTER html %]' cannot be read.
       Please make sure this file has the correct rights set on it.</p>
