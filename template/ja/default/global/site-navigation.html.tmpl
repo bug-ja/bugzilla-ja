@@ -65,21 +65,21 @@
 
   [%# *** Dependencies, Votes, Activity, Print-version *** %]
   [% IF bug %]
-    <link rel="Show" title="Dependency Tree"
+    <link rel="Show" title="依存関係"
           href="showdependencytree.cgi?id=[% bug.bug_id %]&amp;hide_resolved=1">
     [% IF Param('webdotbase') %]
-      <link rel="Show" title="Dependency Graph"
+      <link rel="Show" title="依存グラフ"
             href="showdependencygraph.cgi?id=[% bug.bug_id %]">
     [% END %]
 
     [% IF bug.use_votes %]
-      <link rel="Show" title="Votes ([% bug.votes %])"
+      <link rel="Show" title="投票 ([% bug.votes %])"
             href="votes.cgi?action=show_bug&amp;bug_id=[% bug.bug_id %]">
     [% END %]
 
-      <link rel="Show" title="[% terms.Bug %] Activity"
+      <link rel="Show" title="[% terms.Bug %] の動き"
             href="show_activity.cgi?id=[% bug.bug_id %]">
-      <link rel="Show" title="Printer-Friendly Version"
+      <link rel="Show" title="印刷向け表示"
             href="show_bug.cgi?format=multiple&amp;id=[% bug.bug_id %]">
   [% END %]
 
@@ -87,18 +87,18 @@
   [%# *** Saved Searches *** %]
   [% IF user.showmybugslink %]
     [% user_login = user.login FILTER url_quote %]
-    <link rel="Saved&nbsp;Searches" title="My [% terms.Bugs %]"
+    <link rel="保存された検索" title="わたしの [% terms.Bugs %]"
           href="[% Param('mybugstemplate').replace('%userid%', user_login) %]">
   [% END %]
 
   [% FOREACH q = user.queries %]
-    <link rel="Saved&nbsp;Searches" 
+    <link rel="保存された検索" 
           title="[% q.name FILTER html %]"
           href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% q.name FILTER url_quote %]">
   [% END %]
 
   [% FOREACH q = user.queries_subscribed %]
-    <link rel="Saved&nbsp;Search"
+    <link rel="保存された検索"
           title="[% q.name FILTER html %] ([% q.user.login FILTER html %])"
           href="buglist.cgi?cmdtype=dorem&amp;remaction=run&amp;namedcmd=
                  [% q.name FILTER url_quote %]&amp;sharer_id=
@@ -107,21 +107,21 @@
 
   [%# *** Bugzilla Administration Tools *** %]
   [% IF user.login %] 
-    [% '<link rel="Administration" title="Parameters"    
+    [% '<link rel="管理ツール" title="パラメータ"    
               href="editparams.cgi">' IF user.groups.tweakparams %]
-    [% '<link rel="Administration" title="Users"    
+    [% '<link rel="管理ツール" title="ユーザ"    
               href="editusers.cgi">' IF user.groups.editusers %]
-    [% '<link rel="Administration" title="Products" href="editproducts.cgi">'
+    [% '<link rel="管理ツール" title="プロダクト" href="editproducts.cgi">'
        IF user.groups.editcomponents || user.get_products_by_permission("editcomponents").size %]
-    [% '<link rel="Administration" title="Flag Types"   
+    [% '<link rel="管理ツール" title="フラグ"   
               href="editflagtypes.cgi">' IF user.groups.editcomponents %]
-    [% '<link rel="Administration" title="Groups"        
+    [% '<link rel="管理ツール" title="グループ"        
               href="editgroups.cgi">' IF user.groups.creategroups %]
-    [% '<link rel="Administration" title="Keywords"      
+    [% '<link rel="管理ツール" title="キーワード"      
               href="editkeywords.cgi">' IF user.groups.editkeywords %]
-    [% '<link rel="Administration" title="Whining"       
+    [% '<link rel="管理ツール" title="Whining"       
               href="editwhines.cgi">' IF user.groups.bz_canusewhines %]
-    [% '<link rel="Administration" title="Sanity Check"  
+    [% '<link rel="管理ツール" title="正常性確認"  
               href="sanitycheck.cgi">' IF user.groups.editcomponents %]
   [% END %]  
 [% END %]
