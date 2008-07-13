@@ -30,14 +30,14 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% IF target == "enter_bug.cgi" %]
-  [% title = "Enter $terms.Bug" %]
-  [% subheader = BLOCK %]First, you must pick a product on which to enter [% terms.abug %]. [% END %]
+  [% title = "$terms.Bug の登録" %]
+  [% subheader = BLOCK %]まず最初に、[% terms.abug %] を登録するプロダクトを選択してください。[% END %]
 [% ELSIF target == "describecomponents.cgi" %]
-  [% title = "$terms.Bugzilla Component Descriptions" %]
-  [% subheader = "Please specify the product whose components you want described." %]
+  [% title = "$terms.Bugzilla のコンポーネントの説明" %]
+  [% subheader = "コンポーネントの説明が見たいプロダクトを指定してください。" %]
 [% END %]
 
-[% DEFAULT title = "Choose a Product" %]
+[% DEFAULT title = "Product の選択" %]
 [% PROCESS global/header.html.tmpl %]
 
 <table>
