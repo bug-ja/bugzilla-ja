@@ -195,7 +195,7 @@ x	x	./global/useful-links.html.tmpl
 x	x	./global/user-error.html.tmpl
 x	x	./global/userselect.html.tmpl
 x	x	./global/variables.none.tmpl
-x	x	./index.html.tmpl
+shimono	x	./index.html.tmpl
 x	x	./list/change-columns.html.tmpl
 x	x	./list/edit-multiple.html.tmpl
 x	x	./list/list-simple.html.tmpl
