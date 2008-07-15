@@ -91,15 +91,15 @@ function addSidebar() {
       <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' をアップデートできません。
       ウェブサーバがこのファイルを編集できることを確認してください。</p>
     [% ELSIF release.error == "no_access" %]
-      <p>The local XML file '[% release.xml_file FILTER html %]' cannot be read.
-      Please make sure this file has the correct rights set on it.</p>
+      <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' を読み込めません。
+      このファイルのパーミッションが正しく設定されているか確認してください。</p>
     [% ELSIF release.error == "corrupted" %]
-      <p>The local XML file '[% release.xml_file FILTER html %]' has an invalid XML format.
-      Please delete it and try accessing this page again.</p>
+      <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' は無効な XML 形式です。
+      ファイルを消去し、このページを再読み込みしてください。</p>
     [% ELSIF release.error == "unknown_parameter" %]
-      <p>'[% Param("upgrade_notification") FILTER html %]' is not a valid notification
-      parameter. Please check this parameter in the
-      <a href="editparams.cgi?section=core#upgrade_notification">Parameters</a> page.</p>
+      <p>'[% Param("upgrade_notification") FILTER html %]' は有効な通知の設定ではありません。
+      <a href="editparams.cgi?section=core#upgrade_notification">パラメータ</a> 
+      設定ページから確認してください。</p>
     [% END %]
   </div>
 [% END %]
@@ -107,36 +107,34 @@ function addSidebar() {
 <div id="page-index">
   <div class="intro"></div>
 
-  <p>Welcome to [% terms.Bugzilla %]. To see what's new in this version
-    of [% terms.Bugzilla %], see the 
-    <a href="page.cgi?id=release-notes.html">release notes</a>!
-    You may also want to read the 
+  <p>[% terms.Bugzilla %] にようこそ。このバージョンの [% terms.Bugzilla %] の新機能については、
+    <a href="page.cgi?id=release-notes.html">リリースノート</a> を参照してください。
+    それ以外に、[%+ terms.Bugzilla %] についてや利用方法については、
     <a href="[% docs_urlbase FILTER html %]using.html">
-    [%- terms.Bugzilla %] User's Guide</a> to find out more about 
-    [%+ terms.Bugzilla %] and how to use it.</p>
+    [%- terms.Bugzilla %] ユーザーズガイド</a> を見てください。</p>
 
-  <p>Most common actions:</p>
+  <p>よく利用される項目:</p>
   <ul>
-    <li id="query"><a href="query.cgi">Search existing [% terms.bug %] reports</a></li>
-    <li id="enter-bug"><a href="enter_bug.cgi">Enter a new [% terms.bug %] report</a></li>
-    <li id="report"><a href="report.cgi">Summary reports and charts</a></li>
+    <li id="query"><a href="query.cgi">既存の [% terms.bug %] 報告を検索する</a></li>
+    <li id="enter-bug"><a href="enter_bug.cgi">新規の [% terms.bug %] を報告する</a></li>
+    <li id="report"><a href="report.cgi">サマリーレポートとチャート</a></li>
 [% IF user.id %]
-    <li id="userprefs"><a href="userprefs.cgi">Change password or user preferences</a></li>
+    <li id="userprefs"><a href="userprefs.cgi">パスワードと設定の変更</a></li>
   [% IF user.authorizer.can_logout %]
-    <li id="logout"><a href="relogin.cgi">Log out [% user.login FILTER html %]</a></li>
+    <li id="logout"><a href="relogin.cgi">ログアウトする ([% user.login FILTER html %])</a></li>
   [% END %]
 [% ELSIF user.authorizer.can_login %]
   </ul>
     [% PROCESS "account/auth/login-small.html.tmpl" %]
   <ul>
   [% IF Param('createemailregexp') && user.authorizer.user_can_create_account %]
-    <li id="account"><a href="createaccount.cgi">Open a new [% terms.Bugzilla %] account</a></li>
+    <li id="account"><a href="createaccount.cgi">新規 [% terms.Bugzilla %] アカウントの登録</a></li>
   [% END %]
 [% END %]
-    <li id="sidebar"><a href="javascript:addSidebar()">Add to Sidebar</a> (requires a Mozilla browser like Mozilla Firefox)</li>
+    <li id="sidebar"><a href="javascript:addSidebar()">サイドバーへ追加</a> (Mozilla Firefox のような Mozilla ベースのブラウザが必要です)</li>
     <li id="quick_search_plugin">
-      <a href="javascript:window.external.AddSearchProvider('[% urlbase FILTER html %]search_plugin.cgi')">Install
-      the Quick Search plugin</a> (requires Firefox 2 or Internet Explorer 7)
+      <a href="javascript:window.external.AddSearchProvider('[% urlbase FILTER html %]search_plugin.cgi')">
+      クイックサーチプラグインをインストールする</a> (Firefox 2 もしくは Internet Explorer 7 以上が必要です)
     </li>
 
 
@@ -147,13 +145,13 @@ function addSidebar() {
 
   <form id="f" name="f" action="buglist.cgi" method="get"
         onsubmit="if (this.quicksearch.value == '')
-                  { alert('Please enter one or more search terms first.');
+                  { alert('ひとつ以上の検索語を入力してください。');
                     return false; } return true;">
   <div>
-    <p>Enter [% terms.abug %] # or some search terms:</p>
+    <p>[% terms.abug %] 番号もしくは検索語を入力してください:</p>
     <input id="quicksearch" type="text" name="quicksearch">
-    <input id="find" type="submit" value="Find">
-    <a href="page.cgi?id=quicksearch.html">[Help]</a>
+    <input id="find" type="submit" value="検索">
+    <a href="page.cgi?id=quicksearch.html">[ヘルプ]</a>
   </div>
   </form>
 
