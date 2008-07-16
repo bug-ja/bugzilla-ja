@@ -1,263 +1,263 @@
-# <translator> <checker> <filename>
-x	x	./account/auth/login-small.html.tmpl
-x	x	./account/auth/login.html.tmpl
-x	x	./account/cancel-token.txt.tmpl
-x	x	./account/create.html.tmpl
-x	x	./account/created.html.tmpl
-x	x	./account/email/change-new.txt.tmpl
-x	x	./account/email/change-old.txt.tmpl
-x	x	./account/email/confirm-new.html.tmpl
-x	x	./account/email/confirm.html.tmpl
-x	x	./account/email/request-new.txt.tmpl
-x	x	./account/password/forgotten-password.txt.tmpl
-x	x	./account/password/set-forgotten-password.html.tmpl
-x	x	./account/prefs/account.html.tmpl
-x	x	./account/prefs/email.html.tmpl
-x	x	./account/prefs/permissions.html.tmpl
-x	x	./account/prefs/prefs.html.tmpl
-x	x	./account/prefs/saved-searches.html.tmpl
-x	x	./account/prefs/settings.html.tmpl
-x	x	./account/profile-activity.html.tmpl
-x	x	./admin/admin.html.tmpl
-x	x	./admin/classifications/add.html.tmpl
-x	x	./admin/classifications/del.html.tmpl
-x	x	./admin/classifications/edit.html.tmpl
-x	x	./admin/classifications/reclassify.html.tmpl
-x	x	./admin/classifications/select.html.tmpl
-x	x	./admin/components/confirm-delete.html.tmpl
-x	x	./admin/components/create.html.tmpl
-x	x	./admin/components/edit.html.tmpl
-x	x	./admin/components/footer.html.tmpl
-x	x	./admin/components/list.html.tmpl
-x	x	./admin/components/select-product.html.tmpl
-x	x	./admin/confirm-action.html.tmpl
-x	x	./admin/custom_fields/confirm-delete.html.tmpl
-x	x	./admin/custom_fields/create.html.tmpl
-x	x	./admin/custom_fields/edit.html.tmpl
-x	x	./admin/custom_fields/list.html.tmpl
-x	x	./admin/fieldvalues/confirm-delete.html.tmpl
-x	x	./admin/fieldvalues/create.html.tmpl
-x	x	./admin/fieldvalues/edit.html.tmpl
-x	x	./admin/fieldvalues/footer.html.tmpl
-x	x	./admin/fieldvalues/list.html.tmpl
-x	x	./admin/fieldvalues/select-field.html.tmpl
-x	x	./admin/flag-type/confirm-delete.html.tmpl
-x	x	./admin/flag-type/edit.html.tmpl
-x	x	./admin/flag-type/list.html.tmpl
-x	x	./admin/groups/confirm-remove.html.tmpl
-x	x	./admin/groups/create.html.tmpl
-x	x	./admin/groups/delete.html.tmpl
-x	x	./admin/groups/edit.html.tmpl
-x	x	./admin/groups/list.html.tmpl
-x	x	./admin/keywords/confirm-delete.html.tmpl
-x	x	./admin/keywords/create.html.tmpl
-x	x	./admin/keywords/edit.html.tmpl
-x	x	./admin/keywords/list.html.tmpl
-x	x	./admin/milestones/confirm-delete.html.tmpl
-x	x	./admin/milestones/create.html.tmpl
-x	x	./admin/milestones/edit.html.tmpl
-x	x	./admin/milestones/footer.html.tmpl
-x	x	./admin/milestones/list.html.tmpl
-x	x	./admin/milestones/select-product.html.tmpl
-x	x	./admin/params/admin.html.tmpl
-x	x	./admin/params/attachment.html.tmpl
-x	x	./admin/params/auth.html.tmpl
-x	x	./admin/params/bugchange.html.tmpl
-x	x	./admin/params/bugfields.html.tmpl
-x	x	./admin/params/bugmove.html.tmpl
-x	x	./admin/params/common.html.tmpl
-x	x	./admin/params/core.html.tmpl
-x	x	./admin/params/dependencygraph.html.tmpl
-x	x	./admin/params/editparams.html.tmpl
-x	x	./admin/params/groupsecurity.html.tmpl
-x	x	./admin/params/index.html.tmpl
-x	x	./admin/params/ldap.html.tmpl
-x	x	./admin/params/mta.html.tmpl
-x	x	./admin/params/patchviewer.html.tmpl
-x	x	./admin/params/query.html.tmpl
-x	x	./admin/params/radius.html.tmpl
-x	x	./admin/params/shadowdb.html.tmpl
-x	x	./admin/params/usermatch.html.tmpl
-x	x	./admin/products/confirm-delete.html.tmpl
-x	x	./admin/products/create.html.tmpl
-x	x	./admin/products/edit-common.html.tmpl
-x	x	./admin/products/edit.html.tmpl
-x	x	./admin/products/footer.html.tmpl
-x	x	./admin/products/groupcontrol/confirm-edit.html.tmpl
-x	x	./admin/products/groupcontrol/edit.html.tmpl
-x	x	./admin/products/groupcontrol/updated.html.tmpl
-x	x	./admin/products/list-classifications.html.tmpl
-x	x	./admin/products/list.html.tmpl
-x	x	./admin/products/updated.html.tmpl
-x	x	./admin/sanitycheck/list.html.tmpl
-x	x	./admin/sanitycheck/messages.html.tmpl
-x	x	./admin/settings/edit.html.tmpl
-x	x	./admin/sudo.html.tmpl
-x	x	./admin/table.html.tmpl
-x	x	./admin/users/confirm-delete.html.tmpl
-x	x	./admin/users/create.html.tmpl
-x	x	./admin/users/edit.html.tmpl
-x	x	./admin/users/list.html.tmpl
-x	x	./admin/users/listselectvars.html.tmpl
-x	x	./admin/users/responsibilities.html.tmpl
-x	x	./admin/users/search.html.tmpl
-x	x	./admin/users/userdata.html.tmpl
-x	x	./admin/versions/confirm-delete.html.tmpl
-x	x	./admin/versions/create.html.tmpl
-x	x	./admin/versions/edit.html.tmpl
-x	x	./admin/versions/footer.html.tmpl
-x	x	./admin/versions/list.html.tmpl
-x	x	./admin/versions/select-product.html.tmpl
-x	x	./admin/workflow/comment.html.tmpl
-x	x	./admin/workflow/edit.html.tmpl
-x	x	./attachment/cancel-create-dupe.html.tmpl
-x	x	./attachment/choose.html.tmpl
-x	x	./attachment/confirm-delete.html.tmpl
-x	x	./attachment/content-types.html.tmpl
-x	x	./attachment/create.html.tmpl
-x	x	./attachment/created.html.tmpl
-x	x	./attachment/createformcontents.html.tmpl
-x	x	./attachment/delete_reason.txt.tmpl
-x	x	./attachment/diff-file.html.tmpl
-x	x	./attachment/diff-footer.html.tmpl
-x	x	./attachment/diff-header.html.tmpl
-x	x	./attachment/edit.html.tmpl
-x	x	./attachment/list.html.tmpl
-x	x	./attachment/midair.html.tmpl
-x	x	./attachment/show-multiple.html.tmpl
-x	x	./attachment/updated.html.tmpl
-x	x	./bug/activity/show.html.tmpl
-x	x	./bug/activity/table.html.tmpl
-x	x	./bug/choose.html.tmpl
-x	x	./bug/comments.html.tmpl
-x	x	./bug/create/comment-guided.txt.tmpl
-x	x	./bug/create/comment.txt.tmpl
-x	x	./bug/create/confirm-create-dupe.html.tmpl
-x	x	./bug/create/create-guided.html.tmpl
-x	x	./bug/create/create.html.tmpl
-x	x	./bug/create/created.html.tmpl
-x	x	./bug/create/make-template.html.tmpl
-x	x	./bug/create/user-message.html.tmpl
-x	x	./bug/dependency-graph.html.tmpl
-x	x	./bug/dependency-tree.html.tmpl
-x	x	./bug/edit.html.tmpl
-x	x	./bug/field.html.tmpl
-x	x	./bug/keyword-chooser.html.tmpl
-x	x	./bug/knob.html.tmpl
-x	x	./bug/navigate.html.tmpl
-x	x	./bug/process/bugmail.html.tmpl
-x	x	./bug/process/confirm-duplicate.html.tmpl
-x	x	./bug/process/header.html.tmpl
-x	x	./bug/process/midair.html.tmpl
-x	x	./bug/process/results.html.tmpl
-x	x	./bug/process/verify-new-product.html.tmpl
-x	x	./bug/show-multiple.html.tmpl
-x	x	./bug/show.html.tmpl
-x	x	./bug/show.xml.tmpl
-x	x	./bug/summarize-time.html.tmpl
-x	x	./bug/time.html.tmpl
-x	x	./bug/votes/delete-all.html.tmpl
-x	x	./bug/votes/list-for-bug.html.tmpl
-x	x	./bug/votes/list-for-user.html.tmpl
-o	shimono	./config.js.tmpl
-o	shimono	./config.rdf.tmpl
-x	x	./email/newchangedmail.txt.tmpl
-x	x	./email/sanitycheck.txt.tmpl
-x	x	./email/sudo.txt.tmpl
-x	x	./email/votes-removed.txt.tmpl
-x	x	./email/whine.txt.tmpl
-o	shimono	./filterexceptions.pl
-x	x	./flag/list.html.tmpl
-o	shimono	./global/banner.html.tmpl
-shimono	x	./global/choose-classification.html.tmpl
-shimono	x	./global/choose-product.html.tmpl
-x	x	./global/code-error.html.tmpl
-x	x	./global/common-links.html.tmpl
-x	x	./global/confirm-user-match.html.tmpl
-x	x	./global/docslinks.html.tmpl
-x	x	./global/field-descs.none.tmpl
-x	x	./global/footer.html.tmpl
-x	x	./global/header.html.tmpl
-x	x	./global/help.html.tmpl
-x	x	./global/hidden-fields.html.tmpl
-x	x	./global/initialize.none.tmpl
-x	x	./global/js-products.html.tmpl
-x	x	./global/message.html.tmpl
-x	x	./global/message.txt.tmpl
-x	x	./global/messages.html.tmpl
-x	x	./global/per-bug-queries.html.tmpl
-x	x	./global/select-menu.html.tmpl
-x	x	./global/setting-descs.none.tmpl
-shimono	x	./global/site-navigation.html.tmpl
-x	x	./global/tabs.html.tmpl
-x	x	./global/textarea.html.tmpl
-x	x	./global/useful-links.html.tmpl
-x	x	./global/user-error.html.tmpl
-x	x	./global/userselect.html.tmpl
-x	x	./global/variables.none.tmpl
-shimono	x	./index.html.tmpl
-x	x	./list/change-columns.html.tmpl
-x	x	./list/edit-multiple.html.tmpl
-x	x	./list/list-simple.html.tmpl
-x	x	./list/list.atom.tmpl
-x	x	./list/list.csv.tmpl
-x	x	./list/list.html.tmpl
-x	x	./list/list.ics.tmpl
-x	x	./list/list.js.tmpl
-x	x	./list/list.rdf.tmpl
-x	x	./list/quips.html.tmpl
-x	x	./list/server-push.html.tmpl
-x	x	./list/table.html.tmpl
-x	x	./pages/bug-writing.html.tmpl
-x	x	./pages/fields.html.tmpl
-x	x	./pages/linked.html.tmpl
-x	x	./pages/linkify.html.tmpl
-x	x	./pages/quicksearch.html.tmpl
-x	x	./pages/quicksearchhack.html.tmpl
-x	x	./pages/release-notes.html.tmpl
-x	x	./pages/sudo.html.tmpl
-x	x	./pages/voting.html.tmpl
-x	x	./reports/chart.csv.tmpl
-x	x	./reports/chart.html.tmpl
-x	x	./reports/chart.png.tmpl
-x	x	./reports/components.html.tmpl
-x	x	./reports/create-chart.html.tmpl
-x	x	./reports/duplicates-simple.html.tmpl
-x	x	./reports/duplicates-table.html.tmpl
-x	x	./reports/duplicates.html.tmpl
-x	x	./reports/duplicates.rdf.tmpl
-x	x	./reports/edit-series.html.tmpl
-x	x	./reports/keywords.html.tmpl
-x	x	./reports/menu.html.tmpl
-x	x	./reports/old-charts.html.tmpl
-x	x	./reports/report-bar.png.tmpl
-x	x	./reports/report-line.png.tmpl
-x	x	./reports/report-pie.png.tmpl
-x	x	./reports/report-simple.html.tmpl
-x	x	./reports/report-table.csv.tmpl
-x	x	./reports/report-table.html.tmpl
-x	x	./reports/report.csv.tmpl
-x	x	./reports/report.html.tmpl
-x	x	./reports/series-common.html.tmpl
-x	x	./reports/series.html.tmpl
-x	x	./request/email.txt.tmpl
-x	x	./request/queue.html.tmpl
-x	x	./search/boolean-charts.html.tmpl
-x	x	./search/form.html.tmpl
-x	x	./search/knob.html.tmpl
-x	x	./search/search-advanced.html.tmpl
-x	x	./search/search-create-series.html.tmpl
-x	x	./search/search-help.html.tmpl
-x	x	./search/search-plugin.xml.tmpl
-x	x	./search/search-report-graph.html.tmpl
-x	x	./search/search-report-select.html.tmpl
-x	x	./search/search-report-table.html.tmpl
-x	x	./search/search-specific.html.tmpl
-x	x	./search/tabs.html.tmpl
-x	x	./setup/strings.txt.pl
-x	x	./sidebar.xul.tmpl
-x	x	./welcome-admin.html.tmpl
-x	x	./whine/mail.html.tmpl
-x	x	./whine/mail.txt.tmpl
-x	x	./whine/multipart-mime.txt.tmpl
-x	x	./whine/schedule.html.tmpl
+# <register> <translator> <checker> <filename>
+x	x	x	./account/auth/login-small.html.tmpl
+x	x	x	./account/auth/login.html.tmpl
+x	x	x	./account/cancel-token.txt.tmpl
+x	x	x	./account/create.html.tmpl
+x	x	x	./account/created.html.tmpl
+x	x	x	./account/email/change-new.txt.tmpl
+x	x	x	./account/email/change-old.txt.tmpl
+x	x	x	./account/email/confirm-new.html.tmpl
+x	x	x	./account/email/confirm.html.tmpl
+x	x	x	./account/email/request-new.txt.tmpl
+x	x	x	./account/password/forgotten-password.txt.tmpl
+x	x	x	./account/password/set-forgotten-password.html.tmpl
+x	x	x	./account/prefs/account.html.tmpl
+x	x	x	./account/prefs/email.html.tmpl
+x	x	x	./account/prefs/permissions.html.tmpl
+x	x	x	./account/prefs/prefs.html.tmpl
+x	x	x	./account/prefs/saved-searches.html.tmpl
+x	x	x	./account/prefs/settings.html.tmpl
+x	x	x	./account/profile-activity.html.tmpl
+x	x	x	./admin/admin.html.tmpl
+x	x	x	./admin/classifications/add.html.tmpl
+x	x	x	./admin/classifications/del.html.tmpl
+x	x	x	./admin/classifications/edit.html.tmpl
+x	x	x	./admin/classifications/reclassify.html.tmpl
+x	x	x	./admin/classifications/select.html.tmpl
+x	x	x	./admin/components/confirm-delete.html.tmpl
+x	x	x	./admin/components/create.html.tmpl
+x	x	x	./admin/components/edit.html.tmpl
+x	x	x	./admin/components/footer.html.tmpl
+x	x	x	./admin/components/list.html.tmpl
+x	x	x	./admin/components/select-product.html.tmpl
+x	x	x	./admin/confirm-action.html.tmpl
+x	x	x	./admin/custom_fields/confirm-delete.html.tmpl
+x	x	x	./admin/custom_fields/create.html.tmpl
+x	x	x	./admin/custom_fields/edit.html.tmpl
+x	x	x	./admin/custom_fields/list.html.tmpl
+x	x	x	./admin/fieldvalues/confirm-delete.html.tmpl
+x	x	x	./admin/fieldvalues/create.html.tmpl
+x	x	x	./admin/fieldvalues/edit.html.tmpl
+x	x	x	./admin/fieldvalues/footer.html.tmpl
+x	x	x	./admin/fieldvalues/list.html.tmpl
+x	x	x	./admin/fieldvalues/select-field.html.tmpl
+x	x	x	./admin/flag-type/confirm-delete.html.tmpl
+x	x	x	./admin/flag-type/edit.html.tmpl
+x	x	x	./admin/flag-type/list.html.tmpl
+x	x	x	./admin/groups/confirm-remove.html.tmpl
+x	x	x	./admin/groups/create.html.tmpl
+x	x	x	./admin/groups/delete.html.tmpl
+x	x	x	./admin/groups/edit.html.tmpl
+x	x	x	./admin/groups/list.html.tmpl
+x	x	x	./admin/keywords/confirm-delete.html.tmpl
+x	x	x	./admin/keywords/create.html.tmpl
+x	x	x	./admin/keywords/edit.html.tmpl
+x	x	x	./admin/keywords/list.html.tmpl
+x	x	x	./admin/milestones/confirm-delete.html.tmpl
+x	x	x	./admin/milestones/create.html.tmpl
+x	x	x	./admin/milestones/edit.html.tmpl
+x	x	x	./admin/milestones/footer.html.tmpl
+x	x	x	./admin/milestones/list.html.tmpl
+x	x	x	./admin/milestones/select-product.html.tmpl
+x	x	x	./admin/params/admin.html.tmpl
+x	x	x	./admin/params/attachment.html.tmpl
+x	x	x	./admin/params/auth.html.tmpl
+x	x	x	./admin/params/bugchange.html.tmpl
+x	x	x	./admin/params/bugfields.html.tmpl
+x	x	x	./admin/params/bugmove.html.tmpl
+x	x	x	./admin/params/common.html.tmpl
+x	x	x	./admin/params/core.html.tmpl
+x	x	x	./admin/params/dependencygraph.html.tmpl
+x	x	x	./admin/params/editparams.html.tmpl
+x	x	x	./admin/params/groupsecurity.html.tmpl
+x	x	x	./admin/params/index.html.tmpl
+x	x	x	./admin/params/ldap.html.tmpl
+x	x	x	./admin/params/mta.html.tmpl
+x	x	x	./admin/params/patchviewer.html.tmpl
+x	x	x	./admin/params/query.html.tmpl
+x	x	x	./admin/params/radius.html.tmpl
+x	x	x	./admin/params/shadowdb.html.tmpl
+x	x	x	./admin/params/usermatch.html.tmpl
+x	x	x	./admin/products/confirm-delete.html.tmpl
+x	x	x	./admin/products/create.html.tmpl
+x	x	x	./admin/products/edit-common.html.tmpl
+x	x	x	./admin/products/edit.html.tmpl
+x	x	x	./admin/products/footer.html.tmpl
+x	x	x	./admin/products/groupcontrol/confirm-edit.html.tmpl
+x	x	x	./admin/products/groupcontrol/edit.html.tmpl
+x	x	x	./admin/products/groupcontrol/updated.html.tmpl
+x	x	x	./admin/products/list-classifications.html.tmpl
+x	x	x	./admin/products/list.html.tmpl
+x	x	x	./admin/products/updated.html.tmpl
+x	x	x	./admin/sanitycheck/list.html.tmpl
+x	x	x	./admin/sanitycheck/messages.html.tmpl
+x	x	x	./admin/settings/edit.html.tmpl
+x	x	x	./admin/sudo.html.tmpl
+x	x	x	./admin/table.html.tmpl
+x	x	x	./admin/users/confirm-delete.html.tmpl
+x	x	x	./admin/users/create.html.tmpl
+x	x	x	./admin/users/edit.html.tmpl
+x	x	x	./admin/users/list.html.tmpl
+x	x	x	./admin/users/listselectvars.html.tmpl
+x	x	x	./admin/users/responsibilities.html.tmpl
+x	x	x	./admin/users/search.html.tmpl
+x	x	x	./admin/users/userdata.html.tmpl
+x	x	x	./admin/versions/confirm-delete.html.tmpl
+x	x	x	./admin/versions/create.html.tmpl
+x	x	x	./admin/versions/edit.html.tmpl
+x	x	x	./admin/versions/footer.html.tmpl
+x	x	x	./admin/versions/list.html.tmpl
+x	x	x	./admin/versions/select-product.html.tmpl
+x	x	x	./admin/workflow/comment.html.tmpl
+x	x	x	./admin/workflow/edit.html.tmpl
+x	x	x	./attachment/cancel-create-dupe.html.tmpl
+x	x	x	./attachment/choose.html.tmpl
+x	x	x	./attachment/confirm-delete.html.tmpl
+x	x	x	./attachment/content-types.html.tmpl
+x	x	x	./attachment/create.html.tmpl
+x	x	x	./attachment/created.html.tmpl
+x	x	x	./attachment/createformcontents.html.tmpl
+x	x	x	./attachment/delete_reason.txt.tmpl
+x	x	x	./attachment/diff-file.html.tmpl
+x	x	x	./attachment/diff-footer.html.tmpl
+x	x	x	./attachment/diff-header.html.tmpl
+x	x	x	./attachment/edit.html.tmpl
+x	x	x	./attachment/list.html.tmpl
+x	x	x	./attachment/midair.html.tmpl
+x	x	x	./attachment/show-multiple.html.tmpl
+x	x	x	./attachment/updated.html.tmpl
+x	x	x	./bug/activity/show.html.tmpl
+x	x	x	./bug/activity/table.html.tmpl
+x	x	x	./bug/choose.html.tmpl
+x	x	x	./bug/comments.html.tmpl
+x	x	x	./bug/create/comment-guided.txt.tmpl
+x	x	x	./bug/create/comment.txt.tmpl
+x	x	x	./bug/create/confirm-create-dupe.html.tmpl
+x	x	x	./bug/create/create-guided.html.tmpl
+x	x	x	./bug/create/create.html.tmpl
+x	x	x	./bug/create/created.html.tmpl
+x	x	x	./bug/create/make-template.html.tmpl
+x	x	x	./bug/create/user-message.html.tmpl
+x	x	x	./bug/dependency-graph.html.tmpl
+x	x	x	./bug/dependency-tree.html.tmpl
+x	x	x	./bug/edit.html.tmpl
+x	x	x	./bug/field.html.tmpl
+x	x	x	./bug/keyword-chooser.html.tmpl
+x	x	x	./bug/knob.html.tmpl
+x	x	x	./bug/navigate.html.tmpl
+x	x	x	./bug/process/bugmail.html.tmpl
+x	x	x	./bug/process/confirm-duplicate.html.tmpl
+x	x	x	./bug/process/header.html.tmpl
+x	x	x	./bug/process/midair.html.tmpl
+x	x	x	./bug/process/results.html.tmpl
+x	x	x	./bug/process/verify-new-product.html.tmpl
+x	x	x	./bug/show-multiple.html.tmpl
+x	x	x	./bug/show.html.tmpl
+x	x	x	./bug/show.xml.tmpl
+x	x	x	./bug/summarize-time.html.tmpl
+x	x	x	./bug/time.html.tmpl
+x	x	x	./bug/votes/delete-all.html.tmpl
+x	x	x	./bug/votes/list-for-bug.html.tmpl
+x	x	x	./bug/votes/list-for-user.html.tmpl
+-	o	shimono	./config.js.tmpl
+-	o	shimono	./config.rdf.tmpl
+x	x	x	./email/newchangedmail.txt.tmpl
+x	x	x	./email/sanitycheck.txt.tmpl
+x	x	x	./email/sudo.txt.tmpl
+x	x	x	./email/votes-removed.txt.tmpl
+x	x	x	./email/whine.txt.tmpl
+-	o	shimono	./filterexceptions.pl
+x	x	x	./flag/list.html.tmpl
+-	o	shimono	./global/banner.html.tmpl
+shimono	shimono	x	./global/choose-classification.html.tmpl
+shimono	shimono	x	./global/choose-product.html.tmpl
+shimono	x	x	./global/code-error.html.tmpl
+x	x	x	./global/common-links.html.tmpl
+x	x	x	./global/confirm-user-match.html.tmpl
+x	x	x	./global/docslinks.html.tmpl
+x	x	x	./global/field-descs.none.tmpl
+x	x	x	./global/footer.html.tmpl
+x	x	x	./global/header.html.tmpl
+x	x	x	./global/help.html.tmpl
+x	x	x	./global/hidden-fields.html.tmpl
+x	x	x	./global/initialize.none.tmpl
+x	x	x	./global/js-products.html.tmpl
+x	x	x	./global/message.html.tmpl
+x	x	x	./global/message.txt.tmpl
+x	x	x	./global/messages.html.tmpl
+x	x	x	./global/per-bug-queries.html.tmpl
+x	x	x	./global/select-menu.html.tmpl
+x	x	x	./global/setting-descs.none.tmpl
+shimono	shimono	x	./global/site-navigation.html.tmpl
+x	x	x	./global/tabs.html.tmpl
+x	x	x	./global/textarea.html.tmpl
+x	x	x	./global/useful-links.html.tmpl
+x	x	x	./global/user-error.html.tmpl
+x	x	x	./global/userselect.html.tmpl
+x	x	x	./global/variables.none.tmpl
+shimono	shimono	x	./index.html.tmpl
+x	x	x	./list/change-columns.html.tmpl
+x	x	x	./list/edit-multiple.html.tmpl
+x	x	x	./list/list-simple.html.tmpl
+x	x	x	./list/list.atom.tmpl
+x	x	x	./list/list.csv.tmpl
+x	x	x	./list/list.html.tmpl
+x	x	x	./list/list.ics.tmpl
+x	x	x	./list/list.js.tmpl
+x	x	x	./list/list.rdf.tmpl
+x	x	x	./list/quips.html.tmpl
+x	x	x	./list/server-push.html.tmpl
+x	x	x	./list/table.html.tmpl
+x	x	x	./pages/bug-writing.html.tmpl
+x	x	x	./pages/fields.html.tmpl
+x	x	x	./pages/linked.html.tmpl
+x	x	x	./pages/linkify.html.tmpl
+x	x	x	./pages/quicksearch.html.tmpl
+x	x	x	./pages/quicksearchhack.html.tmpl
+x	x	x	./pages/release-notes.html.tmpl
+x	x	x	./pages/sudo.html.tmpl
+x	x	x	./pages/voting.html.tmpl
+x	x	x	./reports/chart.csv.tmpl
+x	x	x	./reports/chart.html.tmpl
+x	x	x	./reports/chart.png.tmpl
+x	x	x	./reports/components.html.tmpl
+x	x	x	./reports/create-chart.html.tmpl
+x	x	x	./reports/duplicates-simple.html.tmpl
+x	x	x	./reports/duplicates-table.html.tmpl
+x	x	x	./reports/duplicates.html.tmpl
+x	x	x	./reports/duplicates.rdf.tmpl
+x	x	x	./reports/edit-series.html.tmpl
+x	x	x	./reports/keywords.html.tmpl
+x	x	x	./reports/menu.html.tmpl
+x	x	x	./reports/old-charts.html.tmpl
+x	x	x	./reports/report-bar.png.tmpl
+x	x	x	./reports/report-line.png.tmpl
+x	x	x	./reports/report-pie.png.tmpl
+x	x	x	./reports/report-simple.html.tmpl
+x	x	x	./reports/report-table.csv.tmpl
+x	x	x	./reports/report-table.html.tmpl
+x	x	x	./reports/report.csv.tmpl
+x	x	x	./reports/report.html.tmpl
+x	x	x	./reports/series-common.html.tmpl
+x	x	x	./reports/series.html.tmpl
+x	x	x	./request/email.txt.tmpl
+x	x	x	./request/queue.html.tmpl
+x	x	x	./search/boolean-charts.html.tmpl
+x	x	x	./search/form.html.tmpl
+x	x	x	./search/knob.html.tmpl
+x	x	x	./search/search-advanced.html.tmpl
+x	x	x	./search/search-create-series.html.tmpl
+x	x	x	./search/search-help.html.tmpl
+x	x	x	./search/search-plugin.xml.tmpl
+x	x	x	./search/search-report-graph.html.tmpl
+x	x	x	./search/search-report-select.html.tmpl
+x	x	x	./search/search-report-table.html.tmpl
+x	x	x	./search/search-specific.html.tmpl
+x	x	x	./search/tabs.html.tmpl
+x	x	x	./setup/strings.txt.pl
+shimono	x	x	./sidebar.xul.tmpl
+shimono	x	x	./welcome-admin.html.tmpl
+x	x	x	./whine/mail.html.tmpl
+x	x	x	./whine/mail.txt.tmpl
+x	x	x	./whine/multipart-mime.txt.tmpl
+x	x	x	./whine/schedule.html.tmpl
