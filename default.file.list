@@ -1,7 +1,7 @@
 # <register> <translator> <checker> <filename>
 x	x	x	./account/auth/login-small.html.tmpl
 x	x	x	./account/auth/login.html.tmpl
-x	x	x	./account/cancel-token.txt.tmpl
+shimono	shimono	x	./account/cancel-token.txt.tmpl
 x	x	x	./account/create.html.tmpl
 x	x	x	./account/created.html.tmpl
 x	x	x	./account/email/change-new.txt.tmpl
