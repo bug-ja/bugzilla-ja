@@ -10,7 +10,7 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [% IF user.id && user.settings.per_bug_queries.value == "on" %]
@@ -64,16 +64,16 @@
         <input type="hidden" name="remtype" value="asnamed">
         <input type="hidden" name="list_of_bugs" value="1">
         <select id="lob_action" name="action" onchange="update_text();">
-          <option value="add">Add</option>
+          <option value="add">追加</option>
           [% IF lists_of_bugs.size %]
-            <option value="remove">Remove</option>
+            <option value="remove">削除</option>
           [% END %]
         </select>
 
         [% IF Param('docs_urlbase') %]
-          <a href="[% docs_urlbase FILTER html %]query.html#individual-buglists">the named tag</a>
+          <a href="[% docs_urlbase FILTER html %]query.html#individual-buglists">名前付きタグ</a>
         [% ELSE %]
-          the named tag
+          名前付きタグ
         [% END %]
 
         [% IF lists_of_bugs.size %]
@@ -89,10 +89,11 @@
                  size="20" maxlength="64" name="newqueryname"
                  onkeyup="manage_old_lists();">
         </span>
-        <span id="lob_direction">to</span>
+        <span id="lob_direction">を</span>
         [%+ terms.bugs %]
         <input type="text" name="bug_ids" size="12" maxlength="80"
          [%- " value=\"$bugids\"" IF bugids %]>
+        <span id="lob_direction">に</span>
         <input type="submit" value="Commit" id="commit_list_of_bugs">
       </form>
     </li></ul>

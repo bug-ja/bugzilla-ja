@@ -56,56 +56,56 @@ function normal_keypress_handler( aEvent ) {
 
 ]]></script>
 
-  <textbox id="query-field" class="descriptive-content" value="enter search" onfocus="this.setSelectionRange(0,this.value.length)"/>
+  <textbox id="query-field" class="descriptive-content" value="検索語入力" onfocus="this.setSelectionRange(0,this.value.length)"/>
 
   <separator class="groove"/>
 
   <box autostretch="never" valign="top">
     <box orient="vertical" flex="1">
-      <text class="text-link" onclick="load_relative_url('query.cgi')" value="new search"/>
-      <text class="text-link" onclick="load_relative_url('report.cgi')" value="reports"/>
-      <text class="text-link" onclick="load_relative_url('enter_bug.cgi')" value="new [% terms.bug %]"/>
+      <text class="text-link" onclick="load_relative_url('query.cgi')" value="新規検索"/>
+      <text class="text-link" onclick="load_relative_url('report.cgi')" value="レポート"/>
+      <text class="text-link" onclick="load_relative_url('enter_bug.cgi')" value="新規 [% terms.bug %]"/>
       <separator class="thin"/>
 
 [% IF user.id %]
-      <text class="text-link" onclick="load_relative_url('userprefs.cgi')" value="edit prefs"/>
+      <text class="text-link" onclick="load_relative_url('userprefs.cgi')" value="ユーザ設定編集"/>
   [%- IF user.groups.tweakparams %]
-      <text class="text-link" onclick="load_relative_url('editparams.cgi')" value="edit params"/>
-      <text class="text-link" onclick="load_relative_url('editsettings.cgi')" value="edit default preferences"/>
+      <text class="text-link" onclick="load_relative_url('editparams.cgi')" value="パラメータ編集"/>
+      <text class="text-link" onclick="load_relative_url('editsettings.cgi')" value="既定の設定の編集"/>
   [%- END %]
   [%- IF user.groups.editusers || user.can_bless %]
-      <text class="text-link" onclick="load_relative_url('editusers.cgi')" value="edit users"/>
+      <text class="text-link" onclick="load_relative_url('editusers.cgi')" value="ユーザの編集"/>
   [%- END %]
   [%- IF Param('useclassification') && user.groups.editclassifications %]
-      <text class="text-link" onclick="load_relative_url('editclassifications.cgi')" value="edit classifications"/>
+      <text class="text-link" onclick="load_relative_url('editclassifications.cgi')" value="classification の編集"/>
   [%- END %]
   [%- IF user.groups.editcomponents %]
-      <text class="text-link" onclick="load_relative_url('editcomponents.cgi')" value="edit components"/>
-      <text class="text-link" onclick="load_relative_url('editflagtypes.cgi')" value="edit flags"/>
-      <text class="text-link" onclick="load_relative_url('editvalues.cgi')" value="edit field values"/>
+      <text class="text-link" onclick="load_relative_url('editcomponents.cgi')" value="コンポーネントの変数"/>
+      <text class="text-link" onclick="load_relative_url('editflagtypes.cgi')" value="フラグの編集"/>
+      <text class="text-link" onclick="load_relative_url('editvalues.cgi')" value="フィールド値の編集"/>
   [%- END %]
   [%- IF user.groups.creategroups %]
-      <text class="text-link" onclick="load_relative_url('editgroups.cgi')" value="edit groups"/>
+      <text class="text-link" onclick="load_relative_url('editgroups.cgi')" value="グループの編集"/>
   [%- END %]
   [%- IF user.groups.editkeywords %]
-      <text class="text-link" onclick="load_relative_url('editkeywords.cgi')" value="edit keywords"/>
+      <text class="text-link" onclick="load_relative_url('editkeywords.cgi')" value="キーワードの編集"/>
   [%- END %]
   [%- IF user.groups.bz_canusewhines %]
-      <text class="text-link" onclick="load_relative_url('editwhines.cgi')" value="edit whining"/>
+      <text class="text-link" onclick="load_relative_url('editwhines.cgi')" value="whine 設定"/>
   [%- END %]
   [%- IF user.groups.editcomponents %]
-      <text class="text-link" onclick="load_relative_url('sanitycheck.cgi')" value="sanity check"/>
+      <text class="text-link" onclick="load_relative_url('sanitycheck.cgi')" value="整合性確認"/>
   [%- END %]
   [%- IF user.authorizer.can_logout %]
-      <text class="text-link" onclick="load_relative_url('relogin.cgi')" value="log out [% user.login FILTER html %]"/>
+      <text class="text-link" onclick="load_relative_url('relogin.cgi')" value="ログアウト ([% user.login FILTER html %])"/>
   [%- END %]
       <separator class="thin"/>
   [%- IF user.showmybugslink %]
       [% filtered_username = user.login FILTER url_quote %]
-      <text class="text-link" onclick="load_relative_url('[% Param('mybugstemplate').replace('%userid%', filtered_username) FILTER js FILTER html %]')" value="my [% terms.bugs %]"/>
+      <text class="text-link" onclick="load_relative_url('[% Param('mybugstemplate').replace('%userid%', filtered_username) FILTER js FILTER html %]')" value="わたしの [% terms.bugs %]"/>
   [%- END %]
   [%- IF Param('usevotes') %]
-      <text class="text-link" onclick="load_relative_url('votes.cgi?action=show_user')" value="my votes"/>
+      <text class="text-link" onclick="load_relative_url('votes.cgi?action=show_user')" value="わたしの投票"/>
   [%- END %]
 
   [%- FOREACH q = user.queries %]
@@ -113,8 +113,8 @@ function normal_keypress_handler( aEvent ) {
   [% END %]
 
 [% ELSE %]
-      <text class="text-link" onclick="load_relative_url('createaccount.cgi')" value="new user"/>
-      <text class="text-link" onclick="load_relative_url('index.cgi?GoAheadAndLogIn=1')" value="log in"/>
+      <text class="text-link" onclick="load_relative_url('createaccount.cgi')" value="新規ユーザ登録"/>
+      <text class="text-link" onclick="load_relative_url('index.cgi?GoAheadAndLogIn=1')" value="ログイン"/>
 [% END %]
 
     </box>
@@ -124,7 +124,7 @@ function normal_keypress_handler( aEvent ) {
   <box orient="horizontal">
     <spring flex="1"/>
     <html align="right">
-      <html:a class="text-link" href="[% urlbase FILTER xml %]sidebar.cgi">reload</html:a>
+      <html:a class="text-link" href="[% urlbase FILTER xml %]sidebar.cgi">再読み込み</html:a>
     </html>
   </box>
 </window>
