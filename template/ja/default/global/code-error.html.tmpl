@@ -34,113 +34,109 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% DEFAULT title = "Internal Error" %]
+[% DEFAULT title = "内部エラー" %]
 
 [% error_message = BLOCK %]
   [% IF    error == "action_unrecognized" %]
-    [% docslinks = {'query.html' => "Searching for $terms.bugs",
-                    'query.html#list' => "$terms.Bug lists"} %]
-    I don't recognize the value (<em>[% action FILTER html %]</em>)
-    of the <em>action</em> variable.
-  
+    [% docslinks = {'query.html' => "$terms.bugs の検索",
+                    'query.html#list' => "$terms.Bug リスト"} %]
+    <em>action</em> 変数に指定された (<em>[% action FILTER html %]</em>)
+    を認識できません。
+
   [% ELSIF error == "attachment_already_obsolete" %]
-    Attachment #[% attach_id FILTER html %] ([% description FILTER html %]) 
-    is already obsolete.
+    添付 #[% attach_id FILTER html %] ([% description FILTER html %]) 
+    はすでに用済みにされています。
 
   [% ELSIF error == "auth_invalid_email" %]
-    [% title = "Invalid Email Address" %]
-    We received an email address (<b>[% addr FILTER html %]</b>)
-    that didn't pass our syntax checking for a legal email address,
-    when trying to create or update your account.
+    [% title = "無効なメールアドレス" %]
+    あなたのアカウントの作成もしくは更新の際に送信されたメールアドレス
+    (<b>[% addr FILTER html %]</b>)
+    は、設定されている有効なメールアドレスの書式にあいませんでした。
     [% IF default %]
-      A legal address must contain exactly one '@',
-      and at least one '.' after the @.
+      有効なメールアドレスは、ひとつの '@' を含み、そのあとに最低ひとつの
+      '.' があるものになります。
     [% ELSE %]
       [%+ Param('emailregexpdesc') %]
     [% END %]
-    It must also not contain any of these special characters:
-    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>, or any whitespace.
+    また、次の特殊文字や空白文字を含むものは無効です。
+    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
 
   [% ELSIF error == "authres_unhandled" %]
-    The result value of [% value FILTER html %] was not handled by
-    the login code.
+    ログイン処理中の結果 [% value FILTER html %] を処理できませんでした。.
 
   [% ELSIF error == "bad_page_cgi_id" %]
-    [% title = "Invalid Page ID" %]
-    The ID <code>[% page_id FILTER html %]</code> is not a
-    valid page identifier.
+    [% title = "無効なページ ID" %]
+    ID <code>[% page_id FILTER html %]</code> は有効なページ識別子でありません。
 
   [% ELSIF error == "bad_arg" %]
-    Bad argument <code>[% argument FILTER html %]</code> sent to
-    <code>[% function FILTER html %]</code> function.
+    <code>[% function FILTER html %]</code> 関数が無効な引数
+    <code>[% argument FILTER html %]</code> により呼ばれました。
 
   [% ELSIF error == "bug_error" %]
-    Trying to retrieve [% terms.bug %] [%+ bug.bug_id FILTER html %] returned 
-    the error [% bug.error FILTER html %].
-    
+    [% terms.bug %] [%+ bug.bug_id FILTER html %] を表示しようとしたところ、
+    [% bug.error FILTER html %] のエラーが発生しました。
+
   [% ELSIF error == "chart_data_not_generated" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up Charting'} %]
+    [% admindocslinks = {'extraconfig.html' => 'チャートの設定'} %]
     [% IF product %]
-      Charts for the <em>[% product FILTER html %]</em> product are not
-      available yet because no charting data has been collected for it since it
-      was created.
+      <em>[% product FILTER html %]</em> プロダクトのチャートは、
+      チャートが作成されてからデータの収集がまだ行われていないため、
+      現在利用できません。
     [% ELSE %]
-      No charting data has been collected yet.
+      チャート用データが収集されていません。
     [% END %]
-    Please wait a day and try again.
-    If you're seeing this message after a day, then you should contact
+    一日待って再度試してください。
+    同じメッセージを見た場合、
     <a href="mailto:[% Param('maintainer') %]">[% Param('maintainer') %]</a>
-    and reference this error.
+    にこのエラーが発生した時の詳細をつけて連絡してください。
 
   [% ELSIF error == "chart_datafile_corrupt" %]
-    The chart data file [% file FILTER html %] is corrupt.
-        
+    チャート用データファイル [% file FILTER html %] が破損しています。
+
   [% ELSIF error == "chart_dir_nonexistent" %]
-    One of the directories <tt>[% dir FILTER html %]</tt> and 
-    <tt>[% graph_dir FILTER html %]</tt> does not exist.
-  
+    <tt>[% dir FILTER html %]</tt> もしくは <tt>[% graph_dir FILTER html %]</tt>
+    ディレクトリが存在しません。
+
   [% ELSIF error == "chart_file_open_fail" %]
-    Unable to open the chart datafile <tt>[% filename FILTER html %]</tt>.
+    チャート用データファイル <tt>[% filename FILTER html %]</tt> が開けません。
   
   [% ELSIF error == "chart_lines_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'Installing Perl modules necessary for Charting'} %]
-    Charts will not work without the Chart::Lines Perl module being installed.
-    Run checksetup.pl for installation instructions.
+    [% admindocslinks = {'installation.html#install-perlmodules' => 'チャートのために必要な Perl モジュールをインストールする'} %]
+    チャート機能は、Chart::Lines の Perl モジュールがなければ動きません。
+    checksetup.pl を実行して表示されるインストールのための指示に従ってください。
 
   [% ELSIF error == "column_not_null_without_default" %]
-    Failed adding the column [% name FILTER html %]:
-    You cannot add a NOT NULL column with no default to an existing table
-    unless you specify something for the <code>$init_value</code> argument.
+    カラム [% name FILTER html %] の追加に失敗しました:
+    <code>$init_value</code> 引数を指定しない限り、
+    NULL でないカラムを規定値なしに既存のテーブルに追加することはできません。
 
   [% ELSIF error == "column_not_null_no_default_alter" %]
-    You cannot alter the [% name FILTER html %] column to be NOT NULL 
-    without specifying a default or something for $set_nulls_to, because
-    there are NULL values currently in it.
+    [% name FILTER html %] カラムを規定値もしくは $set_nulls_to を指定しないで
+    NOT NULL に変更しようとしましたが、現在 NULL 値を持つエントリがあります。
 
   [% ELSIF error == "db_rename_conflict" %]
-    Name conflict: Cannot rename [% old FILTER html %] to
-    [% new FILTER html %] because [% new FILTER html %] already exists.
+    名前が衝突しました: [% old FILTER html %] を
+    [% new FILTER html %] に変更できません。[% new FILTER html %] はすでに存在します。
 
   [% ELSIF error == "cookies_need_value" %]
-    Every cookie must have a value.
+    すべてのクッキーは値を持つ必要があります。
 
   [% ELSIF error == "env_no_email" %]
-    [% terms.Bugzilla %] did not receive an email address from the 
-    environment.
+    [% terms.Bugzilla %] は環境変数からメールアドレスを特定できませんでした。
     [% IF Param("auth_env_email") %]
-      This means that the '[% Param("auth_env_email") FILTER html %]'
-      environment variable was empty or did not exist.
+      これは、'[% Param("auth_env_email") FILTER html %]' 環境変数が空もしくは、
+      存在しなかったことを意味します。
     [% ELSE %]
-      You need to set the "auth_env_email" parameter to the name of
-      the environment variable that will contain the user's email
-      address.
+      "auth_env_email" パラメータに、
+      ユーザのメールアドレスを含むような環境変数の名前を設定する必要があります。
     [% END %]
 
   [% ELSIF error == "extension_invalid" %]
-    An error occurred processing hook [% name FILTER html %] in
-    extension [% extension FILTER html %]: [% errstr FILTER html %]
+    拡張機能 [% extension FILTER html %] の中で [% name FILTER html %]
+    のフックを処理する際にエラーが発生しました: [% errstr FILTER html %]
 
   [% ELSIF error == "extern_id_conflict" %]
+    外部 ID 
     The external ID '[% extern_id FILTER html %]' already exists
     in the database for '[% username FILTER html %]', but your
     account source says that '[% extern_user FILTER html %]' has that ID.
