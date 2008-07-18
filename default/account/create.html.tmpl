@@ -28,7 +28,7 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% title = BLOCK %]
-  Create a new [% terms.Bugzilla %] account
+  新規 [% terms.Bugzilla %] アカウントの作成
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -36,27 +36,30 @@
            onload = "document.forms['account_creation_form'].login.focus();" %]
 
 <p>
+  [% terms.Bugzilla %] アカウントを作成するためには、
   To create a [% terms.Bugzilla %] account, all you need to do is to enter
 [% IF Param('emailsuffix') == '' %]
-  a legitimate email address.
+  正当なメールアドレスを入力する必要があります。
 [% ELSE %]
-  an accountname which when combined with [% Param('emailsuffix') %]
-  corresponds to an address where you receive email.
+  [% Param('emailsuffix') %] がつくと、
+  あなたがメールを受信できるメールアドレスとなるアカウント名を入力する必要があります。
 [% END %]
-  You will receive an email at this address to confirm the creation of your
-  account. <b>You will not be able to log in until you receive the email.</b>
-  If it doesn't arrive within a reasonable amount of time, you may contact
-  the maintainer of this [% terms.Bugzilla %] installation
-  at <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>.
+  このメールアドレスに、あなたのアカウントを生成するかどうかの確認メールが送信されます。
+  <b>メールを受信するまでログインはできません。</b>
+  もし、ある程度の時間がたってもメールを受信しなかった場合は、
+  この [% terms.Bugzilla %] サイトのメンテナ
+  <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
+  まで連絡を取ってください。
 </p>
 
 [% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
 <p>
-  <b>PRIVACY NOTICE:</b> [% terms.Bugzilla %] is an open [% terms.bug %]
-  tracking system. Activity on most [% terms.bugs %], including email
-  addresses, will be visible to the public. We <b>recommend</b> using a
-  secondary account or free web email service (such as Gmail, Yahoo,
-  Hotmail, or similar) to avoid receiving spam at your primary email address.
+  <b>プライバシーのための重要なお知らせ:</b>
+  [% terms.Bugzilla %] は開かれた [% terms.bug %] 追跡システムです。
+  メールアドレスを含む、ほぼすべての [% terms.bugs %] の動きはどこからでも見る
+  ことができます。サブメールアカウントや、フリーウェブメールサービス (Gmail、
+  Yahoo、Hotmail、など) を利用することを、spam を増やさないためにも、
+  <b>推奨</b> します。
 </p>
 [% END %]
 
@@ -64,7 +67,7 @@
   <table>
     <tr>
       <td align="right">
-        <b>Email address:</b>
+        <b>メールアドレス:</b>
       </td>
       <td>
         <input size="35" id="login" name="login">
@@ -73,7 +76,7 @@
     </tr>
   </table>
   <br>
-  <input type="submit" id="send" value="Send">
+  <input type="submit" id="send" value="送信">
 </form>
 
 [% PROCESS global/footer.html.tmpl %]
