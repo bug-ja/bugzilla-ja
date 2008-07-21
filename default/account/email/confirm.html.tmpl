@@ -22,11 +22,11 @@
   # token: string. The token to be used in this address change.
   #%]
   
-[% title = "Confirm Change Email" %]
+[% title = "メールアドレス変更の確認" %]
 [% PROCESS global/header.html.tmpl %]
 
 <p>
-  To change your email address, please enter the old email address:
+  メールアドレスを変更するには、旧メールアドレスを入力してください。
 </p>
 
 <form method="post" action="token.cgi">
@@ -34,12 +34,12 @@
   <input type="hidden" name="a" value="chgem">
   <table>
     <tr>
-      <th align="right">Old Email Address:</th>
+      <th align="right">旧メールアドレス:</th>
       <td><input type="text" name="email" size="36"></td>
     </tr>
     <tr>
       <th align="right">&nbsp;</th>
-      <td><input type="submit" id="confirm" value="Submit"></td>
+      <td><input type="submit" id="confirm" value="変更"></td>
     </tr>
   </table>
 </form>

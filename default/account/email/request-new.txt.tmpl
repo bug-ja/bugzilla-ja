@@ -10,7 +10,7 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -24,34 +24,34 @@
 [% expiration_ts = token_ts + (constants.MAX_TOKEN_AGE * 86400) %]
 From: [% Param('mailfrom') %]
 To: [% email %]
-Subject: [% terms.Bugzilla %]: confirm account creation
+Subject: [% terms.Bugzilla %]: アカウント作成の確認
 X-Bugzilla-Type: admin
 
-[%+ terms.Bugzilla %] has received a request to create a user account
-using your email address ([% email %]).
+[%+ terms.Bugzilla %] はあなたのメールアドレス ([% email %]) を利用した
+新規アカウント作成の要請を受け取りました。
 
-To continue creating an account using this email address, visit the 
-following link by [%+ time2str("%B %o, %Y at %H:%M %Z", expiration_ts) %]:
+このメールアドレスでのアカウント作成を続行するには、次の URL を
+[%+ time2str("%B %o, %Y at %H:%M %Z", expiration_ts) %] までに訪問してください。
 
 [%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=request_new_account
 
-If you did not receive this email before [%+ time2str("%B %o, %Y at %H:%M %Z", expiration_ts) %] or
-you wish to create an account using a different email address you can begin
-again by going to:
+もし、このメールを [%+ time2str("%B %o, %Y at %H:%M %Z", expiration_ts) %] より前に
+受け取らなかったか、ほかのメールアドレスでアカウントを作成したい場合は、
+次の URL から再試行できます。
 
 [%+ urlbase %]createaccount.cgi
 
 [% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
-PRIVACY NOTICE: [% terms.Bugzilla %] is an open [% terms.bug %] tracking system. Activity on most
-[%+ terms.bugs %], including email addresses, will be visible to the public. We recommend
-using a secondary account or free web email service (such as Gmail, Yahoo,
-Hotmail, or similar) to avoid receiving spam at your primary email address.
+プライバシー保護のために: [% terms.Bugzilla %] は開かれた [% terms.bug %] 追跡システムです。
+メールアドレスを含むほとんど全ての [% terms.bugs %] への変更は、誰でも見られます。
+予備のメールアドレス、もしくは、Gmail, Yahoo, Hotmail などといったフリーメールアカ
+ウントを登録することを、spam の防止の観点からお勧めします。
 [% END %]
 
-If you do not wish to create an account, or if this request was made in
-error you can do nothing or visit the following link:
+アカウントを作成しないことを望むなら、もしくは要請が何らかの間違いであるなら、
+何もしないか次の URL を訪問してください。
 
 [%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cancel_new_account
 
-If the above links do not work, or you have any other issues regarding
-your account, please contact administration at [% Param('maintainer') %].
+上のリンクが動作しないなら、もしくはアカウントに関して何か問題があるなら、
+管理者 [% Param('maintainer') %] に問い合わせてみてください。
