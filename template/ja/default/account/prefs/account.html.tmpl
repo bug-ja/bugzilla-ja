@@ -27,11 +27,11 @@
 <table>
   <tr>
     <td colspan="3">
-      Please enter your existing password to confirm account changes.
+      アカウント情報の変更の確認のために、現在のパスワードを入力してください。
     </td>
   </tr>
   <tr>
-    <th align="right">Password:</th>
+    <th align="right">パスワード:</th>
     <td>
       <input type="hidden" name="Bugzilla_login" 
              value="[% user.login FILTER html %]">
@@ -43,14 +43,14 @@
   </tr>
   [% IF user.authorizer.can_change_password %]
     <tr>
-      <th align="right">New password:</th>
+      <th align="right">新しいパスワード:</th>
       <td>
         <input type="password" name="new_password1">
       </td>
     </tr>              
 
     <tr>
-      <th align="right">Confirm new password:</th>
+      <th align="right">新しいパスワードの確認:</th>
       <td>
         <input type="password" name="new_password2">
       </td>
@@ -58,7 +58,7 @@
   [% END %]
 
   <tr>
-    <th align="right">Your real name (optional, but encouraged):</th>
+    <th align="right">名前 (任意、ですが登録を推奨します):</th>
     <td>
       <input size="35" name="realname" value="[% realname FILTER html %]">
     </td>
@@ -68,26 +68,26 @@
     [% IF login_change_date %]
       [% IF new_login_name %]
         <tr>
-          <th align="right">Pending email address:</th>
+          <th align="right">変更先メールアドレス:</th>
           <td>[% new_login_name FILTER html %]</td>
         </tr>
         <tr>
-          <th align="right">Change request expires:</th>
+          <th align="right">変更要請確認期限:</th>
           <td>[% login_change_date FILTER time %]</td>
         </tr>
       [% ELSE %]
         <tr>
-          <th align="right">Confirmed email address:</th>
+          <th align="right">確認済みメールアドレス:</th>
           <td>[% user.login FILTER html %]</td>
         </tr>
         <tr>
-          <th align="right">Completion date:</th>
+          <th align="right">変更要請確認日付:</th>
           <td>[% login_change_date FILTER time %]</td>
         </tr>
       [% END %]
     [% ELSE %]
       <tr>
-        <th align="right">New email address:</th>
+        <th align="right">新しいメールアドレス:</th>
         <td>
           <input size="35" name="new_login_name">
         </td>
