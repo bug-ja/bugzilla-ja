@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -44,15 +44,15 @@
    doc_section = "userpreferences.html"
  %]
 
-[% tabs = [{ name => "settings", label => "General Preferences",
+[% tabs = [{ name => "settings", label => "一般的な設定",
               link => "userprefs.cgi?tab=settings", saveable => "1" },
-            { name => "email", label => "Email Preferences", 
+            { name => "email", label => "メール設定", 
               link => "userprefs.cgi?tab=email", saveable => "1" },
-            { name => "saved-searches", label => "Saved Searches", 
+            { name => "saved-searches", label => "保存された検索", 
               link => "userprefs.cgi?tab=saved-searches", saveable => "1" },
-            { name => "account", label => "Name and Password",
+            { name => "account", label => "名前とパスワード",
               link => "userprefs.cgi?tab=account", saveable => "1" },
-            { name => "permissions", label => "Permissions", 
+            { name => "permissions", label => "権限", 
               link => "userprefs.cgi?tab=permissions", saveable => "0" } ] %]
 
 [% FOREACH tab IN tabs %]
@@ -69,12 +69,11 @@
 
 [% IF changes_saved %]
   <div id="message">
-    The changes to your [% current_tab.label FILTER lower %] have been saved.
+    あなたの [% current_tab.label FILTER lower %] への変更は保存されました。
 
     [% IF email_changes_saved %]
       <p>
-        An email has been sent to both old and new email
-        addresses to confirm the change of email address.
+        メールアドレス変更の確認のためにメールが新旧両方のアドレスに送信されています。
       </p>
     [% END %]
   </div>
@@ -98,7 +97,7 @@
         <tr>
           <td width="150">&nbsp;</td>
           <td>
-            <input type="submit" id="update" value="Submit Changes">
+            <input type="submit" id="update" value="変更を保存">
           </td>
         </tr>
       </table>

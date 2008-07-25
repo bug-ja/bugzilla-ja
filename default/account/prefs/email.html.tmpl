@@ -40,9 +40,8 @@
 [% usevotes = Param('usevotes') %]
 
 <p>
-  If you don't like getting a notification for "trivial"
-  changes to [% terms.bugs %], you can use the settings below to
-  filter some or all notifications.
+  "重要でない" [% terms.bugs %] への変更についての通知メールを受け取りたくない場合、
+  下の設定からいくつかもしくは全ての通知メールの設定を変更することができます。
 </p>
 
 <script type="text/javascript">
@@ -61,8 +60,8 @@ function SetCheckboxes(setting) {
   }
 }
 
-document.write('<input type="button" value="Enable All Mail" onclick="SetCheckboxes(true); return false;">\n');
-document.write('<input type="button" value="Disable All Mail" onclick="SetCheckboxes(false); return false;">\n');
+document.write('<input type="button" value="全て有効" onclick="SetCheckboxes(true); return false;">\n');
+document.write('<input type="button" value="全て無効" onclick="SetCheckboxes(false); return false;">\n');
 // -->
 </script>
 
@@ -71,7 +70,7 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
 <table>
   <tr>
     <td colspan="2">
-      <b>Global options:</b>
+      <b>全体オプション:</b>
     </td>
   </tr>
 
@@ -83,7 +82,7 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
         value="1"
         [% " checked" IF 
                   mail.${constants.REL_ANY}.${constants.EVT_FLAG_REQUESTED} %]>
-      <label for="[% prefname %]">Email me when someone asks me to set a flag</label>
+      <label for="[% prefname %]">フラグの要請があったときに通知メールを送る</label>
       <br>
     </td>
   </tr>
@@ -95,7 +94,7 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
         value="1"
         [% " checked" IF 
                   mail.${constants.REL_ANY}.${constants.EVT_REQUESTED_FLAG} %]>
-      <label for="[% prefname %]">Email me when someone sets a flag I asked for</label>
+      <label for="[% prefname %]">要請したフラグが設定されたときに通知メールを送る</label>
       <br>
     </td>
   </tr>
@@ -103,60 +102,61 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
   <tr>
     <td width="150"></td>
     <td>
-      You are watching all [% terms.bugs %]. To be removed from this role,
-      contact
-      <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>.
+      すべての [% terms.bugs %] を監視しています。
+      この権限から外れるには、
+      <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
+      に連絡してください。
     </td>
   </tr>
 [% END %]
 </table>
 
 <hr>
-<b>Field/recipient specific options:</b>
+<b>フィールド・条件によるオプション設定:</b>
 <br>
 <br>
 
 [% events = [
     { id = constants.EVT_ADDED_REMOVED,
-      description = "I'm added to or removed from this capacity" },
+      description = "わたしが追加・削除された" },
     { id = constants.EVT_OPENED_CLOSED,
-      description = "The $terms.bug is resolved or reopened" },
+      description = "$terms.bug が解決したか再開された" },
     { id = constants.EVT_PROJ_MANAGEMENT,
-      description = "The priority, status, severity, or milestone changes" },
+      description = "重要度、ステータス、深刻度、マイルストーンが更新された" },
     { id = constants.EVT_COMMENT,
-      description = "New comments are added" },
+      description = "新しいコメントが追加された" },
     { id = constants.EVT_ATTACHMENT,
-      description = "New attachments are added" },
+      description = "新しい添付が追加された" },
     { id = constants.EVT_ATTACHMENT_DATA,
-      description = "Some attachment data changes" },
+      description = "添付データが変更された" },
     { id = constants.EVT_KEYWORD,
-      description = "The keywords field changes" },
+      description = "キーワードが変更された" },
     { id = constants.EVT_CC,
-      description = "The CC field changes" },
+      description = "CC が変更された" },
     { id = constants.EVT_DEPEND_BLOCK,
-      description = "The dependency tree changes" },
+      description = "依存関係が変更された" },
     { id = constants.EVT_OTHER,
-      description = "Any field not mentioned above changes" },
+      description = "上記以外の全ての変更" },
 ] %]
 
 [% neg_events = [
     { id = constants.EVT_UNCONFIRMED,
-      description = "The $terms.bug is in the UNCONFIRMED state" },
+      description = "$terms.bug が UNCONFIRMED のとき" },
     { id = constants.EVT_CHANGED_BY_ME,
-      description = "The change was made by me" },
+      description = "自分が行った変更であるとき" },
 ] %]
 
 [% relationships = [
     { id = constants.REL_ASSIGNEE,
-      description = "Assignee" },
+      description = "担当者" },
     { id = constants.REL_QA,
-      description = "QA Contact" },
+      description = "QA コンタクト" },
     { id = constants.REL_REPORTER,
-      description = "Reporter" },
+      description = "報告者" },
     { id = constants.REL_CC,
-      description = "CCed" },
+      description = "CC" },
     { id = constants.REL_VOTER,
-      description = "Voter" },
+      description = "投票者" },
 ] %]
 
 <table class="bz_emailprefs" border="1">
@@ -164,10 +164,10 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
     <td colspan="[% (useqacontact AND usevotes) ? '5' : 
                      ((useqacontact OR usevotes) ? '4' : '3') %]" 
         align="center" width="50%">
-      <b>When my relationship to this [% terms.bug %] is:</b>
+      <b>この [% terms.bug %] との関連性:</b>
     </td>
     <td rowspan="2" width="40%">
-      <b>I want to receive mail when:</b>
+      <b>メールを受け取りたい条件:</b>
     </td>
   </tr>
 
@@ -214,7 +214,7 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
       &nbsp;
     </td>
     <td width="40%">
-      <b>but not when (overrides above):</b>
+      <b>次のとき以外 (上書きします):</b>
     </td>
   </tr>
 
@@ -264,18 +264,17 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
 
 [% IF Param('supportwatchers') %]
 <hr>
-<b>User Watching</b>
+<b>ユーザの監視</b>
 
 <p>
-If you watch a user, it is as if you are standing in their shoes for the 
-purposes of getting email. Email is sent or not according to <u>your</u>
-preferences for <u>their</u> relationship to the [% terms.bug %] 
-(e.g. Assignee).
+ユーザを監視すると、メールの受信という意味で対象のユーザと同じ状況になることができます。
+メールは、<u>あなたの</u> ではなく、<u>対象の</u> [% terms.bug %] 
+との関係により設定と照合されます。(たとえば、担当者など)
 </p>
 
 <p>
 [% IF watchedusers.size %]
-You are watching everyone in the following list:
+あなたは、次のリストの全員を監視しています:
   </p>
   <p>
     <select id="watched_by_you" name="watched_by_you" multiple="multiple" size="5">
@@ -284,17 +283,17 @@ You are watching everyone in the following list:
         [% END %]
     </select> <br />
     <input type="checkbox" id="remove_watched_users" name="remove_watched_users">
-    <label for="remove_watched_users">Remove selected users from my watch list</label>
+    <label for="remove_watched_users">選択したユーザを関し対象から外す</label>
 [% ELSE %]
-You are currently not watching any users.
+誰も監視していません。
 [% END %]
 </p>
 
-<p><a name="new_watched_by_you" id="new_watched_by_you">Add users to my watch list (comma separated list)</a>:
+<p><a name="new_watched_by_you" id="new_watched_by_you">ユーザを監視リストに追加する (カンマ区切りのリスト)</a>:
   <input size="60" name="new_watchedusers" value="">
 </p>            
 
-<p><a name="watching_you" id="watching_you">Users watching you</a>:<br>
+<p><a name="watching_you" id="watching_you">あなたを監視しているユーザ</a>:<br>
   [% IF watchers.size %]
     [% FOREACH watcher = watchers %]
       [% watcher FILTER html %] <br>
