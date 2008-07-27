@@ -10,13 +10,13 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
 
 [% title = BLOCK %]
-  Administer your installation ([% terms.Bugzilla %]
+  運用中の [% terms.Bugzilla %] の管理 ([% terms.Bugzilla %]
   [%+ constants.BUGZILLA_VERSION FILTER html %])
 [% END %]
 
@@ -26,10 +26,9 @@
 %]
 
 <div>
-  This page is only accessible to empowered users. You can access administrive pages
-  from here (based on your privileges), letting you configure different aspects of
-  this installation. Note: some sections may not be accessible to you and are marked
-  using a lighter color.
+  このページは、権限を持ったユーザでのみアクセス可能です。(あなたの権限に応じて) 
+  ここから管理ページにアクセスできれば、このサイトの設定を変更できます。
+  注意 : 薄い色で表示されているいくつかの部分はあなたがアクセスできない部分となっています。
 </div>
 
 <table>
@@ -37,92 +36,95 @@
     <td class="admin_links">
       <dl>
         [% class = user.groups.tweakparams ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editparams.cgi">Parameters</a></dt>
-        <dd class="[% class %]">Set core parameters of the installation. That's the
-        place where you specify the URL to access this installation, determine how
-        users authenticate, choose which [% terms.bug %] fields to display, select
-        the mail transfer agent to send email notifications, choose which group of
-        users can use charts and share queries, and much more.</dd>
+        <dt class="[% class %]"><a href="editparams.cgi">パラメータ</a></dt>
+        <dd class="[% class %]">サイトの基本的なパラメータの設定です。
+        このサイトへアクセスするための URL や、ユーザ認証の方法、
+        [% terms.bug %] のどのフィールドを表示するか、メール通知などでのメール転送の方式、
+        チャートや共有された検索などを利用できるユーザグループの選択、
+        などの設定が可能です。</dd>
 
-        <dt class="[% class %]"><a href="editsettings.cgi">Default Preferences</a></dt>
-        <dd class="[% class %]">Set the default user preferences. These are the values
-        which will be used by default for all users. Users will be able to edit their
-        own preferences from the <a href="userprefs.cgi?tab=settings">Preferences</a>.</dd>
+        <dt class="[% class %]"><a href="editsettings.cgi">既定の設定</a></dt>
+        <dd class="[% class %]">既定のユーザ設定を設定します。
+        全てのユーザの既定の設定となる値を設定します。
+        ユーザは各自の <a href="userprefs.cgi?tab=settings">設定</a>
+        から変更できます。</dd>
 
         [% class = user.groups.editcomponents ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="sanitycheck.cgi">Sanity Check</a></dt>
-        <dd class="[% class %]">Run sanity checks to locate problems in your database.
-        This may take several tens of minutes depending on the size of your installation.
-        You can also automate this check by running <tt>sanitycheck.pl</tt> from a cron job.
-        A notification will be sent per email to the specified user if errors are detected.</dd>
+        <dt class="[% class %]"><a href="sanitycheck.cgi">整合性確認</a></dt>
+        <dd class="[% class %]">データベースが整合しているかを確認します。
+        あなたのデータサイズによりますが、数十分かかることもあります。
+        cron job で <tt>sanitycheck.pl</tt> を実行することで自動的に行うこともできます。
+        エラーが検出されれば指定されたユーザに警告メールが送信されます。</dd>
 
         [% class = (user.groups.editusers || user.can_bless) ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editusers.cgi">Users</a></dt>
-        <dd class="[% class %]">Create new user accounts or edit existing ones. You can
-        also add and remove users from groups (also known as "user privileges").</dd>
+        <dt class="[% class %]"><a href="editusers.cgi">ユーザ</a></dt>
+        <dd class="[% class %]">新しいユーザを登録や既存ユーザを編集できます。
+        グループへユーザを追加・削除することもできます (いわゆる "ユーザ権限" です)。</dd>
 
         [% class = (Param('useclassification') && user.groups.editclassifications) ? "" : "forbidden" %]
         <dt class="[% class %]"><a href="editclassifications.cgi">Classifications</a></dt>
-        <dd class="[% class %]">If your installation has to manage many products at once,
-        it's a good idea to group these products into distinct categories. This lets users
-        find information more easily when doing searches or when filing new [% terms.bugs %].</dd>
+        <dd class="[% class %]">同時に大量のプロダクトを運用している場合、
+        それらをいくつかの独立したカテゴリに分類することは有益です。
+        この機能により、[% terms.bugs %] をユーザが検索や新規登録する時に、
+        目的の情報を探しやすくすることが可能です。</dd>
 
         [% class = (user.groups.editcomponents
                     || user.get_products_by_permission("editcomponents").size) ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editproducts.cgi">Products</a></dt>
-        <dd class="[% class %]">Edit all aspects of products, including group restrictions
-        which let you define who can access [% terms.bugs %] being in these products. You
-        can also edit some specific attributes of products such as
-        <a href="editcomponents.cgi">components</a>, <a href="editversions.cgi">versions</a>
-        and <a href="editmilestones.cgi">milestones</a> directly.</dd>
+        <dt class="[% class %]"><a href="editproducts.cgi">プロダクト</a></dt>
+        <dd class="[% class %]">グループ権限を含めたプロダクトの全ての設定を編集します。
+        グループ権限は、あるプロダクトの [% terms.bugs %] へアクセスすることが可能なユーザの定義です。
+        また、プロダクト内の特別な定義、<a href="editcomponents.cgi">コンポーネント</a>、
+        <a href="editversions.cgi">バージョン</a>、
+        <a href="editmilestones.cgi">マイルストーン</a> も直接編集できます。</dd>
 
         [% class = user.groups.editcomponents ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editflagtypes.cgi">Flags</a></dt>
-        <dd class="[% class %]">A flag is a custom 4-states attribute of [% terms.bugs %]
-        and/or attachments. These states are: granted, denied, requested and undefined.
-        You can set as many flags as desired per [% terms.bug %], and define which users
-        are allowed to edit them.</dd>
+        <dt class="[% class %]"><a href="editflagtypes.cgi">フラグ</a></dt>
+        <dd class="[% class %]">フラグは、[% terms.bugs %] や添付につけることができる
+        4 状態を持つ編集可能な属性です。状態としては、承認、拒否、要請、未定義があります。
+        [% terms.bug %] ごとに必要なだけのフラグを設定でき、
+        どのユーザがそれを編集可能かも定義できます。</dd>
       </dl>
     </td>
 
     <td class="admin_links">
       <dl>
         [% class = user.groups.admin ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editfields.cgi">Custom Fields</a></dt>
-        <dd class="[% class %]">[% terms.Bugzilla %] lets you define fields which are
-        not implemented by default, based on your local and specific requirements.
-        These fields can then be used as any other field, meaning that you can set
-        them in [% terms.bugs %] and run any search involving them.<br>
-        Before creating new fields, keep in mind that too many fields may make the user
-        interface more complex and harder to use. Be sure you have investigated other ways
-        to satisfy your needs before doing this.</dd>
+        <dt class="[% class %]"><a href="editfields.cgi">カスタムフィールド</a></dt>
+        <dd class="[% class %]">[% terms.Bugzilla %] では、既定では存在しないが、
+        独自に必要となったフィールドを定義することができます。
+        これらのフィールドは、ほかのフィールドと同じように扱え、[% terms.bugs %] 
+        に設定でき、検索条件なおｄとしても利用可能です。<br>
+        新規フィールドを作成する前に、
+        フィールドを定義しすぎるとユーザインターフェースが複雑になり、
+        利用しにくくなることを念頭においてください。これを実行する前に、
+        何かほかの手段で要求を満たせないか検討してください。</dd>
 
-        <dt class="[% class %]"><a href="editvalues.cgi">Field Values</a></dt>
-        <dd class="[% class %]">Define legal values for fields whose values must belong
-        to some given list. This is also the place where you define legal values for some
-        types of custom fields.</dd>
+        <dt class="[% class %]"><a href="editvalues.cgi">フィールド値</a></dt>
+        <dd class="[% class %]">定義されたリストから選択されるべきフィールドの、
+        有効な値を定義します。ここでは、いくつかのタイプのカスタムフィールドについても、
+        有効な値を定義します。</dd>
 
-        <dt class="[% class %]"><a href="editworkflow.cgi">[%terms.Bug %] Status Workflow</a></dt>
-        <dd class="[% class %]">Customize your workflow and choose initial [% terms.bug %]
-        statuses available on [% terms.bug %] creation and allowed [% terms.bug %] status
-        transitions when editing existing [% terms.bugs %].</dd>
+        <dt class="[% class %]"><a href="editworkflow.cgi">[%terms.Bug %] ステータスワークフロー</a></dt>
+        <dd class="[% class %]">ワークフローを変更、初期 [% terms.bug %] 状態の選択を行います。
+        [% terms.bug %] を作成した時に有効なステータスや、既存の [% terms.bugs %] について、
+        許される [% terms.bug %] のステータス遷移を設定します。</dd>
 
         [% class = user.groups.creategroups ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editgroups.cgi">Groups</a></dt>
-        <dd class="[% class %]">Define groups which will be used in the installation.
-        They can either be used to define new user privileges or to restrict the access
-        to some [% terms.bugs %].</dd>
+        <dt class="[% class %]"><a href="editgroups.cgi">グループ</a></dt>
+        <dd class="[% class %]">このサイトで利用するグループを定義します。
+        [% terms.bugs %] へのアクセスを制限したり、ユーザの新しい権限を定義したりできます。</dd>
 
         [% class = user.groups.editkeywords ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editkeywords.cgi">Keywords</a></dt>
-        <dd class="[% class %]">Set keywords to be used with [% terms.bugs %]. Keywords
-        are an easy way to "tag" [% terms.bugs %] to let you find them more easily later.</dd>
+        <dt class="[% class %]"><a href="editkeywords.cgi">キーワード</a></dt>
+        <dd class="[% class %]">[% terms.bugs %] に設定できるキーワードを定義します。
+        キーワードは [% terms.bugs %] への "タグ" 付けより簡易で、
+        あとで検索しやすいものになります。</dd>
 
         [% class = user.groups.bz_canusewhines ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editwhines.cgi">Whining</a></dt>
-        <dd class="[% class %]">Set queries which will be run at some specified date
-        and time, and get the result of these queries directly per email. This is a
-        good way to create reminders and to keep track of the activity in your installation.</dd>
+        <dt class="[% class %]"><a href="editwhines.cgi">Whine</a></dt>
+        <dd class="[% class %]">指定された日時に実行される検索と、
+        その結果の送り先メールアドレスを定義します。
+        これは、サイトでの活動性を維持するためのリマインダとして有用です。</dd>
       </dl>
     </td>
   </tr>

@@ -20,88 +20,82 @@
   
 [% help_html = [ 
 { id => "short_desc_type", 
-  html => "The type of summary search you would like" },   
+  html => "要約の検索方法の指定" },   
 { id => "short_desc", 
-  html => "The $terms.bug summary is a short sentence which succinctly  
-           describes <br> what the $terms.bug is about." },   
+  html => "$terms.bug の要約は $terms.bug の対象を簡単に説明する短い文章です。" },   
 { id => "classification", 
-  html => "$terms.Bugs are categorised into Classifications, Products and Components. classifications is the<br>
-           top-level categorisation." },   
+  html => "$terms.Bugs は Classifications、プロダクト、コンポーネントに分類されています。<br>
+           Classification は最も上のレベルの分類です。" },   
 { id => "product", 
   html => Param('useclassification') ?
-       "$terms.Bugs are categorised into Products and Components. Select a Classification to narrow down this list" :
-       "$terms.Bugs are categorised into Products and Components. Product is 
-           the<br>top-level categorisation." },   
+       "$terms.Bugs はプロダクトとコンポーネントに分類されています。リストを限定するために Classification を選択してください。" :
+       "$terms.Bugs はプロダクトとコンポーネントに分類されています。<br>
+           プロダクトは最も上のレベルの分類です。" },   
 { id => "component", 
-  html => "Components are second-level categories; each belongs to a<br> 
-           particular Product. Select a Product to narrow down this list." },   
+  html => "コンポーネントは下位のカテゴリです。<br>ある特定のプロダクトに分類されており、
+            リストを限定するためにはプロダクトを選択してください。" },   
 { id => "version", 
-  html => "The version field defines the version of the software the 
-           $terms.bug<br>was found in." },   
+  html => "バージョンは、$terms.bug が発見されたバージョンを示すものです。" },   
 { id => "target_milestone", 
-  html => "The target_milestone field is used to define when the engineer<br>
-           the $terms.bug is assigned to expects to fix it." },   
+  html => "ターゲットマイルストーンは担当している技術者がいつ修正しようと<br>
+            考えているかを示すものです。" },   
 { id => "long_desc", 
-  html => "$terms.Bugs have comments added to them by $terms.Bugzilla users.  
-           You can<br>search for some text in those comments." },   
+  html => "$terms.Bugs には $terms.Bugzilla ユーザが追加したコメントがあります。<br>
+            それらのコメントの中の文章を検索できます。" },   
 { id => "long_desc_type", 
-  html => "The type of comment search you would like" },   
+  html => "検索対象とするコメントのタイプです。" },   
 { id => "bug_file_loc", 
-  html => "$terms.Bugs can have a URL associated with them - for example, a 
-           pointer<br>to a web site where the problem is seen." },   
+  html => "$terms.Bugs は関連する URL をもてます。たとえば、問題が確認できる<br>
+            ウェブサイトへのポインタなどです。" },   
 { id => "bug_file_loc_type", 
-  html => "The type of URL search you would like" },   
+  html => "検索対象とする URL のタイプです。" },   
 { id => "status_whiteboard", 
-  html => "Each $terms.bug has a free-form single line text entry box for 
-           adding<br>tags and status information." },   
+  html => "各 $terms.bug は、タグやステータス情報を入力できる<br>
+            自由形式の単独行テキスト入力ボックスを持ちます。" },   
 { id => "status_whiteboard_type", 
-  html => "The type of whiteboard search you would like" },   
+  html => "検索対象とするホワイトボードのタイプです。" },   
 { id => "keywords", 
-  html => "You can add keywords from a defined list to $terms.bugs, in order 
-           to<br>tag and group them." },   
+  html => "$terms.bugs をタグ付けやグループ化するために、<br>
+            定義済みのリストからキーワードを追加できます。" },   
 { id => "keywords_type", 
-  html => "The type of keyword search you would like" },   
+  html => "検索対象とするキーワードのタイプです。" },   
 { id => "bug_status", 
-  html => "$terms.Abug may be in any of a number of states." },
+  html => "$terms.Abug のステータスです。" },
 { id => "resolution", 
-  html => "If $terms.abug is in a resolved state, then one of these reasons
-           will<br>be given for its resolution." },   
+  html => "$terms.abug が解決済みの場合、その解決方法についてひとつの理由が<br>
+            付与されます。" },   
 { id => "bug_severity", 
-  html => "How severe the $terms.bug is, or whether it's an enhancement." },   
+  html => "$terms.bug の重要度を示すか、もしくは enhancement です。" },   
 { id => "priority", 
-  html => "Engineers prioritize their $terms.bugs using this field." },   
+  html => "技術者が $terms.bugs の優先度を指定します。" },   
 { id => "rep_platform", 
-  html => "The hardware platform the $terms.bug was observed on." },   
+  html => "$terms.bug が検出されたハードウェアプラットフォームです。" },   
 { id => "op_sys", 
-  html => "The operating system the $terms.bug was observed on." },   
+  html => "$terms.bug が検出された OS です。" },   
 { id => "email1", 
-  html => "Every $terms.bug has people associated with it in different 
-           roles.<br>Here, you can search on what people are in what role." },
+  html => "全ての $terms.bug には異なる関係で関連しているユーザが居ます。<br>
+            ここでは、ユーザと関係の両方で検索できます。" },
 { id => "email2", 
-  html => "Every $terms.bug has people associated with it in different 
-           roles.<br>Here, you can search on what people are in what role." },
+  html => "全ての $terms.bug には異なる関係で関連しているユーザが居ます。<br>
+            ここでは、ユーザと関係の両方で検索できます。" },
 { id => "bug_id", 
-  html => "You can limit your search to a specific set of $terms.bugs ." },   
+  html => "検索結果を、指定した $terms.bugs 番号のものだけに限ることができます。" },   
 { id => "votes", 
-  html => "Some $terms.bugs can be voted for, and you can limit your search to 
-           $terms.bugs<br>with more than a certain number of votes." },   
+  html => "いくつかの $terms.bugs には投票があることがありますが、何票以上の投票が<br>
+            あった $terms.bugs に限るという制限が可能です。" },   
 { id => "chfield", 
-  html => "You can search for specific types of change - this field define <br>
-           which field you are interested in changes for." },   
+  html => "ある特定の変更について検索することができます - このフィールドで<br>
+            どの種類の変更を検索するか指定します。" },   
 { id => "chfieldfrom", 
-  html => "Specify the start and end dates either in YYYY-MM-DD format<br>
-           (optionally followed by HH:mm, in 24 hour clock), or in relative<br>
-           dates such as 1h, 2d, 3w, 4m, 5y, which respectively mean one hour,<br>
-           two days, three weeks, four months, or five years ago. 0d is last<br>
-           midnight, and 0h, 0w, 0m, 0y is the beginning of this hour, week,<br>
-           month, or year." },
+  html => "開始・終了を、YYYY-MM-DD 形式 (24 時間指定で HH:mm として時間を<br>
+            指定することも可能です) や、1h 2d 3w 4m 5y といった相対期間 (それぞれ、<br>
+            1時間、2日、3週間、4ヶ月、5年)、も利用可能です。0d は直前の真夜中、<br>
+            0h 0w 0m 0y はそれぞれ時間、週、月、年の始まりを意味します。" },
 { id => "chfieldto", 
-  html => "Specify the start and end dates either in YYYY-MM-DD format<br>
-           (optionally followed by HH:mm, in 24 hour clock), or in relative<br>
-           dates such as 1h, 2d, 3w, 4m, 5y, which respectively mean one hour,<br>
-           two days, three weeks, four months, or five years ago. 0d is last<br>
-           midnight, and 0h, 0w, 0m, 0y is the beginning of this hour, week,<br>
-           month, or year." },
+  html => "開始・終了を、YYYY-MM-DD 形式 (24 時間指定で HH:mm として時間を<br>
+            指定することも可能です) や、1h 2d 3w 4m 5y といった相対期間 (それぞれ、<br>
+            1時間、2日、3週間、4ヶ月、5年)、も利用可能です。0d は直前の真夜中、<br>
+            0h 0w 0m 0y はそれぞれ時間、週、月、年の始まりを意味します。" },
 { id => "chfieldvalue", 
-  html => "The value the field defined above changed to during that time." },   
+  html => "期間中に変更されたフィールドを指定します。" },   
 ] %]
