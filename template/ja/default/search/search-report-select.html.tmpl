@@ -32,7 +32,7 @@
                    "reporter", "qa_contact", "votes" ] %]
 
   <select name="[% name FILTER html %]">
-    <option value="">&lt;none&gt;</option>
+    <option value="">&lt;なし&gt;</option>
     
     [% FOREACH field = rep_fields %]
       [% NEXT IF field == "classification" AND !Param('useclassification') %]

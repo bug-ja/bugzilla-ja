@@ -107,14 +107,14 @@ function doOnSelectProduct(selectmode) {
 [% PROCESS global/variables.none.tmpl %]
 
 [% query_variants = [
-  { value => "allwordssubstr", description => "contains all of the words/strings" },
-  { value => "anywordssubstr", description => "contains any of the words/strings" },
-  { value => "substring", description => "contains the string" },
-  { value => "casesubstring", description => "contains the string (exact case)" },
-  { value => "allwords", description => "contains all of the words" },
-  { value => "anywords", description => "contains any of the words" },
-  { value => "regexp", description => "matches the regexp" },
-  { value => "notregexp", description => "doesn't match the regexp" } ] %]
+  { value => "allwordssubstr", description => "全ての語・文字列を含む" },
+  { value => "anywordssubstr", description => "語・文字列のどれかを含む" },
+  { value => "substring", description => "文字列を含む" },
+  { value => "casesubstring", description => "文字列を含む (大文字・小文字を区別)" },
+  { value => "allwords", description => "全ての語を含む" },
+  { value => "anywords", description => "語のどれかを含む" },
+  { value => "regexp", description => "正規表現に一致する" },
+  { value => "notregexp", description => "正規表現に一致しない" } ] %]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
@@ -127,7 +127,7 @@ function doOnSelectProduct(selectmode) {
 <table>
   <tr>
     <th align="right">
-      <label for="short_desc" accesskey="s"><u>S</u>ummary</label>:
+      <label for="short_desc" accesskey="s">要約 (<u>S</u>)</label>:
     </th>
     <td>
       <select name="short_desc_type">
@@ -186,7 +186,7 @@ function doOnSelectProduct(selectmode) {
             <table>
               <tr valign="bottom">
                 <th align="left">
-                  <label for="product" accesskey="p"><u>P</u>roduct</label>:
+                  <label for="product" accesskey="p">プロダクト (<u>P</u>)</label>:
                 </th>
               </tr>
               <tr valign="top">
@@ -210,7 +210,7 @@ function doOnSelectProduct(selectmode) {
             <table>
               <tr valign="bottom">
                 <th align="left">
-                  <label for="component" accesskey="m"><a href="describecomponents.cgi">Co<u>m</u>ponent</a></label>:
+                  <label for="component" accesskey="m"><a href="describecomponents.cgi">コンポーネント (<u>m</u>)</a></label>:
                 </th>
               </tr>
               <tr valign="top">
@@ -233,7 +233,7 @@ function doOnSelectProduct(selectmode) {
             <table>
               <tr valign="bottom">
                 <th align="left">
-                  <label for="version">Version</label>:
+                  <label for="version">バージョン</label>:
                 </th>
               </tr>
               <tr valign="top">
@@ -247,7 +247,7 @@ function doOnSelectProduct(selectmode) {
             <table>
               <tr valign="bottom">
                 <th align="left">
-                  <label for="target_milestone">Target</label>:
+                  <label for="target_milestone">ターゲット</label>:
                 </th>
               </tr>
               <tr valign="top">
@@ -265,11 +265,11 @@ function doOnSelectProduct(selectmode) {
 [%# *** Comment URL Whiteboard Keywords *** %]
 
   [% FOREACH field = [
-    { name => "long_desc", description => "A&nbsp;<u>C</u>omment",
+    { name => "long_desc", description => "コメント (<u>C</u>)",
       accesskey => 'c' },
-    { name => "bug_file_loc", description => "The&nbsp;<u>U</u>RL",
+    { name => "bug_file_loc", description => "<u>U</u>RL",
       accesskey => 'u' },
-    { name => "status_whiteboard", description => "<u>W</u>hiteboard",
+    { name => "status_whiteboard", description => "ホワイトボード (<u>W</u>)",
       accesskey => 'w' } ] %]
 
     [% UNLESS field.name == 'status_whiteboard' AND NOT Param('usestatuswhiteboard') %]
@@ -297,14 +297,14 @@ function doOnSelectProduct(selectmode) {
   [% IF have_keywords %]
     <tr>
       <th align="right">
-        <label for="keywords" accesskey="k"><a href="describekeywords.cgi"><u>K</u>eywords</a></label>:
+        <label for="keywords" accesskey="k"><a href="describekeywords.cgi">キーワード (<u>K</u>)</a></label>:
       </th>
       <td>
         <select name="keywords_type">
         [% FOREACH qv = [
-          { name => "allwords", description => "contains all of the keywords" },
-          { name => "anywords", description => "contains any of the keywords" },
-          { name => "nowords",  description => "contains none of the keywords" } ] %]
+          { name => "allwords", description => "全てのキーワードを含む" },
+          { name => "anywords", description => "いずれかのキーワードを含む" },
+          { name => "nowords",  description => "どのキーワードも含まない" } ] %]
 
           <option value="[% qv.name %]"
             [% " selected" IF default.keywords_type.0 == qv.name %]>
@@ -323,7 +323,7 @@ function doOnSelectProduct(selectmode) {
   [% IF user.in_group(Param("timetrackinggroup")) %]
     <tr>
       <th align="right">
-        <label for="deadlinefrom" accesskey="l">Dead<u>l</u>ine</label>:
+        <label for="deadlinefrom" accesskey="l">締め切り (<u>l</u>)</label>:
       </th>
       <td>
         from <input name="deadlinefrom" id="deadlinefrom" size="10" maxlength="10"
@@ -349,7 +349,7 @@ function doOnSelectProduct(selectmode) {
       <table>
         <tr>
           <th align="left">
-            <label for="bug_status" accesskey="a">St<u>a</u>tus</label>:
+            <label for="bug_status" accesskey="a">ステータス (<u>a</u>)</label>:
           </th>
         </tr>
         <tr valign="top">
@@ -362,7 +362,7 @@ function doOnSelectProduct(selectmode) {
       <table>
         <tr>
           <th align="left">
-            <label for="resolution" accesskey="r"><u>R</u>esolution</label>:
+            <label for="resolution" accesskey="r">処理方法 (<u>R</u>)</label>:
           </th>
         </tr>
         <tr valign="top">
@@ -375,7 +375,7 @@ function doOnSelectProduct(selectmode) {
       <table>
         <tr>
           <th align="left">
-            <label for="bug_severity">Severity</label>:
+            <label for="bug_severity">深刻度</label>:
           </th>
         </tr>
         <tr valign="top">
@@ -388,7 +388,7 @@ function doOnSelectProduct(selectmode) {
       <table>
         <tr>
           <th align="left">
-            <label for="priority" accesskey="i">Pr<u>i</u>ority</label>:
+            <label for="priority" accesskey="i">優先順位 (<u>i</u>)</label>:
           </th>
         </tr>
         <tr valign="top">
@@ -401,7 +401,7 @@ function doOnSelectProduct(selectmode) {
       <table>
         <tr>
           <th align="left">
-            <label for="rep_platform" accesskey="h"><u>H</u>ardware</label>:
+            <label for="rep_platform" accesskey="h">ハードウェア (<u>H</u>)</label>:
           </th>
         </tr>
         <tr valign="top">
@@ -435,9 +435,9 @@ function doOnSelectProduct(selectmode) {
         <legend>
           <strong>
             [% IF Param('usevotes') %]
-              Email Addresses, [% terms.Bug %] Numbers, and Votes
+              メールアドレス、[% terms.Bug %] 数、と投票
             [% ELSE %]
-              Email Addresses and [% terms.Bug %] Numbers
+              メールアドレスと [% terms.Bug %] 数
             [% END %]
           </strong>
         </legend>
@@ -461,7 +461,7 @@ function doOnSelectProduct(selectmode) {
              id="emailassigned_to[% n %]" value="1"
              [% " checked" IF default.emailassigned_to.$n %]>
       <label for="emailassigned_to[% n %]">
-        the [% terms.bug %] assignee
+        [% terms.bug %] 担当者
       </label>
     </td>
   </tr>
@@ -471,7 +471,7 @@ function doOnSelectProduct(selectmode) {
              id="emailreporter[% n %]" value="1"
              [% " checked" IF default.emailreporter.$n %]>
       <label for="emailreporter[% n %]">
-        the reporter
+        報告者
       </label>
     </td>
   </tr>
@@ -482,7 +482,7 @@ function doOnSelectProduct(selectmode) {
              id="emailqa_contact[% n %]" value="1"
              [% " checked" IF default.emailqa_contact.$n %]>
       <label for="emailqa_contact[% n %]">
-        the QA contact
+        QA コンタクト
       </label>
     </td>
   </tr>
@@ -493,7 +493,7 @@ function doOnSelectProduct(selectmode) {
              id="emailcc[% n %]" value="1"
              [% " checked" IF default.emailcc.$n %]>
       <label for="emailcc[% n %]">
-        a CC list member
+        CC リスト
       </label>
     </td>
   </tr>
@@ -503,7 +503,7 @@ function doOnSelectProduct(selectmode) {
                id="emaillongdesc[% n %]" value="1"
                [% " checked" IF default.emaillongdesc.$n %]>
       <label for="emaillongdesc[% n %]">
-        a commenter
+        コメントした人
       </label>
     </td>
   </tr>
@@ -511,11 +511,11 @@ function doOnSelectProduct(selectmode) {
     <td>
       <select name="emailtype[% n %]">
       [% FOREACH qv = [
-        { name => "substring", description => "contains" },
-        { name => "exact", description => "is" },
-        { name => "notequals", description => "is not" },
-        { name => "regexp", description => "matches regexp" },
-        { name => "notregexp", description => "doesn't match regexp" } ] %]
+        { name => "substring", description => "含む" },
+        { name => "exact", description => "と等しい" },
+        { name => "notequals", description => "と異なる" },
+        { name => "regexp", description => "正規表現に一致" },
+        { name => "notregexp", description => "正規表現に不一致" } ] %]
 
         <option value="[% qv.name %]"
           [% " selected" IF default.emailtype.$n == qv.name %]>[% qv.description %]</option>
@@ -540,10 +540,10 @@ function doOnSelectProduct(selectmode) {
   <tr>
     <td>
       <select name="bugidtype">
-        <option value="include"[% " selected" IF default.bugidtype.0 == "include" %]>Only include</option>
-        <option value="exclude"[% " selected" IF default.bugidtype.0 == "exclude" %]>Exclude</option>
+        <option value="include"[% " selected" IF default.bugidtype.0 == "include" %]>中から</option>
+        <option value="exclude"[% " selected" IF default.bugidtype.0 == "exclude" %]>以外から</option>
       </select>
-      <label for="bug_id">[% terms.bugs %] numbered</label>:
+      <label for="bug_id">[% terms.bugs %] 番号</label>:
     </td>
     <td>
       <input type="text" name="bug_id" id="bug_id"
@@ -552,17 +552,16 @@ function doOnSelectProduct(selectmode) {
   </tr>
   <tr>
     <td></td>
-    <td>(comma-separated list)</td>
+    <td>(カンマ区切りリスト)</td>
   </tr>
   [% IF Param('usevotes') %]
     <tr>
       <td align="right">
-        <label for="votes">Only [% terms.bugs %] with at least</label>:
+        <label for="votes">[% terms.bugs %] の最低得票数</label>:
       </td>
       <td>
         <input name="votes" id="votes" size="3"
                value="[% default.votes.0 FILTER html %]">
-        votes
       </td>
     </tr>
   [% END %]
@@ -576,21 +575,21 @@ function doOnSelectProduct(selectmode) {
 
     <td valign="top">
       <fieldset>
-        <legend><strong>[% terms.Bug %] Changes</strong></legend>
+        <legend><strong>[% terms.Bug %] の変更</strong></legend>
 
 
 <dl class="bug_changes">
   <dt>
-    <label for="chfieldfrom">Only [% terms.bugs %] changed between</label>:
+    <label for="chfieldfrom">[% terms.bugs %] の変更が以下の間</label>:
   </dt>
   <dd>
     <input name="chfieldfrom" id="chfieldfrom"
            size="10" value="[% default.chfieldfrom.0 FILTER html %]">
     and <input name="chfieldto" size="10" value="[% default.chfieldto.0 FILTER html %]">
-    <br>(YYYY-MM-DD or relative dates)
+    <br>(YYYY-MM-DD か相対日数)
   </dd>
   <dt>
-    <label for="chfield">where one or more of the following changed</label>:
+    <label for="chfield">の間に以下のひとつ以上が変更された</label>:
   </dt>
   <dd>
     [%# Create array, so we can sort it by description #%]
@@ -607,7 +606,7 @@ function doOnSelectProduct(selectmode) {
     [% END %]
     </select>
   </dd>
-  <dt>and <label for="chfieldvalue">the new value was</label>:</dt>
+  <dt>and <label for="chfieldvalue">新しい値</label>:</dt>
   <dd>
     <input name="chfieldvalue" id="chfieldvalue"
            size="20" value="[% default.chfieldvalue.0 FILTER html %]">

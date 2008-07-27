@@ -33,16 +33,16 @@
 
 [%# This is not necessary for English templates, but useful for localizers. %]
 [% ordersdesc = {
-   "Reuse same sort as last time" => "Reuse same sort as last time",
-   "Bug Number"   => "$terms.Bug Number",
-   "Importance"   => "Importance",
-   "Assignee"     => "Assignee",
-   "Last Changed" => "Last Changed" } %]
+   "Reuse same sort as last time" => "前回と同じ並び順",
+   "Bug Number"   => "$terms.Bug 番号",
+   "Importance"   => "重要度",
+   "Assignee"     => "担当者",
+   "Last Changed" => "最終更新" } %]
 
 <input type="hidden" name="cmdtype" value="doit">
 
 <p>
-  <label for="order">Sort results by</label>:
+  <label for="order">検索結果の並び順</label>:
   <select name="order" id="order">
   [% FOREACH order = orders %]
     <option value="[% order FILTER html %]"
@@ -69,13 +69,13 @@
   <input type="checkbox" id="remasdefault"
          name="remtype" value="asdefault">
   <label for="remasdefault">
-    and remember these as my default search options
+    この並び順を既定の検索オプションとする
   </label>
 </p>
         
 [% IF userdefaultquery %]
   <p>
     <a href="query.cgi?nukedefaultquery=1">
-      Set my default search back to the system default</a>.
+      既定の検索順をシステム既定に戻す</a>
   </p>
 [% END %]

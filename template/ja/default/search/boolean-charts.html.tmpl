@@ -20,32 +20,32 @@
   
 [% types = [
   { name => "noop", description => "---" },
-  { name => "equals", description => "is equal to" },
-  { name => "notequals", description => "is not equal to" },
-  { name => "anyexact", description => "is equal to any of the strings" },
-  { name => "substring", description => "contains the string" },
-  { name => "casesubstring", description => "contains the string (exact case)" },
-  { name => "notsubstring", description => "does not contain the string" },
-  { name => "anywordssubstr", description => "contains any of the strings" },
-  { name => "allwordssubstr", description => "contains all of the strings" },
-  { name => "nowordssubstr", description => "contains none of the strings" },
-  { name => "regexp", description => "contains regexp" },
-  { name => "notregexp", description => "does not contain regexp" },
-  { name => "lessthan", description => "is less than" },
-  { name => "greaterthan", description => "is greater than" },
-  { name => "anywords", description => "contains any of the words" },
-  { name => "allwords", description => "contains all of the words" },
-  { name => "nowords", description => "contains none of the words" },
-  { name => "changedbefore", description => "changed before" },
-  { name => "changedafter", description => "changed after" },
-  { name => "changedfrom", description => "changed from" },
-  { name => "changedto", description => "changed to" },
-  { name => "changedby", description => "changed by" },
-  { name => "matches", description => "matches" } ] %]
+  { name => "equals", description => "と等しい" },
+  { name => "notequals", description => "と等しくない" },
+  { name => "anyexact", description => "の文字列のどれかと等しい" },
+  { name => "substring", description => "の文字列を含む" },
+  { name => "casesubstring", description => "の文字列を含む (大文字小文字一致)" },
+  { name => "notsubstring", description => "の文字列を含まない" },
+  { name => "anywordssubstr", description => "の文字列のどれかを含む" },
+  { name => "allwordssubstr", description => "の文字列の全てを含む" },
+  { name => "nowordssubstr", description => "の文字列の全てを含まない" },
+  { name => "regexp", description => "の正規表現を含む" },
+  { name => "notregexp", description => "の正規表現を含まない" },
+  { name => "lessthan", description => "より小さい" },
+  { name => "greaterthan", description => "より大きい" },
+  { name => "anywords", description => "の単語のどれかを含む" },
+  { name => "allwords", description => "の単語の全てを含む" },
+  { name => "nowords", description => "の単語のどれも含まない" },
+  { name => "changedbefore", description => "より以前に更新" },
+  { name => "changedafter", description => "より以降に更新" },
+  { name => "changedfrom", description => "から更新" },
+  { name => "changedto", description => "へ更新" },
+  { name => "changedby", description => "により更新" },
+  { name => "matches", description => "一致" } ] %]
 
   <p>
     <strong>
-      <a name="chart">Advanced Searching Using Boolean Charts</a>:
+      <a name="chart">論理式を用いた詳細検索</a>:
     </strong>
   </p>
 
@@ -62,7 +62,7 @@
              name="negate[% chartnum FILTER html %]" value="1"
             [%+ "checked" IF chart.negate %]>
         <label for="negate[% chartnum FILTER html %]">
-          Not (negate this whole chart)
+          否定 (論理式の全てを否定)
         </label>
       </td>
     </tr>
@@ -80,27 +80,29 @@
           [% END %]
         </select>
 
+        が
+
+        <input name="[% "value${chartnum}-${rownum}-${colnum}" %]" 
+               value="[% col.value FILTER html %]"> 
+
         <select name="[% "type${chartnum}-${rownum}-${colnum}" %]">
           [% FOREACH type = types %]
             <option value="[% type.name %]"
               [%- " selected" IF type.name == col.type %]>[% type.description %]</option>
           [% END %]
         </select>
-
-        <input name="[% "value${chartnum}-${rownum}-${colnum}" %]" 
-               value="[% col.value FILTER html %]"> 
       </td>
       
       [% UNLESS loop.last %]
         <td align="center"> 
-          Or 
-        </td>    
+          もしくは
+        </td>
       </tr>
       <tr>
       [% ELSE %]
         <td>
           [% newor = colnum + 1 %]
-          <input type="submit" value="Or" [% jsmagic %]
+          <input type="submit" value="もしくは" [% jsmagic %]
                  name="cmd-add[% "${chartnum}-${rownum}-${newor}" %]"
                  id="cmd-add[% "${chartnum}-${rownum}-${newor}" %]">
         </td>
@@ -111,17 +113,17 @@
     
     [% UNLESS loop.last %]
     <tr>
-      <td>And</td>
+      <td>かつ</td>
     </tr>    
     [% ELSE %]
     <tr>
       <td>
         [% newand = rownum + 1; newchart = chartnum + 1 %]
-        <input type="submit" value="And" [% jsmagic %]
+        <input type="submit" value="かつ" [% jsmagic %]
                name="cmd-add[% "${chartnum}-${newand}-0" %]"
                id="cmd-add[% "${chartnum}-${newand}-0" %]">
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="submit" value="Add another boolean chart" [% jsmagic %]
+        <input type="submit" value="もうひとつ論理式を追加" [% jsmagic %]
                name="cmd-add[% newchart %]-0-0"
                id="cmd-add[% newchart %]-0-0">
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
