@@ -15,22 +15,22 @@
   # Copyright (C) 1998 Netscape Communications Corporation. All
   # Rights Reserved.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [% PROCESS "global/variables.none.tmpl" %]
 From: [% Param('mailfrom') %]
 To: [% addressee %]
-Subject: [[% terms.Bugzilla %]] Sanity Check Results
+Subject: [[% terms.Bugzilla %]] 整合性確認結果
 X-Bugzilla-Type: sanitycheck
 
 [%+ urlbase %]sanitycheck.cgi
 
-Below can you read the sanity check results.
+以下が整合性確認の結果です。
 [% IF error_found %]
-Some errors have been found.
+いくつかのエラーが発見されました。
 [% ELSE %]
-No errors have been found.
+エラーは発見されませんでした。
 [% END %]
 
 [% output FILTER txt %]

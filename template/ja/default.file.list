@@ -161,11 +161,11 @@ x	x	x	./bug/votes/list-for-bug.html.tmpl
 x	x	x	./bug/votes/list-for-user.html.tmpl
 -	o	shimono	./config.js.tmpl
 -	o	shimono	./config.rdf.tmpl
-shimono	x	x	./email/newchangedmail.txt.tmpl
-shimono	x	x	./email/sanitycheck.txt.tmpl
-shimono	x	x	./email/sudo.txt.tmpl
-shimono	x	x	./email/votes-removed.txt.tmpl
-shimono	x	x	./email/whine.txt.tmpl
+shimono	shimono	x	./email/newchangedmail.txt.tmpl
+shimono	shimono	x	./email/sanitycheck.txt.tmpl
+shimono	shimono	x	./email/sudo.txt.tmpl
+shimono	shimono	x	./email/votes-removed.txt.tmpl
+shimono	shimono	x	./email/whine.txt.tmpl
 -	o	shimono	./filterexceptions.pl
 shimono	x	x	./flag/list.html.tmpl
 -	o	shimono	./global/banner.html.tmpl

@@ -22,31 +22,31 @@
 
 From: [% Param('mailfrom') %]
 To: [% to %]
-Subject: [% terms.Bug %] [%+ bugid %] Some or all of your votes have been removed.
+Subject: [% terms.Bug %] [%+ bugid %] あなたの投票のいくつかもしくは全てが削除されました
 X-Bugzilla-Type: voteremoved
 
-Some or all of your votes have been removed from [% terms.bug %] [%+ bugid %].
+あなたの [% terms.bug %] [%+ bugid %] への投票のいくつかもしくは全てが削除されました。
 
-You had [% votesold FILTER html %] [%+ IF votesold == 1 %]vote[% ELSE %]votes[% END
-%] on this [% terms.bug %], but [% votesremoved FILTER html %] have been removed.
+あなたは、この [% terms.bug %] に [% votesold FILTER html %] 票投票していましたが、
+[% votesremoved FILTER html %] 票が削除されました。
 
 [% IF votesnew %]
-You still have [% votesnew FILTER html %] [%+ IF votesnew == 1 %]vote[% ELSE %]votes[% END %] on this [% terms.bug %].
+この [% terms.bug %] への残りは [% votesnew FILTER html %] 票です。
 [% ELSE %]
-You have no more votes remaining on this [% terms.bug %].
+この [% terms.bug %] には票が残っていません。
 [% END %]
 
-Reason:
+理由:
 [% IF reason == "votes_bug_moved" %]
-  This [% terms.bug %] has been moved to a different product.
+  [% terms.bug %] が異なるプロダクトへ移動されました。
 
 [% ELSIF reason == "votes_too_many_per_bug" %]
-  The rules for voting on this product has changed;
-  you had too many votes for a single [% terms.bug %].
+  このプロダクトへの投票基準が変更になりました。
+  ひとつの [% terms.bug %] への最大票数を超えています。
 
 [% ELSIF reason == "votes_too_many_per_user" %]
-  The rules for voting on this product has changed; you had
-  too many total votes, so all votes have been removed.
+  このプロダクトへの投票基準が変更になりました。
+  総投票可能数を超える投票を行っているため、全ての票が削除されました。
 [% END %]
 
 
