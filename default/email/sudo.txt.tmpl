@@ -23,21 +23,21 @@
 Content-Type: text/plain
 From: [% Param('mailfrom') %]
 To: [% user.email %]
-Subject: [[% terms.Bugzilla %]] Your account [% user.login -%]
- is being impersonated
+Subject: [[% terms.Bugzilla %]] あなたのアカウント [% user.login -%]
+ が利用されました
 X-Bugzilla-Type: admin
 
-    [%+ sudoer.identity %] has used the 'sudo' feature to access 
-[%+ terms.Bugzilla %] using your account.
+    [%+ sudoer.identity %] は [% terms.Bugzilla %] にアクセスするのに、
+'sudo' 機能経由であなたのアカウントを利用しました。
 
 [% IF reason %]
-    [%+ sudoer.identity %] provided the following reason for doing this:
+    [%+ sudoer.identity %] は以下の理由をあげています:
 
 [% reason FILTER wrap_comment %]
 [% ELSE %]
-    [%+ sudoer.identity %] did not provide a reason for doing this.
+    [%+ sudoer.identity %] はその理由を述べていません。
 [% END %]
 
-    If you feel that this action was inappropriate, please contact 
-[%+ Param("maintainer") %].  For more information on this feature, 
-visit <[% urlbase %]page.cgi?id=sudo.html>.
+    もし、この操作を受け入れられない場合、[%+ Param("maintainer") %] 
+まで連絡してください。この機能の詳細については、以下を参照してください。
+<[% urlbase %]page.cgi?id=sudo.html>
