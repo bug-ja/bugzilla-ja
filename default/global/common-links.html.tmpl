@@ -22,46 +22,46 @@
 [% DEFAULT qs_suffix = "" %]
 
 <ul class="links">
-  <li><a href="./">Home</a></li>
-  <li><span class="separator">| </span><a href="enter_bug.cgi">New</a></li>
-  <li><span class="separator">| </span><a href="query.cgi">Search</a></li>
+  <li><a href="./">ホーム</a></li>
+  <li><span class="separator">| </span><a href="enter_bug.cgi">新規登録</a></li>
+  <li><span class="separator">| </span><a href="query.cgi">検索</a></li>
 
   <li class="form">
     <span class="separator">| </span>
     <form action="buglist.cgi" method="get"
         onsubmit="if (this.quicksearch.value == '')
-                  { alert('Please enter one or more search terms first.');
+                  { alert('ひとつ以上の検索語を入力してください。');
                     return false; } return true;">
     <input class="txt" type="text" id="quicksearch[% qs_suffix FILTER html %]" name="quicksearch">
-    <input class="btn" type="submit" value="Find" id="find[% qs_suffix FILTER html %]">
+    <input class="btn" type="submit" value="検索" id="find[% qs_suffix FILTER html %]">
     [%-# Work around FF bug: keep this on one line %]</form></li>
 
-  <li><span class="separator">| </span><a href="report.cgi">Reports</a></li>
+  <li><span class="separator">| </span><a href="report.cgi">レポート</a></li>
 
   <li>
     [% IF Bugzilla.has_flags %]
       <span class="separator">| </span>
       [% IF user.id %]
         <a href="request.cgi?requester=[% user.login FILTER url_quote %]&amp;requestee=
-                 [% user.login FILTER url_quote %]&amp;do_union=1&amp;group=type&amp;action=queue">My Requests</a>
+                 [% user.login FILTER url_quote %]&amp;do_union=1&amp;group=type&amp;action=queue">わたしのリクエスト</a>
       [% ELSE %]
-        <a href="request.cgi">Requests</a>
+        <a href="request.cgi">リクエスト</a>
       [% END %]
     [% END %]
   [%-# Work around FF bug: keep this on one line %]</li>
 
   [% IF user.id && Param('usevotes') %]
-    <li><span class="separator">| </span><a href="votes.cgi?action=show_user">My&nbsp;Votes</a></li>
+    <li><span class="separator">| </span><a href="votes.cgi?action=show_user">わたしの投票</a></li>
   [% END %]
 
   [% IF user.login %]
-    <li><span class="separator">| </span><a href="userprefs.cgi">Preferences</a></li>
+    <li><span class="separator">| </span><a href="userprefs.cgi">環境設定</a></li>
     [% IF user.groups.tweakparams || user.groups.editusers || user.can_bless
           || (Param('useclassification') && user.groups.editclassifications)
           || user.groups.editcomponents || user.groups.admin || user.groups.creategroups
           || user.groups.editkeywords || user.groups.bz_canusewhines
           || user.get_products_by_permission("editcomponents").size %]
-      <li><span class="separator">| </span><a href="admin.cgi">Administration</a></li>
+      <li><span class="separator">| </span><a href="admin.cgi">管理</a></li>
     [% END %]
 
     [% PROCESS link_to_documentation %]
@@ -69,14 +69,14 @@
     <li>
       <span class="separator">| </span>
       [% IF user.authorizer.can_logout %]
-        <a href="relogin.cgi">Log&nbsp;out</a>
+        <a href="relogin.cgi">ログアウト</a>
       [% ELSE %]
-        Logged&nbsp;in&nbsp;as
+        ログイン中
       [% END %]
       [% IF sudoer %]
-        [%+ sudoer.login FILTER html %] (<b>impersonating
+        [%+ sudoer.login FILTER html %] (<b>ユーザ上書き中
         [%+ user.login FILTER html %]</b>
-        <a href="relogin.cgi?action=end-sudo">end session</a>)
+        <a href="relogin.cgi?action=end-sudo">セッション終了</a>)
       [% ELSE %]
         [%+ user.login FILTER html %]
       [% END %]
@@ -84,7 +84,7 @@
   [% ELSE %]
     [% IF Param('createemailregexp')
           && user.authorizer.user_can_create_account %]
-      <li><span class="separator">| </span><a href="createaccount.cgi">New&nbsp;Account</a></li>
+      <li><span class="separator">| </span><a href="createaccount.cgi">新規アカウント登録</a></li>
     [% END %]
 
     [% PROCESS link_to_documentation %]
@@ -113,7 +113,7 @@
         [% script_name = script_name _ "?GoAheadAndLogIn=1" %]
       [% END %]
         
-      <li><span class="separator">| </span><a href="[% script_name FILTER html %]">Log&nbsp;In</a></li>
+      <li><span class="separator">| </span><a href="[% script_name FILTER html %]">ログイン</a></li>
     [% END %]
   [% END %]
 </ul>
@@ -122,7 +122,7 @@
     [% IF doc_section %]
       <li>
         <span class="separator">| </span>
-        <a href="[% docs_urlbase _ doc_section FILTER html %]" target="_blank">Help</a>
+        <a href="[% docs_urlbase _ doc_section FILTER html %]" target="_blank">ヘルプ</a>
       </li>
     [% END %]
 [% END %]
