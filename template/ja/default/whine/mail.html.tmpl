@@ -50,10 +50,10 @@
 
     <p align="left">
       [% IF author.login == recipient.login %]
-        <a href="[%+ urlbase FILTER html %]editwhines.cgi">Click
-            here to edit your whine schedule</a>
+        <a href="[%+ urlbase FILTER html %]editwhines.cgi">
+            Whine スケジュールを編集する</a>
       [% ELSE %]
-        This search was scheduled by [% author.login FILTER html %].
+        この検索は [% author.login FILTER html %] により設定されています。
       [% END %]
     </p>
 
@@ -65,13 +65,13 @@
   <table width="100%">
     <tr>
       <th align="left">ID</th>
-      <th align="left">Sev</th>
-      <th align="left">Pri</th>
-      <th align="left">Plt</th>
-      <th align="left">Assignee</th>
-      <th align="left">Status</th>
-      <th align="left">Resolution</th>
-      <th align="left">Summary</th>
+      <th align="left">深刻度</th>
+      <th align="left">優先度</th>
+      <th align="left">プラットフォーム</th>
+      <th align="left">担当者</th>
+      <th align="left">ステータス</th>
+      <th align="left">解決方法</th>
+      <th align="left">要約</th>
     </tr>
 
     [% FOREACH bug=query.bugs %]
