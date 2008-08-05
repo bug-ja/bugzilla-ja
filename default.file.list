@@ -257,7 +257,7 @@ shimono	shimono	x	./search/tabs.html.tmpl
 x	x	x	./setup/strings.txt.pl
 shimono	shimono	x	./sidebar.xul.tmpl
 shimono	x	x	./welcome-admin.html.tmpl
-shimono	x	x	./whine/mail.html.tmpl
-shimono	x	x	./whine/mail.txt.tmpl
-shimono	x	x	./whine/multipart-mime.txt.tmpl
-shimono	x	x	./whine/schedule.html.tmpl
+shimono	shimono	x	./whine/mail.html.tmpl
+shimono	shimono	x	./whine/mail.txt.tmpl
+-	o	shimono	./whine/multipart-mime.txt.tmpl
+shimono	shimono	x	./whine/schedule.html.tmpl
