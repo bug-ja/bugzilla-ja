@@ -10,7 +10,7 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -19,70 +19,69 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% title = BLOCK %]Welcome to [% terms.Bugzilla %][% END %]
+[% title = BLOCK %][% terms.Bugzilla %] へようこそ[% END %]
 
 [% PROCESS global/header.html.tmpl
    title = title
-   header_addl_info = "version $constants.BUGZILLA_VERSION"
+   header_addl_info = "バージョン $constants.BUGZILLA_VERSION"
    style_urls = [ 'skins/standard/index.css' ]
 %]
 
 <div id="welcome-admin">
-  <p>Welcome, [% user.identity FILTER html %].</p>
+  <p>ようこそ [% user.identity FILTER html %] さん</p>
 
-  <p>You are seeing this page because some of the core parameters have not been set up yet.
-  The goal of this page is to inform you about the last steps required to set up
-  your installation correctly.</p>
+  <p>この画面は、コアとなるパラメータが設定されていないために表示されています。
+  この画面の目的は、あなたのインストールでを正常に完了するために必要とされる、
+  最後の手順についてお知らせすることです。</p>
 
-  <p>As an administrator, several administrative links are available at the bottom of
-  this page. These links will always be visible, on all pages. Among these links,
-  you must visit at least the <a href="editparams.cgi">Parameters</a> one,
-  which is the page from where you can set all important parameters for this installation.
-  By clicking this link, you will be able to set among others:</p>
+  <p>管理者アカウントでは、いくつかのリンクがこのページの最下部に表示されているはずです。
+  これらのリンクはどのページでも常に見えているはずです。これらのリンクのうち、
+  少なくとも <a href="editparams.cgi">パラメータ</a> ページを見てください。
+  このページは、インストールに必要なすべての重要なパラメータを設定するためのものです。
+  このリンクをたどり、以下の設定を行ってください。</p>
 
   <ul>
-    <li><a href="editparams.cgi?section=core#maintainer">maintainer</a>, the person
-    responsible for this installation if something is running wrong.</li>
+    <li><a href="editparams.cgi?section=core#maintainer">maintainer</a>, 
+    異常動作の時にメンテナンスを行う担当者の連絡先です。</li>
 
-    <li><a href="editparams.cgi?section=core#urlbase">urlbase</a>, which is the URL
-    pointing to this installation and which will be used in emails (which is also the
-    reason you see this page: as long as this parameter is not set, you will see this
-    page again and again).</li>
+    <li><a href="editparams.cgi?section=core#urlbase">urlbase</a>, 
+    このサイトの URL で、メールの URL 表示などで利用されます。
+    (あなたがこの画面を見ている理由のひとつで、このパラメータが設定されなければ、
+    この画面を何度も見ることになります。)</li>
 
-    <li><a href="editparams.cgi?section=core#cookiepath">cookiepath</a> is important
-    for your browser to manage your cookies correctly.</li>
+    <li><a href="editparams.cgi?section=core#cookiepath">cookiepath</a> 
+    このサイトのクッキーを正しくブラウザに取り扱わせるために重要です。</li>
 
-    <li><a href="editparams.cgi?section=core#utf8">utf8</a> will let you encode all
-    texts into UTF-8, if desired (it is strongly recommended to keep this parameter
-    turned on).</li>
+    <li><a href="editparams.cgi?section=core#utf8">utf8</a> 
+    を設定すると、すべての文字列が UTF-8 として取り扱われます。
+    (このパラメータは有効にしておくことを強く推奨します。)</li>
   </ul>
 
-  <p>Also important are the following parameters:</p>
+  <p>次のパラメータも重要になりえます:</p>
 
   <ul>
-    <li><a href="editparams.cgi?section=auth#requirelogin">requirelogin</a>, if turned
-    on, will protect your installation from users having no account on this installation.
-    In other words, users who are not explicitly authenticated with a valid account
-    cannot see any data. This is what you want if you want to keep your data private.</li>
+    <li><a href="editparams.cgi?section=auth#requirelogin">requirelogin</a>, 
+    有効にすると、アカウントをもっていないユーザからサイトを保護できます。
+    言い換えると、有効なアカウントで認証されていないユーザは、
+    まったくデータを見ることができなくなります。
+    データを保護しておきたい場合にこの機能が有用です。</li>
 
     <li><a href="editparams.cgi?section=auth#createemailregexp">createemailregexp</a>
-    defines which users are allowed to create an account on this installation. If set
-    to ".*" (the default), everybody is free to create his own account. If set to
-    "@mycompany.com$", only users having an account @mycompany.com will be allowed to
-    create an account. If left blank, users will not be able to create accounts themselves;
-    only an administrator will be able to create one for them. If you want a private
-    installation, you must absolutely set this parameter to something different from
-    the default.</li>
+    は、このサイトでアカウントを作成可能なユーザを定義します。".*" (既定値) に設定すると、
+    どのメールアドレスでも利用可能になります。"@mycompany.com$" に設定すると、
+    @mycompany.com にアカウントのあるユーザのみが作成可能になります。空白にすると、
+    ユーザは自分でアカウントを作成できず、管理者のみが作成可能となります。
+    このサイトを保護したい場合、このパラメータを既定値以外に変更すべきです。</li>
 
     <li><a href="editparams.cgi?section=mta#mail_delivery_method">mail_delivery_method</a>
-    defines the method used to send emails, such as sendmail or SMTP. You have to set
-    it correctly to send emails.</li>
+    は、sendmail や SMTP といった、メールを送信する方式を設定します。
+    メールを利用する場合、このパラメータを正しく設定する必要があります。</li>
   </ul>
 
   <p>
-    After having set up all this, we recommend looking at [% terms.Bugzilla %]'s other
-    parameters as well at some time so that you understand what they do and whether you
-    want to modify their settings for your installation.
+    これらすべてを設定した後、[% terms.Bugzilla %] のほかのパラメータを同時にじっくり調べ、
+    パラメータが何を設定するものかと、
+    あなたのサイトで変更すべきパラメータがどれかを把握することを強く推奨します。
   </p>
 </div>
 

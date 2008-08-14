@@ -39,7 +39,7 @@
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% IF matchsuccess == 1 %]
-  [% PROCESS global/header.html.tmpl title="Confirm Match" %]
+  [% PROCESS global/header.html.tmpl title="検索結果の照合" %]
 
 [% USE Bugzilla %]
 
@@ -54,24 +54,23 @@
 
   <p>
     [% IF matchmultiple %]
-      [% terms.Bugzilla %] cannot make a conclusive match for one or more
-      of the names and/or email addresses you entered on the previous page.
-      <br>Please examine the lists of potential matches below and select the
-      ones you want,
+      [% terms.Bugzilla %] は、前のページであなたが入力したひとつ以上の名前、
+      もしくはメールアドレスに合致するアカウントを決定できませんでした。
+      <br>下の合致する可能性のあるリストからひとつ選択してください。
     [% ELSE %]
-      [% terms.Bugzilla %] is configured to require verification whenever
-      you enter a name or partial email address.
-      <br>Below are the names/addresses you entered and the matched accounts.
-      Please confirm that they are correct,
+      [% terms.Bugzilla %] は名前やメールアドレスを入力された際に、
+      必ず確認するように設定されています。
+      <br>次のリストは、入力したもしくは合致したアカウントの名前・メールアドレスです。
+      これらが正しいかを確認してください。
     [% END %]
-    or go back to the previous page to revise the names you entered.
+    もしくは、前のページへ戻って入力した名前を変更してください。
   </p>
 [% ELSE %]
   [% PROCESS global/header.html.tmpl title="Match Failed" %]
   <p>
-    [% terms.Bugzilla %] was unable to make any match at all for one or more of
-    the names and/or email addresses you entered on the previous page.<br>
-    Please go back and try other names or email addresses.
+    [% terms.Bugzilla %] は前のページであなたが入力したひとつ以上の名前、
+    もしくはメールアドレスに合致するアカウントを見つけられませんでした。<br>
+    前のページに戻って、他の名前やメールアドレスで試してください。
   </p>
 [% END %]
 
@@ -97,17 +96,14 @@
                 [% IF query.value.users.size > 1 %]
                   [% IF query.value.status == 'fail' %]
                     <font color="#FF0000">
-                      matches multiple users.
+                      複数に合致しました。
                     </font>
-                    Please go back and try again with a more specific
-                    name/address.
+                    前画面に戻り、より特定された名前・メールアドレスで再度試してください。
                   [% ELSE %]
                     [% IF query.value.status == 'trunc' %]
-                      matched
-                      more than the maximum
-                      of [% query.value.users.size %] users:<br>
+                      最大許容数の [% query.value.users.size %] ユーザ以上に合致しました<br>
                     [% ELSE %]
-                      matched:<br>
+                      合致しました<br>
                     [% END %]
                     <select name="[% field.key FILTER html %]"
                      id="[% field.key FILTER html %]"
@@ -128,16 +124,16 @@
                     </select>
                   [% END %]
                 [% ELSE %]
-                  matched
+                  合致しました
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
                 [% IF (query.key.length < 3) && !(Param('emailsuffix'))
                     && (Param('usermatchmode') == 'search') %]
-                  <font color="#FF0000">was too short for substring match
-                  (minimum 3 characters)</font>
+                  <font color="#FF0000">は部分一致には短すぎます
+                  (最低 3 文字必要)</font>
                 [% ELSE %]
-                  <font color="#FF0000">did not match anything</font>
+                  <font color="#FF0000">はなにも合致しませんでした</font>
                 [% END %]
             [% END %]
             </div>
@@ -158,7 +154,7 @@
   [% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
 
   <p>
-    <input type="submit" id="continue" value="Continue">
+    <input type="submit" id="continue" value="続ける">
   </p>
 
   </form>
@@ -176,7 +172,7 @@
   [%-# ELSIF for things that don't belong in the field_descs hash here -%]
 
   [% ELSIF field_name.match("^requestee") %]
-    [% fields.${field_name}.flag_type.name %] requestee
+    [% fields.${field_name}.flag_type.name %] 要請者
 
   [% ELSE %]
     [% field_name FILTER html %]
