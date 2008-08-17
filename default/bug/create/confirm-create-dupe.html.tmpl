@@ -23,7 +23,7 @@
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% PROCESS global/header.html.tmpl
-  title = "Already filed $terms.bug"
+  title = "すでに報告済みの $terms.bug"
 %]
 
 [% USE Bugzilla %]
@@ -32,25 +32,25 @@
   <tr>
     <td bgcolor="#ff0000">
       <font size="+2">
-        You already used the form to file [% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %].
+        このフォームはすでに [% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %] を登録するのに利用しています。
       </font>
     </td>
   </tr>
 </table>
 
-<p><font size="big">You are highly encouraged to visit [% "$terms.bug $bugid"
-FILTER bug_link(bugid) FILTER none %].</font></p>
+<p><font size="big">[% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %]
+を訪問して確認することを強く推奨します。</font></p>
 
 [% IF allow_override %]
-  <p>If you are sure you used the same form to submit a new [% terms.bug %],
-  click 'File [% terms.bug %] again'.<p>
+  <p>新しい [% terms.bug %] の登録に同じフォームを再利用しようとしているだけなら、
+  '再度 [% terms.bug %] を登録する' をクリックしてください。<p>
 
   <form name="create" id="create" method="post" action="post_bug.cgi"
   [%- IF Bugzilla.cgi.param("data") %] enctype="multipart/form-data"[% END %]>
     [% PROCESS "global/hidden-fields.html.tmpl"
                exclude="^(Bugzilla_login|Bugzilla_password|ignore_token)$" %]
     <input type="hidden" name="ignore_token" value="[% bugid FILTER html %]">
-    <input type="submit" value="File [% terms.bug %] again" id="file_bug_again">
+    <input type="submit" value="再度 [% terms.bug %] を登録する" id="file_bug_again">
   </form>
 [% END %]
 
