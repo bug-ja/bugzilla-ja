@@ -133,7 +133,7 @@ shimono	shimono	x	./bug/comments.html.tmpl
 shimono	shimono	x	./bug/create/comment-guided.txt.tmpl
 -	o	shimono	./bug/create/comment.txt.tmpl
 shimono	shimono	x	./bug/create/confirm-create-dupe.html.tmpl
-shimono	x	x	./bug/create/create-guided.html.tmpl
+shimono	shimono	x	./bug/create/create-guided.html.tmpl
 shimono	shimono	x	./bug/create/create.html.tmpl
 shimono	shimono	x	./bug/create/created.html.tmpl
 shimono	shimono	x	./bug/create/make-template.html.tmpl
