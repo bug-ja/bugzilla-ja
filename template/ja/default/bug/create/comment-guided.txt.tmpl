@@ -27,27 +27,27 @@
   #%]  
 [% USE Bugzilla %]
 [% cgi = Bugzilla.cgi %]
-User-Agent:       [%+ cgi.user_agent() %]
-Build Identifier: [%+ cgi.param("buildid") %]
+User-Agent : [%+ cgi.user_agent() %]
+ビルド ID  : [%+ cgi.param("buildid") %]
 
 [%+ cgi.param("comment") IF cgi.param("comment") %]
 
 [%+ IF cgi.param("reproducible") != "Choose one..." -%]
-Reproducible: [%+ cgi.param("reproducible") %]
+再現性: [%+ cgi.param("reproducible") %]
 [% END %]
 
 [% IF !(cgi.param("reproduce_steps").match('^1\.\s+2\.\s+3\.\s+$') || cgi.param("reproduce_steps").match('^\s*$')) %]
-Steps to Reproduce:
+再現手順:
 [%+ cgi.param("reproduce_steps") %]
 [% END %]
 
 [% IF cgi.param("actual_results") -%]
-Actual Results:  
+実際の結果:  
 [%+ cgi.param("actual_results") %]
 [% END %]
 
 [% IF cgi.param("expected_results") %]
-Expected Results:  
+望まれる結果:  
 [%+ cgi.param("expected_results") %]
 [% END %]
 

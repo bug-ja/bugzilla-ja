@@ -32,15 +32,15 @@
 %]
 
 <p>
-  You can bookmark this link:
+  次のリンクをブックマークしてください :
   &ldquo;<a href="enter_bug.cgi?[% url FILTER html %]">
   [% IF short_desc %]
     [% short_desc FILTER html %]
   [% ELSE %]
-    [% terms.Bug %] entry template
+    [% terms.Bug %] 登録テンプレート
   [% END %]</a>&rdquo;.
-  This bookmark will bring up the <em>Enter [% terms.Bug %]</em> page with the
-  fields initialized as you've requested.
+  このブックマークにより、初期状態として指定した値が入力された
+  <em>[% terms.Bug %] 新規登録</em> ページに行きます。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
