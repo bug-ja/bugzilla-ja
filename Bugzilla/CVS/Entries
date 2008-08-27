@@ -32,4 +32,12 @@
 /Util.pm/1.69/Thu Apr  3 16:58:29 2008//TBUGZILLA-3_2-BRANCH
 /Version.pm/1.14/Thu Aug 23 21:31:20 2007//TBUGZILLA-3_2-BRANCH
 /WebService.pm/1.9/Mon Apr 28 22:04:31 2008//TBUGZILLA-3_2-BRANCH
-D
+D/Attachment////
+D/Auth////
+D/Config////
+D/DB////
+D/Install////
+D/Search////
+D/Template////
+D/User////
+D/WebService////
