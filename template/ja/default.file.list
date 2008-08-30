@@ -126,8 +126,8 @@ x	x	x	./attachment/list.html.tmpl
 x	x	x	./attachment/midair.html.tmpl
 x	x	x	./attachment/show-multiple.html.tmpl
 x	x	x	./attachment/updated.html.tmpl
-shimono	x	x	./bug/activity/show.html.tmpl
-shimono	x	x	./bug/activity/table.html.tmpl
+shimono	shimono	x	./bug/activity/show.html.tmpl
+shimono	shimono	x	./bug/activity/table.html.tmpl
 shimono	shimono	x	./bug/choose.html.tmpl
 shimono	shimono	x	./bug/comments.html.tmpl
 shimono	shimono	x	./bug/create/comment-guided.txt.tmpl
