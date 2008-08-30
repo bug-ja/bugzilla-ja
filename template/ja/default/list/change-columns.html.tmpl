@@ -21,20 +21,20 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
-  title = "Change Columns"
+  title = "カラム変更"
 %]
 
 <p>
-  Select the columns you wish to appear in your [% terms.bug %] lists. Note that
-  this feature requires cookies to work.
+  あなたの [% terms.bug %] リストに表示したいカラムを選択してください。
+  この機能が動作するにはクッキーが必要です。
 </p>
 
 [% PROCESS "global/field-descs.none.tmpl" %]
-[% field_descs.short_short_desc     = "Summary (first 60 characters)" %]
-[% field_descs.short_desc           = "Full Summary" %]
-[% field_descs.assigned_to_realname = "Assignee Realname" %]
-[% field_descs.reporter_realname    = "Reporter Realname" %]
-[% field_descs.qa_contact_realname  = "QA Contact Realname" %]
+[% field_descs.short_short_desc     = "要約 (最初の 60 文字)" %]
+[% field_descs.short_desc           = "要約全体" %]
+[% field_descs.assigned_to_realname = "担当者の実名" %]
+[% field_descs.reporter_realname    = "報告者の実名" %]
+[% field_descs.qa_contact_realname  = "QA コンタクトの実名" %]
 
 <form action="colchange.cgi">
   <input type="hidden" name="rememberedquery" value="[% buffer FILTER html %]">
@@ -51,14 +51,14 @@
     <input id="nosplitheader" type="radio" name="splitheader" value="0"
       [%+ "checked='checked'" IF NOT splitheader %]>
     <label for="nosplitheader">
-      Normal headers (prettier)
+      通常のヘッダ (表示がきれいです)
     </label>
     <br>
 
     <input id="splitheader" type="radio" name="splitheader" value="1"
       [%+ "checked='checked'" IF splitheader %]>
     <label for="splitheader">
-      Stagger headers (often makes list more compact)
+      入れ子のヘッダ (リストがコンパクトになります)
     </label>
   </p>
 
@@ -68,13 +68,13 @@
              value="[% saved_search.id FILTER html%]" >
       <input type="checkbox" id="save_columns_for_search" checked="checked" 
              name="save_columns_for_search" value="1">
-      <label for="save_columns_for_search">Save this column list only 
-        for search '[% saved_search.name FILTER html %]'</label>
+      <label for="save_columns_for_search">このカラムリストを
+      '[% saved_search.name FILTER html %]' にのみ適用する。</label>
     </p>
   [% END %]
 
   <p>
-    <input type="submit" id="change" value="Change Columns">
+    <input type="submit" id="change" value="カラム変更">
   </p>
 </form>
 
@@ -82,7 +82,7 @@
   <input type="hidden" name="rememberedquery" value="[% buffer FILTER html %]">
   <input type="hidden" name="resetit" value="1">
   <input type="submit" id="reset" 
-         value="Reset to [% terms.Bugzilla %] default">
+         value="[% terms.Bugzilla %] 既定にリセット">
 </form>
 
 [% PROCESS global/footer.html.tmpl %]
