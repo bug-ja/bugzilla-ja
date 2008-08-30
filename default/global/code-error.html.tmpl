@@ -136,296 +136,284 @@
     のフックを処理する際にエラーが発生しました: [% errstr FILTER html %]
 
   [% ELSIF error == "extern_id_conflict" %]
-    外部 ID 
-    The external ID '[% extern_id FILTER html %]' already exists
-    in the database for '[% username FILTER html %]', but your
-    account source says that '[% extern_user FILTER html %]' has that ID.
+    外部 ID '[% extern_id FILTER html %]' はすでにデータベースに '[% username FILTER html %]'
+    として存在しますが、あなたのアカウントの外部ソースでは '[% extern_user FILTER html %]' 
+    が同じ ID を持っています。
 
   [% ELSIF error == "field_type_mismatch" %]
-    Cannot seem to handle <code>[% field FILTER html %]</code>
-    and <code>[% type FILTER html %]</code> together.
+    <code>[% field FILTER html %]</code> と <code>[% type FILTER html %]</code> 
+    を同時に処理できません。
 
   [% ELSIF error == "field_not_custom" %]
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
-    is not a custom field.
+    はカスタムフィールドではありません。
 
   [% ELSIF error == "gd_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'Installing Perl modules necessary for Charting'} %]
-    Charts will not work without the GD Perl module being installed.
-    Run checksetup.pl for installation instructions.
+    [% admindocslinks = {'installation.html#install-perlmodules' => 'チャートに必要な perl モジュールをインストールする'} %]
+    GD Perl 用モジュールがインストールされていなければチャート機能は動作しません。
+    checksetup.pl を実行しインストール指示に従ってください。
 
   [% ELSIF error == "illegal_content_type_method" %]
-    Your form submission got corrupted somehow.  The <em>content
-    method</em> field, which specifies how the content type gets determined,
-    should have been either <em>autodetect</em>, <em>list</em>,
-    or <em>manual</em>, but was instead
-    <em>[% contenttypemethod FILTER html %]</em>.
+    あなたの変更には間違いがあります。
+    コンテントタイプをどう評価するかを指定する <em>content method</em> フィールドは、
+    <em>autodetect</em>、<em>list</em>、もしくは <em>manual</em> でないといけませんが、
+    <em>[% contenttypemethod FILTER html %]</em> が指定されました。
 
   [% ELSIF error == "illegal_field" %]
-    A legal [% field FILTER html %] was not set.
+    有効な [% field FILTER html %] が指定されていません。
 
   [% ELSIF error == "inactive_group" %]
-    Attempted to add [% terms.bug %] to the '[% name FILTER html %]'
-    group, which is not used for [% terms.bugs %].
+    [% terms.bugs %] には利用されていない、
+    '[% name FILTER html %]' グループへの [% terms.bug %] の追加操作を行おうとしました。
 
   [% ELSIF error == "invalid_attach_id_to_obsolete" %]
-     The attachment number of one of the attachments you wanted to obsolete,
-     [% attach_id FILTER html %], is invalid.
+    用済みにマークしようとした添付ファイルのひとつ [% attach_id FILTER html %] 
+    は無効です。
           
   [% ELSIF error == "invalid_column_name_cookie" %]
-    [% title = "Invalid Column Name" %]
-     The custom sort order specified in your cookie contains an invalid
-     column name <em>[% fragment FILTER html %]</em>. 
-     The cookie has been cleared.
-         
+    [% title = "無効なカラム名" %]
+    クッキーで指定された独自ソート順は無効なカラム名 <em>[% fragment FILTER html %]</em>
+    を指定しています。
+    クッキーを消去しました。
+
   [% ELSIF error == "invalid_column_name_form" %]
-    [% title = "Invalid Column Name" %]
-     The custom sort order specified in your form submission contains an
-     invalid column name <em>[% fragment FILTER html %]</em>.
+    [% title = "無効なカラム名" %]
+    あなたが要求した独自ソート順は無効なカラム名 <em>[% fragment FILTER html %]</em>
+    を指定しています。
 
   [% ELSIF error == "invalid_customfield_type" %]
-    [% title = "Invalid Field Type" %]
-    The type <em>[% type FILTER html %]</em> is not a valid field type.
+    [% title = "無効なフィールドタイプ" %]
+    <em>[% type FILTER html %]</em> は有効なフィールドタイプではありません。
 
   [% ELSIF error == "invalid_dimensions" %]
-    [% title = "Invalid Dimensions" %]
-    The width or height specified is not a positive integer.
+    [% title = "無効な寸法です" %]
+    指定された幅もしくは高さが正の整数ではありません。
 
   [% ELSIF error == "invalid_flag_association" %]
-    [% title = "Invalid Flag Association" %]
-    Some flags do not belong to
+    [% title = "無効なフラグ関係性です" %]
+    いくつかのフラグが
     [% IF attach_id %]
-      attachment [% attach_id FILTER html %].
+      添付 [% attach_id FILTER html %].
     [% ELSE %]
       [%+ terms.bug %] [%+ bug_id FILTER html %].
     [% END %]
+    に属していません。
 
   [% ELSIF error == "invalid_series_id" %]
-    [% title = "Invalid Series" %]
-    The series_id [% series_id FILTER html %] is not valid. It may be that
-    this series has been deleted.
+    [% title = "無効なシリーズです" %]
+    シリーズ ID [% series_id FILTER html %] は無効です。
+    このシリーズは削除された可能性があります。
 
   [% ELSIF error == "invalid_webservergroup" %]
-    There is no such group: [% group FILTER html %]. Check your $webservergroup
-    setting in [% constants.bz_locations.localconfig FILTER html %].
+    [% group FILTER html %] というグループは存在しません。
+    [% constants.bz_locations.localconfig FILTER html %] の $webservergroup 
+    設定を確認してください。
 
   [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
-    Attachment [% attach_id FILTER html %] ([% description FILTER html %]) 
-    is attached to [% terms.bug %] [%+ attach_bug_id FILTER html %], 
-    but you tried to flag it as obsolete while creating a new attachment to 
-    [% terms.bug %] [%+ my_bug_id FILTER html %].
+    添付 [% attach_id FILTER html %] ([% description FILTER html %]) は
+    [% terms.bug %] [%+ attach_bug_id FILTER html %] に添付されていますが、
+    あなたは [% terms.bug %] [%+ my_bug_id FILTER html %] へ新しい添付をつけるときに
+    無効化しようとしました。
 
   [% ELSIF error == "flags_not_available" %]
-    [% title = "Flag Editing not Allowed" %]
+    [% title = "フラグ編集は許可されていません" %]
     [% IF type == "b" %]
-      Flags cannot be set or changed when
-      changing several [% terms.bugs %] at once.
+      複数の [% terms.bugs %] のフラグは一度に設定や変更できません。
     [% ELSE %]
-      References to existing flags when creating
-      a new attachment are invalid.
+      新規に添付するときの既存のフラグの参照は無効です。
     [% END %] 
 
   [% ELSIF error == "flag_requestee_disabled" %]
-    [% title = "Flag not Requestable from Specific Person" %]
-    You can't ask a specific person for
-    <em>[% type.name FILTER html %]</em>.
-  
+    [% title = "特定の人からのフラグ要請はできません" %]
+    特定の人からの
+    <em>[% type.name FILTER html %]</em> の要請はできません。
+ 
   [% ELSIF error == "flag_status_invalid" %]
-    The flag status <em>[% status FILTER html %]</em>
     [% IF id %]
-      for flag ID #[% id FILTER html %]
+      フラグ ID #[% id FILTER html %] の
     [% END %]
-    is invalid.
+    フラグステータス <em>[% status FILTER html %]</em>
+    は無効です。
 
   [% ELSIF error == "flag_type_inactive" %]
-    [% title = "Inactive Flag Type" %]
-    The flag type [% type FILTER html %] is inactive and cannot be used
-    to create new flags.
+    [% title = "利用されていないフラグタイプ" %]
+    フラグタイプ [% type FILTER html %] は無効化されており、
+    新規フラグの作成で利用することはできません。
 
   [% ELSIF error == "flag_type_nonexistent" %]
-    There is no flag type with the ID <em>[% id FILTER html %]</em>.
+    ID <em>[% id FILTER html %]</em> をもつフラグタイプは存在しません。
 
   [% ELSIF error == "flag_type_target_type_invalid" %]
-    The target type was neither <em>[% terms.bug %]</em> nor <em>attachment</em>
-    but rather <em>[% target_type FILTER html %]</em>.
-  
+    ターゲットタイプは <em>[% terms.bug %]</em> でも <em>attachment</em> でもなく、
+    <em>[% target_type FILTER html %]</em> になっています。
+ 
   [% ELSIF error == "invalid_field_name" %]
-    Can't use [% field FILTER html %] as a field name.
+    [% field FILTER html %] をフィールド名に利用できません。
 
   [% ELSIF error == "invalid_keyword_id" %]
-    The keyword ID <em>[% id FILTER html %]</em> couldn't be
-    found.
+    キーワード ID <em>[% id FILTER html %]</em> が見つかりません。
 
   [% ELSIF error == "invalid_user" %]
-    [% title = "Invalid User" %]
-    There is no user account
+    [% title = "無効なユーザ" %]
     [% IF user_id %]
-      with ID <em>[% user_id FILTER html %]</em>.
+      ID <em>[% user_id FILTER html %]</em>.
     [% ELSIF user_login %]
-      with login name <em>[% user_login FILTER html %]</em>.
+      ログイン名 <em>[% user_login FILTER html %]</em>
     [% ELSE %]
-      given.
+      与えられた
     [% END %]
+    のユーザは存在しません。
 
   [% ELSIF error == "ldap_bind_failed" %]
-    Failed to bind to the LDAP server. The error message was: 
+    LDAP サーバへの接続に失敗しました。エラーメッセージは次のとおりです。
     <code>[% errstr FILTER html %]</code>
 
   [% ELSIF error == "ldap_cannot_retreive_attr" %]
-    The specified LDAP attribute [% attr FILTER html %] was not found.
+    指定された LDAP 属性値 [% attr FILTER html %] は見つかりませんでした。
 
   [% ELSIF error == "ldap_connect_failed" %]
-    Could not connect to the LDAP server(s) <code>[% server FILTER html %]</code>.
+    LDAP サーバ <code>[% server FILTER html %]</code> に接続できませんでした。
 
   [% ELSIF error == "ldap_start_tls_failed" %]
-    Could not start TLS with LDAP server: <code>[% error FILTER html %]</code>.
+    LDAP サーバとの TLS 接続開始に失敗しました。<code>[% error FILTER html %]</code>.
 
   [% ELSIF error == "ldap_search_error" %]
-    An error occurred while trying to search LDAP for 
-    &quot;[% username FILTER html %]&quot;: 
+    LDAP サーバで &quot;[% username FILTER html %]&quot;
+    を検索する時にエラーが発生しました。
    <code>[% errstr FILTER html %]</code>
 
   [% ELSIF error == "ldap_server_not_defined" %]
-    The LDAP server for authentication has not been defined.
+    認証用 LDAP サーバが設定されていません。
 
   [% ELSIF error == "mail_send_error" %]
-    There was an error sending mail from '[% mail.header('From') FILTER html %]'
-    to '[% mail.header('To') FILTER html %]':
+    メールを '[% mail.header('From') FILTER html %]' から
+    '[% mail.header('To') FILTER html %]' に送信する際に問題が発生しました。
     [% msg FILTER html %]
 
   [% ELSIF error == "missing_bug_id" %]
-    No [% terms.bug %] ID was given.
-    
+    [% terms.bug %] ID が与えられませんでした。
+
   [% ELSIF error == "missing_series_id" %]
-    Having inserted a series into the database, no series_id was returned for
-    it. Series: [% series.category FILTER html %] / 
+    シリーズをデータベースに登録しようとしましたが、シリーズ ID がありません。
+    シリーズ: [% series.category FILTER html %] / 
     [%+ series.subcategory FILTER html %] / 
-    [%+ series.name FILTER html %].
-    
+    [%+ series.name FILTER html %]
+
   [% ELSIF error == "need_quipid" %]
-    A valid quipid is needed.
+    有効な quipid が必要です。
 
   [% ELSIF error == "no_manual_moved" %]
-    You cannot set the resolution of [% terms.abug %] to MOVED without
-    moving the [% terms.bug %].
+    [% terms.bug %] を移動させることなく、[% terms.abug %] を MOVED 
+    の解決方法にできません。
 
   [% ELSIF error == "param_must_be_numeric" %]
-    [% title = "Invalid Parameter" %]
-    Invalid parameter passed to [% function FILTER html %].
-    It must be numeric.
+    [% title = "無効なパラメータ" %]
+    無効なパラメータが [% function FILTER html %] に渡されました。
+    数値であるべきです。
 
   [% ELSIF error == "param_required" %]
-    [% title = "Missing Parameter" %]
-    The function <code>[% function FILTER html %]</code> requires
-    a <code>[% param FILTER html %]</code> argument, and that
-    argument was not set.
+    [% title = "パラメータがありません" %]
+    関数 <code>[% function FILTER html %]</code> には引数として
+    <code>[% param FILTER html %]</code> が必要ですが、引数が渡されませんでした。
 
   [% ELSIF error == "protection_violation" %]
-    The function <code>[% function FILTER html %]</code> was called
-
+    関数 <code>[% function FILTER html %]</code> は
     [% IF argument %]
-        with the argument <code>[% argument FILTER html %]</code>
+        引数 <code>[% argument FILTER html %]</code> なしに
     [% END %]
-
-    from
-   
+    パッケージ外
     [% IF caller %]
-        <code>[%+ caller FILTER html %]</code>, which is
+        の <code>[%+ caller FILTER html %]</code>
     [% END %]
-
-    outside the package. This function may only be called from
-    a subclass of <code>[% superclass FILTER html %]</code>.
+    から呼ばれました。この関数は、<code>[% superclass FILTER html %]</code>
+    のサブクラスからのみ呼ばれることが可能です。
 
   [% ELSIF error == "radius_preparation_error" %]
-    An error occurred while preparing for a RADIUS authentication request:
-    <code>[% errstr FILTER html %]</code>.
+    RADIUS 認証リクエストを準備している途中でエラーが発生しました。
+    <code>[% errstr FILTER html %]</code>
 
   [% ELSIF error == "unknown_comparison_type" %]
-    Specified comparison type is not supported.
+    指定された比較はサポートされていません。
 
   [% ELSIF error == "request_queue_group_invalid" %]
-    The group field <em>[% group FILTER html %]</em> is invalid.
+    グループフィールド <em>[% group FILTER html %]</em> は無効です。
 
   [% ELSIF error == "report_axis_invalid" %]
-    <em>[% val FILTER html %]</em> is not a valid value for 
-    [%+ IF    fld == "x" %]the horizontal axis
-    [%+ ELSIF fld == "y" %]the vertical axis
-    [%+ ELSIF fld == "z" %]the multiple tables/images
-    [%+ ELSE %]a report axis[% END %] field.
+    <em>[% val FILTER html %]</em> は
+    [%+ IF    fld == "x" %]横軸
+    [%+ ELSIF fld == "y" %]縦軸
+    [%+ ELSIF fld == "z" %]複数テーブル・イメージ
+    [%+ ELSE %]レポート軸[% END %] フィールドとして無効値です。
 
   [% ELSIF error == "setting_info_invalid" %]
-    To create a new setting, you must supply a setting name, a list of 
-    value/sortindex pairs, and the devault value.
+    新しい設定を作成するには、名前、値とソート順のペア、既定の値が必要です。
 
   [% ELSIF error == "setting_name_invalid" %]
-    The setting name <em>[% name FILTER html %]</em> is not a valid
-    option. Setting names must begin with a letter, and contain only
-    letters, digits, or the symbols '_', '-', '.', or ':'.
+    設定名 <em>[% name FILTER html %]</em> は無効です。
+    文字で始まり、文字、数字、記号 '_' '-' '.' ':' のみを含めることができます。
 
   [% ELSIF error == "setting_subclass_invalid" %]
-    There is no such Setting subclass as
-    <code>[% subclass FILTER html %]</code>.
+    設定のサブクラス <code>[% subclass FILTER html %]</code> は存在しません。
 
   [% ELSIF error == "setting_value_invalid" %]
-    The value "<code>[% value FILTER html %]</code>" is not in the list of
-    legal values for the <em>[% name FILTER html %]</em> setting.
+    値 "<code>[% value FILTER html %]</code>" は有効な <em>[% name FILTER html %]</em> 
+    設定の値のリストにありません。
 
   [% ELSIF error == "soap_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'Installing Perl modules'} %]
-    The XMLRPC interface will not work without the SOAP::Lite Perl module being
-    installed.
-    Run checksetup.pl for installation instructions.
+    [% admindocslinks = {'installation.html#install-perlmodules' => 'Perl モジュールのインストール'} %]
+    XMLRPC インターフェースは、SOAP::Lite Perl モジュールがインストールされていなければ
+    利用できません。checksetup.pl を実行し、インストール手順を見てください。
 
   [% ELSIF error == "token_generation_error" %]
-    Something is seriously wrong with the token generation system.
+    トークン生成システムで深刻な問題が発生しています。
 
   [% ELSIF error == "template_error" %]
     [% template_error_msg FILTER html %]
 
   [% ELSIF error == "template_invalid" %]
-    Template with invalid file name found in hook call: [% name FILTER html %].
+    フックコール [% name FILTER html %] の中で無効なファイル名のテンプレートが見つかりました。
 
   [% ELSIF error == "unable_to_retrieve_password" %]
-     I was unable to retrieve your old password from the database.
+    あなたの古いパスワードをデータベースから取得できませんでした。
 
   [% ELSIF error == "undefined_field" %]
-    Form field [% field FILTER html %] was not defined.
-    
+    フォームフィールド [% field FILTER html %] は見つかりませんでした。
+ 
   [% ELSIF error == "unknown_action" %]
     [% IF action %]
-       Unknown action [% action FILTER html %]!
+       不明なアクション [% action FILTER html %] です
     [% ELSE %]
-       I could not figure out what you wanted to do.
+       あなたが何をしたいかわかりません。
     [% END %]
 
   [% ELSIF error == "usage_mode_invalid" %]
-    '[% invalid_usage_mode FILTER html %]' is not a valid usage mode.
+    '[% invalid_usage_mode FILTER html %]' は無効な利用方法です。
 
   [% ELSIF error == "must_be_patch" %]
-    [% title = "Attachment Must Be Patch" %]
-    Attachment #[% attach_id FILTER html %] must be a patch.
+    [% title = "添付はパッチでなければなりません" %]
+    添付 #[% attach_id FILTER html %] はパッチでなければなりません。
 
   [% ELSIF error == "not_in_transaction" %]
-    Attempted to end transaction without starting one first.
+    始めていないトランザクションを終了させようとしました。
 
   [% ELSIF error == "comma_operator_deprecated" %]
-    [% title = "SQL query generator internal error" %]
-    There is an internal error in the SQL query generation code,
-    creating queries with implicit JOIN.
+    [% title = "SQL クエリ生成器の内部エラーです" %]
+    SQL クエリ生成コードで、
+    暗黙の JOIN を利用したクエリを生成する部分でエラーが発生しました。
 
   [% ELSIF error == "invalid_post_bug_submit_action" %]
-    Invalid setting for post_bug_submit_action
+    post_bug_submit_action の無効な設定です。
 
   [% ELSE %]
     [%# Try to find hooked error messages %]
     [% error_message = Hook.process("errors") %]
     [% IF NOT error_message %]
-      [% title = "Internal error" %]
-      An internal error has occurred, but [% terms.Bugzilla %] doesn't know
-      what <code>[% error FILTER html %]</code> means.
+      [% title = "内部エラー" %]
+      内部エラーが発生しましたが、[% terms.Bugzilla %] はエラーコード
+      <code>[% error FILTER html %]</code> が何を意味するのかわかりません。
 
-      If you are a [% terms.Bugzilla %] end-user seeing this message, please save
-      this page and send it to [% Param('maintainer') %].
+      もし、[% terms.Bugzilla %] の単なる利用者なら、メッセージを保存し、
+      [% Param('maintainer') %] までご連絡ください。
     [% ELSE %]
       [% error_message FILTER none %]
     [% END %]
@@ -454,9 +442,9 @@
 
 <tt>
   <p>
-    [% terms.Bugzilla %] has suffered an internal error. Please save this page and send
-    it to [% Param("maintainer") %] with details of what you were doing at
-    the time this message appeared.
+    [% terms.Bugzilla %] に内部エラーが発生しました。このページを保存して、
+    [% Param("maintainer") %] まで、メッセージが表示される前にどういう操作を行ったか
+    とともに送信してください。
   </p>
   <script type="text/javascript"> <!--
     document.write("<p>URL: " + 
@@ -479,7 +467,7 @@
 
 [% IF variables %]
   <pre>
-Variables:
+変数値:
   [% FOREACH key = variables.keys %]
     [%+ key FILTER html %]: [%+ variables.$key FILTER html %]
   [% END %]
