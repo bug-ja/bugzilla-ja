@@ -36,9 +36,9 @@
 [% IF added_quip %]
   <p>
     <font color="red">
-      Your quip '<tt>[% added_quip FILTER html %]</tt>' has been added.
+      あなたの警句 '<tt>[% added_quip FILTER html %]</tt>' は追加されました。
       [% IF Param("quip_list_entry_control") == "moderated" AND !user.groups.admin %]
-        It will be used as soon as it gets approved.
+        認証され次第利用されます。
       [% END %]
     </font>
   </p>
@@ -47,27 +47,26 @@
 [% IF deleted_quip %]
   <p>
     <font color="red">
-      The quip '<tt>[% deleted_quip FILTER html %]</tt>' has been deleted.
+      警句 '<tt>[% deleted_quip FILTER html %]</tt>' は削除されました。
     </font>
   </p>
 [% END %]
 
 [% IF approved or unapproved %]
-  <p>[% approved.size %] quips approved and [% unapproved.size %] quips unapproved</p>
+  <p>[% approved.size %] 個が認証され、[% unapproved.size %] 個が未認証です。</p>
 [% END %]
 
 
 <p>
-  [% terms.Bugzilla %] will pick a random quip for the headline on each 
-  [% terms.bug %] list.
+  [% terms.Bugzilla %] はランダムな警句を選択し、[% terms.bug %] リストの先頭に表示します。
 </p>
 
 [% IF Param("quip_list_entry_control") != "closed" %]
   <p>
-    You can extend the quip list. Type in something clever or funny or boring
-    (but not obscene or offensive, please) and bonk on the button.
+    警句のリストを拡張できます。何かいい、愉快、退屈なものを入力
+    (ただし、節度を欠いたものや攻撃的なものはやめてください) し、登録してください。
     [% IF Param("quip_list_entry_control") == "moderated" AND !user.groups.admin %]
-      Note that your quip has to be approved before it is used.
+      あなたの警句は認証されるまで利用されません。
     [% END %]
   </p>
 
@@ -75,18 +74,18 @@
     <input type="hidden" name="action" value="add">
     <input size="80" name="quip">
     <p>
-      <input type="submit" id="add" value="Add This Quip">
+      <input type="submit" id="add" value="警句を追加">
     </p>
   </form>
 [% ELSE %]
-  <p>No new entries may be submitted at this time.
+  <p>新しいエントリが送信されませんでした。
   </p>
 [% END %]
 
 [% IF show_quips %]
   [% IF !user.in_group('admin') %]
     <h2>
-      Existing quips:
+      既存の警句:
     </h2>
     <ul>
       [% FOREACH quipid = quipids %]
@@ -95,20 +94,20 @@
       [% END %]
     </ul>
   [% ELSE %]
-    <h2>Edit existing quips:</h2>
+    <h2>既存の警句の編集:</h2>
     <p>
-      <strong>Note:</strong> Only approved quips will be shown.
-      If the parameter 'quip_list_entry_control' is set to <q>open</q>, 
-      entered quips are automatically approved.
+      <strong>注:</strong> 認証された警句のみが表示されます。
+      パラメータ 'quip_list_entry_control' が <q>open</q> なら、
+      入力された警句は自動的に認証されます。
     </p>
     <form name="editform" method="post" action="quips.cgi">
       <input type="hidden" name="action" value="approve">
       <table border="1">
         <thead><tr>
-          <th>Quip</th>
-          <th>Author</th>
-          <th>Action</th>
-          <th>Approved</th>
+          <th>警句</th>
+          <th>作者</th>
+          <th>動作</th>
+          <th>状況</th>
         </tr></thead><tbody>
         [% FOREACH quipid = quipids %]
           <tr>
@@ -116,11 +115,11 @@
             <td>
               [% userid = quips.$quipid.userid  %]
               [% users.$userid FILTER html      %]
-              [% "Unknown" IF NOT users.$userid %]
+              [% "未知" IF NOT users.$userid %]
             </td>
             <td>
               <a href="quips.cgi?action=delete&amp;quipid=[% quipid FILTER url_quote %]">
-                Delete
+                削除
               </a>
             </td>
             <td>
@@ -142,23 +141,23 @@
           }
         }
         document.write(' <input type="button" name="uncheck_all" '
-                      +'value="Uncheck All" onclick="SetCheckboxes(false);">');
+                      +'value="全て未選択" onclick="SetCheckboxes(false);">');
         document.write(' <input type="button" name="check_all" '
-                      +'value="Check All" onclick="SetCheckboxes(true);">');
+                      +'value="全て選択" onclick="SetCheckboxes(true);">');
         //--></script>
 
-      <input type="submit" id="update" value="Save Changes">
+      <input type="submit" id="update" value="変更を保存">
     </form>
     <br>
   [% END %]
 [% ELSE %]
   <p>
-    Those who like their wisdom in large doses can
-    <a href="quips.cgi?action=show">view
+    ネタが理解できるのであれば、全ての警句のリストを
+    <a href="quips.cgi?action=show">見る
     [% IF user.in_group('admin') %]
-      and edit
+        そして編集する
     [% END %]
-    the whole quip list</a>.
+    ことが可能です。</a>
   </p>
 [% END %]
 

@@ -28,7 +28,7 @@
 [%# Initialization                                                           #%]
 [%############################################################################%]
 
-[% DEFAULT title = "$terms.Bug List" %]
+[% DEFAULT title = "$terms.Bug リスト" %]
 
 [%############################################################################%]
 [%# Bug Table                                                                #%]
@@ -44,7 +44,7 @@
 
   <body>
     [% IF bugs.size == 0 %]
-      <h3>[% terms.zeroSearchResults %].</h3>
+      <h3>[% terms.zeroSearchResults %]</h3>
     [% ELSE %]
       [% PROCESS list/table.html.tmpl %]
     [% END %]
