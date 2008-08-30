@@ -103,6 +103,15 @@ sub bz_last_key {
     return $last_insert_id;
 }
 
+sub sql_group_concat {
+    my ($self, $column, $separator) = @_;
+    my $sep_sql;
+    if ($separator) {
+        $sep_sql = " SEPARATOR $separator";
+    }
+    return "GROUP_CONCAT($column$sep_sql)";
+}
+
 sub sql_regexp {
     my ($self, $expr, $pattern) = @_;
 
@@ -136,7 +145,7 @@ sub sql_fulltext_search {
 
     # Add the boolean mode modifier if the search string contains
     # boolean operators.
-    my $mode = ($text =~ /[+-<>()~*"]/ ? "IN BOOLEAN MODE" : "");
+    my $mode = ($text =~ /[+\-<>()~*"]/ ? "IN BOOLEAN MODE" : "");
 
     # quote the text for use in the MATCH AGAINST expression
     $text = $self->quote($text);

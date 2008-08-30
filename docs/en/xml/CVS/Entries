@@ -1,13 +1,10 @@
 /.cvsignore/1.1/Fri Apr  4 06:48:17 2008//TBUGZILLA-3_2-BRANCH
-/Bugzilla-Guide.xml/1.78/Mon May  5 01:52:45 2008//TBUGZILLA-3_2-BRANCH
 /about.xml/1.26/Fri Apr  4 06:48:18 2008//TBUGZILLA-3_2-BRANCH
-/administration.xml/1.90/Mon May 19 11:12:15 2008//TBUGZILLA-3_2-BRANCH
 /conventions.xml/1.12/Fri Apr  4 06:48:20 2008//TBUGZILLA-3_2-BRANCH
 /customization.xml/1.44/Sat Apr 26 09:51:17 2008//TBUGZILLA-3_2-BRANCH
 /gfdl.xml/1.11/Fri Apr  4 06:48:21 2008//TBUGZILLA-3_2-BRANCH
 /glossary.xml/1.25/Fri Apr  4 06:48:21 2008//TBUGZILLA-3_2-BRANCH
 /index.xml/1.6/Fri Apr  4 06:48:21 2008//TBUGZILLA-3_2-BRANCH
-/installation.xml/1.157/Sun Apr 13 19:25:18 2008//TBUGZILLA-3_2-BRANCH
 /integration.xml/1.14/Fri Apr  4 06:48:25 2008//TBUGZILLA-3_2-BRANCH
 /introduction.xml/1.6/Fri Apr  4 06:48:25 2008//TBUGZILLA-3_2-BRANCH
 /modules.xml/1.13/Fri Apr  4 06:48:25 2008//TBUGZILLA-3_2-BRANCH
@@ -16,4 +13,7 @@
 /security.xml/1.18/Fri Apr  4 06:48:25 2008//TBUGZILLA-3_2-BRANCH
 /troubleshooting.xml/1.13/Fri Apr  4 06:48:25 2008//TBUGZILLA-3_2-BRANCH
 /using.xml/1.79/Fri Apr  4 06:48:26 2008//TBUGZILLA-3_2-BRANCH
+/Bugzilla-Guide.xml/1.78.2.2/Wed Aug 27 05:44:18 2008//TBUGZILLA-3_2-BRANCH
+/administration.xml/1.90.2.1/Wed Aug 27 05:44:18 2008//TBUGZILLA-3_2-BRANCH
+/installation.xml/1.157.2.1/Wed Aug 27 05:44:18 2008//TBUGZILLA-3_2-BRANCH
 D

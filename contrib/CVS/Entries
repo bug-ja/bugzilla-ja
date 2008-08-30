@@ -10,6 +10,8 @@
 /recode.pl/1.5/Fri Oct 19 06:46:17 2007//TBUGZILLA-3_2-BRANCH
 /sendbugmail.pl/1.8/Fri Oct 19 06:46:17 2007//TBUGZILLA-3_2-BRANCH
 /sendunsentbugmail.pl/1.10/Fri Oct 19 06:46:17 2007//TBUGZILLA-3_2-BRANCH
-/syncLDAP.pl/1.12.2.1/Fri Jun 27 16:42:47 2008//TBUGZILLA-3_2-BRANCH
 /yp_nomail.sh/1.1/Tue Sep 12 23:50:31 2000//TBUGZILLA-3_2-BRANCH
-D
+D/bugzilla-submit////
+D/cmdline////
+D/gnatsparse////
+/syncLDAP.pl/1.12.2.2/Wed Aug 27 05:44:18 2008//TBUGZILLA-3_2-BRANCH

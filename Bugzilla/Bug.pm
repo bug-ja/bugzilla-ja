@@ -35,6 +35,7 @@ use Bugzilla::Constants;
 use Bugzilla::Field;
 use Bugzilla::Flag;
 use Bugzilla::FlagType;
+use Bugzilla::Hook;
 use Bugzilla::Keyword;
 use Bugzilla::User;
 use Bugzilla::Util;
@@ -467,7 +468,7 @@ sub run_create_validators {
     $params->{cc} = $class->_check_cc($component, $params->{cc});
 
     # Callers cannot set Reporter, currently.
-    $params->{reporter} = Bugzilla->user->id;
+    $params->{reporter} = $class->_check_reporter();
 
     $params->{creation_ts} ||= Bugzilla->dbh->selectrow_array('SELECT NOW()');
     $params->{delta_ts} = $params->{creation_ts};
@@ -691,6 +692,11 @@ sub update {
         
         $changes->{'dup_id'} = [$old_dup || undef, $cur_dup || undef];
     }
+
+    Bugzilla::Hook::process('bug-end_of_update', { bug       => $self,
+                                                   timestamp => $delta_ts,
+                                                   changes   => $changes,
+                                                 });
 
     # If any change occurred, refresh the timestamp of the bug.
     if (scalar(keys %$changes) || $self->{added_comments}) {
@@ -1154,7 +1160,7 @@ sub _check_dup_id {
     # What if the reporter currently can't see the new bug? In the browser 
     # interface, we prompt the user. In other interfaces, we default to 
     # not adding the user, as the safest option.
-    elsif (Bugzilla->params->usage_mode == USAGE_MODE_BROWSER) {
+    elsif (Bugzilla->usage_mode == USAGE_MODE_BROWSER) {
         # If we've already confirmed whether the user should be added...
         my $cgi = Bugzilla->cgi;
         my $add_confirmed = $cgi->param('confirm_add_duplicate');
@@ -1314,8 +1320,9 @@ sub _check_qa_contact {
         $id = $qa_contact->id;
         # create() checks this another way, so we don't have to run this
         # check during create().
+        # If there is no QA contact, this check is not required.
         $invocant->_check_strict_isolation_for_user($qa_contact)
-            if ref $invocant;
+            if (ref $invocant && $id);
     }
 
     # "0" always means "undef", for QA Contact.
@@ -1331,6 +1338,22 @@ sub _check_rep_platform {
     $platform = trim($platform);
     check_field('rep_platform', $platform);
     return $platform;
+}
+
+sub _check_reporter {
+    my $invocant = shift;
+    my $reporter;
+    if (ref $invocant) {
+        # You cannot change the reporter of a bug.
+        $reporter = $invocant->reporter->id;
+    }
+    else {
+        # On bug creation, the reporter is the logged in user
+        # (meaning that he must be logged in first!).
+        $reporter = Bugzilla->user->id;
+        $reporter || ThrowCodeError('invalid_user');
+    }
+    return $reporter;
 }
 
 sub _check_resolution {
@@ -1398,7 +1421,8 @@ sub _check_strict_isolation {
         my @old_cc = map { $_->id } @{$original->cc_users};
         my @new_cc = map { $_->id } @{$invocant->cc_users};
         my ($removed, $added) = diff_arrays(\@old_cc, \@new_cc);
-        $ccs = $added;
+        $ccs = Bugzilla::User->new_from_list($added);
+
         $assignee = $invocant->assigned_to
             if $invocant->assigned_to->id != $original->assigned_to->id;
         if ($invocant->qa_contact
@@ -1407,7 +1431,7 @@ sub _check_strict_isolation {
         {
             $qa_contact = $invocant->qa_contact;
         }
-        $product = $invocant->product;
+        $product = $invocant->product_obj;
     }
 
     my @related_users = @$ccs;
