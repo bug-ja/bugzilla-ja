@@ -167,14 +167,14 @@ shimono	shimono	x	./email/sudo.txt.tmpl
 shimono	shimono	x	./email/votes-removed.txt.tmpl
 shimono	shimono	x	./email/whine.txt.tmpl
 -	o	shimono	./filterexceptions.pl
-shimono	x	x	./flag/list.html.tmpl
+shimono	shimono	x	./flag/list.html.tmpl
 -	o	shimono	./global/banner.html.tmpl
 shimono	shimono	x	./global/choose-classification.html.tmpl
 shimono	shimono	x	./global/choose-product.html.tmpl
 shimono	shimono	x	./global/code-error.html.tmpl
 shimono	shimono	x	./global/common-links.html.tmpl
 shimono	shimono	x	./global/confirm-user-match.html.tmpl
-shimono	x	x	./global/docslinks.html.tmpl
+shimono	shimono	x	./global/docslinks.html.tmpl
 shimono	x	x	./global/field-descs.none.tmpl
 -   o   shimono	./global/footer.html.tmpl
 -   o   shimono ./global/header.html.tmpl
