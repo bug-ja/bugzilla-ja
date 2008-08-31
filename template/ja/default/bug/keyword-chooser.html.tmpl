@@ -35,7 +35,7 @@
   <table>
     <tr>
       <td valign="top">
-        Available&nbsp;Keywords:<br>
+        有効なキーワード:<br>
         <select id="keyword-list" size="5" multiple>
         [% FOREACH kwd = valid_keywords %]
           [% UNLESS sel_keywords && lsearch(sel_keywords, kwd) != -1 %]
@@ -49,7 +49,7 @@
         <button onclick="document.getElementById('keyword-chooser').chooserElement.chooser.unchoose(); return false;"><-</button>
       </td>
       <td valign="top">
-        Bug&nbsp;Keywords:<br>
+        [% terms.Bug %] のキーワード:<br>
         <select id="bug-keyword-list" size="5" multiple>
         [% FOREACH kwd = valid_keywords %]
           [% IF sel_keywords && lsearch(sel_keywords, kwd) != -1 %]
@@ -59,9 +59,9 @@
         </select>
       </td>
       <td valign="middle">
-        <button type="button" onclick="document.getElementById('keyword-chooser').chooserElement.chooser.ok(); return false">OK</button>
+        <button type="button" onclick="document.getElementById('keyword-chooser').chooserElement.chooser.ok(); return false">設定</button>
         <br>
-        <button type="button" onclick="document.getElementById('keyword-chooser').chooserElement.chooser.cancel(); return false" style="margin-top:3px;">Cancel</button>
+        <button type="button" onclick="document.getElementById('keyword-chooser').chooserElement.chooser.cancel(); return false" style="margin-top:3px;">キャンセル</button>
       </td>
     </tr>
   </table>
