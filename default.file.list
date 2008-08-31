@@ -142,7 +142,7 @@ x	x	x	./bug/dependency-graph.html.tmpl
 x	x	x	./bug/dependency-tree.html.tmpl
 x	x	x	./bug/edit.html.tmpl
 x	x	x	./bug/field.html.tmpl
-x	x	x	./bug/keyword-chooser.html.tmpl
+shimono	shimono	x	./bug/keyword-chooser.html.tmpl
 x	x	x	./bug/knob.html.tmpl
 x	x	x	./bug/navigate.html.tmpl
 x	x	x	./bug/process/bugmail.html.tmpl
