@@ -141,7 +141,7 @@ shimono	shimono	x	./bug/create/user-message.html.tmpl
 x	x	x	./bug/dependency-graph.html.tmpl
 x	x	x	./bug/dependency-tree.html.tmpl
 x	x	x	./bug/edit.html.tmpl
-x	x	x	./bug/field.html.tmpl
+shimono	shimono	x	./bug/field.html.tmpl
 shimono	shimono	x	./bug/keyword-chooser.html.tmpl
 x	x	x	./bug/knob.html.tmpl
 x	x	x	./bug/navigate.html.tmpl
@@ -175,7 +175,7 @@ shimono	shimono	x	./global/code-error.html.tmpl
 shimono	shimono	x	./global/common-links.html.tmpl
 shimono	shimono	x	./global/confirm-user-match.html.tmpl
 shimono	shimono	x	./global/docslinks.html.tmpl
-shimono	x	x	./global/field-descs.none.tmpl
+shimono	shimono	x	./global/field-descs.none.tmpl
 -   o   shimono	./global/footer.html.tmpl
 -   o   shimono ./global/header.html.tmpl
 x	x	x	./global/help.html.tmpl
