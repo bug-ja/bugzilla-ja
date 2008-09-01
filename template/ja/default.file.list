@@ -140,7 +140,7 @@ shimono	shimono	x	./bug/create/make-template.html.tmpl
 shimono	shimono	x	./bug/create/user-message.html.tmpl
 x	x	x	./bug/dependency-graph.html.tmpl
 x	x	x	./bug/dependency-tree.html.tmpl
-shimono	x	x	./bug/edit.html.tmpl
+shimono	shimono	x	./bug/edit.html.tmpl
 shimono	shimono	x	./bug/field.html.tmpl
 shimono	shimono	x	./bug/keyword-chooser.html.tmpl
 x	x	x	./bug/knob.html.tmpl
