@@ -726,15 +726,15 @@
       </td>
       <td>
         <div id="bz_enable_role_visibility_help">
-          <b>Users in the roles selected below can always view this [% terms.bug %]:</b>
+          <b>下で選択された役割を持つユーザはいつでもこの [% terms.bug %] を閲覧できます:</b>
           <br>
           <small>
-            (The assignee
+            (担当者
             [% IF (Param('useqacontact')) %]
-               and QA contact
+               と QA コンタクト
             [% END %]
-            can always see [% terms.abug %], and this section does not take effect unless
-            the [% terms.bug %] is restricted to at least one group.)
+            は常に [% terms.abug %] を閲覧できますが、これは [% terms.bug %] がひとつ以上の
+            グループに制限されない限り有効ではありません。)
           </small>
         </div>
         <div>
@@ -747,7 +747,7 @@
                    name="reporter_accessible" id="reporter_accessible"
                    [% " checked" IF bug.reporter_accessible %]
                    [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
-            <label for="reporter_accessible">Reporter</label>
+            <label for="reporter_accessible">報告者</label>
           </div>
           <div>
             [% user_can_edit_accessible = bug.check_can_change_field("cclist_accessible", 0, 1) %]
@@ -758,7 +758,7 @@
                    name="cclist_accessible" id="cclist_accessible"
                    [% " checked" IF bug.cclist_accessible %]
                    [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
-            <label for="cclist_accessible">CC List</label>
+            <label for="cclist_accessible">CC リスト</label>
           </div>
         </div>
       </td>
@@ -774,7 +774,7 @@
 [% BLOCK section_dates %]
   <tr>
     <td class="field_label">
-      <b>Reported</b>:
+      <b>報告日</b>:
     </td>
     <td>
      [% bug.creation_ts FILTER time %] by [% INCLUDE user_identity user => bug.reporter %]
@@ -783,11 +783,11 @@
   
   <tr>
     <td class="field_label">
-      <b> Modified</b>:
+      <b>最終更新</b>:
     </td>
     <td>
       [% bug.delta_ts FILTER time FILTER replace(':\d\d$', '') FILTER replace(':\d\d ', ' ')%] 
-      (<a href="show_activity.cgi?id=[% bug.bug_id %]">[%# terms.Bug %]History</a>)
+      (<a href="show_activity.cgi?id=[% bug.bug_id %]">[%# terms.Bug %]履歴の表示</a>)
     </td>
   
   </tr>
@@ -800,7 +800,7 @@
   [% IF user.id %]
     <tr>
         <td class="field_label">
-          <label for="newcc" accesskey="a"><b>CC List</b>:</label>
+          <label for="newcc" accesskey="a"><b>CC リスト</b>:</label>
         </td>
       <td>
         [% IF user.id %]
@@ -816,30 +816,26 @@
                       || (!has_role
                           && user.settings.state_addselfcc.value == 'cc_unless_role') %]>
             <label for="addselfcc">
-              Myself ([% INCLUDE user_identity user=> user FILTER collapse %])
+              自分自身 ([% INCLUDE user_identity user=> user FILTER collapse %])
             </label>
             <br> 
           [% END %]
         [% END %]
-        [% bug.cc.size || 0  FILTER html %] 
-        [% IF bug.cc.size == 1 %]
-          user
-        [% ELSE %]
-          users
-        [% END %]
         [% IF user.id %]
           [% IF bug.cc.contains( user.email ) %]
-            including you ([% INCLUDE user_identity user=> user FILTER collapse %])
+            あなた ([% INCLUDE user_identity user=> user FILTER collapse %]) を含む
           [% END %]
         [% END %]
+        [% bug.cc.size || 0  FILTER html %] 
+        ユーザ
         <span id="cc_edit_area_showhide_container" class="bz_default_hidden">
-          (<a href="#" id="cc_edit_area_showhide">edit</a>)
+          (<a href="#" id="cc_edit_area_showhide">編集</a>)
         </span>
         <div id="cc_edit_area">
           <div>
             <div>
               <label for="cc">
-                <b>Add</b>
+                <b>追加</b>
               </label>
             </div>
             [% INCLUDE global/userselect.html.tmpl
@@ -859,7 +855,7 @@
           [% IF user.id %]
             <br>
             <input type="checkbox" id="removecc" name="removecc">
-            [%%]<label for="removecc">Remove selected CCs</label>
+            [%%]<label for="removecc">選択した CC を削除</label>
             <br>
           [% END %]
         [% END %]
@@ -892,7 +888,7 @@
   [% IF show_bug_flags %]
     <tr>
       <td class="field_label">
-        <label><b>Flags:</b></label>
+        <label><b>フラグ:</b></label>
       </td>
       <td></td>
     </tr>
@@ -997,25 +993,25 @@
   <table class="bz_time_tracking_table">
     <tr>
       <th>
-        <label for="estimated_time">Orig. Est.</label>
+        <label for="estimated_time">初期推定</label>
       </th>
       <th>
-        Current Est.
+        現状の推定
       </th>
       <th>
-        <label for="work_time">Hours Worked</label>
+        <label for="work_time">実働時間</label>
       </th>
       <th>
-        <label for="remaining_time">Hours Left</label>
+        <label for="remaining_time">残り時間</label>
       </th>
       <th>
-        %Complete
+        %完了
       </th>
       <th>
-        Gain
+        倍
       </th>
       <th>
-        <label for="deadline">Deadline</label>
+        <label for="deadline">締め切り</label>
       </th>
     </tr>
     <tr>
@@ -1057,8 +1053,8 @@
     <tr>
       <td colspan="7" class="bz_summarize_time">
         <a href="summarize_time.cgi?id=[% bug.bug_id %]&amp;do_depends=1">
-        Summarize time (including time for [% terms.bugs %]
-        blocking this [% terms.bug %])</a>
+        作業時間の要約 (この [% terms.bugs %] を妨害する
+        [% terms.bug %] を含む)</a>
       </td>
     </tr>
   </table> 
