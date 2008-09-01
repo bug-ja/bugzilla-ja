@@ -121,8 +121,8 @@ x	x	x	./attachment/delete_reason.txt.tmpl
 x	x	x	./attachment/diff-file.html.tmpl
 x	x	x	./attachment/diff-footer.html.tmpl
 x	x	x	./attachment/diff-header.html.tmpl
-x	x	x	./attachment/edit.html.tmpl
-x	x	x	./attachment/list.html.tmpl
+shimono	shimono	x	./attachment/edit.html.tmpl
+shimono	shimono	x	./attachment/list.html.tmpl
 x	x	x	./attachment/midair.html.tmpl
 x	x	x	./attachment/show-multiple.html.tmpl
 x	x	x	./attachment/updated.html.tmpl

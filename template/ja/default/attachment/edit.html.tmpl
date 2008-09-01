@@ -16,18 +16,18 @@
   # Rights Reserved.
   #
   # Contributor(s): Myk Melez <myk@mozilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
 
 [%# Define strings that will serve as the title and header of this page %]
 [% title = BLOCK %]
-  Attachment [% attachment.id %] Details for [% terms.Bug %] [%+ attachment.bug_id %]
+  [% terms.Bug %] [%+ attachment.bug_id %] の添付 [% attachment.id %] の詳細
 [% END %]
 [% header = BLOCK %]
-  Attachment [% attachment.id %] Details for
-  [%+ "$terms.Bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %]
+  [% "$terms.Bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %]
+  添付 [% attachment.id %] の詳細
 [% END %]
 [% subheader = BLOCK %][% bugsummary FILTER html %][% END %]
 
@@ -109,7 +109,7 @@
   function switchToMode(mode)
     {
       if (mode == current_mode) {
-        alert('switched to same mode!  This should not happen.');
+        alert('同じモードへの変更です ! 何も起こりません。');
         return;
       }
 
@@ -204,7 +204,7 @@
     <tr>
       <td width="25%">
         <small>
-        <b><label for="description">Description</label>:</b><br>
+        <b><label for="description">説明</label>:</b><br>
           [% INCLUDE global/textarea.html.tmpl
             id             = 'description'
             name           = 'description'
@@ -220,32 +220,32 @@
             <input type="hidden" name="contenttypeentry"
                    value="[% attachment.contenttype FILTER html %]">
         [% ELSE %]
-          <b><label for="filename">Filename</label>:</b><br>
+          <b><label for="filename">ファイル名</label>:</b><br>
             <input type="text" size="20" id="filename" name="filename"
                    value="[% attachment.filename FILTER html %]"><br>
-          <b>Size:</b>
+          <b>サイズ:</b>
           [% IF attachment.datasize %]
             [%+ attachment.datasize FILTER unitconvert %]
           [% ELSE %]
-            <em>deleted</em>
+            <em>削除済み</em>
           [% END %]<br>
 
-          <b><label for="contenttypeentry">MIME Type</label>:</b><br>
+          <b><label for="contenttypeentry">MIME 型</label>:</b><br>
             <input type="text" size="20"
                    id="contenttypeentry" name="contenttypeentry"
                    value="[% attachment.contenttype FILTER html %]"><br>
 
           <input type="checkbox" id="ispatch" name="ispatch" value="1"
                  [%+ 'checked="checked"' IF attachment.ispatch %]>
-          <label for="ispatch">patch</label>
+          <label for="ispatch">パッチ</label>
         [% END %]
           <input type="checkbox" id="isobsolete" name="isobsolete" value="1"
                  [%+ 'checked="checked"' IF attachment.isobsolete %]>
-          <label for="isobsolete">obsolete</label>
+          <label for="isobsolete">用済み</label>
           [% IF (Param("insidergroup") && user.in_group(Param("insidergroup"))) %]
             <input type="checkbox" id="isprivate" name="isprivate" value="1"
                    [% " checked" IF attachment.isprivate %]>
-            <label for="isprivate">private</label><br>
+            <label for="isprivate">プライベート</label><br>
           [% END %]
           <br>
         </small>
@@ -256,8 +256,8 @@
         [% END %]
 
         <div id="smallCommentFrame">
-          <b><small><label for="comment">Comment</label> (on the
-          [%+ terms.bug %]):</small></b><br>
+          <b><small><label for="comment">コメント</label>
+          ([% terms.bug %] の):</small></b><br>
             [% INCLUDE global/textarea.html.tmpl
               id      = 'comment'
               name    = 'comment'
@@ -268,20 +268,20 @@
         </div>
 
         <input type="submit" value="Submit" id="update"><br><br>
-        <strong>Actions:</strong>
-        <a href="attachment.cgi?id=[% attachment.id %]">View</a>
+        <strong>操作:</strong>
+        <a href="attachment.cgi?id=[% attachment.id %]">見る</a>
         [% IF attachment.ispatch && patchviewerinstalled %]
          | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">Diff</a>
         [% END %]
         [% IF Param("allow_attachment_deletion")
               && user.groups.admin
               && attachment.datasize > 0 %]
-          | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">Delete</a>
+          | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">削除</a>
         [% END %]
       </td>
 
       [% IF !attachment.datasize %]
-        <td width="75%"><b>The content of this attachment has been deleted.</b></td>
+        <td width="75%"><b>この添付の中身は削除済みです。</b></td>
       [% ELSIF attachment.isurl %]
         <td width="75%">
           <a href="[% attachment.data FILTER html %]">
@@ -305,8 +305,8 @@
             wrap    = 'soft'
           %]
           <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]" style="height: 400px; width: 100%;">
-            <b>You cannot view the attachment while viewing its details because your browser does not support IFRAMEs.
-            <a href="attachment.cgi?id=[% attachment.id %]">View the attachment on a separate page</a>.</b>
+            <b>あなたのブラウザが IFRAME をサポートしていないので、添付の詳細をここで見ることができません。
+            <a href="attachment.cgi?id=[% attachment.id %]">別のページで見てください</a>。</b>
           </iframe>
           <script type="text/javascript">
             <!--
@@ -314,13 +314,13 @@
 [% IF patchviewerinstalled %]
               document.write('<iframe id="viewDiffFrame" style="height: 400px; width: 100%; display: none;"><\/iframe>');
 [% END %]
-              document.write('<button type="button" id="editButton" onclick="editAsComment();">Edit Attachment As Comment<\/button>');
-              document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment();" style="display: none;">Undo Edit As Comment<\/button>');
-              document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment();" style="display: none;">Redo Edit As Comment<\/button>');
+              document.write('<button type="button" id="editButton" onclick="editAsComment();">添付をコメントに引用して編集<\/button>');
+              document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment();" style="display: none;">コメントとしての編集をやめる<\/button>');
+              document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment();" style="display: none;">コメントとしての編集を再開する<\/button>');
 [% IF patchviewerinstalled %]
-              document.write('<button type="button" id="viewDiffButton" onclick="viewDiff();">View Attachment As Diff<\/button>');
+              document.write('<button type="button" id="viewDiffButton" onclick="viewDiff();">Diff 形式で添付を見る<\/button>');
 [% END %]
-              document.write('<button type="button" id="viewRawButton" onclick="viewRaw();" style="display: none;">View Attachment As Raw<\/button>');
+              document.write('<button type="button" id="viewRawButton" onclick="viewRaw();" style="display: none;">Raw 形式で添付を見る<\/button>');
             }
             //-->
           </script>
@@ -328,12 +328,11 @@
       [% ELSE %]
         <td id="noview" width="50%">
           <p><b>
-            Attachment is not viewable in your browser because its MIME type 
-            ([% attachment.contenttype FILTER html %]) is not one that your browser is 
-            able to display.
+            この添付はあなたのブラウザでは見ることができません。
+            この MIME 型 ([% attachment.contenttype FILTER html %]) はブラウザでは表示できません。
           </b></p>
           <p><b>
-            <a href="attachment.cgi?id=[% attachment.id %]">Download the attachment</a>.
+            <a href="attachment.cgi?id=[% attachment.id %]">添付をダウンロード</a>
           </b></p>
         </td>
       [% END %]
@@ -342,7 +341,7 @@
 
   </table>
 
-  Attachments on this [% terms.Bug %]:
+  この [% terms.Bug %] への添付:
   [% FOREACH a = attachments %]
     [% IF a == attachment.id %]
       [%+ a %]

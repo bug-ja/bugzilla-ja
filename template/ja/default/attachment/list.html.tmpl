@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Myk Melez <myk@mozilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 <script type="text/javascript">
@@ -27,13 +27,13 @@
     var originalHeight = table.offsetHeight; // Store current height for scrolling
 
     var toggle;
-    if (link.innerHTML == "Show Obsolete") {
+    if (link.innerHTML == "用済みを表示") {
       toggle = ""; // This should be 'table-row', but IE 6 doesn't understand it.
-      link.innerHTML = "Hide Obsolete";
+      link.innerHTML = "用済みを隠す";
     }
     else {
       toggle = "none";
-      link.innerHTML = "Show Obsolete";
+      link.innerHTML = "用済みを表示";
     }
 
     for (var i = 0; i < rows.length; i++) {
@@ -53,7 +53,7 @@
 <table id="attachment_table" cellspacing="0" cellpadding="4">
   <tr>
     <th colspan="[% show_attachment_flags ? 3 : 2 %]" align="left">
-      <a name="a0" id="a0">Attachments</a>
+      <a name="a0" id="a0">添付</a>
     </th>
   </tr>
 
@@ -71,7 +71,7 @@
         <td valign="top">
           [% IF attachment.datasize %]
             <a name="a[% count %]" href="attachment.cgi?id=[% attachment.id %]"
-               title="View the content of the attachment">
+               title="添付の中身を見る">
           [% END %]
           <b>[% attachment.description FILTER html FILTER obsolete(attachment.isobsolete) %]</b>
           [% "</a>" IF attachment.datasize %]
@@ -80,23 +80,23 @@
             [% IF attachment.datasize %]
               ([% attachment.datasize FILTER unitconvert %],
               [% IF attachment.ispatch %]
-                patch)
+                パッチ)
               [% ELSIF attachment.isurl %]
-                url)
+                URL)
               [% ELSE %]
                 [%+ attachment.contenttype FILTER html %])
               [% END %]
             [% ELSE %]
-              (<em>deleted</em>)
+              (<em>削除済</em>)
             [% END %]
 
             <br>
             <a href="#attach_[% attachment.id %]"
-               title="Go to the comment associated with the attachment">
+               title="添付に関連したコメントを見る">
               [%- attachment.attached FILTER time %]</a>,
 
             <a href="mailto:[% attachment.attacher.email FILTER html %]"
-               title="Write an email to the creator of the attachment">
+               title="添付の作者にメールを送信する">
               [% attachment.attacher.name || attachment.attacher.login FILTER html %]
             </a>
           </span>
@@ -105,7 +105,7 @@
         [% IF show_attachment_flags %]
           <td class="bz_attach_flags" valign="top">
             [% IF attachment.flags.size == 0 %]
-              <i>no flags</i>
+              <i>フラグなし</i>
             [% ELSE %]
               [% FOREACH flag = attachment.flags %]
                 [% flag.setter.nick FILTER html %]:
@@ -119,7 +119,7 @@
         [% END %]
 
         <td valign="top">
-          <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">Details</a>
+          <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">詳細</a>
           [% IF attachment.ispatch && patchviewerinstalled %]
             | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">Diff</a>
           [% END %]
@@ -134,13 +134,13 @@
       [% IF attachments.size %]
         <span class="bz_attach_view_hide">
           [% IF obsolete_attachments %]
-            <a href="#a0" onClick="return toggle_display(this);">Hide Obsolete</a> ([% obsolete_attachments %]) |
+            <a href="#a0" onClick="return toggle_display(this);">用済みを隠す</a> ([% obsolete_attachments %]) |
           [% END %]
-          <a href="attachment.cgi?bugid=[% bugid %]&amp;action=viewall">View All</a>
+          <a href="attachment.cgi?bugid=[% bugid %]&amp;action=viewall">全て見る</a>
         </span>
       [% END %]
-      <a href="attachment.cgi?bugid=[% bugid %]&amp;action=enter">Add an attachment</a>
-      (proposed patch, testcase, etc.)
+      <a href="attachment.cgi?bugid=[% bugid %]&amp;action=enter">添付を追加</a>
+      (パッチの提案、テストケースなど)
     </td>
   </tr>
 </table>
