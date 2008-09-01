@@ -22,15 +22,15 @@
 [% IF bottom_navigator == 1 %]
   <ul class="related_actions">
     <li><a href="show_bug.cgi?format=multiple&amp;id=
-                [% bug.bug_id FILTER url_quote %]">Format For Printing</a></li>
+                [% bug.bug_id FILTER url_quote %]">印刷用整形</a></li>
     <li>&nbsp;-&nbsp;<a href="show_bug.cgi?ctype=xml&amp;id=
                         [% bug.bug_id  FILTER url_quote %]">XML</a></li>
     <li>&nbsp;-&nbsp;<a href="enter_bug.cgi?cloned_bug_id=
-                        [% bug.bug_id  FILTER url_quote %]">Clone This 
-                        [% terms.Bug %]</a></li>
+                        [% bug.bug_id  FILTER url_quote %]">この
+                        [% terms.Bug %] を複製</a></li>
     [%# Links to more things users can do with this bug. %]
     [% Hook.process("links") %]
-    <li>&nbsp;-&nbsp;<a href="#">Top of page </a></li>
+    <li>&nbsp;-&nbsp;<a href="#">ページトップ</a></li>
     </ul>
 [% END %]        
 
@@ -38,47 +38,47 @@
 <div class="navigation">
 [% IF bug_list && bug_list.size > 0 %]
   [% this_bug_idx = lsearch(bug_list, bug.bug_id) %]
-  <b>[% terms.Bug %] List:</b>
+  <b>[% terms.Bug %] リスト:</b>
   [% IF this_bug_idx != -1 %]
-    ([% this_bug_idx + 1 %] of [% bug_list.size %])
+    ([% bug_list.size %] のうちの [% this_bug_idx + 1 %])
   [% END %]
 
 [% IF this_bug_idx != -1 %]
-  <a href="show_bug.cgi?id=[% bug_list.first %]">First</a>
-  <a href="show_bug.cgi?id=[% bug_list.last %]">Last</a>
+  <a href="show_bug.cgi?id=[% bug_list.first %]">先頭</a>
+  <a href="show_bug.cgi?id=[% bug_list.last %]">最後</a>
 [% END %]
 
   [% IF bug.bug_id %]
     [% IF this_bug_idx != -1 %]
       [% IF this_bug_idx > 0 %]
         [% prev_bug = this_bug_idx - 1 %]
-        <a href="show_bug.cgi?id=[% bug_list.$prev_bug %]">Prev</a>
+        <a href="show_bug.cgi?id=[% bug_list.$prev_bug %]">前</a>
       [% ELSE %]
-        <i><font color="#777777">Prev</font></i>
+        <i><font color="#777777">前</font></i>
       [% END %]
 
       [% IF this_bug_idx + 1 < bug_list.size %]
         [% next_bug = this_bug_idx + 1 %]
-        <a href="show_bug.cgi?id=[% bug_list.$next_bug %]">Next</a>
+        <a href="show_bug.cgi?id=[% bug_list.$next_bug %]">次</a>
       [% ELSE %]
-        <i><font color="#777777">Next</font></i>
+        <i><font color="#777777">次</font></i>
       [% END %]
     [% ELSE %]
-      (This [% terms.bug %] is not in your last search results)
+      (この [% terms.bug %] は検索結果の最後です)
     [% END %]
   [% ELSE %]
     &nbsp;&nbsp;
   [% END %]
 
-  &nbsp;&nbsp;<a href="buglist.cgi?regetlastlist=1">Show last search results</a>
+  &nbsp;&nbsp;<a href="buglist.cgi?regetlastlist=1">最後の検索結果を表示</a>
 [% ELSE %]
   [%# Either !bug_list || bug_list.size <= 0 %]
   [%# With no list, don't show link to search results %]
-  <i><font color="#777777">First</font></i>
-  <i><font color="#777777">Last</font></i>
-  <i><font color="#777777">Prev</font></i>
-  <i><font color="#777777">Next</font></i>
+  <i><font color="#777777">先頭</font></i>
+  <i><font color="#777777">最後</font></i>
+  <i><font color="#777777">前</font></i>
+  <i><font color="#777777">次</font></i>
   &nbsp;&nbsp;
-  <i><font color="#777777">No search results available</font></i>
+  <i><font color="#777777">有効な検索結果がありません</font></i>
 [% END %]
 </div>
