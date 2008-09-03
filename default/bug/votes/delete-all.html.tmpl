@@ -25,26 +25,26 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
-           title = "Remove your votes?"
+           title = "全ての投票を削除しますか?"
  %]
 
 <p>
-  You are about to remove all of your [% terms.bug %] votes. Are you sure you wish to
-  remove your vote from every [% terms.bug %] you've voted on?
+  あなたは全ての [% terms.bug %] 投票を削除しようとしています。
+  本当に全ての投票した [% terms.bug %] の票を取り除きますか?
 </p>
 
 <form action="votes.cgi" method="post">
     <input type="hidden" name="action" value="vote">
   <p>
     <input type="radio" name="delete_all_votes" value="1">
-    Yes, delete all my votes
+    はい。削除します。
   </p>
   <p>
     <input type="radio" name="delete_all_votes" value="0" checked="checked">
-    No, go back and review my votes
+    いいえ。戻って自分の投票を確認します。
   </p>
   <p>
-    <input type="submit" id="vote" value="Submit">
+    <input type="submit" id="vote" value="実行">
   </p>
 </form>
 

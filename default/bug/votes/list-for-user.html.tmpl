@@ -43,7 +43,7 @@
 [% IF !header_done %]
   [% subheader = voting_user.login FILTER html %]
   [% IF canedit %]
-    [% title = "Change Votes" %]
+    [% title = "投票変更" %]
     [% IF bug_id %]
       [%# We .select and .focus the input so it works for textbox and 
           checkbox %]
@@ -52,7 +52,7 @@
                   ".focus()" %]
     [% END %]
   [% ELSE %]
-    [% title = "Show Votes" %]
+    [% title = "投票表示" %]
   [% END %]
   [% PROCESS global/header.html.tmpl
              style_urls = [ "skins/standard/voting.css" ] 
@@ -64,7 +64,7 @@
 [% IF votes_recorded %]
   <p>
     <font color="red">
-      The changes to your votes have been saved.
+      あなたの投票への変更は保存されました。
     </font>
   </p>
 [% ELSE %]
@@ -77,9 +77,9 @@
     <table cellspacing="4">
       <tr>
         <td></td>
-        <th>Votes</th>
+        <th>投票数</th>
         <th>[% terms.Bug %] #</th>
-        <th>Summary</th>
+        <th>要約</th>
       </tr>
 
       [% onevoteproduct = 0 %]
@@ -93,15 +93,14 @@
         <tr>
           <th>[% product.name FILTER html %]</th>
           <td colspan="2" ><a href="buglist.cgi?bug_id=
-              [%- product.bug_ids.join(",") FILTER url_quote %]">([% terms.bug %] list)</a>
+              [%- product.bug_ids.join(",") FILTER url_quote %]">([% terms.bug %] リスト)</a>
           </td>
           <td>
             [% IF product.maxperbug < product.maxvotes AND
                   product.maxperbug > 1 %]
               <font size="-1">
-                (Note: only [% product.maxperbug %] vote
-                [% "s" IF product.maxperbug != 1 %] allowed per [% terms.bug %] in
-                this product.)
+                (注: このプロダクトでは最大 [% product.maxperbug %] 票
+                がひとつの [% terms.bug %] に対して許可されています。)
               </font>
             [% END %]
           </td>
@@ -110,7 +109,7 @@
         [% FOREACH bug = product.bugs %]
           <tr [% IF bug.id == bug_id && canedit %] 
             class="bz_bug_being_voted_on" [% END %]>
-            <td>[% IF bug.id == bug_id && canedit %]Enter New Vote here &rarr;
+            <td>[% IF bug.id == bug_id && canedit %]票数を入力 &rarr;
               [%- END %]</td>
             <td align="right"><a name="vote_[% bug.id %]">
               [% IF canedit %]
@@ -130,16 +129,15 @@
             </td>
             <td>
               [% bug.summary FILTER html %]
-              (<a href="votes.cgi?action=show_bug&amp;bug_id=[% bug.id %]">Show Votes</a>)
+              (<a href="votes.cgi?action=show_bug&amp;bug_id=[% bug.id %]">投票を表示</a>)
             </td>
           </tr>
         [% END %]
 
         <tr>
           <td></td>
-          <td colspan="3">[% product.total %] vote
-            [% "s" IF product.total != 1 %] used out of [% product.maxvotes %]
-            allowed.
+          <td colspan="3">[% product.total %] 票を、最大有効票数 [% product.maxvotes %]
+            に対して利用済みです。
             <br>
             <br>
           </td>
@@ -148,38 +146,38 @@
     </table>
 
     [% IF canedit %]
-      <input type="submit" value="Change My Votes" id="change"> or 
-      <a href="buglist.cgi?bug_id=[% all_bug_ids.join(",") FILTER url_quote %]">view all
-        as [% terms.bug %] list</a>
+      <input type="submit" value="投票を変更する" id="change"> か
+      <a href="buglist.cgi?bug_id=[% all_bug_ids.join(",") FILTER url_quote %]">全てを
+        [% terms.bug %] リストとしてみる</a>
       <br>
       <br>
-      To change your votes,
+      投票の変更には、
       [% IF multivoteproduct %]
-        type in new numbers (using zero to mean no votes)
-        [% " or " IF onevoteproduct %]
+        新しい票数を入力する (0 は投票なしを意味します)
+        [% " か " IF onevoteproduct %]
       [% END %]
       [% IF onevoteproduct %]
-        change the checkbox
+        チェックボックスを変更する
       [% END %]
-      and then click <b>Change My Votes</b>.
+      を行い、<b>投票を変更する</b> をクリックしてください。
     [% ELSE %]
-       <a href="buglist.cgi?bug_id=[% all_bug_ids.join(",") FILTER url_quote %]">View all
-         as [% terms.bug %] list</a>
+       <a href="buglist.cgi?bug_id=[% all_bug_ids.join(",") FILTER url_quote %]">全てを
+         [% terms.bug %] リストとしてみる</a>
     [% END %]
   </form>
 [% ELSE %]
   <p>
     [% IF canedit %]
-    You are
+    あなたは
     [% ELSE %]
-    This user is
+    このユーザは
     [% END %]
-    currently not voting on any [% terms.bugs %].
+    どの [% terms.bugs %] に対しても投票していません。
   </p>
 [% END %]
 
 <p>
-  <a href="page.cgi?id=voting.html">Help with voting</a>.
+  <a href="page.cgi?id=voting.html">投票機能のヘルプ</a>.
 </p>
 
 [% PROCESS global/footer.html.tmpl %]

@@ -41,12 +41,12 @@
 
 <dl>
 [% PROCESS emails
-   description = "Email sent to"
+   description = "メール送信先"
    names = mail.sent
 %]
 
 [% PROCESS emails
-   description = "Excluding"
+   description = "送信除外"
    names = mail.excluded
 %]
 </dl>
@@ -64,10 +64,10 @@
         <code>[% name FILTER html %]</code>[% ", " UNLESS loop.last() %]
       [% END %]
     [% ELSE %]
-      no one
+      誰も居ません
     [% END %]
   [% ELSE %]
-    (list of e-mails not available)
+    (メールアドレスのリストは表示できません)
   [% END %]
   </dd>
 [% END %]

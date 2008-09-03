@@ -28,15 +28,15 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
-           title = "Show Votes"
+           title = "投票の表示"
            subheader = "$terms.Bug <a href=\"show_bug.cgi?id=$bug_id\">$bug_id</a>"
  %]
 
 [% total = 0 %]
 <table cellspacing="4">
   <tr>
-    <th>Who</th>
-    <th>Number of votes</th>
+    <th>投票者</th>
+    <th>票数</th>
   </tr>
 
   [% FOREACH voter = users %]
@@ -54,6 +54,6 @@
   [% END %]
 </table>
 
-<p>Total votes: [% total %]</p>
+<p>全投票数: [% total %]</p>
 
 [% PROCESS global/footer.html.tmpl %]
