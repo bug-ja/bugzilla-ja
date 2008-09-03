@@ -33,12 +33,12 @@
     [% ELSE %]
       [% terms.Bugs %]
     [% END %]
-    processed
+    処理完了
   [% END %]
 [% ELSIF title_tag == "mid_air" %]
-  [% title = "Mid-air collision!" %]
+  [% title = "衝突発生 !" %]
 [% ELSIF title_tag == "change_votes" %]
-  [% title = "Change Votes" %]
+  [% title = "投票変更" %]
 [% END %]
 
 [% PROCESS global/header.html.tmpl

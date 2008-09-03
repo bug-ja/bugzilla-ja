@@ -41,13 +41,13 @@
   [% PROCESS bug/process/header.html.tmpl %]
 [% END %]
 
-<h1>Mid-air collision detected!</h1>
+<h1>衝突が検出されました !</h1>
 
 <p>
-  Someone else has made changes to
+  ほかの誰かが
   [%+ "$terms.bug $bug.id" FILTER bug_link(bug.id) FILTER none %]
-  at the same time you were trying to.
-  The changes made were:
+  にあなたと同時に変更を加えました。
+  変更内容は以下のとおりです。
 </p>
 
 <p>
@@ -56,7 +56,7 @@
 
 [% IF comments.size > start_at %]
 <p>
-  Added the comment(s):
+  追加コメント
   <blockquote>
     [% PROCESS "bug/comments.html.tmpl" %]
   </blockquote>
@@ -65,7 +65,7 @@
 
 [% IF cgi.param("comment") %]
 <p>
-  Your comment was:<br>
+  あなたのコメント:<br>
   <blockquote><pre class="bz_comment_text">
     [% cgi.param("comment") FILTER wrap_comment FILTER html %]
   </pre></blockquote>
@@ -73,7 +73,7 @@
 [% END %]
 
 <p>
-You have the following choices:
+次のどれかを選択できます:
 </p>
 
 <ul>
@@ -83,14 +83,14 @@ You have the following choices:
              value="[% bug.delta_ts FILTER html %]">
       [% PROCESS "global/hidden-fields.html.tmpl" 
           exclude="^Bugzilla_login|Bugzilla_password|delta_ts$" %]
-      <input type="submit" id="process" value="Submit my changes anyway">
-        This will cause all of the above changes to be overwritten
-        [% ", except for the added comment(s)" IF comments.size > start_at %].
+      <input type="submit" id="process" value="無視して自分の変更を登録する">
+        これを実行すると上の変更の全てが上書きされます。
+        [% "ただし、追加されたコメントを除きます。" IF comments.size > start_at %].
     </form>
   </li>
   <li>
-    Throw away my changes, and
-    [%+ "revisit $terms.bug $bug.id" FILTER bug_link(bug.id) FILTER none %]
+    自分の変更をやめて、
+    [%+ "$terms.bug $bug.id に戻る" FILTER bug_link(bug.id) FILTER none %]
   </li>
 </ul>
 

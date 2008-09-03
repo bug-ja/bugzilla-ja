@@ -28,26 +28,26 @@
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
-[% PROCESS global/header.html.tmpl title="Duplicate Warning" %]
+[% PROCESS global/header.html.tmpl title="重複処理の警告" %]
 [% orig_bug = "$terms.bug $original_bug_id"
      FILTER bug_link(original_bug_id) %]
 
 <p>
-  When marking [% terms.abug %] as a duplicate, the reporter of the duplicate
-  is normally added to the CC list of the original. The permissions
-  on [% orig_bug FILTER none %] (the original) are currently set
-  such that the reporter would not normally be able to see it.
+  [% terms.abug %] を重複にする際、
+  重複したバグの報告者は通常重複先の CC リストに追加されます。
+  (重複先の) [% orig_bug FILTER none %] で権限が設定されていますので、
+  元の報告者は通常は見ることができなくなります。
 </p>
 
 <p>
-  <b>Adding the reporter to the CC list of [% orig_bug FILTER none %]
+  <b>報告者を [% orig_bug FILTER none %] の CC リストに
   [% IF cclist_accessible %]
-    will immediately
+    今すぐ
   [% ELSE %]
-    might, in the future,
+    おそらくあとで
   [% END %]
-  allow him/her access to view this [% terms.bug %].</b>
-  Do you wish to do this?
+  追加し、この [% terms.bug %] を見ることができるようにします。</b>
+  問題ありませんか？
 </p>
 
 <form method="post" action="process_bug.cgi">
@@ -56,18 +56,18 @@
 
 <p>
   <input type="radio" name="confirm_add_duplicate" value="1">
-    Yes, add the reporter to CC list on [% orig_bug FILTER none %]
+    はい。[% orig_bug FILTER none %] の CC リストに報告者を追加します。
 </p>
 <p>
   <input type="radio" name="confirm_add_duplicate" value="0" checked="checked">
-    No, do not add the reporter to CC list on [% orig_bug FILTER none %]
+    いいえ。[% orig_bug FILTER none %] の CC リストに報告者は追加しません。
 </p>
 <p>
-  [% "Throw away my changes, and revisit $terms.bug $duplicate_bug_id"
+  [% "変更をやめて、$terms.bug $duplicate_bug_id に戻る"
      FILTER bug_link(duplicate_bug_id) FILTER none %]
 </p>
 <p>
-  <input type="submit" id="process" value="Submit">
+  <input type="submit" id="process" value="実行">
 </p>
 
 </form>
