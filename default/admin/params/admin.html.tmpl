@@ -16,30 +16,31 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
-   title = "Administrative Policies"
-   desc = "Set up account policies"
+   title = "管理ポリシー"
+   desc = "アカウントポリシーの設定"
 %]
 
 [% param_descs = {
-  allowbugdeletion => "The pages to edit products and components can delete all " _
-                      "associated $terms.bugs when you delete a product (or component). " _
-                      "Since that is a pretty scary idea, you have to turn on " _
-                      "this option before any such deletions will ever happen.",
+  allowbugdeletion => "プロダクトとコンポーネントの編集画面から、すべての関連する" _
+                      "$terms.bugs をプロダクト (やコンポーネント) の削除時に削除できるように" _
+                      "する。これはかなり恐ろしい操作ですが、そういった削除操作を行う" _
+                      "ためにはこのオプションを有効にする必要があります。",
 
-  allowemailchange => "Users can change their own email address through the preferences. " _
-                      "Note that the change is validated by emailing both addresses, so " _
-                      "switching this option on will not let users use an invalid address.",
+  allowemailchange => "ユーザがメールアドレスを設定画面から変更可能になります。" _
+                      "変更前後の両方のメールアドレスでの確認作業が変更には必要です。" _
+                      "そのため、このオプションを有効にしてもユーザが無効なメールアドレスを" _
+                      "利用することはできません。"
 
-  allowuserdeletion => "The user editing pages are capable of letting you delete user accounts. " _
-                       "$terms.Bugzilla will issue a warning in case you'd run into inconsistencies " _
-                       "when you're about to do so, but such deletions remain kinda scary. " _
-                       "So, you have to turn on this option before any such deletions " _
-                       "will ever happen.",
+  allowuserdeletion => "ユーザ編集画面ではユーザアカウントの削除も可能です。" _
+                       "$terms.Bugzilla は、ユーザを削除した際に不整合が発生する可能性が" _
+                       "あることを警告しますが、そういった削除操作が必要になることがあるかもしれません。" _
+                       "このオプションを、そういった削除作業が必要になる前に有効にしてください。",
 
-  supportwatchers => "Support one user watching (ie getting copies of all related " _
-                     "email about) another's ${terms.bugs}. Useful for people going on " _
-                     "vacation, and QA folks watching particular developers' ${terms.bugs}." }
+  supportwatchers => "ほかの ${terms.bugs} ユーザの監視 (たとえば、関連するすべてのメールの" _
+                     "コピーを受け取るなど)の機能を有効にします。休暇へ出かけるユーザなどや、" _
+                     "QA 関係者が特定の開発者の ${terms.bugs} を監視するのに有用です。"
+}
 %]

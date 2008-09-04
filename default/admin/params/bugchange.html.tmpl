@@ -16,42 +16,44 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
-   title = "$terms.Bug Change Policies"
-   desc = "Set up $terms.bug change policies"
+   title = "$terms.Bug 変更ポリシー"
+   desc = "$terms.bug 変更ポリシーの設定"
 %]
 
 [% param_descs = {
-  duplicate_or_move_bug_status => "When $terms.abug is marked as a duplicate of another one " _
-                                  "or is moved to another installation, use this $terms.bug status."
+  duplicate_or_move_bug_status => "$terms.abug を重複とするや、他のサイトへ移動するときに、" _
+                                  "ここで設定した $terms.bug ステータスを適用します。",
 
-  letsubmitterchoosepriority => "If this is on, then people submitting $terms.bugs can " _
-                                "choose an initial priority for that ${terms.bug}. " _
-                                "If off, then all $terms.bugs initially have the default " _
-                                "priority selected below.",
+  letsubmitterchoosepriority => "有効なら、$terms.bugs の登録者が ${terms.bug} " _
+                                "の初期重要度を選択できます。" _
+                                "無効なら、すべての $terms.bugs には下で設定する、" _
+                                "既定の重要度が設定されます。",
 
-  letsubmitterchoosemilestone => "If this is on, then people submitting $terms.bugs can " _
-                                 "choose the Target Milestone for that ${terms.bug}. " _
-                                 "If off, then all $terms.bugs initially have the default " _
-                                 "milestone for the product being filed in.",
+  letsubmitterchoosemilestone => "有効なら、$terms.bugs の登録者が ${terms.bug} " _
+                                 "のターゲットマイルストーンを選択できます。" _
+                                 "無効なら、すべての $terms.bugs にはプロダクトの既定の" _
+                                 "マイルストーンが設定されます。",
 
-  musthavemilestoneonaccept => "If you are using Target Milestone, do you want to require that " _
-                               "the milestone be set in order for a user to ACCEPT a ${terms.bug}?",
+  musthavemilestoneonaccept => "ターゲットマイルストーンを利用している場合、" _
+                               "${terms.bug} を受け入れる時にマイルストーンを設定することを要求しますか ?",
 
-  commentonclearresolution => "If this option is on, the user needs to enter a short comment if " _
-                              "the ${terms.bug}'s resolution is cleared.",
+  commentonclearresolution => "有効なら、${terms.bug} の解決方法を消去するときに" _
+                              "短いコメントを入力しなければならなくなります。",
 
-  commentonchange_resolution => "If this option is on, the user needs to enter a short " _
-                                "comment if the resolution of the $terms.bug changes.",
+  commentonchange_resolution => "有効なら、$terms.bug の解決方法を変更するときに、" _
+                                "短いコメントを入力しなければならなくなります。",
 
-  commentonreassignbycomponent => "If this option is on, the user needs to enter a short comment if " _
-                                  "the $terms.bug is reassigned by component.",
+  commentonreassignbycomponent => "有効なら、$terms.bug のコンポーネント変更により再割り当てする際に" _
+                                  "短いコメントを入力しなければならなくなります。",
 
-  commentonduplicate => "If this option is on, the user needs to enter a short comment " _
-                        "if the $terms.bug is marked as duplicate.",
+  commentonduplicate => "有効なら、$terms.bug を重複とするときに" _
+                        "短いコメントを入力しなければならなくなります。",
 
-  noresolveonopenblockers => "Don\'t allow $terms.bugs to be resolved as fixed " _
-                             "if they have unresolved dependencies." }
+  noresolveonopenblockers => "未解決の依存関係がある時に、$terms.bugs を解決済みと" _
+                             "することができなくなります。",
+}
+
 %]

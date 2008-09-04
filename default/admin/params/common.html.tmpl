@@ -15,7 +15,7 @@
   # Copyright (C) 1998 Netscape Communications Corporation. All
   # Rights Reserved.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #                 Marc Schumann <wurblzap@gmail.com>
   #%]
 [%# INTERFACE:
@@ -41,10 +41,10 @@
       [% ELSIF param.type == "b" %]
         <input type="radio" name="[% param.name FILTER html %]" id="[% param.name FILTER html %]-on"
                value=1 [% "checked=\"checked\"" IF Param(param.name) %]>
-        <label for="[% param.name FILTER html %]-on">On</label>
+        <label for="[% param.name FILTER html %]-on">有効 (On)</label>
         <input type="radio" name="[% param.name FILTER html %]" id="[% param.name FILTER html %]-off"
                value=0 [% "checked=\"checked\"" IF !Param(param.name) %]>
-        <label for="[% param.name FILTER html %]-off">Off</label>
+        <label for="[% param.name FILTER html %]-off">無効 (Off)</label>
       [% ELSIF param.type == "m" %]
         [% boxSize = 5 %]
         [% boxSize = param.choices.size IF param.choices.size < 5 %]
@@ -87,7 +87,7 @@
                      [% END %]
             '        <option class="sortlist_separator"' +
             '                disabled="disabled"' +
-            '                value="[% sortlist_separator %]">active&uarr;&nbsp;&darr;inactive<\/option>' +
+            '                value="[% sortlist_separator %]">有効&uarr;&nbsp;&darr;無効<\/option>' +
                      [% FOREACH item = param.choices %]
                        [% IF lsearch(plist, item) == -1 %]
             '            <option value="[% item FILTER html %]">[% item FILTER html %]<\/option>' +
@@ -120,14 +120,14 @@
         </select>
       [% ELSE %]
         <font color="red">
-          <blink>Unknown param type [% param.type FILTER html %]!!!</blink>
+          <blink>未知のパラメータ型 [% param.type FILTER html %] です!!!</blink>
         </font>
       [% END %]  
       </p>
       <p>
         <input type="checkbox" name="reset-[% param.name FILTER html %]"
                id="reset-[% param.name FILTER html %]">
-        <label for="reset-[% param.name FILTER html %]">Reset</label>
+        <label for="reset-[% param.name FILTER html %]">リセット</label>
       </p>
       <hr>
     </dd>

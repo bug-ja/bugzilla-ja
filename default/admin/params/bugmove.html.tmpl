@@ -16,34 +16,35 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
-   title = "$terms.Bug Moving"
-   desc = "Set up parameters to move $terms.bugs to/from another installation"
+   title = "$terms.Bug 移動"
+   desc = "他のサイトとの間で $terms.bugs を移動させるためのパラメータの設定"
 %]
 
 [% param_descs = {
-  "move-enabled" => "If this is on, $terms.Bugzilla will allow certain people " _
-                    "to move $terms.bugs to the defined database.",
+  "move-enabled" => "有効なら、$terms.Bugzilla は特定のユーザに $terms.bugs を指定" _
+                    "されたデータベースへ移動させることを許可します。",
 
-  "move-button-text" => "The text written on the Move button. Explain where the $terms.bug is " _
-                        "being moved to.",
+  "move-button-text" => "移動ボタンに表示されるテキストです。$terms.bug の移動先" _
+                        "の情報を設定してください。",
 
-  "move-to-url" => "The URL of the database we allow some of our $terms.bugs to be moved to.",
+  "move-to-url" => "$terms.bugs を移動可能な先として許される URI の指定",
 
-  "move-to-address" => "To move ${terms.bugs}, an email is sent to the target database. This is " _
-                       "the email address that database uses to listen for incoming ${terms.bugs}.",
+  "move-to-address" => "${terms.bugs} を移動する時、ターゲットへメールが送信されます。" _
+                       "ここに移動先が ${terms.bugs} を受け取るメールアドレスを指定してください。",
 
-  "moved-from-address" => "To move ${terms.bugs}, an email is sent to the target database. This is " _
-                          "the email address from which this mail, and error messages are sent.",
+  "moved-from-address" => "${terms.bugs} を移動させるとき、ターゲットへメールが送信されます。"
+                          "メールの送信元、そしてエラーメールが戻るアドレスを指定してください。",
 
-  movers => "A list of people with permission to move $terms.bugs and reopen moved " _
-            "${terms.bugs} (in case the move operation fails).",
+  movers => "$term.bugs を移動させる権限、もしくは移動させた ${terms.bugs} " _
+            "を再び開く権限 (移動が失敗した時のため) を持つユーザのリストです。",
 
-  "moved-default-product" => "$terms.Bugs moved from other databases to here are assigned " _
-                             "to this product.",
+  "moved-default-product" => "他のサイトから移動してきた $terms.bugs の割当先の" _
+                             "既定のプロダクトの名前です。",
 
-  "moved-default-component" => "$terms.Bugs moved from other databases to here are assigned " _
-                               "to this component." }
+  "moved-default-component" => "移動してきた $terms.bugs の既定のコンポーネントです。",
+}
+
 %]

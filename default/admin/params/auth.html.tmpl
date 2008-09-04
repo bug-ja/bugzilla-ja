@@ -16,119 +16,111 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #                 Marc Schumann <wurblzap@gmail.com>
   #%]
 [%
-   title = "User Authentication"
-   desc = "Set up your authentication policies"
+   title = "ユーザ認証"
+   desc = "ユーザ認証に関するポリシーの設定"
 %]
 
 [% param_descs = {
-  auth_env_id => "Environment variable used by external authentication system " _
-                 "to store a unique identifier for each user. Leave it blank " _
-                 "if there isn't one or if this method of authentication " _
-                 "is not being used.",
+  auth_env_id => "外部認証システムが利用する、ユーザのユニークな ID を格納する" _
+                 "環境変数です。存在しないか、この方式の認証を利用しない場合は、" _
+                 "この設定を空白にしてください。",
 
-  auth_env_email => "Environment variable used by external authentication system " _
-                    "to store each user's email address. This is a required " _
-                    "field for environmental authentication. Leave it blank " _
-                    "if you are not going to use this feature.",
+  auth_env_email => "外部認証システムが利用する、ユーザのメールアドレスを格納する" _
+                    "環境変数です。環境変数による認証を利用する場合は、このパラメータ" _
+                    "は必須です。この方式の認証を利用しない場合は、空白にしてください。",
 
-  auth_env_realname => "Environment variable used by external authentication system " _
-                       "to store the user's real name. Leave it blank if there " _
-                       "isn't one or if this method of authentication is not being " _
-                       "used.",
+  auth_env_realname => "外部認証システムが利用する、ユーザの実名を格納する環境変数" _
+                       "です。存在しないか、この方式の認証を利用しない場合は、" _
+                       "この設定を空白にしてください。",
 
-  user_info_class => "Mechanism(s) to be used for gathering a user's login information.
-                      More than one may be selected. If the first one returns nothing,
-                      the second is tried, and so on.<br>
-                      The types are:
+  user_info_class => "ユーザのログイン情報を得るための方法の設定です。ひとつ以上
+                      の項目を選択可能です。最初のものがなにも返さなければ二つ目を試す、
+                      を繰り返します。<br>
+                      項目は以下のようになります。
                       <dl>
                         <dt>CGI</dt>
                         <dd>
-                          Asks for username and password via CGI form interface.
+                          CGI フォームインターフェース経由でユーザ名とパスワードを聞く
                         </dd>
                         <dt>Env</dt>
                         <dd>
-                          Info for a pre-authenticated user is passed in system
-                          environment variables.
+                          事前認証情報を環境変数経由で渡される場合
                         </dd>
                       </dl>",
 
-  user_verify_class => "Mechanism(s) to be used for verifying (authenticating) information
-                        gathered by user_info_class.
-                        More than one may be selected. If the first one cannot find the
-                        user, the second is tried, and so on.<br>
-                        The types are:
+  user_verify_class => "user_info_class で得られた認証情報を確認する方法です。
+                        ひとつ以上の項目を選択可能です。最初のものがなにも返さなければ
+                        二つ目を試す、を繰り返します。<br>
+                        項目は以下のようになります。
                         <dl>
                           <dt>DB</dt>
                           <dd>
-                            ${terms.Bugzilla}'s built-in authentication. This is the most common
-                            choice.
+                            ${terms.Bugzilla} の組み込み認証方式。最も一般的な選択です。
                           </dd>
                           <dt>RADIUS</dt>
                           <dd>
-                            RADIUS authentication using a RADIUS server.
-                            This method is experimental; please see the
-                            $terms.Bugzilla documentation for more information.
-                            Using this method requires
-                            <a href=\"?section=radius\">additional
-                            parameters</a> to be set.
+                            RADIUS サーバを利用した RADIUS 認証方式です。
+                            この方法はまだ実験的ですので、詳細に関しては、
+                            $terms.Bugzilla のドキュメントを参照してください。
+                            この方式を利用するには、
+                            <a href=\"?section=radius\">追加パラメータ</a>
+                            を設定する必要があります。
                           </dd>
                           <dt>LDAP</dt>
                           <dd>
-                            LDAP authentication using an LDAP server.
-                            Please see the $terms.Bugzilla documentation
-                            for more information. Using this method requires
-                            <a href=\"?section=ldap\">additional
-                            parameters</a> to be set.
+                            LDAP サーバを利用した LDAP 認証方式です。
+                            詳細に関しては $terms.Bugzilla のドキュメントを参照
+                            してください。この方式を利用するには、
+                            <a href=\"?section=ldap\">追加パラメータ</a>
+                            の設定が必要です。
                           </dd>
                         </dl>",
 
-  rememberlogin => "Controls management of session cookies
+  rememberlogin => "セッションクッキーの管理方法
                     <ul>
                       <li>
-                        on - Session cookies never expire (the user has to login only
-                        once per browser).
+                        on - セッションクッキーに期限はありません。
+                        (ブラウザごとに1度ログインするだけでよくなります)
                       </li>
                       <li>
-                        off - Session cookies last until the users session ends (the user
-                        will have to login in each new browser session).
+                        off - セッションクッキーはユーザがセッションを終了するまでです。
+                        (ブラウザを立ち上げなおすとログインが必要です)
                       </li>
                       <li>
-                        defaulton/defaultoff - Default behavior as described
-                        above, but user can choose whether $terms.Bugzilla will remember his
-                        login or not.
+                        defaulton/defaultoff - 既定の動作は上の通りですが、
+                        $terms.Bugzilla はユーザの設定値も利用します。
                       </li>
                     </ul>",
 
-  loginnetmask => "The number of bits for the netmask used if a user chooses to " _
-                  "allow a login to be valid for more than a single IP. Setting " _
-                  "this to 32 disables this feature.<br> " _
-                  "Note that enabling this may decrease the security of your system.",
+  loginnetmask => "単一 IP アドレス以上に対してログインを有効にするオプションを選択した" _
+                  "ユーザがログイン可能なネットマスクのビット数です。32 に設定すると、" _
+                  "無効になります。<br>" _
+                  "これを有効にするとシステムのセキュリティーが低下します。",
 
-  requirelogin => "If this option is set, all access to the system beyond the " _
-                  "front page will require a login. No anonymous users will " _
-                  "be permitted.",
+  requirelogin => "有効なら、トップページ以外のシステムへのすべてのアクセスでログインが" _
+                  "必要となります。匿名ユーザはなにもできません。",
 
-  emailregexp => "This defines the regexp to use for legal email addresses. The " _
-                 "default tries to match fully qualified email addresses. Another " _
-                 "popular value to put here is <tt>^[^@]+$</tt>, which means " _
-                 "'local usernames, no @ allowed.'",
+  emailregexp => "有効なメールアドレスを定義する正規表現です。" _
+                 "デフォルトは正規のメールアドレスにマッチするようになっています。" _
+                 "他のよくある設定は <tt>^[^@]+$</tt> で、@ が入らないローカルの" _
+                 "ユーザ名となります。",
 
-  emailregexpdesc => "This describes in English words what kinds of legal addresses " _
-                     "are allowed by the <tt>emailregexp</tt> param.",
+  emailregexpdesc => "<tt>emailregexp</tt> パラメータで許可されている有効なメールアドレス" _
+                     "がなにであるかを説明する (英語の) 説明です。",
 
-  emailsuffix => "This is a string to append to any email addresses when actually " _
-                 "sending mail to that address. It is useful if you have changed " _
-                 "the <tt>emailregexp</tt> param to only allow local usernames, " _
-                 "but you want the mail to be delivered to username@my.local.hostname.",
+  emailsuffix => "メールが送信されるときにメールアドレスに追加される文字列です。" _
+                 "<tt>emailregexp</tt> パラメータをローカルユーザ名に限定した場合に、" _
+                 "username@my.local.hostname へメールを送信するために有用です。",
 
-  createemailregexp => "This defines the regexp to use for email addresses that are " _
-                       "permitted to self-register using a 'New Account' feature. The " _
-                       "default (.*) permits any account matching the emailregexp " _
-                       "to be created. If this parameter is left blank, no users " _
-                       "will be permitted to create their own accounts and all accounts " _
-                       "will have to be created by an administrator." }
+  createemailregexp => "新規ユーザ登録機能で自分で登録するのが許されるメールアドレス" _
+                       "を定義する正規表現です。デフォルト (.*) は、" _
+                       "emailregexp に適合するアカウントなら作成可能となります。" _
+                       "空白にした場合、ユーザ自身での新規登録が一切できなくなり、" _
+                       "管理者による作成のみが可能になります。"
+}
+
 %]
