@@ -16,38 +16,34 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
-   title = "Attachments"
-   desc = "Set up attachment options"
+   title = "添付"
+   desc = "添付のオプション設定"
 %]
 
 [% param_descs = {
-  allow_attachment_deletion => "If this option is on, administrators will be able to delete " _
-                               "the content of attachments.",
+  allow_attachment_deletion => "有効なら、管理者が添付ファイルを削除できます。",
 
-  allow_attach_url => "If this option is on, it will be possible to " _
-                      "specify a URL when creating an attachment and " _
-                      "treat the URL itself as if it were an attachment.",
+  allow_attach_url => "有効なら、添付の作成時に URL を指定して作成し、URL そのものを添付" _
+                      "として取り扱うことが可能になります。",
 
-  maxpatchsize => "The maximum size (in kilobytes) of patches. $terms.Bugzilla will not " _
-                  "accept patches greater than this number of kilobytes in size. " _
-                  "To accept patches of any size (subject to the limitations of " _
-                  "your server software), set this value to zero.",
+  maxpatchsize => "パッチの最大サイズ (kB) です。$terms.Bugzilla はこのサイズ以上のパッチを" _
+                  "受けつけなくなります。どのようなサイズのパッチでも受け付けるようにする" _
+                  "(サーバソフトウェアの制限によりますが)場合は、0 にしてください。",
 
-  maxattachmentsize => "The maximum size (in kilobytes) of non-patch attachments. " _
-                       "$terms.Bugzilla will not accept attachments greater than this number " _
-                       "of kilobytes in size. To accept attachments of any size " _
-                       "(subject to the limitations of your server software), set this " _
-                       "value to zero.",
+  maxattachmentsize => "パッチでない添付ファイルの最大サイズ (kB) です。$terms.Bugzilla は" _
+                       "このサイズ以上のパッチを受け付けなくなります。どのようなサイズの" _
+                       "パッチでも受け付けるようにする (サーバソフトウェアの制限によりますが) " _
+                       "場合は、0 にしてください。",
 
-  maxlocalattachment => "The maximum size (in megabytes) of attachments identified by " _
-                        "the user as 'Big Files' to be stored locally on the webserver. " _
-                        "If set to zero, attachments will never be kept on the local " _
-                        "filesystem.",
+  maxlocalattachment => "ユーザが '巨大ファイル' と指定し、サーバのローカルに保存される" _
+                        "添付ファイルの最大サイズ (MB) です。" _
+                        "0 にすると、添付ファイルは一切ローカルに保存されません。",
 
-  convert_uncompressed_images => "If this option is on, attachments with content type image/bmp " _
-                                 "will be converted to image/png and compressed before uploading to " _
-                                 "the database to conserve disk space." }
+  convert_uncompressed_images => "有効にすると image/bmp の添付ファイルを、データベースに" _
+                                 "保存する前に image/png に変換して、ディスクスペースを節約します。",
+
+}
 %]

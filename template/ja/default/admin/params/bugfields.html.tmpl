@@ -16,48 +16,45 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
-   title = "$terms.Bug Fields"
-   desc = "Choose fields you want to display"
+   title = "$terms.Bug フィールド"
+   desc = "表示したいフィールドの選択"
 %]
 
 [% param_descs = {
-  useclassification => "If this is on, $terms.Bugzilla will associate each product with a " _
-                       "specific classification. But you must have 'editclassification' " _
-                       "permissions enabled in order to edit classifications.",
+  useclassification => "有効なら、$terms.Bugzilla はプロダクトを特定の classification " _
+                       "と紐付けます。'editclassification' 権限がなければ、" _
+                       "classification を編集することはできません。",
 
-  showallproducts => "If this is on and useclassification is set, $terms.Bugzilla will add a " _
-                     "'All' link in the 'New $terms.Bug' page to list all available products.",
+  showallproducts => "有効で、useclassification が有効なら、$terms.Bugzilla は" _
+                     "全プロダクトを表示する 'All' リンクを '新規 $terms.Bug 登録' ページに追加します。",
 
-  usetargetmilestone => "Do you wish to use the Target Milestone field?",
+  usetargetmilestone => "ターゲットマイルストーンを利用しますか ?",
 
-  useqacontact => "Do you wish to use the QA Contact field?",
+  useqacontact => "QA コンタクトフィールドを利用しますか ?",
 
-  usestatuswhiteboard => "Do you wish to use the Status Whiteboard field?",
+  usestatuswhiteboard => "ステータスホワイトボードを利用しますか ?",
 
-  usevotes => "Do you wish to allow users to vote for ${terms.bugs}? Note that in order " _
-              "for this to be effective, you will have to change the maximum " _
-              "votes allowed in a product to be non-zero in " _
-              "<a href=\"editproducts.cgi\">the product edit page</a>.",
+  usevotes => "ユーザが ${terms.bugs} に投票できるようにしますか ?" _
+              "これが有効に働くには、<a href=\"editproducts.cgi\">プロダクトの設定で</a>" _
+              "プロダクトで許可される最大投票数を 0 でない値に変更する必要があります。",
 
-  usebugaliases => "Do you wish to use $terms.bug aliases, which allow you to assign " _
-                   "$terms.bugs an easy-to-remember name by which you can refer to them?",
+  usebugaliases => "$terms.bug エイリアスを利用しますか。参照可能な覚えやすい名前を" _
+                   "$terms.bugs につけることができるようになります。",
 
-  defaultpriority => "This is the priority that newly entered $terms.bugs are set to.",
+  defaultpriority => "新規 $terms.bugs における既定の重要度",
 
-  defaultseverity => "This is the severity that newly entered $terms.bugs are set to.",
+  defaultseverity => "新規 $terms.bugs における既定の深刻度",
 
-  defaultplatform => "This is the platform that is preselected on the $terms.bug " _
-                     "entry form.<br> " _
-                     "You can leave this empty: " _
-                     "$terms.Bugzilla will then use the platform that the browser " _
-                     "reports to be running on as the default.",
+  defaultplatform => "$terms.bug 入力フォームで既定値となるプラットフォームの値です。" _
+                     "空白にすると、$terms.Bugzilla はブラウザの情報を元に既定の" _
+                     "プラットフォームの値を決定します。",
 
-  defaultopsys => "This is the operating system that is preselected on the $terms.bug " _
-                  "entry form.<br> " _
-                  "You can leave this empty: " _
-                  "$terms.Bugzilla will then use the operating system that the browser " _
-                  "reports to be running on as the default." }
+  defaultopsys => "$terms.bug 入力フォームで既定値となる OS の値です。<br>" _
+                  "空白にすると、$terms.Bugzilla はブラウザの情報を元に既定の" _
+                  "OSの値を決定します。",
+}
+
 %]
