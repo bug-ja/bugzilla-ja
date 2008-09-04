@@ -27,7 +27,7 @@
 
 <ul id="useful-links">
   <li id="links-actions">
-    <div class="label">Actions: </div>
+    <div class="label">動作: </div>
       [% PROCESS "global/common-links.html.tmpl" qs_suffix = "_bottom" %]
   </li>
 
@@ -39,12 +39,12 @@
     [% print_pipe = 0 %]
     <li id="links-saved">
       <div class="label">
-        Saved Searches:
+        保存した検索:
       </div>
       <ul class="links">
         [% IF user.showmybugslink %]
           [% filtered_username = user.login FILTER url_quote %]
-          <li><a href="[% Param('mybugstemplate').replace('%userid%', filtered_username) %]">My [% terms.Bugs %]</a></li>
+          <li><a href="[% Param('mybugstemplate').replace('%userid%', filtered_username) %]">わたしの [% terms.Bugs %]</a></li>
           [% print_pipe = 1 %]
         [% END %]
 

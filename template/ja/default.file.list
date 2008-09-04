@@ -178,12 +178,12 @@ shimono	shimono	x	./global/docslinks.html.tmpl
 shimono	shimono	x	./global/field-descs.none.tmpl
 -   o   shimono	./global/footer.html.tmpl
 -   o   shimono ./global/header.html.tmpl
-x	x	x	./global/help.html.tmpl
-x	x	x	./global/hidden-fields.html.tmpl
+-	o	shimono	./global/help.html.tmpl
+shimono	shimono	x	./global/hidden-fields.html.tmpl
 -	o	shimono	./global/initialize.none.tmpl
-x	x	x	./global/js-products.html.tmpl
-x	x	x	./global/message.html.tmpl
-x	x	x	./global/message.txt.tmpl
+-	o	shimono	./global/js-products.html.tmpl
+shimono	shimono	x	./global/message.html.tmpl
+-	o	shimono	./global/message.txt.tmpl
 x	x	x	./global/messages.html.tmpl
 shimono shimono	x	./global/per-bug-queries.html.tmpl
 -	o	shimono	./global/select-menu.html.tmpl
@@ -191,7 +191,7 @@ shimono	shimono	x	./global/setting-descs.none.tmpl
 shimono	shimono	x	./global/site-navigation.html.tmpl
 -	o	shimono	./global/tabs.html.tmpl
 -	o	shimono	./global/textarea.html.tmpl
-x	x	x	./global/useful-links.html.tmpl
+shimono	shimono	x	./global/useful-links.html.tmpl
 x	x	x	./global/user-error.html.tmpl
 -	o	shimono	./global/userselect.html.tmpl
 shimono	shimono	x	./global/variables.none.tmpl
