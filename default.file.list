@@ -192,7 +192,7 @@ shimono	shimono	x	./global/site-navigation.html.tmpl
 -	o	shimono	./global/tabs.html.tmpl
 -	o	shimono	./global/textarea.html.tmpl
 shimono	shimono	x	./global/useful-links.html.tmpl
-x	x	x	./global/user-error.html.tmpl
+nakano	x	x	./global/user-error.html.tmpl
 -	o	shimono	./global/userselect.html.tmpl
 shimono	shimono	x	./global/variables.none.tmpl
 shimono	shimono	x	./index.html.tmpl
