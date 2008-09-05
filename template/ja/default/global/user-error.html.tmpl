@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Fr辿d辿ric Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -42,519 +42,514 @@
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
-[% DEFAULT title = "Error" %]
+[% DEFAULT title = "エラー" %]
 
 [% error_message = BLOCK %]
   [% IF    error == "account_creation_disabled" %]
-    [% title = "Account Creation Disabled" %]
-    User account creation has been disabled.
+    [% title = "アカウント作成は無効化されています" %]
+    ユーザアカウント作成は無効化されています。
     <hr>
-    New accounts must be created by an administrator. The
-    maintainer is [% Param("maintainer") %].
+    新規アカウント作成は管理者が行います。
+    管理者は [% Param("maintainer") %] です。
 
   [% ELSIF error == "account_creation_restricted" %]
-    [% title = "Account Creation Restricted" %]
-    User account creation has been restricted.
+    [% title = "アカウント作成は制限されています" %]
+    ユーザアカウント作成は制限されています。
     <hr>
-    Contact your administrator or the maintainer
-    ([% Param("maintainer") %]) for information about
-    creating an account.
+    管理者もしくはメンテナー ([% Param("maintainer") %])
+    にアカウント作成のための情報を問い合わせてください。
 
   [% ELSIF error == "account_disabled" %]
-    [% title = "Account Disabled" %]
+    [% title = "アカウントは無効です" %]
     [% disabled_reason FILTER none %]
     <hr>
-    If you believe your account should be restored, please
-    send email to [% Param("maintainer") %] explaining why.
+    アカウントが再度、有効化されるべきだと思う場合、
+    上記にある無効化された理由に対する妥当と判断可能な理由を添付して
+    [% Param("maintainer") %] までメールで申請してください。
 
   [% ELSIF error == "account_exists" %]
-    [% title = "Account Already Exists" %]
-    There is already an account with
+    [% title = "指定のアカウントは既に存在します" %]
+    指定された
     [% IF email %]
-      the login name [% email FILTER html %].
+      ログイン名 ([% email FILTER html %]).
     [% ELSE %]
-      that login name.
+      ログイン名
     [% END %]
+    のアカウントは既に存在しています。
 
   [% ELSIF error == "alias_has_comma_or_space" %]
-    [% title = "Invalid Characters In Alias" %]
-    The alias you entered, <em>[% alias FILTER html %]</em>,
-    contains one or more commas or spaces.  Aliases cannot contain
-    commas or spaces because those characters are used to separate
-    aliases from each other in lists.  Please choose an alias
-    that does not contain commas and spaces.
+    [% title = "Alias に無効な文字が含まれています" %]
+    入力された Alias <em>[% alias FILTER html %]</em> には一つ以上のカンマ、
+    もしくはスペースが含まれています。これらの文字はリストの中でのセパレータとして利用されますので、
+    名称としては利用できません。カンマやスペースを含まない alias 名をつけてください。
 
   [% ELSIF error == "alias_in_use" %]
-    [% title = "Alias In Use" %]
+    [% title = "Alias は既に利用されています" %]
     [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
-    has already taken the alias <em>[% alias FILTER html %]</em>.
-    Please choose another one.
+    は既に <em>[% alias FILTER html %]</em> というAlias を持ちます。
+    別の名称を選択してください。
 
   [% ELSIF error == "alias_is_numeric" %]
-    [% title = "Alias Is Numeric" %]
-    You tried to give this [% terms.bug %] the alias <em>[% alias FILTER html %]</em>,
-    but aliases cannot be merely numbers, since they could
-    then be confused with [% terms.bug %] IDs.  Please choose an
-    alias containing at least one letter.
+    [% title = "Alias が数字です" %]
+    この[% terms.bug %] に Alias <em>[% alias FILTER html %]</em> をつけようとしましたが、
+    [% terms.bug %] ID と混同する可能性があるため、Alias は数字だけでは適用できません。
+    少なくとも一文字は英文字を含む Alias を選択してください。
 
   [% ELSIF error == "alias_too_long" %]
-    [% title = "Alias Too Long" %]
-    [% terms.Bug %] aliases cannot be longer than 20 characters.
-    Please choose a shorter alias.
+    [% title = "Alias が長すぎます" %]
+    [% terms.Bug %] の Alias は 20 文字 (byte) 以上にはできません。
+    より短いものにしてください。
 
   [% ELSIF error == "auth_cant_create_account" %]
-    [% title = "Can't create accounts" %]
-    This site is using an authentication scheme which does not permit
-    account creation. Please contact an administrator to get a new account
-    created.
+    [% title = "アカウントを作成できません" %]
+    このサイトが利用している認証サービスは、アカウント作成を許可していません。
+    新規アカウント作成については、管理者に問い合わせてください。
 
   [% ELSIF error == "auth_failure" %]
-    [% title = "Authorization Required" %]
-    [% admindocslinks = {'groups.html' => 'Group Security'} %]
+    [% title = "認証が必要です" %]
+    [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
     Sorry,
     [% IF group %]
-      you aren't a member of the '[% group FILTER html %]' group,
+      あなたは、'[% group FILTER html %]' グループのメンバーではありません。
     [% END %]
 
     [% IF reason %]
-      [% IF group %] and [% END %]
+      [% IF group %] また、 [% END %]
       [% IF reason == "cant_bless" %]
-        you don't have permissions to add or remove people from a group,
+        グループへのアカウントの追加・削除権限がありません。
       [% ELSIF reason == "not_visible" %]
-        there are visibility restrictions on certain user groups,
+        指定されたユーザグループへの閲覧制限がかかっています。
       [% END %]
     [% END %]
 
-    [% IF group || reason %] and so [% END %] you are not authorized to
-    [% IF action == "access" %]
-      access
-    [% ELSIF action == "add" %]
-      add new
-    [% ELSIF action == "begin" %]
-      begin
-    [% ELSIF action == "modify" %]
-      modify
-    [% ELSIF action == "delete" %]
-      delete
-    [% ELSIF action == "edit" %]
-      add, modify or delete
-    [% ELSIF action == "move" %]
-      move
-    [% ELSIF action == "run" %]
-      run
-    [% ELSIF action == "schedule" %]
-      schedule
-    [% ELSIF action == "use" %]
-      use
-    [% END %]
+    [% IF group || reason %] そして、 [% END %]
 
     [% IF object == "administrative_pages" %]
-      administrative pages
+      管理画面
     [% ELSIF object == "attachment" %]
-      this attachment
+      この添付
     [% ELSIF object == "bugs" %]
       [%+ terms.bugs %]
     [% ELSIF object == "charts" %]
-      the "New Charts" feature
+      新規チャートの追加機能
     [% ELSIF object == "classifications" %]
-      classifications
+      分類
     [% ELSIF object == "components" %]
-      components
+      コンポーネント
     [% ELSIF object == "custom_fields" %]
-      custom fields
+      カスタムフィールド
     [% ELSIF object == "field_values" %]
-      field values
+      フィールド値
     [% ELSIF object == "flagtypes" %]
-      flag types
+      フラグタイプ
     [% ELSIF object == "group_access" %]
-      group access
+      グループ権限
     [% ELSIF object == "groups" %]
-      groups
+      グループ
     [% ELSIF object == "keywords" %]
-      keywords
+      キーワード
     [% ELSIF object == "milestones" %]
-      milestones
+      マイルストーン
     [% ELSIF object == "multiple_bugs" %]
-      multiple [% terms.bugs %] at once
+      一度に複数の [% terms.bugs %]
     [% ELSIF object == "parameters" %]
-      parameters
+      パラメータ
     [% ELSIF object == "products" %]
-      products
+      プロダクト
     [% ELSIF object == "quips" %]
       quips
     [% ELSIF object == "reports" %]
-      whine reports
+      whine レポート
     [% ELSIF object == "sanity_check" %]
-      a sanity check
+      sanity check
     [% ELSIF object == "settings" %]
-      settings
+      設定
     [% ELSIF object == "sudo_session" %]
-      a sudo session
+      sudo セッション
     [% ELSIF object == "timetracking_summaries" %]
-      time-tracking summary reports
+      時間追跡サマリーレポート
     [% ELSIF object == "user" %]
-      the user you specified
+      指定したユーザ
     [% ELSIF object == "users" %]
-      users
+      ユーザ
     [% ELSIF object == "versions" %]
-      versions
+      バージョン
     [% ELSIF object == "workflow" %]
-      the workflow
-    [% END %].
+      ワークフロー
+    [% END %]
+
+    [% IF action == "access" %]
+      閲覧
+    [% ELSIF action == "add" %]
+      新規登録
+    [% ELSIF action == "begin" %]
+      開始
+    [% ELSIF action == "modify" %]
+      編集
+    [% ELSIF action == "delete" %]
+      削除
+    [% ELSIF action == "edit" %]
+      追加、編集、削除
+    [% ELSIF action == "move" %]
+      移動
+    [% ELSIF action == "run" %]
+      実行
+    [% ELSIF action == "schedule" %]
+      スケジューリング
+    [% ELSIF action == "use" %]
+      利用
+    [% END %]
+
+    は許可されていません。
 
     [% Hook.process("auth_failure") %]
 
   [% ELSIF error == "attachment_deletion_disabled" %]
-    [% title = "Attachment Deletion Disabled" %]
-    Attachment deletion is disabled on this installation.
+    [% title = "添付の削除はできません" %]
+    このサイトでは添付は削除できません。
 
   [% ELSIF error == "attachment_removed" %]
-    [% title = "Attachment Removed" %]
-    The attachment you are attempting to access has been removed.
+    [% title = "添付は削除されました" %]
+    削除しようとした添付は既に削除されています。
 
   [% ELSIF error == "bug_access_denied" %]
-    [% title = "Access Denied" %]
-    [% admindocslinks = {'groups.html' => 'Group Security'} %]
-    You are not authorized to access [% terms.bug %] #[% bug_id FILTER html %].
+    [% title = "アクセスは拒否されました" %]
+    [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
+    [% terms.bug %] #[% bug_id FILTER html %] へのアクセス権限がありません。
 
   [% ELSIF error == "bug_access_query" %]
-    [% title = "Access Denied" %]
-    [% docslinks = {'myaccount.html' => 'Creating an account'} %]
-    You are not authorized to access [% terms.bug %] #[% bug_id FILTER html %].
-    To see this [% terms.bug %], you must
-    first <a href="show_bug.cgi?id=
-                   [% bug_id FILTER url_quote %]&amp;GoAheadAndLogIn=1">log
-    in to an account</a> with the appropriate permissions.
+    [% title = "アクセスは拒否されました" %]
+    [% docslinks = {'myaccount.html' => 'アカウント作成'} %]
+    [% terms.bug %] #[% bug_id FILTER html %] へのアクセス権限がありません。
+    この [% terms.bug %] を見るには、まず必要な権限を持った
+    <a href="show_bug.cgi?id=
+                   [% bug_id FILTER url_quote %]&amp;GoAheadAndLogIn=1">
+    アカウントでログイン</a> してください。
 
   [% ELSIF error == "buglist_parameters_required" %]
-    [% title = "Parameters Required" %]
-    [% docslinks = {'query.html' => "Searching for $terms.bugs",
-                    'query.html#list' => "$terms.Bug lists"} %]
-    You may not search, or create saved searches, without any search terms.
+    [% title = "必要なパラメータが足りません" %]
+    [% docslinks = {'query.html' => "$terms.bugs の検索",
+                    'query.html#list' => "$terms.Bug リスト"} %]
+    検索語無しでは、検索や保存された検索の作成はできません。
 
   [% ELSIF error == "chart_too_large" %]
-    [% title = "Chart Too Large" %]
-    Sorry, but 2000 x 2000 is the maximum size for a chart.
+    [% title = "チャートが大きすぎます" %]
+    チャートの最大サイズは 2000 &times; 2000 に制限されています。
 
   [% ELSIF error == "comment_invalid_isprivate" %]
-    You tried to modify the privacy of comment id [% id FILTER html %],
-    but that is not a valid comment on this [% terms.bug %].
+    コメント [% id FILTER html %] の privacy を変更しようとしましたが、
+    [% terms.bug %] の妥当なコメントではありません。
 
   [% ELSIF error == "comment_required" %]
-    [% title = "Comment Required" %]
-    You have to specify a
+    [% title = "コメントをつけてください" %]
     [% IF old && new %]
-      <b>comment</b> when changing the status of [% terms.abug %] from
-      [%+ old.name FILTER html %] to [% new.name FILTER html %].
+      [% terms.abug %] のステータスを
+      [%+ old.name FILTER html %] から [% new.name FILTER html %]
+      に変更する場合、<b>コメント</b>
     [% ELSIF new %]
-      description for this [% terms.bug %].
+      この [% terms.bug %] の説明
     [% ELSE %]
-      <b>comment</b> on this change.
+      この変更に関する <b>コメント</b>
     [% END %]
+    を記述する必要があります。
 
   [% ELSIF error == "comment_too_long" %]
-    [% title = "Comment Too Long" %]
-    Comments cannot be longer than 65,535 characters.
+    [% title = "コメントが長すぎます" %]
+    コメントは 65,535 文字以上にはできません。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
-    [% title = "Classification Not Enabled" %]
-    Sorry, classification is not enabled.
+    [% title = "指定された Classification は無効です" %]
+    Classification は無効です。
 
   [% ELSIF error == "classification_not_specified" %]
-    [% title = "You Must Supply A Classification Name" %]
-    You must enter a classification name.
+    [% title = "Classification 名を指定してください" %]
+    Classification 名を入力してください。
 
   [% ELSIF error == "classification_already_exists" %]
-    [% title = "Classification Already Exists" %]
-    A classification with the name '[% name FILTER html %]' already exists.
+    [% title = "指定された Classification が既に存在しています" %]
+    '[% name FILTER html %]' の Classification は既に存在します。
 
   [% ELSIF error == "classification_doesnt_exist" %]
-    [% title = "Classification Does Not Exist" %]
-    The classification '[% name FILTER html %]' does not exist.
+    [% title = "指定された Classification は存在しません" %]
+    指定した Classification '[% name FILTER html %]' は存在しません。
 
   [% ELSIF error == "classification_doesnt_exist_for_product" %]
-    [% title = "Classification Does Not Exist For Product" %]
-    The classification '[% classification FILTER html %]' does not exist
-    for product '[% product FILTER html %]'.
+    [% title = "指定された Classification は指定のプロダクトに対して存在しません" %]
+    Classification '[% classification FILTER html %]' はプロダクト
+    '[% product FILTER html %]' には存在しません。
 
   [% ELSIF error == "classification_invalid_sortkey" %]
-    [% title = "Invalid Sortkey for Classification" %]
-    The sortkey <em>[% sortkey FILTER html %]</em> for the '[% name FILTER html %]'
-    classification is invalid. It must be a positive integer.
+    [% title = "Classification のソート順が無効です" %]
+    Classification '[% name FILTER html %]' には ソート順として
+    <em>[% sortkey FILTER html %]</em> は利用できません。
+    正の整数である必要があります。
 
   [% ELSIF error == "classification_not_deletable" %]
-    [% title = "Default Classification Can Not Be Deleted" %]
-    You can not delete the default classification
+    [% title = "既定の Classification は削除できません" %]
+    既定の Classification は削除できません。
 
   [% ELSIF error == "classification_has_products" %]
-     Sorry, there are products for this classification. You
-     must reassign those products to another classification before you
-     can delete this one.
+    この Classification にはプロダクトが登録されています。
+    削除するには、これらのプロダクトを他の Classification に移動してください。
 
   [% ELSIF error == "component_already_exists" %]
-    [% title = "Component Already Exists" %]
-    The <em>[% product.name FILTER html %]</em> product already has
-    a component named <em>[% name FILTER html %]</em>.
+    [% title = "指定されたコンポーネントは既に存在しています" %]
+    指定されたコンポーネント名 <em>[% name FILTER html %]</em>
+    はプロダクト <em>[% product.name FILTER html %]</em>
+    に既に存在しています。
 
   [% ELSIF error == "component_blank_description" %]
-    [% title = "Blank Component Description Not Allowed" %]
-    You must enter a non-blank description for this component.
+    [% title = "コンポーネントの説明を入力してください" %]
+    コンポーネントの説明は必須項目です。
 
   [% ELSIF error == "component_blank_name" %]
-    [% title = "Blank Component Name Not Allowed" %]
-    You must enter a name for this new component.
+    [% title = "コンポーネントの名前を入力してください" %]
+    コンポーネントの名前は必須項目です。
 
   [% ELSIF error == "component_has_bugs" %]
-    [% title = BLOCK %]Component has [% terms.Bugs %][% END %]
-    There are [% nb FILTER html %] [%+ terms.bugs %] entered for this component!
-    You must reassign those [% terms.bugs %] to another component before you
-    can delete this one.
+    [% title = BLOCK %]指定のコンポーネントには [% terms.Bugs %] が存在します[% END %]
+    このコンポーネントには [% nb FILTER html %] [%+ terms.bugs %] が存在します。
+    削除するには [% terms.bugs %] を他のコンポーネントに移動してください。
 
   [% ELSIF error == "component_name_too_long" %]
-    [% title = "Component Name Is Too Long" %]
-    The name of a component is limited to 64 characters. 
-    '[% name FILTER html %]' is too long ([% name.length %] characters).
+    [% title = "コンポーネント名が長すぎます" %]
+    コンポーネント名は 64 文字以上にはできません。
+    '[% name FILTER html %]' は長すぎます ([% name.length %] 文字です)。
 
   [% ELSIF error == "component_need_initialowner" %]
-    [% title = "Component Requires Default Assignee" %]
-    A default assignee is required for this component.
+    [% title = "コンポーネントには既定の担当者が必要です" %]
+    コンポーネントには既定の担当者が必要です。
 
   [% ELSIF error == "customfield_nonexistent" %]
-    [% title = "Unknown Custom Field" %]
-    There is no custom field with the name '[% name FILTER html %]'.
+    [% title = "未知のカスタムフィールド" %]
+    未知のカスタムフィールド '[% name FILTER html %]' が存在します。
 
   [% ELSIF error == "customfield_not_obsolete" %]
-    [% title = "Custom Field Not Obsolete" %]
-    The custom field '[% name FILTER html %]' is not obsolete.
-    Please obsolete a custom field before attempting to delete it.
+    [% title = "カスタムフィールドが "用済み" に設定されていません" %]
+    カスタムフィールド '[% name FILTER html %]' は "用済み" に設定されていません。
+    削除する前に「用済み」に設定してください。
 
   [% ELSIF error == "customfield_has_activity" %]
-    [% title = "Custom Field Has Activity" %]
-    The custom field '[% name FILTER html %]' cannot be deleted because
-    it has recorded activity.
+    [% title = "指定のカスタムフィールドは利用されています" %]
+    カスタムフィールド '[% name FILTER html %]' はバグの更新履歴に記録されているため、
+    削除できません。
 
   [% ELSIF error == "customfield_has_contents" %]
-    [% title = "Custom Field Has Contents" %]
-    The custom field '[% name FILTER html %]' cannot be deleted because
-    at least one [% terms.bug %] has a non empty value for this field.
+    [% title = "指定のカスタムフィールドに情報が残っています" %]
+    カスタムフィールド '[% name FILTER html %]' に情報を保存している
+    [% terms.bug %] があるため、削除できません。
 
   [% ELSIF error == "dependency_loop_multi" %]
-    [% title = "Dependency Loop Detected" %]
-    The following [% terms.bug %](s) would appear on both the "depends on"
-    and "blocks" parts of the dependency tree if these changes
-    are committed:
+    [% title = "依存関係がループしています" %]
+    次の変更が加えられた場合、
+    以下の [% terms.bug %] は依存関係の "依存する" "妨害する" の両方に含まれることになります。
     [% FOREACH dep = deps %]
       [%+ dep FILTER bug_link(dep) FILTER none %]
     [% END %].
-    This would create a circular dependency, which is not allowed.
+    これは依存関係のループを作ることになり、許可できません。
 
   [% ELSIF error == "dependency_loop_single" %]
-    [% title = "Dependency Loop Detected" %]
-    You can't make [% terms.abug %] block itself or depend on itself.
+    [% title = "依存関係のループが検出されました" %]
+    [% terms.abug %] を自分自身に "依存する" もしくは "妨害する" ことはできません。
 
   [% ELSIF error == "dupe_id_required" %]
-    [% title = "Duplicate $terms.Bug Id Required" %]
-    You must specify [% terms.abug %] id to mark this [% terms.bug %]
-    as a duplicate of.
+    [% title = "重複先の $terms.Bug ID が入力されていません" %]
+    この [% terms.bug %] の重複先となる [% terms.abug %] ID が入力されていません。
 
   [% ELSIF error == "dupe_not_allowed" %]
-    [% title = "Cannot mark $terms.bugs as duplicates" %]
-    You cannot mark [% terms.bugs %] as duplicates when
-    changing several [% terms.bugs %] at once.
+    [% title = "$terms.bugs を重複にできません" %]
+    複数の [% terms.bugs %] を更新する際に、[% terms.bugs %] を重複にはできません。
 
   [% ELSIF error == "dupe_loop_detected" %]
-    [% title = "Loop detected among duplicates" %]
-    You cannot mark [% terms.bug %] [%+ bug_id FILTER html %] as
-    a duplicate of
+    [% title = "重複の関係にループがあります" %]
+    [% terms.bug %] [%+ bug_id FILTER html %] を、
     [% IF dupe_of == bug_id %]
-      itself
+      自分自身の
     [% ELSE %]
-      [%+ terms.bug %] [%+ dupe_of FILTER html %], because it
-      would create a duplicate loop
-    [% END %].
+      重複のループが出来るため
+      [%+ terms.bug %] [%+ dupe_of FILTER html %]の
+    [% END %]
+    重複にはできません。
 
   [% ELSIF error == "email_change_in_progress" %]
-    [% title = "Email Change Already In Progress" %]
-    Email change already in progress; please check your email.
+    [% title = "メールアドレスの変更は既に申請されています" %]
+    メールアドレスの変更は既に申請されています。メールボックスを確認してください。
 
   [% ELSIF error == "email_confirmation_failed" %]
-    [% title = "Email Address Confirmation Failed" %]
-    Email address confirmation failed.
+    [% title = "メールアドレスの確認に失敗しました" %]
+    メールアドレス確認の手続きが失敗に終わりました。
 
   [% ELSIF error == "email_no_text_plain" %]
-    Your message did not contain any text.[% terms.Bugzilla %] does not
-    accept HTML-only email, or HTML email with attachments.
+    あなたのメッセージは空です。[% terms.Bugzilla %] は HTML のみのメールや、
+    添付ファイル付きの HTML メールは受け付けません。
 
   [% ELSIF error == "empty_group_description" %]
-    [% title = "The group description can not be empty" %]
-    You must enter a description for the group.
+    [% title = "グループの説明を入力してください" %]
+    グループの説明は必須項目です。
 
   [% ELSIF error == "empty_group_name" %]
-    [% title = "The group name can not be empty" %]
-    You must enter a name for the group.
+    [% title = "グループの名前を入力してください" %]
+    グループの名前は必須項目です。
   
   [% ELSIF error == "entry_access_denied" %]
-    [% title = "Permission Denied" %]
-    [% admindocslinks = {'groups.html' => 'Group Security'} %]
-    Sorry, either the product <em>[% product FILTER html %]</em>
-    does not exist or you aren't authorized to
-    enter [% terms.abug %] into it.
+    [% title = "権限がありません" %]
+    [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
+    <em>[% product FILTER html %]</em> は存在しないか、あなたはこのプロダクトに
+    [% terms.abug %] を登録する権限がありません。
 
   [% ELSIF error == "field_already_exists" %]
-    [% title = "Field Already Exists" %]
-    The field '[% field.name FILTER html %]'     
-    ([% field.description FILTER html %]) already exists. Please
-    choose another name.
+    [% title = "指定されたフィールド名は既に存在しています" %]
+    フィールド '[% field.name FILTER html %]' 
+    ([% field.description FILTER html %]) は既に存在しています。
+    別の名前を選択してください。
 
   [% ELSIF error == "field_invalid_name" %]
-    [% title = "Invalid Field Name" %]
-    '[% name FILTER html %]' is not a valid name for a field.
-    A name may contain only letters, numbers, and the underscore character.
+    [% title = "無効なフィールド名です" %]
+    '[% name FILTER html %]' はフィールド名としては無効です。
+    英文字、数字、アンダースコア (_) のみが利用可能です。
 
   [% ELSIF error == "field_invalid_sortkey" %]
-    [% title = "Invalid Sortkey for Field" %]
-    The sortkey [% sortkey FILTER html %] that you have provided for
-    this field is not a valid positive integer.
+    [% title = "フィールドのソート順が無効です" %]
+    指定されたソート順 [% sortkey FILTER html %] は妥当な正の整数ではありません。
 
   [% ELSIF error == "field_missing_description" %]
-    [% title = "Missing Description for Field" %]
-    You must enter a description for this field.
+    [% title = "フィールドの説明を入力してください" %]
+    フィールドの説明は必須項目です。
 
   [% ELSIF error == "field_missing_name" %]
-    [% title = "Missing Name for Field" %]
-    You must enter a name for this field.
+    [% title = "フィールドの名前を入力してください" %]
+    フィールドの名前は必須項目です。
 
   [% ELSIF error == "fieldname_invalid" %]
-    [% title = "Specified Field Does Not Exist" %]
-    The field '[% field FILTER html %]' does not exist or 
-    cannot be edited with this interface.
+    [% title = "指定されたフィールドは存在しません" %]
+    フィールド '[% field FILTER html %]' は存在しないか、
+    このインターフェースでは編集できません。
 
   [% ELSIF error == "fieldname_not_specified" %]
-    [% title = "Field Name Not Specified" %]
-    No field name specified when trying to edit field values.
+    [% title = "フィールド名が指定されていません" %]
+    編集しようとするフィールドの名前が指定されていません。
 
   [% ELSIF error == "fieldvalue_already_exists" %]
-    [% title = "Field Value Already Exists" %]
-    The value '[% value FILTER html %]' already exists for the
-    '[%- field.description FILTER html %]' field.
+    [% title = "指定されたフィールド値は既に存在しています" %]
+    フィールド '[%- field.description FILTER html %]' には既に値として
+    '[% value FILTER html %]' は存在しています。
 
   [% ELSIF error == "fieldvalue_doesnt_exist" %]
-    [% title = "Specified Field Value Does Not Exist" %]
-    The value '[% value FILTER html %]' does not exist for
-    the '[% field FILTER html %]' field.
+    [% title = "指定されたフィールド値は存在しません" %]
+    フィールド '[% field FILTER html %]' には値として
+    '[% value FILTER html %]' は存在しません。
 
   [% ELSIF error == "fieldvalue_is_default" %]
-    [% title = "Specified Field Value Is Default" %]
-    '[% value FILTER html %]' is the default value for
-    the '[% field.description FILTER html %]' field and cannot be deleted.
+    [% title = "指定されたフィールド値は既定値です" %]
+    '[% value FILTER html %]' はフィールド '[% field.description FILTER html %]'
+    の既定値ですので削除できません。
     [% IF user.groups.tweakparams %]
-      You have to <a href="editparams.cgi?section=bugfields#
-      [%- param_name FILTER url_quote %]">change</a> the default value first.
+      先に既定値を <a href="editparams.cgi?section=bugfields#
+      [%- param_name FILTER url_quote %]">変更</a> する必要があります。
     [% END %]
 
   [% ELSIF error == "fieldvalue_name_too_long" %]
-    [% title = "Field Value Is Too Long" %]
-    The value of a field is limited to 60 characters.
-    '[% value FILTER html %]' is too long ([% value.length %] characters).
+    [% title = "フィールド値が長すぎます" %]
+    フィールド値は 60 文字に制限されています。
+    '[% value FILTER html %]' は長すぎます ([% value.length %] 文字です)。
 
   [% ELSIF error == "fieldvalue_not_editable" %]
-    [% title = "Field Value Not Editable" %]
-    The value '[% old_value FILTER html %]' cannot be renamed because
-    it plays some special role for the '[% field.description FILTER html %]' field.
+    [% title = "指定されたフィールド値は編集できません" %]
+    フィールド '[% field.description FILTER html %]' で特殊な役割を担っているため、
+    フィールド値 '[% old_value FILTER html %]' は変更できません。
 
   [% ELSIF error == "fieldvalue_not_deletable" %]
-    [% title = "Field Value Not Deletable" %]
-    The value '[% value FILTER html %]' cannot be removed because
-    it plays some special role for the '[% field.description FILTER html %]' field.
+    [% title = "指定されたフィールド値は削除できません" %]
+    フィールド '[% field.description FILTER html %]' で特殊な役割を担っているため、
+    フィールド値 '[% value FILTER html %]' は削除できません。
 
   [% ELSIF error == "fieldvalue_not_specified" %]
-    [% title = "Field Value Not Specified" %]
-    No field value specified when trying to edit a field value.
+    [% title = "フィールド値が指定されていません" %]
+    フィールド値を編集しようとしましたが、フィールド値が指定されていません。
 
   [% ELSIF error == "fieldvalue_reserved_word" %]
-    [% title = "Reserved Word Not Allowed" %]
-    You cannot use the '[% value FILTER html %]' value for the
-    '[% field.description FILTER html %]' field. This value is used internally.
-    Please choose another one.
+    [% title = "指定されたフィールド値は予約されています" %]
+    フィールド '[% field.description FILTER html %]' に
+    フィールド値 '[% value FILTER html %]' は使えません。
+    指定された値はシステム内部で予約されています。
+    他の値を選択してください。
 
   [% ELSIF error == "fieldvalue_sortkey_invalid" %]
-    [% title = "Invalid Field Value Sortkey" %]
-    The sortkey '[% sortkey FILTER html %]' for the '[% name FILTER html %]'
-    field is not a valid (positive) number.
+    [% title = "フィールド値のソート順が無効です" %]
+    フィールド '[% name FILTER html %]' に指定されたソート順
+    '[% sortkey FILTER html %]' は妥当な正の整数ではありません。
 
   [% ELSIF error == "fieldvalue_still_has_bugs" %]
-    [% title = "You Cannot Delete This Field Value" %]
-    You cannot delete the value '[% value FILTER html %]' from the 
-    '[% field FILTER html %]' field, because there are still
-    [%+ count FILTER html %] [%+ terms.bugs %] using it.
+    [% title = "指定されたフィールド値は削除できません" %]
+    [%+ count FILTER html %] [%+ terms.bugs %] で使用されているため、
+    フィールド '[% field FILTER html %]' からフィールド値
+    '[% value FILTER html %]' を削除できません。
 
   [% ELSIF error == "fieldvalue_undefined" %]
-    [% title = "Undefined Value Not Allowed" %]
-    You must specify a value.
+    [% title = "未定義のフィールド値は許可されていません" %]
+    値を指定する必要があります。
 
   [% ELSIF error == "file_not_specified" %]
-    [% title = "No File Specified" %]
-    You did not specify a file to attach.
+    [% title = "ファイルが指定されていません" %]
+    添付するファイルが指定されていません。
 
   [% ELSIF error == "file_too_large" %]
-    [% title = "File Too Large" %]
-    The file you are trying to attach is [% filesize FILTER html %] 
-    kilobytes (KB) in size. Non-patch attachments cannot be more than
-    [%+ Param('maxattachmentsize') %] KB. <br>
-    We recommend that you store your attachment elsewhere
+    [% title = "ファイルが大きすぎます" %]
+    添付しようとしたファイルは [% filesize FILTER html %] KB あります。
+    パッチ以外の添付ファイルは [%+ Param('maxattachmentsize') %] KB
+    を超えることはできません。 <br>
+    添付ファイルをウェブのどこかに保存して、
     [% IF Param("allow_attach_url") %]
-      and then specify the URL to this file on the attachment
-      creation page in the <b>AttachURL</b> field.
+      URL を添付を行うページの <b>AttachURL</b> フィールドに指定してください。
     [% ELSE %]
-      and then insert the URL to it in a comment, or in the URL field
-      for this [% terms.bug %].
+      URL をコメントとして、もしくは、[% terms.bug %] の URL
+      フィールドに入力してください。
     [% END %]
-    <br>Alternately, if your attachment is an image, you could convert
-    it to a compressible format like JPG or PNG and try again.
+    <br>また、添付ファイルが画像ファイルなら、圧縮形式、たとえば JPG や PNG
+    などの形式に変換してもう一度試してください。
 
   [% ELSIF error == "flag_not_multiplicable" %]
-    [% docslinks = {'flags-overview.html' => 'An overview on Flags',
-                    'flags.html' => 'Using Flags'} %]
-    You can't ask more than one person at a time for
-    <em>[% type.name FILTER html %]</em>.
+    [% docslinks = {'flags-overview.html' => 'フラグの説明',
+                    'flags.html' => 'フラグの利用方法'} %]
+    複数の人に対して同時に <em>[% type.name FILTER html %]</em>
+    フラグを要求することはできません。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
-    [% title = "Flag Requestee Needs Privileges" %]
-    [% requestee.identity FILTER html %] does not have permission to set the
-    <em>[% flagtype.name FILTER html %]</em> flag. Please select a user who is
-    a member of the <em>[% flagtype.grant_group.name FILTER html %]</em> group.
+    [% title = "フラグの要求先のアカウントに権限が必要です" %]
+    [% requestee.identity FILTER html %] は <em>[% flagtype.name FILTER html %]</em>
+    フラグを設定する権限を持っていません。<em>[% flagtype.grant_group.name FILTER html %]</em>
+    グループに所属するユーザを選択してください。
 
   [% ELSIF error == "flag_requestee_unauthorized" %]
-    [% title = "Flag Requestee Not Authorized" %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'Administering Flags',
-                         'groups.html' => 'Group Security'} %]
-    [% docslinks = {'flags-overview.html' => 'An overview on Flags',
-                    'flags.html' => 'Using Flags'} %]
+    [% title = "フラグの要求先のアカウントは認証されていません" %]
+    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
+                         'groups.html' => 'グループセキュリティー'} %]
+    [% docslinks = {'flags-overview.html' => 'フラグの説明',
+                    'flags.html' => 'フラグの利用方法'} %]
 
-    You asked [% requestee.identity FILTER html %]
-    for <code>[% flag_type.name FILTER html %]</code> on [% terms.bug %] 
-    [%+ bug_id FILTER html -%]
-    [% IF attach_id && attach_id > 0 %], attachment [% attach_id FILTER html %][% END %],
-    but that [% terms.bug %] has been restricted to users in certain groups, 
-    and the user you asked isn't in all the groups to which 
-    the [% terms.bug %] has been restricted.
-    Please choose someone else to ask, or make the [% terms.bug %] accessible
-    to users on its CC: list and add that user to the list.
+    [% terms.bug %] [%+ bug_id FILTER html -%]
+    [% IF attach_id && attach_id > 0 %]の添付 [% attach_id FILTER html %][% END %]
+    で <code>[% flag_type.name FILTER html %]</code> フラグを
+    [% requestee.identity FILTER html %] に要求しましたが、
+    この [% terms.bug %] へのアクセスは特定のグループに制限されていますが、
+    指定されたユーザは [% terms.bug %] にアクセスできるグループに所属していません。
+    要求先を他のユーザにするか、CC リストのユーザが [% terms.bug %]
+    にアクセスできるようにして、その人をリストに追加してください。
 
   [% ELSIF error == "flag_requestee_unauthorized_attachment" %]
-    [% title = "Flag Requestee Not Authorized" %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'Administering Flags',
-                         'groups.html' => 'Group Security'} %]
-    [% docslinks = {'flags-overview.html' => 'An overview on Flags',
-                    'flags.html' => 'Using Flags'} %]
+    [% title = "フラグの要求先のアカウントは認証されていません" %]
+    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
+                         'groups.html' => 'グループセキュリティー'} %]
+    [% docslinks = {'flags-overview.html' => 'フラグの説明',
+                    'flags.html' => 'フラグの利用方法'} %]
 
-    You asked [% requestee.identity FILTER html %]
-    for <code>[% flag_type.name FILTER html %]</code> on 
-    [%+ terms.bug %] [%+ bug_id FILTER html %],
-    attachment [% attach_id FILTER html %], but that attachment
-    is restricted to users in the [% Param("insidergroup") FILTER html %] group,
-    and the user you asked isn't in that group.  Please choose someone else
-    to ask, or ask an administrator to add the user to the group.
+    [%+ terms.bug %] [%+ bug_id FILTER html %] の添付
+    [% attach_id FILTER html %] で
+    <code>[% flag_type.name FILTER html %]</code> フラグを
+    [% requestee.identity FILTER html %] に要求しましたが、
+    その添付は [% Param("insidergroup") FILTER html %] グループのユーザに制限されていて、
+    要求先のユーザはこのグループに所属していません。
+    要求先を他のユーザにするか、ユーザをグループに追加するように管理者に依頼してください。
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
     [% title = "Flag Type CC List Invalid" %]
