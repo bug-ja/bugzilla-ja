@@ -86,7 +86,7 @@
   [% ELSIF error == "alias_in_use" %]
     [% title = "エイリアスは既に利用されています" %]
     [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
-    は既に <em>[% alias FILTER html %]</em> というAlias を持ちます。
+    は既に <em>[% alias FILTER html %]</em> というエイリアスを持ちます。
     別の名称を選択してください。
 
   [% ELSIF error == "alias_is_numeric" %]
