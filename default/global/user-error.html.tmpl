@@ -78,26 +78,26 @@
     のアカウントは既に存在しています。
 
   [% ELSIF error == "alias_has_comma_or_space" %]
-    [% title = "Alias に無効な文字が含まれています" %]
-    入力された Alias <em>[% alias FILTER html %]</em> には一つ以上のカンマ、
+    [% title = "エイリアスに無効な文字が含まれています" %]
+    入力されたエイリアス <em>[% alias FILTER html %]</em> には一つ以上のカンマ、
     もしくはスペースが含まれています。これらの文字はリストの中でのセパレータとして利用されますので、
-    名称としては利用できません。カンマやスペースを含まない alias 名をつけてください。
+    名称としては利用できません。カンマやスペースを含まないエイリアス名をつけてください。
 
   [% ELSIF error == "alias_in_use" %]
-    [% title = "Alias は既に利用されています" %]
+    [% title = "エイリアスは既に利用されています" %]
     [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
     は既に <em>[% alias FILTER html %]</em> というAlias を持ちます。
     別の名称を選択してください。
 
   [% ELSIF error == "alias_is_numeric" %]
-    [% title = "Alias が数字です" %]
-    この[% terms.bug %] に Alias <em>[% alias FILTER html %]</em> をつけようとしましたが、
-    [% terms.bug %] ID と混同する可能性があるため、Alias は数字だけでは適用できません。
-    少なくとも一文字は英文字を含む Alias を選択してください。
+    [% title = "エイリアスが数字です" %]
+    この[% terms.bug %] にエイリアス <em>[% alias FILTER html %]</em> をつけようとしましたが、
+    [% terms.bug %] ID と混同する可能性があるため、エイリアスは数字だけでは適用できません。
+    少なくとも一文字は英文字を含むエイリアスを選択してください。
 
   [% ELSIF error == "alias_too_long" %]
-    [% title = "Alias が長すぎます" %]
-    [% terms.Bug %] の Alias は 20 文字 (byte) 以上にはできません。
+    [% title = "エイリアスが長すぎます" %]
+    [% terms.Bug %] のエイリアスは 20 文字 (byte) 以上にはできません。
     より短いものにしてください。
 
   [% ELSIF error == "auth_cant_create_account" %]
