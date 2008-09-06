@@ -552,37 +552,38 @@
     要求先を他のユーザにするか、ユーザをグループに追加するように管理者に依頼してください。
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
-    [% title = "Flag Type CC List Invalid" %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'Administering Flags'} %]
-    The CC list [% cc_list FILTER html %] must be less than 200 characters long.
+    [% title = "フラグの CC リストが適当ではありません" %]
+    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
+    CC リスト [% cc_list FILTER html %] は 200 文字以下でなければいけません。
 
   [% ELSIF error == "flag_type_component_without_product" %]
-    [% title = "Product Missing" %]
-    A component was selected without a product being selected.
+    [% title = "プロダクトが指定されていません" %]
+    コンポーネントが選択されていますが、プロダクトが選択されていません。
 
   [% ELSIF error == "flag_type_description_invalid" %]
-    [% title = "Flag Type Description Invalid" %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'Administering Flags'} %]
-    The description must be less than 32K.
+    [% title = "フラグの説明が適当ではありません" %]
+    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
+    フラグの説明は 32KB 以内でなければいけません (日本語で約一万文字)。
 
   [% ELSIF error == "flag_type_name_invalid" %]
-    [% title = "Flag Type Name Invalid" %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'Administering Flags'} %]
-    The name <em>[% name FILTER html %]</em> must be 1-50 characters long
-    and must not contain any spaces or commas.
+    [% title = "フラグ名が適当ではありません" %]
+    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
+    フラグ名 <em>[% name FILTER html %]</em> は 1 ～ 50 文字で、
+    スペースやカンマを含むことはできません。
 
   [% ELSIF error == "flag_update_denied" %]
-    [% title = "Flag Modification Denied" %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'Administering Flags',
-                         'groups.html' => 'Group Security'} %]
-    [% docslinks = {'flags-overview.html' => 'An overview on Flags',
-                    'flags.html' => 'Using Flags'} %]
-    You tried to [% IF status == "+" %] grant [% ELSIF status == "-" %] deny
-    [% ELSIF status == "X" %] clear [% ELSE %] request [% END %]
+    [% title = "フラグ編集が拒否されました" %]
+    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
+                         'groups.html' => 'グループセキュリティー'} %]
+    [% docslinks = {'flags-overview.html' => 'フラグの説明',
+                    'flags.html' => 'フラグの利用方法'} %]
+    フラグ [% IF status == "+" %] 承認 [% ELSIF status == "-" %] 拒否
+    [% ELSIF status == "X" %] 破棄 [% ELSE %] 要請 [% END %] を
     <code>[% name FILTER html %]
-          [% IF status == "X" %][% old_status FILTER html %][% END %]</code>.
+          [% IF status == "X" %][% old_status FILTER html %][% END %]</code>
+    へ行おうとしました。
 
-    Only a user with the required permissions may make this change.
+    権限を持つユーザのみがこの操作が可能です。
 
   [% ELSIF error == "format_not_found" %]
     [% title = "Format Not Found" %]
@@ -590,9 +591,9 @@
     a content type of <em>[% ctype FILTER html %]</em>.
     
   [% ELSIF error == "flag_type_sortkey_invalid" %]
-    [% title = "Flag Type Sort Key Invalid" %]
-    The sort key must be an integer between 0 and 32767 inclusive.
-    It cannot be <em>[% sortkey FILTER html %]</em>.
+    [% title = "フラグのソート順が無効です" %]
+    フラグのソート順は 0 ～ 32767 の整数でなくてはいけません。
+    <em>[% sortkey FILTER html %]</em> には設定できません。
 
   [% ELSIF error == "freetext_too_long" %]
     [% title = "Text Too Long" %]
