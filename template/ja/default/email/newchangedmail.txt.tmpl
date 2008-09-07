@@ -50,15 +50,15 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [% FOREACH relationship = reasons %]
   [% SWITCH relationship %]
     [% CASE constants.REL_ASSIGNEE %]
-[% terms.bug %] の担当者です
+[%+ terms.bug %] の担当者です
     [% CASE constants.REL_REPORTER %]
-[% terms.bug %] の報告者です
+[%+ terms.bug %] の報告者です
     [% CASE constants.REL_QA %]
-[% terms.bug %] の QA コンタクトです
+[%+ terms.bug %] の QA コンタクトです
     [% CASE constants.REL_CC %]
-[% terms.bug %] の CC リストに入っています
+[%+ terms.bug %] の CC リストに入っています
     [% CASE constants.REL_VOTER %]
-[% terms.bug %] の投票者です
+[%+ terms.bug %] の投票者です
     [% CASE constants.REL_GLOBAL_WATCHER %]
 全ての [% terms.bug %] の変更を監視しています
   [% END %]
@@ -66,14 +66,14 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [% FOREACH relationship = reasons_watch %]
   [% SWITCH relationship %]
     [% CASE constants.REL_ASSIGNEE %]
-[% terms.bug %] の担当者を監視しています
+[%+ terms.bug %] の担当者を監視しています
     [% CASE constants.REL_REPORTER %]
-[% terms.bug %] の報告者を監視しています
+[%+ terms.bug %] の報告者を監視しています
     [% CASE constants.REL_QA %]
-[% terms.bug %] の QA コンタクトを監視しています。
+[%+ terms.bug %] の QA コンタクトを監視しています。
     [% CASE constants.REL_CC %]
-[% terms.bug %] の CC リストの誰かを監視しています
+[%+ terms.bug %] の CC リストの誰かを監視しています
     [% CASE constants.REL_VOTER %]
-[% terms.bug %] の投票者を監視しています
+[%+ terms.bug %] の投票者を監視しています
   [% END %]
 [% END %]
