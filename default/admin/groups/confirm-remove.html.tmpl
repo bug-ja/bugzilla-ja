@@ -28,9 +28,9 @@
   #%]
 
 [% IF regexp %]
-  [% title = "Confirm: Remove Explicit Members in the Regular Expression?" %]
+  [% title = "確認: 正規表現に該当する明示されたユーザを除外しますか?" %]
 [% ELSE %]
-  [% title = "Confirm: Remove All Explicit Members?" %]
+  [% title = "確認: すべての明示されたユーザを削除しますか?" %]
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -39,18 +39,18 @@
 %]
 
 [% IF regexp %]
-  <p>This option will remove all users from '[% group.name FILTER html %]'
-    whose login names match the regular expression:
+  <p>このオプションにより、ログイン名が次の正規表現に該当するすべてのユーザが、
+    '[% group.name FILTER html %]' から削除されます :
     '[% regexp FILTER html %]'</p>
 [% ELSE %]
-  <p>This option will remove all explicitly defined users
-    from '[% group.name FILTER html %].'</p>
+  <p>このオプションにより、[% group.name FILTER html %] グループのすべての
+    明示されたユーザが削除されます。</p>
 [% END %]
   
-<p>Generally, you will only need to do this when upgrading groups
-  created with [% terms.Bugzilla %] versions 2.16 and earlier. Use
-  this option with <b>extreme care</b> and consult the documentation
-  for further information.
+<p>一般的に、この操作は [% terms.Bugzilla %] 2.16 以前からアップグレードする際に
+  作成されるグループにのみ行う必要があります。
+  このオプションは、より詳細な情報についてドキュメントを参照し、
+  <b>かなり注意して</b> 実行してください。
 </p>
     
 <form method="post" action="editgroups.cgi">
@@ -59,8 +59,8 @@
   <input type="hidden" name="action" value="remove_regexp">
   
   <input name="token" type="hidden" value="[% token FILTER html %]">
-  <input name="confirm" type="submit" value="Confirm">
-  <p>Or <a href="editgroups.cgi">return to the Edit Groups page</a>.</p>
+  <input name="confirm" type="submit" value="実行">
+  <p>Or <a href="editgroups.cgi">グループ編集ページに戻る</a>.</p>
 </form>
     
 [% PROCESS global/footer.html.tmpl %] 
