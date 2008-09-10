@@ -824,191 +824,182 @@
     のいずれかでなければいけません)。
 
   [% ELSIF error == "invalid_group_ID" %]
-    [% title = "Invalid group ID" %]
-    The group you specified doesn't exist.
+    [% title = "指定されたグループ ID が無効です" %]
+    指定されたグループは存在しません。
 
   [% ELSIF error == "invalid_group_name" %]
-    [% title = "Invalid group name" %]
-    The group you specified, [% name FILTER html %], is not valid here.
+    [% title = "指定されたグループ名が無効です" %]
+    指定されたグループ [% name FILTER html %] はここでは有効ではありません。
 
   [% ELSIF error == "invalid_maxrows" %]
-    [% title = "Invalid Max Rows" %]
-    The maximum number of rows, '[% maxrows FILTER html %]', must be
-    a positive integer.
+    [% title = "最大行数が無効です" %]
+    最大行数 '[% maxrows FILTER html %]' は無効です。
+    正の整数でなくてはいけません。
 
   [% ELSIF error == "invalid_parameter" %]
-    [% title = "Invalid Parameter" %]
-    The new value for [% name FILTER html %] is invalid: [% err FILTER html %].
+    [% title = "パラメータが無効です" %]
+    指定された値 [% name FILTER html %] は無効です: [% err FILTER html %].
 
   [% ELSIF error == "invalid_product_name" %]
-    [% title = "Invalid Product Name" %]
-    The product name '[% product FILTER html %]' is invalid or does not exist.
+    [% title = "プロダクト名が無効です" %]
+    プロダクト名 '[% product FILTER html %]' は無効か存在しません。
 
   [% ELSIF error == "invalid_regexp" %]
-    [% title = "Invalid regular expression" %]
-    The regular expression you entered is invalid.
+    [% title = "無効な正規表現です" %]
+    指定された正規表現は無効です。
 
   [% ELSIF error == "invalid_user_group" %]
-    [% title = "Invalid User Group" %]
-    [% IF users.size > 1 %] Users [% ELSE %] User [% END %]
-    '[% users.join(', ') FILTER html %]'
-    [% IF users.size > 1 %] are [% ELSE %] is [% END %]
-    not able to edit the
+    [% title = "ユーザグループは無効です" %]
+    ユーザ '[% users.join(', ') FILTER html %]' は
+    [% IF bug_id %]
+      [% terms.bug %] '[% bug_id FILTER html %]' の
+    [% ELSIF new %]
+      新規 [% terms.bug %] に含めたり、
+    [% ELSE %]
+      変更しようとしている [% terms.bug %] 全ての
+    [% END %]
     [% IF product %]
       '[% product FILTER html %]'
     [% END %]
     [%+ field_descs.product FILTER html %]
-    [% IF bug_id %]
-      for [% terms.bug %] '[% bug_id FILTER html %]'.
-    [% ELSIF new %]
-      and may not be included on a new [% terms.bug %].
-    [% ELSE %]
-      for at least one [% terms.bug %] being changed.
-    [% END %]
+    を編集することはできません。
 
   [% ELSIF error == "invalid_username" %]
-    [% title = "Invalid Username" %]
-    The name <tt>[% name FILTER html %]</tt> is not a valid username.  
-    Either you misspelled it, or the person has not
-    registered for a [% terms.Bugzilla %] account.
+    [% title = "ユーザ名が無効です" %]
+    <tt>[% name FILTER html %]</tt> は有効なユーザ名ではありません。
+    ユーザ名を間違えているか、まだ [% terms.Bugzilla %]
+    アカウントを作成していない可能性があります。
 
   [% ELSIF error == "invalid_username_or_password" %]
-    [% title = "Invalid Username Or Password" %]
-    The username or password you entered is not valid.
+    [% title = "ユーザ名、もしくはパスワードが無効です" %]
+    指定されたユーザ名、もしくはパスワードが無効です。
 
   [% ELSIF error == "keyword_already_exists" %]
-    [% title = "Keyword Already Exists" %]
-    A keyword with the name [% name FILTER html %] already exists.
+    [% title = "指定されたキーワードは既に存在しています" %]
+    [% name FILTER html %] という名前のキーワードは既に存在しています。
 
   [% ELSIF error == "keyword_blank_description" %]
-    [% title = "Blank Keyword Description Not Allowed" %]
-    You must enter a non-blank description for the keyword.
+    [% title = "キーワードの説明を入力してください" %]
+    キーワードの説明は必須項目です。
      
   [% ELSIF error == "keyword_blank_name" %]
-    [% title = "Blank Keyword Name Not Allowed" %]
-    You must enter a non-blank name for the keyword.
+    [% title = "キーワード名を入力してください" %]
+    キーワード名は必須項目です。
      
   [% ELSIF error == "keyword_invalid_name" %]
-    [% title = "Invalid Keyword Name" %]
-    You may not use commas or whitespace in a keyword name.
+    [% title = "キーワード名が無効です" %]
+    キーワード名にはカンマやスペースは利用できません。
      
   [% ELSIF error == "local_file_too_large" %]
-    [% title = "Local File Too Large" %]
-    Local file uploads must not exceed 
-    [% Param('maxlocalattachment') %] MB in size.
+    [% title = "ローカルファイルのサイズが大きすぎます" %]
+    アップロードするファイルは
+    [% Param('maxlocalattachment') %] MB 以下でなくてはいけません。
 
   [% ELSIF error == "login_needed_for_password_change" %]
-    [% title = "Login Name Required" %]
-    You must enter a login name when requesting to change your password.
+    [% title = "ログイン名を入力してください" %]
+    パスワード変更時にはログイン名を入力する必要があります。
 
   [% ELSIF error == "login_required_for_pronoun" %]
     [% title = "Login Name Required" %]
-    You can't use %user% without being logged in, because %user% refers
-    to your login name, which we don't know.
+    検索 %user% はログインしなければ利用できません。
+    %user% はあなたのログイン名を参照する必要がありますが、それができません。
 
   [% ELSIF error == "milestone_already_exists" %]
-    [% title = "Milestone Already Exists" %]
-    [% admindocslinks = {'products.html' => 'Administering products',
-                         'milestones.html' => 'About Milestones'} %]
-    The milestone '[% name FILTER html %]' already exists for product '
-    [%- product FILTER html %]'.
+    [% title = "指定されたマイルストーンは既に存在しています" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理',
+                         'milestones.html' => 'マイルストーン'} %]
+    マイルストーン '[% name FILTER html %]' は プロダクト
+    '[%- product FILTER html %]' に既に存在しています。
 
   [% ELSIF error == "milestone_blank_name" %]
-    [% title = "Blank Milestone Name Not Allowed" %]
-    You must enter a name for this milestone.
+    [% title = "マイルスートン名を入力してください" %]
+    マイルストーン名は必須項目です。
 
   [% ELSIF error == "milestone_is_default" %]
-    [% title = "Default milestone not deletable" %]
-    [% admindocslinks = {'products.html' => 'Administering products',
-                         'milestones.html' => 'About Milestones'} %]
-    Sorry, but [% milestone.name FILTER html %] is the default milestone
-    for the '[% milestone.product.name FILTER html %]' product, and so
-    it cannot be deleted.
+    [% title = "既定のマイルストーンは削除できません" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理',
+                         'milestones.html' => 'マイルストーン'} %]
+    [% milestone.name FILTER html %] は '[% milestone.product.name FILTER html %]'
+    の既定のマイルストーンです。そのため、削除することができません。
 
   [% ELSIF error == "milestone_name_too_long" %]
-    [% title = "Milestone Name Is Too Long" %]
-    The name of a milestone is limited to 20 characters. 
-    '[% name FILTER html %]' is too long ([% name.length %] characters).
+    [% title = "マイルストーン名が長すぎます" %]
+    マイルストーン名は 20 文字以内でなくてはいけません。
+    '[% name FILTER html %]' は長すぎます ([% name.length %] 文字です).
 
   [% ELSIF error == "milestone_required" %]
-    [% title = "Milestone Required" %]
-    You must select a target milestone for [% terms.bug %]
-    [%+ bug.id FILTER html %]
-    if you are going to accept it.  Part of accepting 
-    [%+ terms.abug %] is giving an estimate of when it will be fixed.
+    [% title = "マイルストーンを指定してください" %]
+    [% terms.bug %] [%+ bug.id FILTER html %] を担当する場合、
+    ターゲットマイルストーンを選択してください。
+    [%+ terms.abug %] を担当するにはいつ頃解決可能であるか、
+    目処を立てなくてはいけません。
 
   [% ELSIF error == "milestone_sortkey_invalid" %]
-    [% title = "Invalid Milestone Sortkey" %]
-    The sortkey '[% sortkey FILTER html %]' is not in the range
-    [%+ constants.MIN_SMALLINT FILTER html %] &le; sortkey &le;
-    [%+ constants.MAX_SMALLINT FILTER html %].
+    [% title = "マイルストーンのソート順が無効です" %]
+    ソート順 '[% sortkey FILTER html %]' が
+    [%+ constants.MIN_SMALLINT FILTER html %] 以上
+    [%+ constants.MAX_SMALLINT FILTER html %] 以下の範囲ではありません。
 
   [% ELSIF error == "misarranged_dates" %]
-    [% title = "Misarranged Dates" %]
-    Your start date ([% datefrom FILTER html %]) is after 
-    your end date ([% dateto FILTER html %]).
+    [% title = "指定された日付の範囲が間違っています" %]
+    開始日 ([% datefrom FILTER html %]) が
+    終了日 ([% dateto FILTER html %]) よりも後です。
     
   [% ELSIF error == "missing_attachment_description" %]
-    [% title = "Missing Attachment Description" %]
-    You must enter a description for the attachment.
+    [% title = "添付の説明が入力されていません" %]
+    添付の説明は必須項目です。
     
   [% ELSIF error == "missing_category" %]
-    [% title = "Missing Category" %]
-    You did not specify a category for this series.
+    [% title = "カテゴリが指定されていません" %]
+    この series のカテゴリが指定されていません。
 
   [% ELSIF error == "missing_component" %]
-    [% title = "Missing Component" %]
-    [% admindocslinks = {'products.html'   => 'Administering products',
-                         'components.html' => 'Creating a component'} %]
-    Sorry, the product <em>[% product.name FILTER html %]</em>
-    has to have at least one component in order for you to
-    enter [% terms.abug %] into it.<br>
+    [% title = "コンポーネントがありません" %]
+    [% admindocslinks = {'products.html'   => 'プロダクトの管理',
+                         'components.html' => 'コンポーネントの作成'} %]
+    プロダクト <em>[% product.name FILTER html %]</em> に [% terms.abug %]
+    を登録するためには、最低一つはコンポーネントが存在していなくてはいけません。<br>
     [% IF user.in_group("editcomponents", product.id) %]
-      <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">Create
-      a new component</a>.
+      <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">コンポーネントを作成してください</a>。
     [% ELSE %]
-      Please contact [% Param("maintainer") %] and ask them
-      to add a component to this product.
+      [% Param("maintainer") %] に連絡をとり、このプロダクトにコンポーネントを追加してもらってください。
     [% END %]
 
   [% ELSIF error == "missing_content_type" %]
-    [% title = "Missing Content-Type" %]
-     You asked [% terms.Bugzilla %] to auto-detect the content type, but
-     your browser did not specify a content type when uploading the file, 
-     so you must enter a content type manually.
-                
+    [% title = "Content-Type の自動判別に失敗しました" %]
+     [% terms.Bugzilla %] に添付ファイルの Content-Type を自動で判定するように要請されましたが、
+     ブラウザからファイルをアップロードする際に情報がありませんでした。
+     手動で入力してください。
+
   [% ELSIF error == "missing_content_type_method" %]
-    [% title = "Missing Content-Type Determination Method" %]
-    You must choose a method for determining the content type,
-    either <em>auto-detect</em>, <em>select from list</em>, or <em>enter 
-    manually</em>.
-        
+    [% title = "Content-Type の判定方法が指定されていません" %]
+    <em>自動判定</em>、<em>リストから選択</em>、<em>手動入力</em>
+    の中から、Content-Type の判別方法を指定してください。
+
   [% ELSIF error == "missing_cookie" %]
-    [% title = "Missing Cookie" %]
-    Sorry, I seem to have lost the cookie that recorded
-    the results of your last search. I'm afraid you will have to start
-    again from the <a href="query.cgi">search page</a>.
-          
+    [% title = "cookie がありません" %]
+    最後の検索結果を保存していた cookie が無くなっているようです。
+    <a href="query.cgi">検索フォーム</a> からもう一度検索を行ってください。
+
   [% ELSIF error == "missing_datasets" %]
-    [% title = "No Datasets Selected" %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
-    You must specify one or more datasets to plot.
-    
+    [% title = "データセットが選択されていません" %]
+    [% docslinks = {'reporting.html' => 'レポート'} %]
+    プロット用の一つ以上のデータセットを選択する必要があります。
+
   [% ELSIF error == "missing_email_type" %]
-    [% title = "Your Search Makes No Sense" %]
-    You must specify one or more fields in which to search for
-    <tt>[% email FILTER html %]</tt>.
-    
+    [% title = "指定された検索条件が無効です" %]
+    <tt>[% email FILTER html %]</tt> で検索するには一つ以上のフィールドを指定する必要があります。
+
   [% ELSIF error == "missing_frequency" %]
-    [% title = "Missing Frequency" %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
-    You did not specify a valid frequency for this series.
-                
+    [% title = "頻度が入力されていません" %]
+    [% docslinks = {'reporting.html' => 'レポート'} %]
+    この series に適当な頻度が入力されていません。
+
   [% ELSIF error == "missing_name" %]
-    [% title = "Missing Name" %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
-    You did not specify a name for this series.
-                
+    [% title = "名前が入力されていません" %]
+    [% docslinks = {'reporting.html' => 'レポート'} %]
+    この series の名前は必須項目です。
+
   [% ELSIF error == "missing_query" %]
     [% title = "Missing Search" %]
     [% docslinks = {'query.html' => "Searching for $terms.bugs",
