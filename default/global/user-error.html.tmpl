@@ -314,7 +314,7 @@
   [% ELSIF error == "component_name_too_long" %]
     [% title = "コンポーネント名が長すぎます" %]
     コンポーネント名は 64 文字以上にはできません。
-    '[% name FILTER html %]' は長すぎます ([% name.length %] 文字です)。
+    '[% name FILTER html %]' は長すぎます ([% name.length %] 文字入力されています)。
 
   [% ELSIF error == "component_need_initialowner" %]
     [% title = "コンポーネントには既定の担当者が必要です" %]
@@ -451,7 +451,7 @@
   [% ELSIF error == "fieldvalue_name_too_long" %]
     [% title = "フィールド値が長すぎます" %]
     フィールド値は 60 文字に制限されています。
-    '[% value FILTER html %]' は長すぎます ([% value.length %] 文字です)。
+    '[% value FILTER html %]' は長すぎます ([% value.length %] 文字入力されています)。
 
   [% ELSIF error == "fieldvalue_not_editable" %]
     [% title = "指定されたフィールド値は編集できません" %]
@@ -596,247 +596,232 @@
     <em>[% sortkey FILTER html %]</em> には設定できません。
 
   [% ELSIF error == "freetext_too_long" %]
-    [% title = "Text Too Long" %]
-    The text you entered is too long ([% text.length FILTER html %] characters,
-    above the maximum length allowed of [% constants.MAX_FREETEXT_LENGTH FILTER none %]
-    characters):
+    [% title = "テキストが長すぎます" %]
+    入力されたテキストが長すぎます
+    (最長、[% constants.MAX_FREETEXT_LENGTH FILTER none %] ですが、
+    [% text.length FILTER html %] 文字入力されています):
     <p><em>[% text FILTER html %]</em></p>
 
   [% ELSIF error == "group_cannot_delete" %]
-    [% title = "Cannot Delete Group" %]
-    The <em>[% name FILTER html %]</em> group cannot be deleted because
-    there are
-    <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">records</a>
-    in the database which refer to it. All references to this group must
-    be removed before you can remove it.
+    [% title = "グループを削除できません" %]
+    <em>[% name FILTER html %]</em> グループは削除できません。
+    データベース中で以下の
+    <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">レコード</a>
+    から参照されています。
+    先にこのグループへの全ての参照を削除してください。
 
   [% ELSIF error == "group_change_denied" %]
-    [% title = "Cannot Add/Remove That Group" %]
-    You tried to add or remove group id [% group_id FILTER html %]
-    from [% terms.bug %] [%+ bug.id FILTER html %], but you do not
-    have permissions to do so.
+    [% title = "グループを追加、または削除できません" %]
+    グループ ID [% group_id FILTER html %] を [% terms.bug %] [%+ bug.id FILTER html %]
+    から削除しようとしましたが、あなたはこの権限を持っていません。
 
   [% ELSIF error == "group_exists" %]
-    [% title = "The group already exists" %]
-    The group [% name FILTER html %] already exists.
+    [% title = "グループは既に存在しています" %]
+    グループ [% name FILTER html %] は既に存在しています。
 
   [% ELSIF error == "group_has_special_role" %]
-    [% title = "Group not deletable" %]
-    [% IF groups.size == 1 %]
-      [% attr = "it" %]
-      [% param = "parameter" %]
-    [% ELSE %]
-      [% attr = "them" %]
-      [% param = "parameters" %]
-    [% END %]
-    The group '[% name FILTER html %]' is used by the
-    '[% groups.join("' and '") FILTER html %]' [% param FILTER html %].
-    In order to delete this group, you first have to change the
-    [%+ param FILTER html %] to make [% attr FILTER html %] point to another group.
+    [% title = "グループを削除できません" %]
+    グループ '[% name FILTER html %]' は
+    '[% groups.join("' and '") FILTER html %]' のパラメータで利用されています。
+    このグループを削除するには、先に他のグループを参照するようにパラメータを変更してください。
 
 
   [% ELSIF error == "group_invalid_removal" %]
-    You tried to remove [% terms.bug %] [%+ bug.id FILTER html %]
-    from group id [% group_id FILTER html %], but [% terms.bugs %] in the 
-    '[% product FILTER html %]' product can not be removed from that
-    group.
-    
+    グループ ID [% group_id FILTER html %] から
+    [% terms.bug %] [%+ bug.id FILTER html %] を削除しようとしましたが、
+    プロダクト '[% product FILTER html %]' の [% terms.bugs %]
+    はそのグループから削除できません。
+
   [% ELSIF error == "group_invalid_restriction" %]
-    You tried to restrict [% terms.bug %] [%+ bug.id FILTER html %] to
-    to group id [% group_id FILTER html %], but [% terms.bugs %] in the
-    '[% product FILTER html %]' product can not be restricted to
-    that group.
+    [% terms.bug %] [%+ bug.id FILTER html %] を
+    グループ ID [% group_id FILTER html %] に制限しようとしましたが、
+    '[% product FILTER html %]' プロダクトの [% terms.bugs %]
+    を指定されたグループに制限することはできません。
 
   [% ELSIF error == "group_not_specified" %]
-    [% title = "Group not specified" %]
-    No group was specified.
+    [% title = "グループが指定されていません" %]
+    グループが指定されていません。
 
   [% ELSIF error == "system_group_not_deletable" %]
-    [% title = "System Groups not deletable" %]
-    <em>[% name FILTER html %]</em> is a system group.
-    This group cannot be deleted.
+    [% title = "システムグループは削除できません" %]
+    <em>[% name FILTER html %]</em> はシステムグループです。
+    このグループは削除できません。
 
   [% ELSIF error == "group_unknown" %]
-    [% title = "Unknown Group" %]
-    The group [% name FILTER html %] does not exist. Please specify
-    a valid group name. Create it first if necessary!
+    [% title = "不明なグループ" %]
+    グループ [% name FILTER html %] は存在していません。
+    有効なグループ名を指定してください。
+    必要なのであれば、先に作ってください。
 
   [% ELSIF error == "illegal_at_least_x_votes" %]
-    [% title = "Your Search Makes No Sense" %]
-    The <em>At least ___ votes</em> field must be a simple number. 
-    You entered <tt>[% value FILTER html %]</tt>, which isn't.
+    [% title = "指定された検索条件が無効です" %]
+    <em>最低投票数</em> のフィールドは単純な数字でなくてはいけません。
+    指定された <tt>[% value FILTER html %]</tt> は適当ではありません。
     
   [% ELSIF error == "illegal_attachment_edit" %]
-    [% title = "Unauthorized Action" %]
-    You are not authorized to edit attachment [% attach_id FILTER html %].
+    [% title = "認証されていない操作です" %]
+    添付 [% attach_id FILTER html %] を編集する権限がありません。
 
   [% ELSIF error == "illegal_attachment_edit_bug" %]
-    [% title = "Unauthorized Action" %]
-    You are not authorized to edit attachments on [% terms.bug %] 
-    [%+ bug_id FILTER html %].
+    [% title = "認証されていない操作です" %]
+    [% terms.bug %] [%+ bug_id FILTER html %] の添付を編集する権限がありません。
          
   [% ELSIF error == "illegal_attachment_is_patch" %]
-    [% title = "Your Search Makes No Sense" %]
-    The only legal values for the <em>Attachment is patch</em> field are
-    0 and 1.
+    [% title = "指定された検索条件が無効です" %]
+    <em>添付がパッチであるかどうか</em> のフィールドの有効な値は 0 と 1 のみです。
 
   [% ELSIF error == "illegal_bug_status_transition" %]
-    [% title = "Illegal $terms.Bug Status Change" %]
+    [% title = "$terms.Bug ステータスの変更はできません" %]
     [% IF old.defined %]
-      You are not allowed to change the [% terms.bug %] status from
-      [%+ old.name FILTER html %] to [% new.name FILTER html %].
+      あなたは [% terms.bug %] ステータスを
+      [%+ old.name FILTER html %] から
+      [% new.name FILTER html %] に変更することは許可されていません。
     [% ELSE %]
-      You are not allowed to file new [% terms.bugs %] with the
-      [%+ new.name FILTER html %] status. 
+      あなたは [%+ new.name FILTER html %] ステータスで [% terms.bugs %]
+      を新規登録することはできません。
     [% END %]
 
   [% ELSIF error == "illegal_change" %]
     [% title = "Not allowed" %]
-    You tried to change the
-    <strong>[% field_descs.$field FILTER html %]</strong> field 
+    <strong>[% field_descs.$field FILTER html %]</strong> のフィールドを
     [% IF oldvalue.defined %]
-      from <em>[% oldvalue.join(', ') FILTER html %]</em>
+      <em>[% oldvalue.join(', ') FILTER html %]</em> から
     [% END %]
     [% IF newvalue.defined %]
-      to <em>[% newvalue.join(', ') FILTER html %]</em>
+      <em>[% newvalue.join(', ') FILTER html %]</em> へ
     [% END %]
-    , but only
+    変更しようとしましたが、
     [% IF privs < 3 %]
-      the assignee
-      [% IF privs < 2 %] or reporter [% END %]
-      of the [% terms.bug %], or
+      [% terms.bug %] の担当者
+      [% IF privs < 2 %] もしくは報告者 [% END %]
+      もしくは
     [% END %]
-    a user with the required permissions may change that field.
+    権限を持つユーザのみがフィールドを変更できます。
 
   [% ELSIF error == "illegal_change_deps" %]
     [% title = "Not allowed" %]
-    You tried to change the 
-    <strong>[% field_descs.$field FILTER html %]</strong> field 
-    but only a user allowed to edit 
-    both related [% terms.bugs %] may change that field.
+    <strong>[% field_descs.$field FILTER html %]</strong>
+    フィールドを変更しようとしましたが、変更を受ける全ての
+    [% terms.bugs %] の変更権限があるユーザのみが、このフィールドを変更できます。
 
   [% ELSIF error == "illegal_changed_in_last_x_days" %]
-    [% title = "Your Search Makes No Sense" %]
-    The <em>Changed in last ___ days</em> field must be a simple number. 
-    You entered <tt>[% value FILTER html %]</tt>, which isn't.
+    [% title = "指定された検索条件が無効です" %]
+    <em>過去 ___ 日に変更された</em> のフィールドは単純な数字でなくてはいけません。
+    指定された <tt>[% value FILTER html %]</tt> は適当ではありません。
     
   [% ELSIF error == "illegal_date" %]
-    [% title = "Illegal Date" %]
-    '<tt>[% date FILTER html %]</tt>' is not a legal date.
+    [% title = "指定された日付は無効です" %]
+    '<tt>[% date FILTER html %]</tt>' は有効な日付ではありません。
     [% IF format %]
-      Please use the format '<tt>[% format FILTER html %]</tt>'.
+      '<tt>[% format FILTER html %]</tt>' の形式で入力してください。
     [% END %]
     
   [% ELSIF error == "illegal_email_address" %]
-    [% title = "Invalid Email Address" %]
-    The e-mail address you entered (<b>[% addr FILTER html %]</b>) 
-    didn't pass our syntax checking for a legal email address.
+    [% title = "指定されたメールアドレスは無効です" %]
+    指定されたメールアドレス (<b>[% addr FILTER html %]</b>) 
+    は、メールアドレスの文法検査で無効だと判断されました。
     [% IF default %]
-      A legal address must contain exactly one '@',
-      and at least one '.' after the @.
+      有効なメールアドレスは、'@' を一つだけ含み、'.' を '@'
+      の後ろに最低一つは含まなくてはいけません。
     [% ELSE %]
       [%+ Param('emailregexpdesc') %]
     [% END %]
-    It must also not contain any of these special characters:
-    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>, or any whitespace.
-    
+    また、<tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
+    や空白文字(スペース等)を含むことはできません。
+
   [% ELSIF error == "illegal_frequency" %]
-    [% title = "Too Frequent" %]
-    Unless you are an administrator, you may not create series which are 
-    run more often than once every [% minimum FILTER html %] days.
-    
+    [% title = "指定された更新頻度は高すぎます" %]
+    なたが管理者ではないのであれば、[% minimum FILTER html %]
+    日に一度以上の頻度で動作する series は作成できません。
+
   [% ELSIF error == "illegal_group_control_combination" %]
-    [% title = "Your Group Control Combination Is Illegal" %]
-    [% admindocslinks = {'groups.html' => 'Assigning Group Controls to Products'} %]
-    Your group control combination for group &quot;
-    [% groupname FILTER html %]&quot; is illegal.
+    [% title = "グループ制限の組み合わせが無効です" %]
+    [% admindocslinks = {'groups.html' => 'プロダクトのグループの割り当て'} %]
+    グループの組み合わせ &quot;[% groupname FILTER html %]&quot; は無効です。
 
   [% ELSIF error == "illegal_is_obsolete" %]
-    [% title = "Your Search Makes No Sense" %]
-    The only legal values for the <em>Attachment is obsolete</em> field are
-    0 and 1.
+    [% title = "指定された検索条件が無効です" %]
+    <em>添付が用済みであるかどうか</em> のフィールドの有効な値は 0 と 1のみです。
 
   [% ELSIF error == "illegal_query_name" %]
-    [% title = "Illegal Search Name" %]
-    The name of your search cannot contain any of the following characters: 
+    [% title = "指定された検索名は無効です" %]
+    検索の名前には次の文字を含むことはできません。
     &lt;, &gt;, &amp;.
 
   [% ELSIF error == "illegal_series_creation" %]
-    [% admindocslinks = {'groups.html' => 'Group security'} %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
-    You are not authorized to create series.
+    [% admindocslinks = {'groups.html' => 'グループ権限'} %]
+    [% docslinks = {'reporting.html' => 'レポート'} %]
+    series を作成する権限がありません。
         
   [% ELSIF error == "illegal_series_edit" %]
-    [% admindocslinks = {'groups.html' => 'Group security'} %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
-    You are not authorized to edit this series. To do this, you must either
-    be its creator, or an administrator.
+    [% admindocslinks = {'groups.html' => 'グループ権限'} %]
+    [% docslinks = {'reporting.html' => 'レポート'} %]
+    この series を編集する権限がありません。
+    実行には作成者であるか、管理者権限が必要です。
 
   [% ELSIF error == "illegal_time" %]
-    [% title = "Illegal Time" %]
-    '<tt>[% time FILTER html %]</tt>' is not a legal time.
+    [% title = "指定された時刻は無効です" %]
+    '<tt>[% time FILTER html %]</tt>' は有効な時刻ではありません。
     [% IF format %]
-      Please use the format '<tt>[% format FILTER html %]</tt>'.
+      '<tt>[% format FILTER html %]</tt>' の形式で入力してください。
     [% END %]
         
   [% ELSIF error == "insufficient_data_points" %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
-    We don't have enough data points to make a graph (yet).
-        
+    [% docslinks = {'reporting.html' => 'レポート'} %]
+    グラフを作成するために十分なデータが (まだ) ありません。
+
   [% ELSIF error == "invalid_attach_id" %]
-    [% title = "Invalid Attachment ID" %]
-    The attachment id [% attach_id FILTER html %] is invalid.
+    [% title = "添付 ID が無効です" %]
+    添付 ID [% attach_id FILTER html %] が無効です。
 
   [% ELSIF error == "bug_id_does_not_exist" %]
-    [% title = BLOCK %]Invalid [% terms.Bug %] ID[% END %]
-    [% terms.Bug %] #[% bug_id FILTER html %] does not exist.
-    
+    [% title = BLOCK %][% terms.Bug %] ID が無効です[% END %]
+    [% terms.Bug %] #[% bug_id FILTER html %] は存在しません。
+
   [% ELSIF error == "improper_bug_id_field_value" %]
     [% title = BLOCK %]
-      [% IF bug_id %]Invalid [% ELSE %]Missing [% END %] [% terms.Bug %] ID
+      [% terms.Bug %] ID が[% IF bug_id %]無効です[% ELSE %]存在しません[% END %]
     [% END %]
     [% IF bug_id %]
-      '[% bug_id FILTER html %]' is not a valid [% terms.bug %] number
+      '[% bug_id FILTER html %]' は有効な [% terms.bug %] 番号
       [% IF Param("usebugaliases") %]
-        nor an alias to [% terms.abug %]
-      [% END %].
+        もしくは [% terms.abug %] へのエイリアス
+      [% END %] ではありません。
     [% ELSE %]
       [% IF field %]
-        The '[% field_descs.$field FILTER html %]' field
-        cannot be empty.
+        '[% field_descs.$field FILTER html %]' フィールドが空です。
       [% END %]
-      You must enter a valid [% terms.bug %] number!
+      適当な [% terms.bug %] 番号を入力してください。
     [% END %]
 
   [% ELSIF error == "invalid_changedsince" %]
-    [% title = "Invalid 'Changed Since'" %]
-    The 'changed since' value, '[% changedsince FILTER html %]', must be an
-    integer >= 0.
+    [% title = "'期間中に変更された' が無効です" %]
+    '期間に変更された' の値 '[% changedsince FILTER html %]' は 0 以上の整数でなくてはいけません。
 
   [% ELSIF error == "invalid_content_type" %]
-    [% title = "Invalid Content-Type" %]
-    The content type <em>[% contenttype FILTER html %]</em> is invalid.
-    Valid types must be of the form <em>foo/bar</em> where <em>foo</em>
-    is either <em>application, audio, image, message, model, multipart,
-    text,</em> or <em>video</em>.
+    [% title = "Content-Type が無効です" %]
+    Content-Type <em>[% contenttype FILTER html %]</em> は無効です。
+    Content-Type は <em>foo/bar</em> の形式で、<em>foo</em> には
+    <em>application, audio, image, message, model, multipart, text, video</em>
+    のいずれかでなくてはいけません。
     
   [% ELSIF error == "invalid_context" %]
-    [% title = "Invalid Context" %]
-    The context [% context FILTER html %] is invalid (must be a number,
-    "file" or "patch").
+    [% title = "コンテキストが無効です" %]
+    コンテキスト [% context FILTER html %] は無効です (有効な値は数値か、
+    "file" もしくは "patch" です)。
 
   [% ELSIF error == "invalid_datasets" %]
-    [% title = "Invalid Datasets" %]
-    Invalid datasets <em>[% datasets FILTER html %]</em>. Only digits,
-    letters and colons are allowed.
+    [% title = "データセットが無効です" %]
+    データセット <em>[% datasets FILTER html %]</em> は無効です。
+    数値、文字、コロンのみが利用できます。
 
   [% ELSIF error == "invalid_format" %]
-    [% title = "Invalid Format" %]
-    The format "[% format FILTER html %]" is invalid (must be one of
+    [% title = "フォーマットが無効です" %]
+    フォーマット "[% format FILTER html %]" は無効です (
     [% FOREACH my_format = formats %]
       "[% my_format FILTER html %]"
     [% END %]
-    ).
+    のいずれかでなければいけません)。
 
   [% ELSIF error == "invalid_group_ID" %]
     [% title = "Invalid group ID" %]
