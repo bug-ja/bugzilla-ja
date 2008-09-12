@@ -45,7 +45,7 @@ x	x	x	./admin/flag-type/confirm-delete.html.tmpl
 x	x	x	./admin/flag-type/edit.html.tmpl
 x	x	x	./admin/flag-type/list.html.tmpl
 shimono	shimono	x	./admin/groups/confirm-remove.html.tmpl
-shimono	x	x	./admin/groups/create.html.tmpl
+shimono	shimono	x	./admin/groups/create.html.tmpl
 shimono	x	x	./admin/groups/delete.html.tmpl
 shimono	x	x	./admin/groups/edit.html.tmpl
 shimono	x	x	./admin/groups/list.html.tmpl
@@ -66,7 +66,7 @@ shimono	shimono	x	./admin/params/bugchange.html.tmpl
 shimono	shimono	x	./admin/params/bugfields.html.tmpl
 shimono	shimono	x	./admin/params/bugmove.html.tmpl
 shimono	shimono	x	./admin/params/common.html.tmpl
-shimono	x	x	./admin/params/core.html.tmpl
+shimono	shimono	x	./admin/params/core.html.tmpl
 shimono	x	x	./admin/params/dependencygraph.html.tmpl
 shimono	x	x	./admin/params/editparams.html.tmpl
 shimono	x	x	./admin/params/groupsecurity.html.tmpl
