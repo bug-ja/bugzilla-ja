@@ -24,9 +24,9 @@
 
 [% title = BLOCK %]
   [% IF attachid %]
-Attachment #[% attachid %] for [% terms.bug %] #[% bugid %]
+[% terms.bug %] #[% bugid %] の添付 #[% attachid %]
   [% ELSE %]
-Interdiff of #[% oldid %] and #[% newid %] for [% terms.bug %] #[% bugid %]
+[% terms.bug %] #[% bugid %] の添付 #[% oldid %] と #[% newid %] の差分
   [% END %]
 [% END %]
 
@@ -211,15 +211,15 @@ tbody.file pre:empty {
 
 [% IF headers %]
   [% header = BLOCK %]
+    <a href="show_bug.cgi?id=[% bugid %]">[% terms.bug %] #[% bugid %]</a> の
     [% IF attachid %]
-      Attachment #[% attachid %]: [% description FILTER html %]
+      添付 #[% attachid %]: [% description FILTER html %]
     [% ELSE %]
-      Diff Between 
        #[% oldid %]: <a href="[% PROCESS diffurl id=oldid %]">[% old_desc FILTER html %]</a>
-      and 
+      と
        #[% newid %]: <a href="[% PROCESS diffurl id=newid %]">[% new_desc FILTER html %]</a>
+      の差分
     [% END %]
-    for <a href="show_bug.cgi?id=[% bugid %]">[% terms.bug %] #[% bugid %]</a>
   [% END %]
   [% subheader = BLOCK %]
     [% bugsummary FILTER html %]
@@ -244,13 +244,12 @@ tbody.file pre:empty {
 [% IF attachid %]
   [%# HEADER %]
   [% IF headers %]
-    <a href="[% PROCESS viewurl id=attachid %]">View</a>
-    | <a href="[% PROCESS editurl id=attachid %]">Details</a>
-    | <a href="[% PROCESS diffurl id=attachid %]&amp;context=[% context FILTER url_quote %]&amp;collapsed=[% collapsed FILTER url_quote %]&amp;headers=[% headers FILTER url_quote %]&amp;format=raw">Raw&nbsp;Unified</a>
+    <a href="[% PROCESS viewurl id=attachid %]">見る</a>
+    | <a href="[% PROCESS editurl id=attachid %]">詳細</a>
+    | <a href="[% PROCESS diffurl id=attachid %]&amp;context=[% context FILTER url_quote %]&amp;collapsed=[% collapsed FILTER url_quote %]&amp;headers=[% headers FILTER url_quote %]&amp;format=raw">そのまま</a>
   [% END %]
   [% IF other_patches.size > 0 %]
     [% IF headers %] |[%END%]
-    Differences between
     <form style="display: inline" action="attachment.cgi">
       <select name="oldid">
       [% FOREACH patch = other_patches %]
@@ -259,17 +258,18 @@ tbody.file pre:empty {
         >[% patch.desc FILTER html %]</option>
       [% END %]
       </select>
-      and this patch
-      <input type="submit" id="diff" value="Diff">
+      とこのパッチの
+      <input type="submit" id="diff" value="差分">
       <input type="hidden" name="action" value="interdiff">
       <input type="hidden" name="newid" value="[% attachid %]">
       <input type="hidden" name="headers" value="[% headers FILTER html %]">
+      を表示する
     </form>
   [% END %]
   <br>
 [% ELSE %]
   [% IF headers %]
-    <a href="attachment.cgi?oldid=[% oldid %]&amp;newid=[% newid %]&amp;action=interdiff&amp;format=raw">Raw Unified</a>
+    <a href="attachment.cgi?oldid=[% oldid %]&amp;newid=[% newid %]&amp;action=interdiff&amp;format=raw">そのまま</a>
     |
   [% END %]
 [% END %]
@@ -278,24 +278,24 @@ tbody.file pre:empty {
 <a href="#"
    onmouseover="lastStatus = window.status; window.status='Collapse All'; return true"
    onmouseout="window.status = lastStatus; return true"
-   onclick="return collapse_all()">Collapse All</a> | 
+   onclick="return collapse_all()">全て閉じる</a> | 
 <a href="#"
    onmouseover="lastStatus = window.status; window.status='Expand All'; return true"
    onmouseout="window.status = lastStatus; return true"
-   onclick="return expand_all()">Expand All</a>
+   onclick="return expand_all()">全て展開</a>
 
 [% IF do_context %]
   [%# only happens for normal viewing, not interdiff %]
-  | <span style='font-weight: bold'>Context:</span>
+  | <span style='font-weight: bold'>形式:</span>
   [% IF context == "patch" %]
-    (<strong>Patch</strong> / 
+    (<strong>パッチ</strong> / 
   [% ELSE %]
-    (<a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER url_quote %]">Patch</a> / 
+    (<a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER url_quote %]">パッチ</a> / 
   [% END %]
   [% IF context == "file" %]
-    <strong>File</strong> /
+    <strong>ファイル</strong> /
   [% ELSE %]
-    <a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER url_quote %]&amp;context=file">File</a> / 
+    <a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER url_quote %]&amp;context=file">ファイルe</a> / 
   [% END %]
 
   [% IF context == "patch" || context == "file" %]
@@ -306,15 +306,15 @@ tbody.file pre:empty {
 [% END %]
 
 [% IF warning %]
-<h2 class="warning">Warning: 
+<h2 class="warning">警告: 
   [% IF warning == "interdiff1" %]
-  this difference between two patches may show things in the wrong places due
-  to a limitation in [% terms.Bugzilla %] when comparing patches with different
-  sets of files.
+  この二つのパッチの差分は、[% terms.Bugzilla %]
+  は異なったファイルのセットに対するパッチを比較する際に制限があるため、間違った場所に
+  表示している可能性があります。
   [% END %]
   [% IF warning == "interdiff2" %]
-  this difference between two patches may be inaccurate due to a limitation in
-  [%+ terms.Bugzilla %] when comparing patches made against different revisions.
+  二つのパッチの差分は [% terms.Bugzilla %] が異なったリビジョンへのパッチを比較する際の
+  制限のため、正確でない可能性があります。
   [% END %]
 </h2>
 [% ELSE %]

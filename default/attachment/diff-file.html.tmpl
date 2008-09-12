@@ -34,13 +34,13 @@
   [% END %]
   [% IF file.plus_lines %]
     [% IF file.minus_lines %]
-      (-[% file.minus_lines %]&nbsp;/&nbsp;+[% file.plus_lines %]&nbsp;lines)
+      (-[% file.minus_lines %]&nbsp;/&nbsp;+[% file.plus_lines %]&nbsp;行)
     [% ELSE %]
-      (+[% file.plus_lines %]&nbsp;lines)
+      (+[% file.plus_lines %]&nbsp;行)
     [% END %]
   [% ELSE %]
     [% IF file.minus_lines %]
-      (-[% file.minus_lines %]&nbsp;lines)
+      (-[% file.minus_lines %]&nbsp;行)
     [% END %]
   [% END %]
 </td></tr></thead><tbody class="[% collapsed ? 'file_collapse' : 'file' %]">
@@ -55,22 +55,22 @@ incremental_restore()
     <table cellpadding="0" cellspacing="0">
     <tr><th width="95%" align="left">
   [% IF file.is_add %]
-    Added
+    追加
   [% ELSIF file.is_remove %]
     [% IF bonsai_prefix %]
-      <a href="[% bonsai_prefix %]">Removed</a>
+      <a href="[% bonsai_prefix %]">削除</a>
     [% ELSE %]
-      Removed
+      削除
     [% END %]
   [% ELSE %]
     [% IF bonsai_prefix %]
       <a href="[% bonsai_prefix %]#[% section.old_start %]">
     [% END %]
     [% IF section.old_lines > 1 %]
-      &nbsp;Lines&nbsp;[% section.old_start %]-[% section.old_start + 
+      &nbsp;行&nbsp;[% section.old_start %]-[% section.old_start + 
                                              section.old_lines - 1 %]
     [% ELSE %]
-      Line&nbsp;[% section.old_start %]
+      行&nbsp;[% section.old_start %]
     [% END %]
     [% IF bonsai_prefix %]
       </a>
@@ -78,7 +78,7 @@ incremental_restore()
     &nbsp;&nbsp;[% section.func_info FILTER html IF section.func_info %]
   [% END %] 
     </th><th>
-  <a name="[% file.filename FILTER html %]_sec[% section_num %]" href="#[% file.filename FILTER html %]_sec[% section_num %]">Link&nbsp;Here</a>&nbsp;
+  <a name="[% file.filename FILTER html %]_sec[% section_num %]" href="#[% file.filename FILTER html %]_sec[% section_num %]">ここへのリンク</a>&nbsp;
     </th></tr></table>
   </th></tr>
   [% current_line_old = section.old_start %]

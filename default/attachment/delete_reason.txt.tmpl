@@ -10,7 +10,7 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -19,14 +19,15 @@
   # date: the date when the request to delete the attachment was made.
   #%]
 
-The content of attachment [% attachment.id %] has been deleted by
+添付 [% attachment.id %] の中身は
     [%+ user.identity %]
+によって削除されました。
 [% IF reason %]
-who provided the following reason:
+以下の理由が提示されています。
 
 [%+ reason %]
 [% ELSE %]
-without providing any reason.
+削除理由は示されていません。
 [% END %]
 
-The token used to delete this attachment was generated at [% date FILTER time %].
+添付の削除のためのトークンは [% date FILTER time %] に発行されました。
