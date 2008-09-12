@@ -16,99 +16,83 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [% 
-   title = "Required Settings"
-   desc = "Settings that are required for proper operation of $terms.Bugzilla" 
+   title = "必須の設定"
+   desc = "$terms.Bugzilla の最低限の動作に必須のパラメータ" 
 %]
 
 [% param_descs = {
-  maintainer => "The email address of the person who maintains this installation " _
-                "of ${terms.Bugzilla}.",
+  maintainer => "この ${terms.Bugzilla} サイトのメンテナのメールアドレス",
 
-  urlbase => "The URL that is the common initial leading part of all $terms.Bugzilla " _
-             "URLs.",
+  urlbase => "この $terms.Bugzilla の URL の共通する先頭部分 (トップページの URL)",
 
-  docs_urlbase => "The URL that is the common initial leading part of all " _
-                  "$terms.Bugzilla documentation URLs. " _
-                  "It may be an absolute URL, or a URL relative to urlbase " _
-                  "above. " _
-                  "Leave this empty to suppress links to the documentation." _
-                  "'%lang%' will be replaced by user's preferred language " _
-                  "(if available).",
+  docs_urlbase => "すべての $terms.Bugzilla ドキュメント URL の先頭に入る" _
+                  "共通の文字列。絶対 URL や urlbase に対する相対 URL が指定可能です。" _
+                  "空白にするとすべてのドキュメントへのリンクが無効化されます。" _
+                  "'%lang%' はユーザに最適な言語 (存在すれば) に置換されます。",
 
-  sslbase => "The URL that is the common initial leading part of all HTTPS " _
-             "(SSL) $terms.Bugzilla URLs.",
+  sslbase => "この $terms.Bugzilla の HTTPS (SSL) 接続での URL の共通する先頭部分。",
 
-  ssl => "Controls when $terms.Bugzilla should enforce sessions to use HTTPS by " _
-         "using <tt>sslbase</tt>.",
+  ssl => "$terms.Bugzilla がセッションに <tt>sslbase</tt> を利用した HTTPS " _
+         "を強制する時点の指定。",
 
-  cookiedomain => "The domain for $terms.Bugzilla cookies. Normally blank. " _
-                  "If your website is at 'www.foo.com', setting this to " _
-                  "'.foo.com' will also allow 'bar.foo.com' to access " _
-                  "$terms.Bugzilla cookies. This is useful if you have more than " _
-                  "one hostname pointing at the same web server, and you " _
-                  "want them to share the $terms.Bugzilla cookie.",
+  cookiedomain => "$terms.Bugzilla クッキーのドメイン。通常空白にしてください。" _
+                  "'www.foo.com' にサイトがあって、これを '.foo.com' に指定すると、" _
+                  "'bar.foo.com' といったドメインからも $terms.Bugzilla クッキーに" _
+                  "アクセスできるようになります。同じウェブサーバに、ひとつ以上の" _
+                  "ホスト名が付いていて、$terms.Bugzilla クッキーを共有したい場合には" _
+                  "有用です。",
 
-  cookiepath => "Path, relative to your web document root, to which to restrict " _
-                "$terms.Bugzilla cookies. Normally this is the URI portion of your URL " _
-                "base. Begin with a / (single slash mark). For instance, if " _
-                "$terms.Bugzilla serves from 'http://www.somedomain.com/bugzilla/', set " _
-                "this parameter to /bugzilla/. Setting it to / will allow " _
-                "all sites served by this web server or virtual host to read " _
-                "$terms.Bugzilla cookies.",
+  cookiepath => "$terms.Bugzilla のクッキーを利用できる範囲を制限するための、ウェブ" _
+                "サイトのルートに対する相対パスです。通常、これはあなたの URL の" _
+                "ベースの部分となり、/ (単一のスラッシュ) から始まります。" _
+                "たとえば、$terms.Bugzilla が 'http://www.somedomain.com/bugzilla/'" _
+                "で提供されているなら、このパラメータは /bugzilla/ となるべきです。" _
+                "/ に設定すると、同じウェブサーバか同じ仮想ホストで提供されている" _
+                "すべてのサービスに $terms.Bugzilla クッキーが公開されます。",
 
-  timezone => "The timezone that your database server lives in, " _
-              "such as UTC, PDT or JST. If set to '', " _
-              "then the timezone will not be displayed with the timestamps.",
+  timezone => "UTC, PDT, JST などといった、データベースサーバのタイムゾーンです。" _
+              "'' に設定すると、タイムスタンプにはタイムゾーン情報は付きません。",
 
-  utf8 => "Use UTF-8 (Unicode) encoding for all text in ${terms.Bugzilla}. New " _
-          "installations should set this to true to avoid character encoding " _
-          "problems. <strong>Existing databases should set this to true " _
-          " only after the data has been converted from existing legacy " _
-          " character encodings to UTF-8, using the " _
-          " <kbd>contrib/recode.pl</kbd> script</strong>. <br><br> Note " _
-          " that if you  turn this parameter from &quot;off&quot; to " _
-          " &quot;on&quot;, you must re-run checksetup.pl immediately " _
-          " afterward.",
+  utf8 => "UTF-8 (Unicode) エンコーディングを ${terms.Bugzilla} のすべてのテキストで" _
+          "利用します。新規インストールでは文字コード問題を回避するためにこれを設定" _
+          "すべきです。<strong>既存のデータベースに関しては、<code>contrib/recode.pl</code>" _
+          "を利用して文字コードを UTF-8 に変換してから(注: Bugzilla-ja 2.20以前に対して" _
+          "正常に動作するかは保証されませんので、このスクリプトを利用しないでください。)" _
+          "、このオプションを有効にしてください。<br><br>注: このオプションを有効にしたら" _
+          "すぐに checksetup.pl を実行してください。",
 
-  shutdownhtml => "If this field is non-empty, then $terms.Bugzilla will be completely " _
-                  "disabled and this text will be displayed instead of all the " _
-                  "$terms.Bugzilla pages.",
+  shutdownhtml => "これが空白でなければ、$terms.Bugzilla は完全に利用できなくなり、" _
+                  "それぞれの $terms.Bugzilla ページの代わりにこのテキストが表示されます。",
 
-  announcehtml => "If this field is non-empty, then $terms.Bugzilla will " _
-                  "display whatever is in this field at the top of every " _
-                  "HTML page.  The HTML you put in this field is not " _
-                  "wrapped or enclosed in anything; you might want to " _
-                  "wrap it inside a <tt>&lt;div&gt;</tt>.  Give the div " _
-                  "<em>id=message</em> to get green text inside a " _
-                  "red box, or <em>class=bz_private</em> for dark " _
-                  "red on a red background.  Anything defined in " _
-                  "<tt>skins/standard/global.css</tt> or " _
-                  "<tt>skins/custom/global.css</tt> will work.  To get " _
-                  "centered text, use <em>style=\"text-align: " _
-                  "center;\"</em>.",
+  announcehtml => "これが空白でなければ、$terms.Bugzilla はここに設定されているものを" _
+                  "すべての HTML ページの上部に表示します。ここに設定した HTML はまったく" _
+                  "何も処理されずに利用されます。<tt>&lt;div&gt;</tt> で囲むことを推奨" _
+                  "します。divに<em>id=message</em>を設定すれば、赤い囲みの緑表示、" _
+                  "<em>class=bz_private</em>を設定すれば赤い背景の暗赤表示になります。" _
+                  "<tt>skins/standard/global.css</tt>や<tt>skins/custom/global.css</tt>" _
+                  "で定義されているものがすべて動作します。中心寄せにしたい場合、" _
+                  "<em>style=\"text-align: center;\"</em> を利用してください。",
 
-  proxy_url => "$terms.Bugzilla may have to access the web to get notifications about new " _
-               "releases, see the <tt>upgrade_notification</tt> parameter. In case you are " _
-               "behind a proxy, it may be necessary to enter its URL if the web server " _
-               "group cannot access the HTTP_PROXY environment variable. If you have to " _
-               "authenticate, use the <code>http://user:pass@proxy_url/</code> syntax.",
+  proxy_url => "$terms.Bugzilla が新リリースのデータを取得するには、<tt>upgrade_notification</tt>" _
+               "パラメータにあるようにウェブにアクセスする必要があります。" _
+               "プロキシの内側に設置されている場合、ウェブサーバのグループが HTTP_PROXY " _
+               "環境変数を定義していなければ、ここに URL を入力する必要があります。" _
+               "もし、認証が必要なら<code>http://user:pass@proxy_url/</code>" _
+               "形式を利用してください。",
 
-  upgrade_notification => "<p>$terms.Bugzilla can inform you when a new release is available. " _
-                          "The notification will appear on the $terms.Bugzilla homepage, " _
-                          "for administrators only.</p>" _
-                          "<ul><li>'development_snapshot' notifies you about the latest " _
-                          "release on the trunk, i.e. development snapshots.</li>" _
-                          "<li>'latest_stable_release' notifies you about the most recent release " _
-                          "available on the most recent stable branch. This branch may be " _
-                          "different from the branch your installation is based on.</li>" _
-                          "<li>'stable_branch_release' notifies you only about new releases " _
-                          "corresponding to the branch your installation is based on. " _
-                          "If you are running a release candidate, you will get " _
-                          "a notification for newer release candidates too.</li>" _
-                          "<li>'disabled' will never notify you about new releases and no " _
-                          "connection will be established to a remote server.</li></ul>" }
+  upgrade_notification => "<p>$terms.Bugzilla は新リリースが存在するかの通知を表示できます。" _
+                          "通知は $terms.Bugzilla のホームページに管理者のみに表示されます。</p>" _
+                          "<ul><li>'development_snapshot' では、trunkの最新リリース (開発" _
+                          "版スナップショットなど) が通知されます。</li>" _
+                          "<li>'latest_stable_release' では、最新の安定版リリースが通知" _
+                          "されます。このバージョンはあなたが利用しているものと異なる可能性があります。</li>" _
+                          "<li>'stable_branch_release' では、あなたが利用しているバージョン" _
+                          "の最新版について通知します。リリース候補版を利用している場合、" _
+                          "最新のリリース候補版について通知されます。</li>" _
+                          "<li>'disabled' では、まったく何も通知しませんが、外部サーバへの" _
+                          "接続を行わなくなります。</li></ul>" }
 %]

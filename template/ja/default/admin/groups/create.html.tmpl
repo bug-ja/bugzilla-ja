@@ -26,17 +26,17 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = "Add group"
-  subheader = "This page allows you to define a new user group."
+  title = "グループの追加"
+  subheader = "この画面で新規グループ追加を行えます"
   doc_section = "groups.html#create-groups"
 %]
 
 <form method="post" action="editgroups.cgi">
   <table border="1" cellpadding="4" cellspacing="0"><tr>
-    <th>New Name</th>
-    <th>New Description</th>
-    <th>New User RegExp</th>
-    <th>Use For [% terms.Bugs %]</th>
+    <th>新しい名前</th>
+    <th>説明</th>
+    <th>含める正規表現</th>
+    <th>[% terms.Bugs %] で利用する</th>
   </tr><tr>
     <td><input size="20" name="name"></td>
     <td><input size="40" name="desc"></td>
@@ -50,49 +50,44 @@
 
   <input type="checkbox" id="insertnew" name="insertnew" value="1"
     [% IF Param("makeproductgroups") %] checked[% END %]>
-  <label for="insertnew">Insert new group into all existing products.</label>
+  <label for="insertnew">すべての既存のプロダクトに新規グループを導入する。</label>
   <p>
-  <input type="submit" id="create" value="Add">
+  <input type="submit" id="create" value="追加">
   <input type="hidden" name="action" value="new">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
 
-<p><b>Name</b> is what is used with the B<!-- blah -->ugzilla->user->in_group()
-function in any customized cgi files you write that use a given group.
-It can also be used by people submitting [% terms.bugs %] by email to
-limit [% terms.abug %] to a certain set of groups.</p>
+<p><b>名前</b> は B<!-- blah -->ugzilla->user->in_group() 関数で利用され、
+特定のグループに対する独自 cgi を書くときに利用できます。
+また、メールで登録した [% terms.bugs %] をある [% terms.abug %] グループに限る
+ときにも利用可能です。</p>
 
-<p><b>Description</b> is what will be shown in the [% terms.bug %] reports
-to members of the group where they can choose whether
-the [% terms.bug %] will be restricted to others in the same group.</p>
+<p><b>説明</b> は [% terms.bug %] 報告で、グループに該当するユーザに対して表示され、
+[% terms.bug %] を同じグループのみに制限するかどうかを指定できます。</p>
 
-<p>The <b>Use For [% terms.Bugs %]</b> flag determines whether or not the
-group is eligible to be used for [% terms.bugs %]. If you clear this, it will
-no longer be possible for users to add [% terms.bugs %] to this group,
-although [% terms.bugs %] already in the group will remain in the group.
-Doing so is a much less drastic way to stop a group from growing
-than deleting the group would be. <b>Note: If you are creating
-a group, you probably want it to be usable for [% terms.bugs %], in which
-case you should leave this checked.</b></p>
+<p><b>[% terms.Bugs %] で利用する</b> フラグは、グループを [% terms.bugs %] に
+アクセスできるユーザに制限するために利用するかどうかをしめします。
+これを設定しなければ、[% terms.bugs %] をこのグループに加えることはできなくなりますが、
+[% terms.bugs %] がすでにグループに制限されていればそのままです。
+グループを削除するよりこちらを利用する方が、グループの所属を増やさないようにする
+ために変更が少ないです。<b>注: グループを作成した場合、[% terms.bugs %] に利用できる
+ように設定したいでしょうから、これは有効なままにしてください。</b></p>
 
-<p><b>User RegExp</b> is optional, and if filled in, will 
-automatically grant membership to this group to anyone with an 
-email address that matches this regular expression.</p>
+<p><b>含める正規表現</b> はオプションです。もし設定されていれば、この正規表現に
+メールアドレスが合致するユーザは自動的に権限を取得します。</p>
 
 <p>
-  <b>Icon URL</b> is optional, and is the URL pointing to the icon
-  used to identify the group. It may be either a relative URL to the base URL
-  of this installation or an absolute URL. This icon will be displayed
-  in comments in [% terms.bugs %] besides the name of the author of comments.
+  <b>アイコン URL</b> はオプションです。グループを特定するために利用されるアイコンの
+  URL を指定します。サイトのベース URL への相対 URL と絶対 URL の双方が利用できます。
+  アイコンは [% terms.bugs %] のコメントの表示でコメント投稿者の名前のあとに表示されます。
 </p>
 
-<p>By default, the new group will be associated with existing 
-products. Unchecking the "Insert new group into all existing 
-products" option will prevent this and make the group become 
-visible only when its controls have been added to a product.</p>
+<p>既定では、新規グループは既存のプロダクトにのみ関連付けることができます。
+"新規グループをすべてのプロダクトで利用する" のチェックをはずすと、
+これは行われず、プロダクトに追加したものについてのみグループが表示されるようになります。</p>
 
-<p>Back to the <a href="./">main [% terms.bugs %] page</a>
+<p><a href="./">メイン [% terms.bugs %] ページ</a>に戻る
 
-or to the <a href="editgroups.cgi">group list</a>.
+もしくは、<a href="editgroups.cgi">グループリスト</a>を表示する。
 
 [% PROCESS global/footer.html.tmpl %] 

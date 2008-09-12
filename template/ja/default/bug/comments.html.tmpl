@@ -163,21 +163,22 @@
       <span class="[% class_name FILTER html %]">
         [%# Do not filter decoration as it's a real HTML tag. No XSS risk. %]
         [% decoration FILTER none %]
-        <i>[% comment_label FILTER html %]
-        <a name="c[% count %]" href="show_bug.cgi?id=[% bug.bug_id %]#c[% count %]">
-          [% comment_link FILTER html %]</a>
+        <i>
         <span class="vcard">
           <a class="fn email" href="mailto:[% comment.author.email FILTER html %]">
             [% (comment.author.name || comment.author.login) FILTER html %]
           </a> からの
         </span>
+        [% comment_label FILTER html %]
+        <a name="c[% count %]" href="show_bug.cgi?id=[% bug.bug_id %]#c[% count %]">
+          [% comment_link FILTER html %]</a>
         [% FOREACH group = comment.author.direct_group_membership %]
           [% NEXT UNLESS group.icon_url %]
           <img src="[% group.icon_url FILTER html %]"
                alt="[% group.name FILTER html %]"
                title="[% group.name FILTER html %] - [% group.description FILTER html %]">
         [% END %]
-
+        @
         [%+ comment.time FILTER time %]</i>
 
         [% IF mode == "edit" %]
