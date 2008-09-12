@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Myk Melez <myk@mozilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -32,15 +32,15 @@
 [% cgi = Bugzilla.cgi %]
 
 [% PROCESS global/variables.none.tmpl %]
-[% PROCESS global/header.html.tmpl title = "Mid-air collision!" %]
+[% PROCESS global/header.html.tmpl title = "空中衝突 !" %]
 
-<h1>Mid-air collision detected!</h1>
+<h1>衝突が検出されました !</h1>
 
 <p>
-  Someone else has made changes to
-  <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">attachment [% attachment.id %]</a>
-  of [% "$terms.bug $attachment.bug_id" FILTER bug_link(attachment.bug_id) FILTER none %]
-  at the same time you were trying to. The changes made were:
+  他の誰かが
+  [% "$terms.bug $attachment.bug_id" FILTER bug_link(attachment.bug_id) FILTER none %] の
+  <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">添付 [% attachment.id %]</a>
+  に同時に変更を加えようとしました。変更は
 </p>
 
 <p>
@@ -49,7 +49,7 @@
 
 [% IF cgi.param("comment") %]
 <p>
-  Your comment was:<br>
+  あなたのコメントは:<br>
   <blockquote><pre class="bz_comment_text">
     [% cgi.param("comment") FILTER wrap_comment FILTER html %]
   </pre></blockquote>
@@ -57,21 +57,21 @@
 [% END %]
 
 <p>
-You have the following choices:
+次の選択が可能です:
 </p>
 
 <ul>
   <li>
     <form method="post" action="attachment.cgi">
       [% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
-      <input type="submit" id="process" value="Submit my changes anyway">
-        This will cause all of the above changes to be overwritten.
+      <input type="submit" id="process" value="変更を実行します">
+        上記の全ての変更を上書きします。
     </form>
   </li>
   <li>
-    Throw away my changes, and
-    <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">revisit
-    attachment [% attachment.id %]</a>
+    変更をやめ
+    <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">
+    添付 [% attachment.id %]</a> に戻ります
   </li>
 </ul>
 
