@@ -108,7 +108,6 @@
   [% ELSIF error == "auth_failure" %]
     [% title = "認証が必要です" %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
-    Sorry,
     [% IF group %]
       あなたは、'[% group FILTER html %]' グループのメンバーではありません。
     [% END %]
@@ -991,9 +990,9 @@
     <tt>[% email FILTER html %]</tt> で検索するには一つ以上のフィールドを指定する必要があります。
 
   [% ELSIF error == "missing_frequency" %]
-    [% title = "頻度が入力されていません" %]
+    [% title = "更新頻度が入力されていません" %]
     [% docslinks = {'reporting.html' => 'レポート'} %]
-    この series に適当な頻度が入力されていません。
+    この series に適当な更新頻度が入力されていません。
 
   [% ELSIF error == "missing_name" %]
     [% title = "名前が入力されていません" %]
@@ -1001,42 +1000,40 @@
     この series の名前は必須項目です。
 
   [% ELSIF error == "missing_query" %]
-    [% title = "Missing Search" %]
-    [% docslinks = {'query.html' => "Searching for $terms.bugs",
-                    'query.html#list' => "$terms.Bug lists"} %]
-    The search named <em>[% queryname FILTER html %]</em>
+    [% title = "指定された検索がありません" %]
+    [% docslinks = {'query.html' => "$terms.bugs の検索",
+                    'query.html#list' => "$terms.Bug リスト"} %]
+    <em>[% queryname FILTER html %]</em> という名前の検索は
     [% IF sharer_id && sharer_id != user.id %]
-      has not been made visible to you.
+      あなたのアカウントから利用できません。
     [% ELSE %]
-      does not exist.
+      存在しません。
     [% END %]
 
   [% ELSIF error == "missing_resolution" %]
-    [% title = "Resolution Required" %]
-    A valid resolution is required to mark [% terms.bugs %] as
-    [%+ status FILTER upper FILTER html %].
+    [% title = "処理方法が指定されていません" %]
+    [% terms.bugs %] を [%+ status FILTER upper FILTER html %]
+    として処理するには有効な処理方法が必要です。
 
   [% ELSIF error == "move_bugs_disabled" %]
-    [% title = BLOCK %][% terms.Bug %] Moving Disabled[% END %]
-    Sorry, [% terms.bug %] moving has been disabled. If you need
-    to move [% terms.abug %], please contact [% Param("maintainer") %].
+    [% title = BLOCK %][% terms.Bug %] の移動は無効化されています[% END %]
+    [% terms.bug %] の移動は無効化されています。
+    [% terms.abug %] を移動する必要がある場合は、[% Param("maintainer") %] に連絡してください。
 
   [% ELSIF error == "missing_subcategory" %]
-    [% title = "Missing Subcategory" %]
-    You did not specify a subcategory for this series.
-                
+    [% title = "サブカテゴリが指定されていません" %]
+    この series にサブカテゴリが指定されていません。
+
   [% ELSIF error == "missing_version" %]
-    [% title = "Missing Version" %]
-    [% admindocslinks = {'versions.html' => 'Defining versions'} %]
-    Sorry, the product <em>[% product.name FILTER html %]</em>
-    has to have at least one version in order for you to
-    enter [% terms.abug %] into it.<br>
+    [% title = "利用可能なバージョンが登録されていません" %]
+    [% admindocslinks = {'versions.html' => 'バージョンの指定'} %]
+    [% terms.abug %] を登録するには、プロダクト
+    <em>[% product.name FILTER html %]</em>
+    にバージョンが最低、一つは必要です。<br>
     [% IF user.in_group("editcomponents", product.id) %]
-      <a href="editversions.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">Create
-      a new version</a>.
+      <a href="editversions.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">新しいバージョンを作成してください</a>。
     [% ELSE %]
-      Please contact [% Param("maintainer") %] and ask them
-      to add a version to this product.
+      [% Param("maintainer") %] に連絡し、このプロダクトにバージョンを追加するように要請してください。
     [% END %]
 
   [% ELSIF error == "need_quip" %]
@@ -1045,108 +1042,103 @@
     Please enter a quip in the text field.
 
   [% ELSIF error == "new_password_missing" %]
-    [% title = "New Password Missing" %]
-    You must enter a new password.
+    [% title = "新しいパスワードが入力されていません" %]
+    新しいパスワードが入力されていません。
 
   [% ELSIF error == "no_axes_defined" %]
-    [% title = "No Axes Defined" %]
+    [% title = "軸が定義されていません" %]
     [% docslinks = {'reporting.html' => 'Reporting'} %]
-    You didn't define any axes to plot.
+    プロットする軸が定義されていません。
 
   [% ELSIF error == "no_bugs_chosen" %]
-    [% title = BLOCK %]No [% terms.Bugs %] Selected[% END %]
-    You apparently didn't choose any [% terms.bugs %]
+    [% title = BLOCK %][% terms.Bugs %] が選択されていません[% END %]
     [% IF action == "modify" %]
-      to modify.
+      編集する
     [% ELSIF action == "view" %]
-      to view.
+      表示する
     [% END %]
+    [% terms.bugs %] が選択されていません。
 
   [% ELSIF error == "no_bug_ids" %]
-    [% title = BLOCK %]No [% terms.Bugs %] Selected[% END %]
-    You didn't choose any [% terms.bugs %] to
-    [% IF action == "add" %] add to [% ELSE %] remove from [% END %]
-    the [% tag FILTER html %] tag.
+    [% title = BLOCK %][% terms.Bugs %] が選択されていません[% END %]
+    タグ [% tag FILTER html %] を
+    [% IF action == "add" %] 追加 [% ELSE %] 削除 [% END %]
+    する [% terms.Bugs %] が選択されていません。
 
   [% ELSIF error == "no_bugs_in_list" %]
-    [% title = "Delete Tag?" %]
-    This will remove all [% terms.bugs %] from the
-    [% tag FILTER html %] tag. This will delete the tag completely. Click
+    [% title = "タグを削除して良いですか?" %]
+    タグ [% tag FILTER html %] から全ての [% terms.bugs %] を削除します。
+    この操作を実行すると、完全にタグを削除します(やり直すことはできません)。
+    本当に実行するかを確認してから
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- tag FILTER url_quote %]">here</a> if you really want to delete it.
+    [%- tag FILTER url_quote %]">削除を実行</a>してください。
 
   [% ELSIF error == "no_bugs_to_remove" %]
-    [% title = "No Tag Selected" %]
-    You didn't select a tag from which to remove [% terms.bugs %].
+    [% title = "タグが選択されていません" %]
+    [% terms.bugs %] から削除するタグが選択されていません。
 
   [% ELSIF error == "no_dupe_stats" %]
-    [% title = "Cannot Find Duplicate Statistics" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    There are no duplicate statistics for today ([% today FILTER html %]) 
-    or yesterday.
+    [% title = "重複する統計は見つかりませんでした" %]
+    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
+    今日 ([% today FILTER html %]) か昨日に重複する統計は設定されていません。
 
   [% ELSIF error == "no_dupe_stats_error_today" %]
-    [% title = "Error Reading Today's Dupes File" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    An error occurred opening today's dupes file: [% error_msg FILTER html %].
+    [% title = "今日の重複データを読み込む際にエラーが発生しました" %]
+    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
+    今日の重複のデータファイルを開く際にエラーが発生しました: [% error_msg FILTER html %]
 
   [% ELSIF error == "no_dupe_stats_error_whenever" %]
-    [% title = "Error Reading Previous Dupes File" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    An error occurred opening [% changedsince FILTER html %] days ago
-    ([% whenever FILTER html %])'s dupes file:
-    [% error_msg FILTER html %].
+    [% title = "過去の重複データを読み込む際にエラーが発生しました" %]
+    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
+    [% changedsince FILTER html %] 日前 ([% whenever FILTER html %])
+    の重複データファイルを開く際にエラーが発生しました: [% error_msg FILTER html %]
 
   [% ELSIF error == "no_dupe_stats_error_yesterday" %]
-    [% title = "Error Reading Yesterday's Dupes File" %]
-    [% admindocslinks = {'extraconfig.html' => 'Setting up the collecstats.pl job'} %]
-    There are no duplicate statistics for today ([% today FILTER html %]), 
-    and an error
-    occurred opening yesterday's dupes file: [% error_msg FILTER html %].
+    [% title = "昨日の重複データを読み込む際にエラーが発生しました" %]
+    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
+    今日 ([% today FILTER html %]) の重複の統計データが存在せず、
+    昨日のデータを開く際にもエラーが発生しました: [% error_msg FILTER html %]
 
   [% ELSIF error == "no_initial_bug_status" %]
-    [% title = "No Initial $terms.Bug Status" %]
-    No [% terms.bug %] status is available on [% terms.bug %] creation.
-    Please report the problem to [% Param("maintainer") %].
+    [% title = "$terms.Bug ステータスの初期値がありません" %]
+    [% terms.bug %] を作成時に選択可能な [% terms.bug %] ステータスがありません。
+    [% Param("maintainer") %] にこの問題を報告してください。
 
   [% ELSIF error == "no_new_quips" %]
-    [% title = "No New Quips" %]
-    [% admindocslinks = {'quips.html' => 'Controlling quip usage'} %]
-    This site does not permit the addition of new quips.
+    [% title = "新規 quips は無効です" %]
+    [% admindocslinks = {'quips.html' => 'quip の利用方法の制御'} %]
+    新しい quips を追加することはこのサイトでは許可されていません。
 
   [% ELSIF error == "no_page_specified" %]
-    [% title = "No Page Specified" %]
-    You did not specify the id of a page to display.
+    [% title = "ページが指定されていません" %]
+    表示するページの ID が指定されていません。
 
   [% ELSIF error == "no_products" %]
-    [% title = "No Products" %]
-    [% admindocslinks = {'products.html'   => 'Setting up a product',
-                         'components.html' => 'Adding components to products',
-                         'groups.html'     => 'Groups security'} %]
-    Either no products have been defined to enter [% terms.bugs %] against or you have not
-    been given access to any.
+    [% title = "プロダクトがありません" %]
+    [% admindocslinks = {'products.html'   => 'プロダクトの設定',
+                         'components.html' => 'プロダクトにコンポーネントを追加する',
+                         'groups.html'     => 'グループセキュリティ'} %]
+    入力する [% terms.bugs %] に対するプロダクトが定義されていないか、
+    あなたのアカウントにはアクセスする権限がありません。
 
   [% ELSIF error == "no_valid_action" %]
-    [% title = "No valid action specified" %]
-    Cannot edit [% field_descs.$field FILTER html %]: no valid action was specified.
+    [% title = "有効な動作が指定されていません" %]
+    [% field_descs.$field FILTER html %] を編集できません: 有効な動作が指定されていません
 
   [% ELSIF error == "number_not_numeric" %]
-    [% title = "Numeric Value Required" %]
+    [% title = "数値が必要です" %]
     The value '[% num FILTER html %]' in the 
-    <em>[% field_descs.$field FILTER html %]</em> field 
-    is not a numeric value.
+    <em>[% field_descs.$field FILTER html %]</em> フィールドの値が数値ではありません。
 
   [% ELSIF error == "number_too_large" %]
-    [% title = "Number Too Large" %]
-    The value '[% num FILTER html %]' in the 
-    <em>[% field_descs.$field FILTER html %]</em> field 
-    is more than the maximum allowable value of '[% max_num FILTER html %]'.
+    [% title = "指定された数値は大きすぎます" %]
+    <em>[% field_descs.$field FILTER html %]</em> フィールドの値、'[% num FILTER html %]'
+   は大きすぎます。'[% max_num FILTER html %]' までの数値を入力してください。
 
   [% ELSIF error == "number_too_small" %]
-    [% title = "Number Too Small" %]
-    The value '[% num FILTER html %]' 
-    in the <em>[% field_descs.$field FILTER html %]</em> field 
-    is less than the minimum allowable value of '[% min_num FILTER html %]'.
+    [% title = "指定された数値は小さすぎます" %]
+    <em>[% field_descs.$field FILTER html %]</em> フィールドの値、'[% num FILTER html %]'
+    は小さすぎます。'[% min_num FILTER html %]' 以上の数値を入力してください。
 
   [% ELSIF error == "object_name_not_specified" %]
     [% type = BLOCK %][% PROCESS object_name %][% END %]
@@ -1156,99 +1148,96 @@
 
   [% ELSIF error == "object_does_not_exist" %]
     [% type = BLOCK %][% PROCESS object_name %][% END %]
-    [% title = BLOCK %]Invalid [% type FILTER ucfirst FILTER html %][% END %]
-    There is no [% type FILTER html %] named '[% name FILTER html %]'
+    [% title = BLOCK %][% type FILTER ucfirst FILTER html %] は無効です[% END %]
     [% IF product.defined %]
-      in the '[% product.name FILTER html %]' product
+      '[% product.name FILTER html %]' プロダクトには
     [% END %].
+    '[% name FILTER html %]' という名前の [% type FILTER html %] がありません。
     [% IF class == "Bugzilla::User" %]
-      Either you mis-typed the name or that user has not yet registered
-      for a [% terms.Bugzilla %] account.
+      入力した名前が間違えているか、その人は [% terms.Bugzilla %] にはアカウントを登録していないのかもしれません。
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
-    [% title = "Incorrect Old Password" %]
-    You did not enter your old password correctly.
+    [% title = "(現在の) パスワードが違います" %]
+    (現在の) パスワードが正しく入力されていません。
 
   [% ELSIF error == "old_password_required" %]
-    [% title = "Old Password Required" %]
-    You must enter your old password to change your email address.
+    [% title = "(現在の) パスワードが入力されていません" %]
+    メールアドレスを変更する際には、(現在の) パスワードは必須項目です。
 
   [% ELSIF error == "password_change_requests_not_allowed" %]
-    [% title = "Password Change Requests Not Allowed" %]
-    The system is not configured to allow password change requests.
+    [% title = "パスワードの変更は許可されていません" %]
+    このシステムではパスワードを変更できるように設定されていません。
 
   [% ELSIF error == "passwords_dont_match" %]
-    [% title = "Passwords Don't Match" %]
-    The two passwords you entered did not match.
+    [% title = "パスワードが一致しませんでした" %]
+    入力された二つのパスワードが一致していません。
 
   [% ELSIF error == "password_too_long" %]
-    [% title = "Password Too Long" %]
-    The password must be no more than
-    [%+ constants.USER_PASSWORD_MAX_LENGTH FILTER html %] characters long.
+    [% title = "パスワードが長すぎます" %]
+    入力されたパスワードは長すぎます。
+    [%+ constants.USER_PASSWORD_MAX_LENGTH FILTER html %] 文字以内にしてください。
 
   [% ELSIF error == "password_too_short" %]
-    [% title = "Password Too Short" %]
-    The password must be at least
-    [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long.
+    [% title = "パスワードが短すぎます" %]
+    入力されたパスワードは短すぎます。
+    [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 文字以上にしてください。
 
   [% ELSIF error == "patch_too_large" %]
-    [% title = "File Too Large" %]
-    The file you are trying to attach is [% filesize FILTER html %] 
-    kilobytes (KB) in size.
-    Patches cannot be more than [% Param('maxpatchsize') %] KB in size.
-    Try breaking your patch into several pieces.
+    [% title = "パッチファイルが大きすぎます" %]
+    添付しようとしたファイルは [% filesize FILTER html %] KB もあります。
+    パッチのサイズは最大で [% Param('maxpatchsize') %] KB です。
+    パッチを分割することを検討してください。
 
   [% ELSIF error == "product_access_denied" %]
-    Either the product '[% product FILTER html %]' does not exist or
-    you don't have access to it.
+    プロダクト '[% product FILTER html %]' は存在しないか、
+    あなたのアカウントにはアクセスする権限がありません。
 
   [% ELSIF error == "product_doesnt_exist" %]
-    [% title = "Specified Product Does Not Exist" %]
-    The product '[% product FILTER html %]' does not exist.
+    [% title = "指定されたプロダクトは存在していません" %]
+    プロダクト '[% product FILTER html %]' は存在していません。
 
   [% ELSIF error == "product_votes_per_bug_must_be_nonnegative" %]
-    [% title = "Maximum Votes Must Be Non-negative" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    '[% maxvotesperbug FILTER html %]' is an invalid value for the 
-    <em>'Maximum Votes Per [% terms.Bug %]'</em> field, which should
-    contain a non-negative number.
+    [% title = "最大投票数に負の数値は設定できません" %]
+    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
+    <em>'[% terms.Bug %] あたりの最大投票数'</em> フィールドに
+    '[% maxvotesperbug FILTER html %]' は指定できません。
+    値は '0' か、正の整数を入力してください。
 
   [% ELSIF error == "product_votes_per_user_must_be_nonnegative" %]
-    [% title = "Votes Per User Must Be Non-negative" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    '[% votesperuser FILTER html %]' is an invalid value for the 
-    <em>'Votes Per User'</em> field, which should contain a
-    non-negative number.
+    [% title = "ユーザあたりの投票数に負の数値は設定できません" %]
+    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
+    <em>'ユーザ当たりの投票数'</em> フィールドに
+    '[% votesperuser FILTER html %]' は指定できません。
+    値は '0' か、正の整数を入力してください。
 
   [% ELSIF error == "product_votes_to_confirm_must_be_nonnegative" %]
-    [% title = "Votes To Confirm Must Be Non-negative" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    '[% votestoconfirm FILTER html %]' is an invalid value for the 
-    <em>'Votes To Confirm'</em> field, which should contain a
-    non-negative number.
+    [% title = "承認するための票数に負の数値は設定できません" %]
+    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
+    <em>'承認のための票数'</em> フィールドに
+    '[% votestoconfirm FILTER html %]' は指定できません。
+    値は '0' か、正の整数を入力してください。
 
   [% ELSIF error == "product_cant_delete_description" %]
-    [% title = "Cannot delete product description" %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    Cannot delete the description for product
-    '[% product FILTER html %]'.
+    [% title = "プロダクトの説明は削除できません" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    プロダクト '[% product FILTER html %]' の説明は削除できません。
 
   [% ELSIF error == "product_cant_delete_name" %]
-    [% title = "Cannot delete product name" %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    Cannot delete the product name for product '[% product FILTER html %]'.
+    [% title = "プロダクト名は削除できません" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    プロダクト '[% product FILTER html %]' のプロダクト名は削除できません。
 
   [% ELSIF error == "product_name_already_in_use" %]
-    [% title = "Product name already in use" %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    The product name '[% product FILTER html %]' is already in use.
+    [% title = "指定されたプロダクト名は既に利用されています" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    プロダクト名 '[% product FILTER html %]' は既に利用されています。
   
   [% ELSIF error == "product_name_diff_in_case" %]
-    [% title = "Product name differs only in case" %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    The product name '[% product FILTER html %]' differs from existing 
-    product '[% existing_product FILTER html %]' only in case.
+    [% title = "指定されたプロダクト名は既存のものと大文字・小文字の差異しかありません" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    プロダクト名 '[% product FILTER html %]' は既に存在してる
+    '[% existing_product FILTER html %]' と大文字・小文字の違いしかありません。
 
   [% ELSIF error == "product_must_define_defaultmilestone" %]
     [% title = "Must define new default milestone" %]
