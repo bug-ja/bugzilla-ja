@@ -1037,9 +1037,9 @@
     [% END %]
 
   [% ELSIF error == "need_quip" %]
-    [% title = "Quip Required" %]
+    [% title = "警句が入力されていません" %]
     [% docslinks = {'quips.html' => 'About quips'} %]
-    Please enter a quip in the text field.
+    警句をテキストフィールドに入力してください。
 
   [% ELSIF error == "new_password_missing" %]
     [% title = "新しいパスワードが入力されていません" %]
@@ -1142,9 +1142,8 @@
 
   [% ELSIF error == "object_name_not_specified" %]
     [% type = BLOCK %][% PROCESS object_name %][% END %]
-    [% title = BLOCK %][% type FILTER ucfirst FILTER html %] Not 
-    Specified[% END %]
-    You must select/enter a [% type FILTER html %].
+    [% title = BLOCK %][% type FILTER ucfirst FILTER html %] が指定されていません[% END %]
+    [% type FILTER html %] を入力、もしくは選択してください。
 
   [% ELSIF error == "object_does_not_exist" %]
     [% type = BLOCK %][% PROCESS object_name %][% END %]
@@ -1236,225 +1235,220 @@
   [% ELSIF error == "product_name_diff_in_case" %]
     [% title = "指定されたプロダクト名は既存のものと大文字・小文字の差異しかありません" %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
-    プロダクト名 '[% product FILTER html %]' は既に存在してる
+    プロダクト名 '[% product FILTER html %]' は既に存在している
     '[% existing_product FILTER html %]' と大文字・小文字の違いしかありません。
 
   [% ELSIF error == "product_must_define_defaultmilestone" %]
-    [% title = "Must define new default milestone" %]
-    [% admindocslinks = {'products.html' => 'Administering products',
-                         'milestones.html' => 'About Milestones'} %]
+    [% title = "新しい既定のマイルストーンを新規作成してください" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理',
+                         'milestones.html' => 'マイルストーン'} %]
     [% IF classification %]
       [% classification_url_part = BLOCK %]&amp;classification=
         [%- classification FILTER url_quote %]
       [% END %]
     [% END %]
-    You must <a href="editmilestones.cgi?action=add&amp;product=
+    プロダクト '[% product FILTER html %]' の既定のマイルストーンを設定する前に
+    <a href="editmilestones.cgi?action=add&amp;product=
     [%- product FILTER url_quote %]
     [%- classification_url_part FILTER none %]">
-    create the milestone '[% defaultmilestone FILTER html %]'</a> before
-    it can be made the default milestone for product '[% product FILTER html %]'.
+    マイルストーン '[% defaultmilestone FILTER html %]'</a>
+    を作成してください。
 
   [% ELSIF error == "product_admin_denied" %]
-    [% title = "Product Access Denied" %]
-    You are not allowed to edit properties of product '[% product FILTER html %]'.
+    [% title = "プロダクトにアクセスできません" %]
+    あなたのアカウントはプロダクト '[% product FILTER html %]' を編集する権限がありません。
 
   [% ELSIF error == "product_blank_name" %]
-    [% title = "Blank Product Name Not Allowed" %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    You must enter a name for the new product.
+    [% title = "プロダクト名を入力してください" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    プロダクト名は必須項目です。
   
   [% ELSIF error == "product_disabled" %]
-    [% title = BLOCK %]Product closed for [% terms.Bug %] Entry[% END %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    Sorry, entering [% terms.abug %] into the
-    product <em>[% product.name FILTER html %]</em> has been disabled.
+    [% title = BLOCK %]指定されたプロダクトに [% terms.Bug %] の新規登録はできません[% END %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    プロダクト <em>[% product.name FILTER html %]</em> への
+    [% terms.abug %] の新規追加は無効化されています。
 
   [% ELSIF error == "product_edit_denied" %]
-    [% title = "Product Edit Access Denied" %]
-    [% admindocslinks = {'products.html' => 'Administering products',
-                         'groups.html'   => 'Group security'} %]
-    You are not permitted to edit [% terms.bugs %] in product 
-    [%+ product FILTER html %].
+    [% title = "プロダクトの編集ができません" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理',
+                         'groups.html'   => 'グループセキュリティー'} %]
+    あなたのアカウントはプロダクト [%+ product FILTER html %] の
+    [% terms.bugs %] を編集することはできません。
 
   [% ELSIF error == "product_has_bugs" %]
-    [% title = BLOCK %]Product has [% terms.Bugs %][% END %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    There are [% nb FILTER html %] [%+ terms.bugs %] entered for this product!
-    You must move those [% terms.bugs %] to another product before you
-    can delete this one.
+    [% title = BLOCK %]プロダクトに [% terms.Bugs %] が存在します[% END %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    [% nb FILTER html %] 件の [%+ terms.bugs %] がこのプロダクトには存在しています。
+    これらの [% terms.bugs %] を別のプロダクトに移動させてから削除してください。
 
   [% ELSIF error == "product_must_have_description" %]
-    [% title = "Product needs Description" %]
-    [% admindocslinks = {'products.html' => 'Administering products'} %]
-    You must enter a description for product '[% product FILTER html %]'.
+    [% title = "プロダクトの説明を入力してください" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    プロダクト '[% product FILTER html %]' の説明は必須項目です。
 
   [% ELSIF error == "product_must_have_version" %]
-    [% title = "Product needs Version" %]
-    [% admindocslinks = {'products.html' => 'Administering products',
-                         'versions.html' => 'Administering versions'} %]
-    You must enter a version for product '[% product FILTER html %]'.
+    [% title = "プロダクトにバージョンを追加してください" %]
+    [% admindocslinks = {'products.html' => 'プロダクトの管理',
+                         'versions.html' => 'バージョンの管理'} %]
+    プロダクト '[% product FILTER html %]' のバージョンは必須項目です。
 
   [% ELSIF error == "product_not_specified" %]
-    [% title = "No Product Specified" %]
-    [% admindocslinks = {'products.html'   => 'Administering products',
-                         'components.html' => 'Administering components',
-                         'milestones.html' => 'Administering milestones',
-                         'versions.html'   => 'Administering versions'} %]
-    No product specified when trying to edit components, milestones, versions
-    or product.
+    [% title = "プロダクトが指定されていません" %]
+    [% admindocslinks = {'products.html'   => 'プロダクトの管理',
+                         'components.html' => 'コンポーネントの管理',
+                         'milestones.html' => 'マイルストーンの管理',
+                         'versions.html'   => 'バージョンの管理'} %]
+    コンポーネント、マイルストーン、バージョン、もしくはプロダクトを編集しようとしましたが、
+    プロダクトが指定されていません。
 
   [% ELSIF error == "query_name_exists" %]
-    [% title = "Search Name Already In Use" %]
-    The name <em>[% name FILTER html %]</em> is already used by another
-    saved search. You first have to
+    [% title = "検索名は既に利用されています" %]
+    検索名 <em>[% name FILTER html %]</em> は既に利用されています。
+    この名前を利用したい場合、保存されている同名の検索を
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- name FILTER url_quote %]">delete</a> it if you really want to use
-    this name.
+    [%- name FILTER url_quote %]">削除</a> してください。
 
   [% ELSIF error == "query_name_missing" %]
-    [% title = "No Search Name Specified" %]
+    [% title = "検索名が入力されていません" %]
     [% docslinks = {'query.html#list' => "$terms.Bug lists"} %]
-    You must enter a name for your search.
+    検索名は必須項目です。
 
   [% ELSIF error == "query_name_too_long" %]
-    [% title = "Query Name Too Long" %]
-    The name of the query must be less than 64 characters long.
+    [% title = "検索名が長すぎます" %]
+    検索名は 64 文字以内で入力してください。
 
   [% ELSIF error == "quicksearch_unknown_field" %]
-    [% title = "Unknown QuickSearch Field" %]
+    [% title = "認識できない QuickSearch フィールドです" %]
     [% IF fields.unique.size == 1 %]
-      Field <code>[% fields.first FILTER html %]</code> is not a known field.
+      フィールド <code>[% fields.first FILTER html %]</code> は有効なフィールドではありません。
     [% ELSE %]
-      Fields
+      フィールド
       [% FOREACH field = fields.unique.sort %]
          <code>[% field FILTER html %]</code>
          [% ', ' UNLESS loop.last() %]
       [% END %]
-      are not known fields.
+      は有効なフィールドではありません。
     [% END %]
-    The legal field names are <a href="page.cgi?id=quicksearchhack.html">listed here</a>.
+    有効なフィールド名は<a href="page.cgi?id=quicksearchhack.html">ヘルプにリストアップされています</a>。
 
   [% ELSIF error == "reassign_to_empty" %]
-    [% title = "Illegal Reassignment" %]
-    To reassign [% terms.abug %], you must provide an address for
-    the new assignee.
+    [% title = "新しい担当者のアドレスが指定されていません" %]
+    [% terms.abug %] を他のアカウントに担当を設定する場合、
+    新しい担当者のアドレスを入力する必要があります。
 
   [% ELSIF error == "require_component" %]
-    [% title = "Component Needed" %]
-    To file this [% terms.bug %], you must first choose a component.
-    If necessary, just guess.
+    [% title = "コンポーネントが指定されていません" %]
+    [% terms.bug %] を新規追加する際には、コンポーネントを選択しなくてはいけません。
+    どのコンポーネントが適当か判断できないのであれば、想像して決めてください。
 
   [% ELSIF error == "require_new_password" %]
-    [% title = "New Password Needed" %]
-    You cannot change your password without choosing a new one.
+    [% title = "新しいパスワードが入力されていません" %]
+    パスワードを変更する際には新しいパスワードは必須項目です。
 
   [% ELSIF error == "require_summary" %]
-    [% title = "Summary Needed" %]
-    You must enter a summary for this [% terms.bug %].
+    [% title = "要約が入力されていません" %]
+    [% terms.bug %] には要約が必須項目です。
 
   [% ELSIF error == "resolution_cant_clear" %]
-    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %] is 
-    closed, so you cannot clear its resolution.
+    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %] は閉じられているので、
+    解決方法をクリアすることはできません。
 
   [% ELSIF error == "resolution_not_allowed" %]
-    [% title = "Resolution Not Allowed" %]
-    You cannot set a resolution for open [% terms.bugs %].
+    [% title = "解決方法を設定できません" %]
+    開かれている [% terms.bugs %] に解決方法は設定できません。
 
   [% ELSIF error == "saved_search_used_by_whines" %]
-    [% title = "Saved Search In Use" %]
-    [% docslinks = {'whining.html' => 'About Whining'} %]
-    The saved search <em>[% search_name FILTER html %]</em> is being used 
-    by <a href="editwhines.cgi">Whining events</a> with the following subjects:
-    [%+ subjects FILTER html %]
+    [% title = "保存された検索は利用されています" %]
+    [% docslinks = {'whining.html' => 'Whine について'} %]
+    保存された検索 <em>[% search_name FILTER html %]</em> はすでに
+    <a href="editwhines.cgi">Whining イベント</a> で
+    [%+ subjects FILTER html %] という名前で利用されています。
 
   [% ELSIF error == "search_content_without_matches" %]
-    [% title = "Illegal Search" %]
-    The "content" field can only be used with "matches" search 
-    and the "matches" search can only be used with the "content"
-    field.
+    [% title = "無効な検索です" %]
+    内容フィールドは一致検索でのみ利用可能です。
+    また、一致検索は内容フィールドを利用したときのみ利用可能です。
 
   [% ELSIF error == "series_already_exists" %]
-    [% title = "Series Already Exists" %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
-      A series named <em>[% series.category FILTER html %] /
+    [% title = "series は既に存在しています" %]
+    [% docslinks = {'reporting.html' => 'レポート'} %]
+      series 名 <em>[% series.category FILTER html %] /
       [%+ series.subcategory FILTER html %] / 
       [%+ series.name FILTER html %]</em>
-      already exists.
+      は既に存在しています。
     
   [% ELSIF error == "sidebar_supports_mozilla_only" %]
-    Sorry - sidebar.cgi currently only supports Mozilla based web browsers.
-    <a href="http://www.mozilla.org">Upgrade today</a>. :-)
+    sidebar.cgi は Mozilla ベースのブラウザでのみ利用できます。
+    <a href="http://www.mozilla.org">今すぐアップグレードしてください</a>(笑)
 
   [% ELSIF error == "still_unresolved_bugs" %]
     [% IF dependency_count == 1 %]
       [% terms.Bug %]# <a href="show_bug.cgi?id=[% dependencies.0.bug_id FILTER none %]">[% dependencies.0.bug_id FILTER none %]</a>
-      still has [% dependencies.0.dependencies FILTER html %] unresolved
+      は [% dependencies.0.dependencies FILTER html %] 件の未解決の
       [% IF dependencies.0.dependencies == 1 %]
-        dependency
+        [% terms.bug %]
       [% ELSE %]
-        dependencies
-      [% END %]. Show
-      <a href="showdependencytree.cgi?id=[% dependencies.0.bug_id FILTER none %]&amp;hide_resolved=1">Dependency
-      Tree</a>.
+        [% terms.bugs %]
+      [% END %] が依存しています。
+      <a href="showdependencytree.cgi?id=[% dependencies.0.bug_id FILTER none %]&amp;hide_resolved=1">依存ツリー</a>
+      を表示して確認してください。
     [% ELSE %]
-      There are [% dependency_count FILTER none %] open [% terms.bugs %] which
-      have unresolved dependencies.
+      [% dependency_count FILTER none %] 件の開かれた未解決の [% terms.bugs %] が依存しています。
       <br>
       [% FOREACH bug = dependencies %]
         [% terms.Bug %]# <a href="show_bug.cgi?id=[% bug.bug_id FILTER none %]">[% bug.bug_id FILTER none %]</a>
-        has [% bug.dependencies FILTER html %] open
+        は [% bug.dependencies FILTER html %] 件の開かれた
         [% IF bug.dependencies == 1 %]
-          dependency.
+          [% terms.bug %]
         [% ELSE %]
-          dependencies.
-        [% END %]
-        (<a href="showdependencytree.cgi?id=[% bug.bug_id FILTER none %]&amp;hide_resolved=1">Dependency
-        Tree</a>)<br>
+          [% terms.bugs %]
+        [% END %] が依存しています。
+        (<a href="showdependencytree.cgi?id=[% bug.bug_id FILTER none %]&amp;hide_resolved=1">依存ツリー</a> を表示)<br>
       [% END %]
     [% END %]
 
   [% ELSIF error == "sudo_in_progress" %]
-    [% title = "Session In Progress" %]
-    A sudo session (impersonating [% target FILTER html %]) is in progress.  
-    End that session (using the link in the footer) before starting a new one.
+    [% title = "セッションを実行中です" %]
+    sudo セッション (ターゲット [% target FILTER html %]) が実行中です。
+    フッタにあるリンクでこのセッションを終了させてから新しいセッションを実行してください。
 
   [% ELSIF error == "sudo_password_required" %]
-    [% title = "Password Required" %]
-    Your [% terms.Bugzilla %] password is required to begin a sudo 
-    session. Please <a href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">go back</a> and enter your password.
-    
-  [% ELSIF error == "sudo_preparation_required" %]
-    [% title = "Preparation Required" %]
-    You may not start a sudo session directly.  Please
+    [% title = "パスワードが必要です" %]
+    sudo セッションを開始するには、あなたの [% terms.Bugzilla %] のパスワードが必要です。
     <a href="relogin.cgi?action=prepare-sudo&target_login=
     [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">start your session normally</a>.
+    [%- reason FILTER html %]">ログイン画面</a>で、あなたのパスワードを入力してください。
+
+  [% ELSIF error == "sudo_preparation_required" %]
+    [% title = "準備が必要です" %]
+    sudo セッションを直接開始することはできません。
+    <a href="relogin.cgi?action=prepare-sudo&target_login=
+    [%- target_login FILTER html %]&reason=
+    [%- reason FILTER html %]">通常のセッションを開始してから</a> 実行してください。
 
   [% ELSIF error == "sudo_protected" %]
-    [% title = "User Protected" %]
-    The user [% login FILTER html %] may not be impersonated by sudoers.
+    [% title = "ユーザは保護されています" %]
+    ユーザ [% login FILTER html %] は sudo の対象にはできません。
 
   [% ELSIF error == "too_many_votes_for_bug" %]
-    [% title = "Illegal Vote" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    You may only use at most [% max FILTER html %] votes for a single
-    [%+ terms.bug %] in the
-    <tt>[% product FILTER html %]</tt> product, but you are trying to
-    use [% votes FILTER html %].
+    [% title = "投票数が多すぎます" %]
+    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
+    <tt>[% product FILTER html %]</tt> プロダクトでは、
+    ひとつの [%+ terms.bug %] につき、
+    最高 [% max FILTER html %] 票を投じることができます。
+    しかし、[% votes FILTER html %] 票を投じようとしました。
 
   [% ELSIF error == "too_many_votes_for_product" %]
-    [% title = "Illegal Vote" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    You tried to use [% votes FILTER html %] votes in the
-    <tt>[% product FILTER html %]</tt> product, which exceeds the maximum of
-    [%+ max FILTER html %] votes for this product.
+    [% title = "投票数が多すぎます" %]
+    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
+    <tt>[% product FILTER html %]</tt> プロダクトで [% votes FILTER html %]
+    票を投じようとしましたが、このプロダクトでは最高 [%+ max FILTER html %]
+    票しか投票できません。
 
   [% ELSIF error == "token_does_not_exist" %]
-    [% title = "Token Does Not Exist" %]
-    The token you submitted does not exist, has expired, or has
-    been canceled.
+    [% title = "入力されたトークンは存在していません" %]
+    入力されたトークンは存在していないか、期限切れか、既にキャンセルされています。
 
   [% ELSIF error == "too_soon_for_new_token" %]
     [% title = "Too Soon For New Token" %]
