@@ -36,30 +36,32 @@
 <p>
 
 [% UNLESS no_add_version_link %]
+  バージョンを
   <a title="Add a version to product '[% product.name FILTER html %]'"
      href="editversions.cgi?action=add&amp;product=
-          [%- product.name FILTER url_quote %]">Add</a> a version. 
+          [%- product.name FILTER url_quote %]">追加</a>
 [% END %]
 
 [% IF version.name && !no_edit_version_link %]
-  Edit version <a 
+  バージョン <a 
   title="Edit Version '[% version.name FILTER html %]' of product '
          [%- product.name FILTER html %]'"
   href="editversions.cgi?action=edit&amp;product=
         [%- product.name FILTER url_quote %]&amp;version=
         [%- version.name FILTER url_quote %]">
-        '[% version.name FILTER html %]'</a>.
+        '[% version.name FILTER html %]'</a> を編集
 [% END %]
 
 [% UNLESS no_edit_other_versions_link %]
-  Edit other versions of product <a 
+  プロダクト <a 
   href="editversions.cgi?product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>.
-
+        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+  の他のバージョンを編集する。
 [% END %]
 
-  Edit product <a 
+  プロダクト <a 
   href="editproducts.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>.
+        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+  を編集する。
 
 </p>

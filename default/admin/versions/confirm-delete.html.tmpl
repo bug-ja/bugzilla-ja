@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Gavin Shelley <bugzilla@chimpychompy.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -26,7 +26,7 @@
   #                    version the user wants to delete.
   #%]
 
-[% title = BLOCK %]Delete Version of Product '[% product.name FILTER html %]'
+[% title = BLOCK %]プロダクト '[% product.name FILTER html %]' のバージョンを削除
   [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -35,59 +35,48 @@
 
 <table border="1" cellpadding="4" cellspacing="0">
 <tr bgcolor="#6666FF">
-  <th valign="top" align="left">Field</th>
-  <th valign="top" align="left">Value</th>
+  <th valign="top" align="left">項目</th>
+  <th valign="top" align="left">値</th>
 </tr>
 <tr>
-  <td valign="top">Version:</td>
+  <td valign="top">バージョン:</td>
   <td valign="top">[% version.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">Version of Product:</td>
+  <td valign="top">プロダクトのバージョン:</td>
   <td valign="top">[% product.name FILTER html %]</td>
 </tr>
 <tr>
   <td valign="top">[% terms.Bugs %]:</td>
   <td valign="top">
 [% IF version.bug_count %]
-  <a title="List of [% terms.bugs %] targetted at version '
-           [%- version.name FILTER html %]'"
+  <a title="バージョン [% version.name FILTER html %] が目標の [% terms.bugs %] リスト"
      href="buglist.cgi?version=[% version.name FILTER url_quote %]&amp;product=
           [%- product.name FILTER url_quote %]">
           [%- version.bug_count FILTER none %]</a>
 [% ELSE %]
-  None
+  なし
 [% END %]
   </td>
 </tr>
 </table>
 
-<h2>Confirmation</h2>
+<h2>確認</h2>
 
 [% IF version.bug_count %]
   <p>
-  Sorry, there
-  [% IF version.bug_count > 1 %] 
-    are [% version.bug_count FILTER none %] [%+ terms.bugs %] 
-  [% ELSE %]
-    is [% version.bug_count FILTER none %] [%+ terms.bug %] 
-  [% END %]
-
-  outstanding for this version. You must move 
-
-  [% IF version.bug_count > 1 %]
-     those [% terms.bugs %] 
-  [% ELSE %]
-     that [% terms.bug %]
-  [% END %]
-  to another version before you can delete this one.
+  このバージョンを利用している
+    [% version.bug_count FILTER none %] [%+ terms.bug %] 
+  が残っています。これらの
+    [% terms.bug %] 
+  を他のバージョンに移動するか削除する必要があります。
   </p>
 [% ELSE %]
 
-  <p>Do you really want to delete this version?</p>
+  <p>本当にこのバージョンを削除しますか ?</p>
   
   <form method="post" action="editversions.cgi">
-    <input type="submit" id="delete" value="Yes, delete">
+    <input type="submit" id="delete" value="はい、削除します">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="product" value="[% product.name FILTER html %]">
     <input type="hidden" name="version" value="[% version.name FILTER html %]">

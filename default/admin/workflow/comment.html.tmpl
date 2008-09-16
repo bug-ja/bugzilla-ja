@@ -10,14 +10,14 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #                 Gervase Markham <gerv@mozilla.org>
   #%]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% INCLUDE global/header.html.tmpl
-   title = "Edit Actions Triggered by the Workflow"
+   title = "ワークフローにより実行される機能の編集"
    style_urls = ['skins/standard/admin.css']
 %]
 
@@ -33,19 +33,19 @@
 </script>
 
 <p>
-  This page allows you to define which status transitions require a comment
-  by the user doing the change.
+  このページで、どのステータス変遷を行う時に、
+  ユーザがコメントを入力するのが必要かを編集できます。
 </p>
 
 <form id="workflow_form" method="POST" action="editworkflow.cgi">
 <table>
   <tr>
     <th colspan="2">&nbsp;</th>
-    <th colspan="[% statuses.size FILTER html %]" class="title">To</th>
+    <th colspan="[% statuses.size FILTER html %]" class="title">変更先</th>
   </tr>
 
   <tr>
-    <th rowspan="[% statuses.size + 2 FILTER html %]" class="title">From</th>
+    <th rowspan="[% statuses.size + 2 FILTER html %]" class="title">変更元</th>
     <th>&nbsp;</th>
     [% FOREACH status = statuses %]
       <th class="col-header[% status.is_open ? " open-status" : " closed-status" %]">
@@ -55,7 +55,7 @@
   </tr>
 
   [%# This defines the entry point in the workflow %]
-  [% p = [{id => 0, name => "{Start}", is_open => 1}] %]
+  [% p = [{id => 0, name => "{登録時}", is_open => 1}] %]
   [% FOREACH status = p.merge(statuses) %]
     <tr class="highlight">
       <th align="right" class="[% status.is_open ? "open-status" : "closed-status" %]">
@@ -66,7 +66,7 @@
         [% IF workflow.${status.id}.${new_status.id}.defined %]
           <td align="center" class="checkbox-cell
               [% " checked" IF workflow.${status.id}.${new_status.id} %]"
-              title="From [% status.name FILTER html %] to [% new_status.name FILTER html %]">
+              title="[% status.name FILTER html %] から [% new_status.name FILTER html %] へ">
             <input type="checkbox" name="c_[% status.id %]_[% new_status.id %]"
                    id="c_[% status.id %]_[% new_status.id %]" onclick="toggle_cell(this)"
               [% " checked='checked'" IF workflow.${status.id}.${new_status.id} %]>
@@ -82,9 +82,9 @@
 <p align="center">
   <input type="hidden" name="action" value="update_comment">
   <input type="hidden" name="token" value="[% token FILTER html %]">
-  <input type="submit" value="Commit Changes"> -
-  <a href="editworkflow.cgi?action=edit_comment">Cancel Changes</a> -
-  <a href="editworkflow.cgi">View Current Workflow</a>
+  <input type="submit" value="変更の保存"> -
+  <a href="editworkflow.cgi?action=edit_comment">変更をやめる</a> -
+  <a href="editworkflow.cgi">現在のワークフローを見る</a>
 </p>
 
 </form>
