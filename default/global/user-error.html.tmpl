@@ -911,7 +911,7 @@
     [% END %]
     
   [% ELSIF error == "illegal_email_address" %]
-    [% title = "指定された $jawords. は無効です" %]
+    [% title = "指定された $jawords.mail_address は無効です" %]
     指定された [% jawords.mail_address %] (<b>[% addr FILTER html %]</b>) 
     は、[% jawords.mail_address %] の文法検査で無効だと判断されました。
     [% IF default %]
