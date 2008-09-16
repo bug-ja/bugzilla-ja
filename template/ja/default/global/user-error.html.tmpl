@@ -121,7 +121,7 @@
   "dependency" => "依存",
 
   "duplicate" => "重複",
-  "duplicate_target" => "重複先"
+  "duplicate_target" => "重複先",
 
   "field" => "フィールド",
   "field_name" => "フィールド名",
@@ -521,7 +521,7 @@
     [% terms.abug %] を自分自身に "[% jawords.bug_depends_on %]" もしくは "[% jawords.bug_blocks %]" ことはできません。
 
   [% ELSIF error == "dupe_id_required" %]
-    [% title = "$jawords.duplicate_target の $terms.Bug ID が入力されていません" %]
+    [% title = "$jawords.duplicate_target の $terms.bug ID が入力されていません" %]
     この [% terms.bug %] の [% jawords.duplicate_target %] となる [% terms.abug %] ID が入力されていません。
 
   [% ELSIF error == "dupe_not_allowed" %]
