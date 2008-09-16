@@ -113,6 +113,8 @@
   "component_name" => "コンポーネント名",
   "component_description" => "コンポーネントの説明",
 
+  "content_type" => "Content-Type",
+
   "custom_field" => "カスタムフィールド",
 
   "default_assignee" => "既定の担当者",
@@ -154,6 +156,8 @@
 
   "obsolete_attachment" => "用済み",
   "obsolete_custom_field" => "用済み",
+
+  "output_format" => "フォーマット",
 
   "param" => "パラメータ",
 
@@ -777,9 +781,9 @@
     権限を持つ [% jawords.user %] のみがこの操作が可能です。
 
   [% ELSIF error == "format_not_found" %]
-    [% title = "Format Not Found" %]
-    The requested format <em>[% format FILTER html %]</em> does not exist with
-    a content type of <em>[% ctype FILTER html %]</em>.
+    [% title = "[% output_format %] が存在していません" %]
+    指定された [% jawords.output_format %] <em>[% format FILTER html %]</em> は
+    <em>[% ctype FILTER html %]</em> の [% jawords.content_type %] で出力できません。
     
   [% ELSIF error == "flag_type_sortkey_invalid" %]
     [% title = "$jawords.flag の $jawords.sortkey が無効です" %]
