@@ -51,7 +51,7 @@
   #
   #  メモ: 変数化すべき?
   #    - 認証サービス
-  # %]
+%]
 [% jawords = {
   "account" => "アカウント",
   "account_creation" => "新規アカウント登録",
@@ -686,95 +686,95 @@
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
                     'flags.html' => 'フラグの利用方法'} %]
     複数の人に対して同時に <em>[% type.name FILTER html %]</em>
-    [% jpwords.flag %] を [% jpwords.flag_request %] することはできません。
+    [% jawords.flag %] を [% jawords.flag_request %] することはできません。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
-    [% title = "$jpwords.flag の $jpwords.flag_request_target のアカウントに権限が必要です" %]
+    [% title = "$jawords.flag の $jawords.flag_request_target のアカウントに権限が必要です" %]
     [% requestee.identity FILTER html %] は <em>[% flagtype.name FILTER html %]</em>
-    [% jpwords.flag %] を設定する権限を持っていません。<em>[% flagtype.grant_group.name FILTER html %]</em>
-    [% jpwords.group %] に所属する [% jpwords.user %] を選択してください。
+    [% jawords.flag %] を設定する権限を持っていません。<em>[% flagtype.grant_group.name FILTER html %]</em>
+    [% jawords.group %] に所属する [% jawords.user %] を選択してください。
 
   [% ELSIF error == "flag_requestee_unauthorized" %]
-    [% title = "$jpword.flag の $jpwords.flag_request_target の $jpwords.account は認証されていません" %]
+    [% title = "$jpword.flag の $jawords.flag_request_target の $jawords.account は認証されていません" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
                     'flags.html' => 'フラグの利用方法'} %]
 
     [% terms.bug %] [%+ bug_id FILTER html -%]
-    [% IF attach_id && attach_id > 0 %] の [% jpwords.attachment %] [% attach_id FILTER html %][% END %]
-    で <code>[% flag_type.name FILTER html %]</code> [% jpwords.flag %] を
-    [% requestee.identity FILTER html %] に [% jpwords.flag_request %] しましたが、
-    この [% terms.bug %] へのアクセスは特定の [% jpwords.group %] に制限されていますが、
-    指定された [% jpwords.user %] は [% terms.bug %] にアクセスできる
-    [% jpwords.group %] に所属していません。
-    [% jpwords.flag_request_target %] を他のユーザにするか、[% jpwords.bug_cc_list %] の
-    [% jpwords.user %] が [% terms.bug %] にアクセスできるようにして、
-    その人を [% jpwords.bug_cc_list %] に追加してください。
+    [% IF attach_id && attach_id > 0 %] の [% jawords.attachment %] [% attach_id FILTER html %][% END %]
+    で <code>[% flag_type.name FILTER html %]</code> [% jawords.flag %] を
+    [% requestee.identity FILTER html %] に [% jawords.flag_request %] しましたが、
+    この [% terms.bug %] へのアクセスは特定の [% jawords.group %] に制限されていますが、
+    指定された [% jawords.user %] は [% terms.bug %] にアクセスできる
+    [% jawords.group %] に所属していません。
+    [% jawords.flag_request_target %] を他のユーザにするか、[% jawords.bug_cc_list %] の
+    [% jawords.user %] が [% terms.bug %] にアクセスできるようにして、
+    その人を [% jawords.bug_cc_list %] に追加してください。
 
   [% ELSIF error == "flag_requestee_unauthorized_attachment" %]
-    [% title = "$jpwords.flag の $jpwords.flag_request_target の $jpwords.account は認証されていません" %]
+    [% title = "$jawords.flag の $jawords.flag_request_target の $jawords.account は認証されていません" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
                     'flags.html' => 'フラグの利用方法'} %]
 
-    [%+ terms.bug %] [%+ bug_id FILTER html %] の [% jpwords.attachment %]
+    [%+ terms.bug %] [%+ bug_id FILTER html %] の [% jawords.attachment %]
     [% attach_id FILTER html %] で
-    <code>[% flag_type.name FILTER html %]</code> [% jpwords.flag %] を
-    [% requestee.identity FILTER html %] に [% jpwords.flag_request %] しましたが、
-    その [% jpwords.attachment %] は
-    [% Param("insidergroup") FILTER html %] [% jpwords.group %] の
-    [% jpwords.user %] に制限されていて、
-    [% jpwords.flag_request_target %] の [% jpwords.user %]
-    はこの [% jpwords.group %] に所属していません。
-    [% jpwords.flag_request_target %] を他の [% jpwords.user %] にするか、
-    [% jpwords.user %] を [% jpwords.group %] に追加するように
-    [% jpwords.admin_administrator %] に依頼してください。
+    <code>[% flag_type.name FILTER html %]</code> [% jawords.flag %] を
+    [% requestee.identity FILTER html %] に [% jawords.flag_request %] しましたが、
+    その [% jawords.attachment %] は
+    [% Param("insidergroup") FILTER html %] [% jawords.group %] の
+    [% jawords.user %] に制限されていて、
+    [% jawords.flag_request_target %] の [% jawords.user %]
+    はこの [% jawords.group %] に所属していません。
+    [% jawords.flag_request_target %] を他の [% jawords.user %] にするか、
+    [% jawords.user %] を [% jawords.group %] に追加するように
+    [% jawords.admin_administrator %] に依頼してください。
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
-    [% title = "$jpwords.flag の $jpwords.bug_cc_list が適当ではありません" %]
+    [% title = "$jawords.flag の $jawords.bug_cc_list が適当ではありません" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
-    [% jpwords.bug_cc_list %] [% cc_list FILTER html %] は 200 文字以下でなければいけません。
+    [% jawords.bug_cc_list %] [% cc_list FILTER html %] は 200 文字以下でなければいけません。
 
   [% ELSIF error == "flag_type_component_without_product" %]
-    [% title = "$jpwords.product が指定されていません" %]
-    [% jpwords.component %] が選択されていますが、
-    [% jpwords.product %] が選択されていません。
+    [% title = "$jawords.product が指定されていません" %]
+    [% jawords.component %] が選択されていますが、
+    [% jawords.product %] が選択されていません。
 
   [% ELSIF error == "flag_type_description_invalid" %]
-    [% title = "$jpwords.flag_description が適当ではありません" %]
+    [% title = "$jawords.flag_description が適当ではありません" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
-    [% jpwords.flag_description %] は 32KB 以内でなければいけません (日本語で約一万文字)。
+    [% jawords.flag_description %] は 32KB 以内でなければいけません (日本語で約一万文字)。
 
   [% ELSIF error == "flag_type_name_invalid" %]
-    [% title = "$jpwords.flag_name が適当ではありません" %]
+    [% title = "$jawords.flag_name が適当ではありません" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
-    [% jpwords.flag_name %] <em>[% name FILTER html %]</em> は 1 ～ 50 文字で、
+    [% jawords.flag_name %] <em>[% name FILTER html %]</em> は 1 ～ 50 文字で、
     スペースやカンマを含むことはできません。
 
   [% ELSIF error == "flag_update_denied" %]
-    [% title = "$jpwords.flag の編集が拒否されました" %]
+    [% title = "$jawords.flag の編集が拒否されました" %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
                     'flags.html' => 'フラグの利用方法'} %]
-    [% jpwords.flag %]
+    [% jawords.flag %]
     [% IF status == "+" %]
-      [% jpwords.flag_grant %]
+      [% jawords.flag_grant %]
     [% ELSIF status == "-" %]
-      [% jpwords.flag_deny %]
+      [% jawords.flag_deny %]
     [% ELSIF status == "X" %]
-      [% jpwords.flag_cancel %]
+      [% jawords.flag_cancel %]
     [% ELSE %]
-      [% jpwords.flag_request %]
+      [% jawords.flag_request %]
     [% END %]
     を
     <code>[% name FILTER html %]
           [% IF status == "X" %][% old_status FILTER html %][% END %]</code>
     へ行おうとしました。
 
-    権限を持つ [% jpwords.user %] のみがこの操作が可能です。
+    権限を持つ [% jawords.user %] のみがこの操作が可能です。
 
   [% ELSIF error == "format_not_found" %]
     [% title = "Format Not Found" %]
@@ -782,101 +782,101 @@
     a content type of <em>[% ctype FILTER html %]</em>.
     
   [% ELSIF error == "flag_type_sortkey_invalid" %]
-    [% title = "$jpwords.flag の $jpwords.sortkey が無効です" %]
-    [% jpwords.flag %] の [% jpwords.sortkey %] は 0 ～ 32767 の整数でなくてはいけません。
+    [% title = "$jawords.flag の $jawords.sortkey が無効です" %]
+    [% jawords.flag %] の [% jawords.sortkey %] は 0 ～ 32767 の整数でなくてはいけません。
     <em>[% sortkey FILTER html %]</em> には設定できません。
 
   [% ELSIF error == "freetext_too_long" %]
-    [% title = "$jpwords.text が長すぎます" %]
-    入力された [% jpwords.text %] が長すぎます
+    [% title = "$jawords.text が長すぎます" %]
+    入力された [% jawords.text %] が長すぎます
     (最長、[% constants.MAX_FREETEXT_LENGTH FILTER none %] ですが、
     [% text.length FILTER html %] 文字入力されています):
     <p><em>[% text FILTER html %]</em></p>
 
   [% ELSIF error == "group_cannot_delete" %]
-    [% title = "$jpwords.group を削除できません" %]
-    <em>[% name FILTER html %]</em> [% jpwords.group %] は削除できません。
+    [% title = "$jawords.group を削除できません" %]
+    <em>[% name FILTER html %]</em> [% jawords.group %] は削除できません。
     データベース中で以下の
-    <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">[% jpwords.record %]</a>
+    <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">[% jawords.record %]</a>
     から参照されています。
-    先にこの [% jpwords.group %] への全ての参照を削除してください。
+    先にこの [% jawords.group %] への全ての参照を削除してください。
 
   [% ELSIF error == "group_change_denied" %]
-    [% title = "$jpwords.group を追加、または削除できません" %]
-    $jpwords.group ID [% group_id FILTER html %] を
+    [% title = "$jawords.group を追加、または削除できません" %]
+    $jawords.group ID [% group_id FILTER html %] を
     [% terms.bug %] [%+ bug.id FILTER html %]
     から削除しようとしましたが、あなたはこの権限を持っていません。
 
   [% ELSIF error == "group_exists" %]
-    [% title = "$jpwords.group は既に存在しています" %]
-    [% jpwords.group %] [% name FILTER html %] は既に存在しています。
+    [% title = "$jawords.group は既に存在しています" %]
+    [% jawords.group %] [% name FILTER html %] は既に存在しています。
 
   [% ELSIF error == "group_has_special_role" %]
-    [% title = "$jpwords.group を削除できません" %]
-    [% jpwords.group %] '[% name FILTER html %]' は
-    '[% groups.join("' and '") FILTER html %]' の [% jpwords.param %] で利用されています。
-    この [% jpwords.group %] を削除するには、先に他の [% jpwords.group %]
-    を参照するように [% jpwords.param %] を変更してください。
+    [% title = "$jawords.group を削除できません" %]
+    [% jawords.group %] '[% name FILTER html %]' は
+    '[% groups.join("' and '") FILTER html %]' の [% jawords.param %] で利用されています。
+    この [% jawords.group %] を削除するには、先に他の [% jawords.group %]
+    を参照するように [% jawords.param %] を変更してください。
 
   [% ELSIF error == "group_invalid_removal" %]
-    [% jpwords.group %] ID [% group_id FILTER html %] から
+    [% jawords.group %] ID [% group_id FILTER html %] から
     [% terms.bug %] [%+ bug.id FILTER html %] を削除しようとしましたが、
-    [% jpwords.product %] '[% product FILTER html %]' の [% terms.bugs %]
-    はその [% jpwords.group %] から削除できません。
+    [% jawords.product %] '[% product FILTER html %]' の [% terms.bugs %]
+    はその [% jawords.group %] から削除できません。
 
   [% ELSIF error == "group_invalid_restriction" %]
     [% terms.bug %] [%+ bug.id FILTER html %] を
-    [% jpwords.group %] ID [% group_id FILTER html %] に制限しようとしましたが、
-    '[% product FILTER html %]' [% jpwords.product %] の [% terms.bugs %]
-    を指定された [% jpwords.group %] に制限することはできません。
+    [% jawords.group %] ID [% group_id FILTER html %] に制限しようとしましたが、
+    '[% product FILTER html %]' [% jawords.product %] の [% terms.bugs %]
+    を指定された [% jawords.group %] に制限することはできません。
 
   [% ELSIF error == "group_not_specified" %]
-    [% title = "$jpwords.group が指定されていません" %]
-    [% jpwords.group %] が指定されていません。
+    [% title = "$jawords.group が指定されていません" %]
+    [% jawords.group %] が指定されていません。
 
   [% ELSIF error == "system_group_not_deletable" %]
-    [% title = "$jpwords.group_system_group は削除できません" %]
-    <em>[% name FILTER html %]</em> は [% jpwords.group_system_group %] です。
-    この [% jpwords.group %] は削除できません。
+    [% title = "$jawords.group_system_group は削除できません" %]
+    <em>[% name FILTER html %]</em> は [% jawords.group_system_group %] です。
+    この [% jawords.group %] は削除できません。
 
   [% ELSIF error == "group_unknown" %]
-    [% title = "不明な $jpwords.group" %]
-    [% jpwords.group %] [% name FILTER html %] は存在していません。
-    有効な [% jpwords.group_name %] を指定してください。
+    [% title = "不明な $jawords.group" %]
+    [% jawords.group %] [% name FILTER html %] は存在していません。
+    有効な [% jawords.group_name %] を指定してください。
     必要なのであれば、先に作ってください。
 
   [% ELSIF error == "illegal_at_least_x_votes" %]
-    [% title = "指定された [% jpwords.search_inputs %] が無効です" %]
-    <em>[% jpwords.search_min_votes %]</em> のフィールドは単純な数字でなくてはいけません。
+    [% title = "指定された $jawords.search_inputs が無効です" %]
+    <em>[% jawords.search_min_votes %]</em> のフィールドは単純な数字でなくてはいけません。
     指定された <tt>[% value FILTER html %]</tt> は適当ではありません。
     
   [% ELSIF error == "illegal_attachment_edit" %]
     [% title = "認証されていない操作です" %]
-    [% jpwords.attachment %] [% attach_id FILTER html %] を編集する権限がありません。
+    [% jawords.attachment %] [% attach_id FILTER html %] を編集する権限がありません。
 
   [% ELSIF error == "illegal_attachment_edit_bug" %]
     [% title = "認証されていない操作です" %]
     [% terms.bug %] [%+ bug_id FILTER html %] の
-    [% jpwords.attachment %] を編集する権限がありません。
+    [% jawords.attachment %] を編集する権限がありません。
          
   [% ELSIF error == "illegal_attachment_is_patch" %]
-    [% title = "指定された $jpwords.search_inputs が無効です" %]
-    <em>[% jpwords.search_attachment_is_patch %]</em> の [% jpwords.field %] の有効な値は 0 と 1 のみです。
+    [% title = "指定された $jawords.search_inputs が無効です" %]
+    <em>[% jawords.search_attachment_is_patch %]</em> の [% jawords.field %] の有効な値は 0 と 1 のみです。
 
   [% ELSIF error == "illegal_bug_status_transition" %]
-    [% title = "$terms.bug $jpwords.bug_status の変更はできません" %]
+    [% title = "$terms.bug $jawords.bug_status の変更はできません" %]
     [% IF old.defined %]
-      あなたは [% terms.bug %] [% jpwords.bug_status %] を
+      あなたは [% terms.bug %] [% jawords.bug_status %] を
       [%+ old.name FILTER html %] から
       [% new.name FILTER html %] に変更することは許可されていません。
     [% ELSE %]
-      あなたは [%+ new.name FILTER html %] [% jpwords.bug_status %] で
+      あなたは [%+ new.name FILTER html %] [% jawords.bug_status %] で
       [% terms.bugs %] を新規登録することはできません。
     [% END %]
 
   [% ELSIF error == "illegal_change" %]
     [% title = "許可されていない変更を行おうとしました" %]
-    <strong>[% field_descs.$field FILTER html %]</strong> の [% jpwords.field %] を
+    <strong>[% field_descs.$field FILTER html %]</strong> の [% jawords.field %] を
     [% IF oldvalue.defined %]
       <em>[% oldvalue.join(', ') FILTER html %]</em> から
     [% END %]
@@ -885,37 +885,37 @@
     [% END %]
     変更しようとしましたが、
     [% IF privs < 3 %]
-      [% terms.bug %] の [% jpwords.bug_assignee %]
-      [% IF privs < 2 %] もしくは [% jpwords.bug_reporter %] [% END %]
+      [% terms.bug %] の [% jawords.bug_assignee %]
+      [% IF privs < 2 %] もしくは [% jawords.bug_reporter %] [% END %]
       もしくは
     [% END %]
-    権限を持つ [% jpwords.user %] のみが [% jpwords.field %] を変更できます。
+    権限を持つ [% jawords.user %] のみが [% jawords.field %] を変更できます。
 
   [% ELSIF error == "illegal_change_deps" %]
     [% title = "許可されていない変更を行おうとしました" %]
     <strong>[% field_descs.$field FILTER html %]</strong>
-    [% jpwords.field %] を変更しようとしましたが、変更を受ける全ての
-    [% terms.bugs %] の変更権限がある [% jpwords.user %] のみが、この [% jpwords.field %] を変更できます。
+    [% jawords.field %] を変更しようとしましたが、変更を受ける全ての
+    [% terms.bugs %] の変更権限がある [% jawords.user %] のみが、この [% jawords.field %] を変更できます。
 
   [% ELSIF error == "illegal_changed_in_last_x_days" %]
-    [% title = "指定された $jpwords.search_inputs が無効です" %]
-    <em>[% jpwords.search_days_since_bug_changed %]</em> の
-    [% jpwords.field %] は単純な数字でなくてはいけません。
+    [% title = "指定された $jawords.search_inputs が無効です" %]
+    <em>[% jawords.search_days_since_bug_changed %]</em> の
+    [% jawords.field %] は単純な数字でなくてはいけません。
     指定された <tt>[% value FILTER html %]</tt> は適当ではありません。
     
   [% ELSIF error == "illegal_date" %]
-    [% title = "指定された $jpwords.search_date は無効です" %]
-    '<tt>[% date FILTER html %]</tt>' は有効な [% jpwords.date %] ではありません。
+    [% title = "指定された $jawords.search_date は無効です" %]
+    '<tt>[% date FILTER html %]</tt>' は有効な [% jawords.date %] ではありません。
     [% IF format %]
       '<tt>[% format FILTER html %]</tt>' の形式で入力してください。
     [% END %]
     
   [% ELSIF error == "illegal_email_address" %]
-    [% title = "指定された $jpwords. は無効です" %]
-    指定された [% jpwords.mail_address %] (<b>[% addr FILTER html %]</b>) 
-    は、[% jpwords.mail_address %] の文法検査で無効だと判断されました。
+    [% title = "指定された $jawords. は無効です" %]
+    指定された [% jawords.mail_address %] (<b>[% addr FILTER html %]</b>) 
+    は、[% jawords.mail_address %] の文法検査で無効だと判断されました。
     [% IF default %]
-      有効な [% jpwords.mail_address %] は、'@' を一つだけ含み、'.' を '@'
+      有効な [% jawords.mail_address %] は、'@' を一つだけ含み、'.' を '@'
       の後ろに最低一つは含まなくてはいけません。
     [% ELSE %]
       [%+ Param('emailregexpdesc') %]
