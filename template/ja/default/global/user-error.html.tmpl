@@ -784,7 +784,7 @@
   [% ELSIF error == "format_not_found" %]
     [% title = "$output_format が存在していません" %]
     指定された [% jawords.output_format %] <em>[% format FILTER html %]</em> は
-    <em>[% ctype FILTER html %]</em> の [% jawords.content_type %] で出力できません。
+    <em>[% ctype FILTER html %]</em> の [% jawords.output_content_type %] で出力できません。
     
   [% ELSIF error == "flag_type_sortkey_invalid" %]
     [% title = "$jawords.flag の $jawords.sortkey が無効です" %]
