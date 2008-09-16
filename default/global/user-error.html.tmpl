@@ -49,145 +49,245 @@
   #  UI に存在している訳語が変更された場合に迅速にエラーメッセージでも対応できる
   #  ように、メッセージの一部を変数化しています。適宜、必要であれば追加してください。
   # %]
-[% ui_words = {
+[% jawords = {
   "account" => "アカウント",
   "account_creation" => "新規アカウント登録",
 
-  "Bugzilla" => "Bugzilla"
+  "admin_administrator" => "管理者",
+  "admin_maintainer" => "メンテナ",
+  "admin_pages" => "管理画面",
+  "admin_param" => "パラメータ",
+
+  "attachment" => "添付",
+
+  "bug_alias" => "エイリアス",
+  "bug_alias_name" => "エイリアス名",
+  "bug_summary" => "要約",
+  "bug_status" => "ステータス",
+  "bug_version" => "バージョン",
+  "bug_platform" => "プラットフォーム",
+  "bug_importance" => "重要度",
+  "bug_target_milestone" => "ターゲットマイルストーン",
+  "bug_milestone" => "マイルストーン",
+  "bug_assignee" => "担当者",
+  "bug_qa_contact" => "QA コンタクト",
+  "bug_url" => "URL",
+  "bug_whiteboard" => "ホワイトボード",
+  "bug_keyword" => "キーワード",
+  "bug_depends_on" => "依存する",
+  "bug_blocks" => "妨害する",
+  "bug_dependencies" => "依存する $terms.bugs",
+  "bug_dependency_tree" => "依存ツリー",
+  "bug_comment" => "コメント",
+  "bug_privacy" => "プライバシー",
+  "bug_enter_description" => "説明",
+  "bug_history" => "$terms.bug の更新履歴",
+  "bug_history_link" => "履歴の表示",
+
+  "chart" => "チャート",
+
+  "classification" => "classification",
+  "classification_name" => "classification 名",
+  "classification_description" => "classification の説明",
+
+  "component" => "コンポーネント",
+  "component_name" => "コンポーネント名",
+  "component_description" => "コンポーネントの説明",
+
+  "custom_field" => "カスタムフィールド",
+
+  "default_assignee" => "既定の担当者",
+  "default_qa_contact" => "既定の QA コンタクト",
+
+  "field" => "フィールド",
+  "field_value" => "フィールド値",
+
+  "flag" => "フラグ",
+  "flag_type" => "フラグタイプ",
+
+  "group" => "グループ",
+  "group_access" => "グループ権限",
+  "group_member" => "グループのメンバー",
+
+  "login" => "ログイン",
+  "login_name" => "ログイン名",
+  "login_password" => "パスワード",
+
+  "obsolete_attachment" => "用済み",
+  "obsolete_custom_field" => "用済み",
+
+  "product" => "プロダクト",
+  "product_name" => "プロダクト名",
+  "product_description" => "プロダクトの説明",
+
+  "quip" => "quip",
+
+  "sanity_check" => "sanity check",
+
+  "search" => "検索",
+  "search_term" => "検索語",
+  "search_saved_search" => "保存した検索",
+  "search_saved_search_creation" => "検索条件を保存",
+
+  "session" => "セッション",
+
+  "setting" => "設定",
+
+  "site" => "サイト",
+
+  "sortkey" => "ソート順",
+
+  "sudo" => "sudo",
+  "sudo_session" => "sudo セッション",
+
+  "time_tracking" => "時間追跡",
+  "time_tracking_summary" => "時間追跡サマリー",
+  "time_tracking_summary_report" => "時間追跡サマリーレポート",
+
+  "token" => "トークン",
+
+  "user" => "ユーザ",
+
+  "whine" => "whine",
+  "whine_report" => "whine レポート",
+
+  "workflow" => "ワークフロー",
+
+  "XXX_End_Item" => "これは最後の行に置いてください"
   }
 %]
 
 [% error_message = BLOCK %]
   [% IF    error == "account_creation_disabled" %]
-    [% title = "$ui_words.account_creation は無効化されています" %]
-    [% ui_words.account_creation %] は無効化されています。
+    [% title = "$jawords.account_creation は無効化されています" %]
+    [% jawords.account_creation %] は無効化されています。
     <hr>
-    [% ui_words.account_creation %] は管理者が行います。
-    管理者 [% Param("maintainer") %] に連絡してください。
+    [% jawords.account_creation %] は [% jawords.admin_administrator %] が行います。
+    [% jawords.admin_administrator %] [% Param("maintainer") %] に連絡してください。
 
   [% ELSIF error == "account_creation_restricted" %]
-    [% title = "$ui_words.account_creation は制限されています" %]
-    [% ui_words.account_creation %] は制限されています。
+    [% title = "$jawords.account_creation は制限されています" %]
+    [% jawords.account_creation %] は制限されています。
     <hr>
-    管理者もしくはメンテナー ([% Param("maintainer") %])
-    に [% ui_words.account_creation %] のための情報を問い合わせてください。
+    [% jawords.admin_administrator %] もしくは [% jawords.admin_maintainer %] ([% Param("maintainer") %])
+    に [% jawords.account_creation %] のための情報を問い合わせてください。
 
   [% ELSIF error == "account_disabled" %]
-    [% title = "アカウントは無効です" %]
+    [% title = "$jawords.account は無効です" %]
     [% disabled_reason FILTER none %]
     <hr>
-    アカウントが再度、有効化されるべきだと思う場合、
+    [% jawords.account %] が再度、有効化されるべきだと思う場合、
     上記にある無効化された理由に対する妥当と判断可能な理由を添付して
     [% Param("maintainer") %] までメールで申請してください。
 
   [% ELSIF error == "account_exists" %]
-    [% title = "指定のアカウントは既に存在します" %]
+    [% title = "指定の $jawords.account は既に存在します" %]
     指定された
     [% IF email %]
-      ログイン名 ([% email FILTER html %]).
+      [% jawords.login_name %] ([% email FILTER html %]).
     [% ELSE %]
-      ログイン名
+      [% jawords.login_name %]
     [% END %]
-    のアカウントは既に存在しています。
+    の [% jawords.account %] は既に存在しています。
 
   [% ELSIF error == "alias_has_comma_or_space" %]
-    [% title = "エイリアスに無効な文字が含まれています" %]
-    入力されたエイリアス <em>[% alias FILTER html %]</em> には一つ以上のカンマ、
+    [% title = "$jawords.bug_alias に無効な文字が含まれています" %]
+    入力された [% jawords.bug_alias %] <em>[% alias FILTER html %]</em> には一つ以上のカンマ、
     もしくはスペースが含まれています。これらの文字はリストの中でのセパレータとして利用されますので、
-    名称としては利用できません。カンマやスペースを含まないエイリアス名をつけてください。
+    名称としては利用できません。カンマやスペースを含まない [% jawords.bug_alias_name %] をつけてください。
 
   [% ELSIF error == "alias_in_use" %]
-    [% title = "エイリアスは既に利用されています" %]
+    [% title = "$jawords.bug_alias は既に利用されています" %]
     [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
-    は既に <em>[% alias FILTER html %]</em> というエイリアスを持ちます。
+    は既に <em>[% alias FILTER html %]</em> という [% jawords.bug_alias %] を持ちます。
     別の名称を選択してください。
 
   [% ELSIF error == "alias_is_numeric" %]
-    [% title = "エイリアスが数字です" %]
-    この[% terms.bug %] にエイリアス <em>[% alias FILTER html %]</em> をつけようとしましたが、
-    [% terms.bug %] ID と混同する可能性があるため、エイリアスは数字だけでは適用できません。
-    少なくとも一文字は英文字を含むエイリアスを選択してください。
+    [% title = "[% jawords.bug_alias %] が数字です" %]
+    この[% terms.bug %] に [% jawords.bug_alias %] <em>[% alias FILTER html %]</em> をつけようとしましたが、
+    [% terms.bug %] ID と混同する可能性があるため、[% jawords.bug_alias %] は数字だけでは適用できません。
+    少なくとも一文字は英文字を含む [% jawords.bug_alias %] を選択してください。
 
   [% ELSIF error == "alias_too_long" %]
-    [% title = "エイリアスが長すぎます" %]
-    [% terms.Bug %] のエイリアスは 20 文字 (byte) 以上にはできません。
+    [% title = "$jawords.bug_alias が長すぎます" %]
+    [% terms.Bug %] の [% jawords.bug_alias %] は 20 文字 (byte) 以上にはできません。
     より短いものにしてください。
 
   [% ELSIF error == "auth_cant_create_account" %]
-    [% title = "アカウントを作成できません" %]
-    このサイトが利用している認証サービスは、アカウント作成を許可していません。
-    新規アカウント作成については、管理者に問い合わせてください。
+    [% title = "$jawords.account を作成できません" %]
+    このサイトが利用している認証サービスは、[% jawords.account_creation %] を許可していません。
+    [% jawords.account_creation %] については、[% jawords.admin_administrator %] に問い合わせてください。
 
   [% ELSIF error == "auth_failure" %]
     [% title = "認証が必要です" %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
     [% IF group %]
-      あなたは、'[% group FILTER html %]' グループのメンバーではありません。
+      あなたは、'[% group FILTER html %]' [% jawords.group_member %] ではありません。
     [% END %]
 
     [% IF reason %]
       [% IF group %] また、 [% END %]
       [% IF reason == "cant_bless" %]
-        グループへのアカウントの追加・削除権限がありません。
+        [% jawords.group %] への [% jawords.account %] の追加・削除権限がありません。
       [% ELSIF reason == "not_visible" %]
-        指定されたユーザグループへの閲覧制限がかかっています。
+        指定された [% jawords.group %] への閲覧制限がかかっています。
       [% END %]
     [% END %]
 
     [% IF group || reason %] そして、 [% END %]
 
     [% IF object == "administrative_pages" %]
-      管理画面
+      [% jawords.admin_pages %]
     [% ELSIF object == "attachment" %]
-      この添付
+      この [% jawords.attachment %]
     [% ELSIF object == "bugs" %]
       [%+ terms.bugs %]
     [% ELSIF object == "charts" %]
-      新規チャートの追加機能
+      新規 [% jawords.chart %] の追加機能
     [% ELSIF object == "classifications" %]
-      分類
+      [% jawords.classification %]
     [% ELSIF object == "components" %]
-      コンポーネント
+      [% jawords.component %]
     [% ELSIF object == "custom_fields" %]
-      カスタムフィールド
+      [% jawords.custom_field %]
     [% ELSIF object == "field_values" %]
-      フィールド値
+      [% jawords.field_value %]
     [% ELSIF object == "flagtypes" %]
-      フラグタイプ
+      [% jawords.flag_type %]
     [% ELSIF object == "group_access" %]
-      グループ権限
+      [% jawords.group_access %]
     [% ELSIF object == "groups" %]
-      グループ
+      [% jawords.group %]
     [% ELSIF object == "keywords" %]
-      キーワード
+      [% jawords.bug_keyword %]
     [% ELSIF object == "milestones" %]
-      マイルストーン
+      [% jawords.bug_milestone %]
     [% ELSIF object == "multiple_bugs" %]
       一度に複数の [% terms.bugs %]
     [% ELSIF object == "parameters" %]
-      パラメータ
+      [% jawords.admin_param %]
     [% ELSIF object == "products" %]
-      プロダクト
+      [% jawords.product %]
     [% ELSIF object == "quips" %]
-      quips
+      [% jawords.quip %]
     [% ELSIF object == "reports" %]
-      whine レポート
+      [% jawords.whine_report %]
     [% ELSIF object == "sanity_check" %]
-      sanity check
+      [% jawords.sanity_check %]
     [% ELSIF object == "settings" %]
-      設定
+      [% jawords.setting %]
     [% ELSIF object == "sudo_session" %]
-      sudo セッション
+      [% jawords.sudo_session %]
     [% ELSIF object == "timetracking_summaries" %]
-      時間追跡サマリーレポート
+      [% jawords.time_tracking_summary_report %]
     [% ELSIF object == "user" %]
-      指定したユーザ
+      指定した [% jawords.user %]
     [% ELSIF object == "users" %]
-      ユーザ
+      [% jawords.user %]
     [% ELSIF object == "versions" %]
-      バージョン
+      [% jawords.bug_version %]
     [% ELSIF object == "workflow" %]
-      ワークフロー
+      [% jawords.workflow %]
     [% END %]
 
     [% IF action == "access" %]
@@ -217,138 +317,142 @@
     [% Hook.process("auth_failure") %]
 
   [% ELSIF error == "attachment_deletion_disabled" %]
-    [% title = "添付の削除はできません" %]
-    このサイトでは添付は削除できません。
+    [% title = "$jawords.attachment の削除はできません" %]
+    この [% jawords.site %] では [% jawords.attachment %] は削除できません。
 
   [% ELSIF error == "attachment_removed" %]
-    [% title = "添付は削除されました" %]
-    削除しようとした添付は既に削除されています。
+    [% title = "$jawords.attachment は削除されました" %]
+    削除しようとした [% jawords.attachment %] は既に削除されています。
 
   [% ELSIF error == "bug_access_denied" %]
     [% title = "アクセスは拒否されました" %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
-    [% terms.bug %] #[% bug_id FILTER html %] へのアクセス権限がありません。
+    あなたの [% jawords.account %] には
+    [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
 
   [% ELSIF error == "bug_access_query" %]
     [% title = "アクセスは拒否されました" %]
     [% docslinks = {'myaccount.html' => 'アカウント作成'} %]
-    [% terms.bug %] #[% bug_id FILTER html %] へのアクセス権限がありません。
+    あなたの [% jawords.account %] には
+    [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
     この [% terms.bug %] を見るには、まず必要な権限を持った
     <a href="show_bug.cgi?id=
                    [% bug_id FILTER url_quote %]&amp;GoAheadAndLogIn=1">
-    アカウントでログイン</a> してください。
+    [% jawords.account %] で [% jawords.login %]</a> してください。
 
   [% ELSIF error == "buglist_parameters_required" %]
-    [% title = "必要なパラメータが足りません" %]
+    [% title = "$jawords.search_term が入力されていません" %]
     [% docslinks = {'query.html' => "$terms.bugs の検索",
                     'query.html#list' => "$terms.Bug リスト"} %]
-    検索語無しでは、検索や保存された検索の作成はできません。
+    [% jawords.search_term %] 無しでは、[% jawords.search %]
+    や [%jawords.search_saved_search_creation %] はできません。
 
   [% ELSIF error == "chart_too_large" %]
-    [% title = "チャートが大きすぎます" %]
-    チャートの最大サイズは 2000 &times; 2000 に制限されています。
+    [% title = "%jawords.chart が大きすぎます" %]
+    [% jawords.chart %] の最大サイズは 2000 &times; 2000 に制限されています。
 
   [% ELSIF error == "comment_invalid_isprivate" %]
-    コメント [% id FILTER html %] の privacy を変更しようとしましたが、
-    [% terms.bug %] の妥当なコメントではありません。
+    [% jawords.bug_comment %] [% id FILTER html %] の [% jawords.bug_privacy %]
+    を変更しようとしましたが、
+    [% terms.bug %] の妥当な [% jawords.bug_comment %] ID ではありません。
 
   [% ELSIF error == "comment_required" %]
-    [% title = "コメントをつけてください" %]
+    [% title = "$jawords.bug_comment をつけてください" %]
     [% IF old && new %]
-      [% terms.abug %] のステータスを
+      [% terms.abug %] の [% jawords.bug_status %] を
       [%+ old.name FILTER html %] から [% new.name FILTER html %]
-      に変更する場合、<b>コメント</b>
+      に変更する場合、<b>[% jawords.bug_comment %]</b>
     [% ELSIF new %]
-      この [% terms.bug %] の説明
+      この [% terms.bug %] の [% jawords.bug_enter_description %]
     [% ELSE %]
-      この変更に関する <b>コメント</b>
+      この変更に関する <b>[% jawords.bug_comment %]</b>
     [% END %]
     を記述する必要があります。
 
   [% ELSIF error == "comment_too_long" %]
-    [% title = "コメントが長すぎます" %]
-    コメントは 65,535 文字以上にはできません。
+    [% title = "$jawords.bug_comment が長すぎます" %]
+    [% jawords.bug_comment %] は 65,535 文字以上にはできません。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
-    [% title = "指定された Classification は無効です" %]
-    Classification は無効です。
+    [% title = "指定された $jawords.classification は無効です" %]
+    [% jawords.classification %] は無効です。
 
   [% ELSIF error == "classification_not_specified" %]
-    [% title = "Classification 名を指定してください" %]
-    Classification 名を入力してください。
+    [% title = "$jawords.classification 名を指定してください" %]
+    [% jawords.classification %] 名を入力してください。
 
   [% ELSIF error == "classification_already_exists" %]
-    [% title = "指定された Classification が既に存在しています" %]
-    '[% name FILTER html %]' の Classification は既に存在します。
+    [% title = "指定された $jawords.classification が既に存在しています" %]
+    '[% name FILTER html %]' の [$ jawords.classification %] は既に存在しています。
 
   [% ELSIF error == "classification_doesnt_exist" %]
-    [% title = "指定された Classification は存在しません" %]
-    指定した Classification '[% name FILTER html %]' は存在しません。
+    [% title = "指定された $jawords.classification は存在していません" %]
+    指定した [% jawords.classification %] '[% name FILTER html %]' は存在していません。
 
   [% ELSIF error == "classification_doesnt_exist_for_product" %]
-    [% title = "指定された Classification は指定のプロダクトに対して存在しません" %]
-    Classification '[% classification FILTER html %]' はプロダクト
-    '[% product FILTER html %]' には存在しません。
+    [% title = "指定された $jawords.classification は指定の $jawords.product に対して存在していません" %]
+    [% jawords.classification %] '[% classification FILTER html %]' は
+    [% jawords.product %] '[% product FILTER html %]' には存在していません。
 
   [% ELSIF error == "classification_invalid_sortkey" %]
-    [% title = "Classification のソート順が無効です" %]
-    Classification '[% name FILTER html %]' には ソート順として
-    <em>[% sortkey FILTER html %]</em> は利用できません。
+    [% title = "$jawords.classification の $jawords.sortkey が無効です" %]
+    [% jawords.classification %] '[% name FILTER html %]' には
+    [% jawords.sortkey %] として <em>[% sortkey FILTER html %]</em> は利用できません。
     正の整数である必要があります。
 
   [% ELSIF error == "classification_not_deletable" %]
-    [% title = "既定の Classification は削除できません" %]
-    既定の Classification は削除できません。
+    [% title = "既定の $jawords.classification は削除できません" %]
+    既定の [% jawords.classification %] は削除できません。
 
   [% ELSIF error == "classification_has_products" %]
-    この Classification にはプロダクトが登録されています。
-    削除するには、これらのプロダクトを他の Classification に移動してください。
+    この [% jawords.classification %] には [% jawords.product %] が登録されています。
+    削除するには、これらの [% jawords.product %] を他の [% jawords.classification %] に移動してください。
 
   [% ELSIF error == "component_already_exists" %]
-    [% title = "指定されたコンポーネントは既に存在しています" %]
-    指定されたコンポーネント名 <em>[% name FILTER html %]</em>
-    はプロダクト <em>[% product.name FILTER html %]</em>
+    [% title = "指定された $jawords.component は既に存在しています" %]
+    指定された [% jawords.component_name %] <em>[% name FILTER html %]</em>
+    は [% jawords.product %] <em>[% product.name FILTER html %]</em>
     に既に存在しています。
 
   [% ELSIF error == "component_blank_description" %]
-    [% title = "コンポーネントの説明を入力してください" %]
-    コンポーネントの説明は必須項目です。
+    [% title = "$jawords.component_description を入力してください" %]
+    [% $jawords.component_description %] は必須項目です。
 
   [% ELSIF error == "component_blank_name" %]
-    [% title = "コンポーネントの名前を入力してください" %]
-    コンポーネントの名前は必須項目です。
+    [% title = "$jawords.component_name を入力してください" %]
+    [% jawords.component_name %] は必須項目です。
 
   [% ELSIF error == "component_has_bugs" %]
-    [% title = BLOCK %]指定のコンポーネントには [% terms.Bugs %] が存在します[% END %]
-    このコンポーネントには [% nb FILTER html %] [%+ terms.bugs %] が存在します。
-    削除するには [% terms.bugs %] を他のコンポーネントに移動してください。
+    [% title = BLOCK %]指定された [% jawords.component %] には [% terms.bugs %] が存在します[% END %]
+    この [% jawords.component %] には [% nb FILTER html %] [%+ terms.bugs %] が存在します。
+    削除するには [% terms.bugs %] を他の [% jawords.component %] に移動してください。
 
   [% ELSIF error == "component_name_too_long" %]
-    [% title = "コンポーネント名が長すぎます" %]
-    コンポーネント名は 64 文字以上にはできません。
+    [% title = "$jawords.component_name が長すぎます" %]
+    [% jawords.component_name %] は 64 文字以上にはできません。
     '[% name FILTER html %]' は長すぎます ([% name.length %] 文字入力されています)。
 
   [% ELSIF error == "component_need_initialowner" %]
-    [% title = "コンポーネントには既定の担当者が必要です" %]
-    コンポーネントには既定の担当者が必要です。
+    [% title = "$jawords.component には既定の担当者が必要です" %]
+    [% jawords.component %] には [% jawords.default_assignee %] が必要です。
 
   [% ELSIF error == "customfield_nonexistent" %]
-    [% title = "未知のカスタムフィールド" %]
-    未知のカスタムフィールド '[% name FILTER html %]' が存在します。
+    [% title = "定義されていない $jawords.custom_field" %]
+    定義されていない [% jawords.custom_field %] '[% name FILTER html %]' が存在します。
 
   [% ELSIF error == "customfield_not_obsolete" %]
-    [% title = "カスタムフィールドが \"用済み\" に設定されていません" %]
-    カスタムフィールド '[% name FILTER html %]' は "用済み" に設定されていません。
-    削除する前に「用済み」に設定してください。
+    [% title = "$jawords.custom_field が \"$jawords.obsolete_custom_field\" に設定されていません" %]
+    [% jawords.custom_field %] '[% name FILTER html %]' は "[% jawords.obsolete_custom_field %]" に設定されていません。
+    削除する前に "[% jawords.obsolete_custom_field %]" に設定してください。
 
   [% ELSIF error == "customfield_has_activity" %]
-    [% title = "指定のカスタムフィールドは利用されています" %]
-    カスタムフィールド '[% name FILTER html %]' はバグの更新履歴に記録されているため、
-    削除できません。
+    [% title = "指定された $jawords.custom_field は利用されています" %]
+    [% jawords.custom_field %] '[% name FILTER html %]' は [% jawords.bug_history %]
+    に記録されているため、削除できません。
 
   [% ELSIF error == "customfield_has_contents" %]
-    [% title = "指定のカスタムフィールドに情報が残っています" %]
-    カスタムフィールド '[% name FILTER html %]' に情報を保存している
+    [% title = "指定された $jawords.custom_field に情報が残っています" %]
+    [% jawords.custom_field %] '[% name FILTER html %]' に情報を保存している
     [% terms.bug %] があるため、削除できません。
 
   [% ELSIF error == "dependency_loop_multi" %]
