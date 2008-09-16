@@ -10,14 +10,14 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #                 Gervase Markham <gerv@mozilla.org>
   #%]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% INCLUDE global/header.html.tmpl
-   title = "Edit Workflow"
+   title = "ワークフローの編集"
    style_urls = ['skins/standard/admin.css']
 %]
 
@@ -33,23 +33,23 @@
 </script>
 
 <p>
-  This page allows you to define which status transitions are valid in your workflow.
-  For compatibility with older versions of [% terms.Bugzilla %], reopening [% terms.abug %]
-  will only display either UNCONFIRMED or REOPENED (if allowed by your workflow) but not
-  both. The decision depends on whether the [% terms.bug %] has ever been confirmed or not.
-  So it is a good idea to allow both transitions and let [% terms.Bugzilla %] select the
-  correct one.
+  このページで、どのステータス変更がワークフローとして有効かを定義します。
+  旧バージョンの [% terms.Bugzilla %] との互換性のため、[% terms.abug %] の再開では
+  UNCONFIRMED もしくは REOPENED (ワークフローで有効なら) の両方ではなく、
+  どちらかしか表示されません。
+  この選択は [% terms.bug %] がすでに承認されたかどうかによります。
+  そのため、両方の変更を有効にし [% terms.Bugzilla %] が選択可能にしておくべきです。
 </p>
 
 <form id="workflow_form" method="POST" action="editworkflow.cgi">
 <table>
   <tr>
     <th colspan="2">&nbsp;</th>
-    <th colspan="[% statuses.size FILTER html %]" class="title">To</th>
+    <th colspan="[% statuses.size FILTER html %]" class="title">変更先</th>
   </tr>
 
   <tr>
-    <th rowspan="[% statuses.size + 2 FILTER html %]" class="title">From</th>
+    <th rowspan="[% statuses.size + 2 FILTER html %]" class="title">変更元</th>
     <th>&nbsp;</th>
     [% FOREACH status = statuses %]
       <th class="col-header[% status.is_open ? " open-status" : " closed-status" %]">
@@ -59,7 +59,7 @@
   </tr>
 
   [%# This defines the entry point in the workflow %]
-  [% p = [{id => 0, name => "{Start}", is_open => 1}] %]
+  [% p = [{id => 0, name => "{登録時}", is_open => 1}] %]
   [% FOREACH status = p.merge(statuses) %]
     <tr class="highlight">
       <th align="right" class="[% status.is_open ? "open-status" : "closed-status" %]">
@@ -86,22 +86,21 @@
 </table>
 
 <p>
-  When [% terms.abug %] is marked as a duplicate of another one or is moved
-  to another installation, the [% terms.bug %] status is automatically set to
-  <b>[% Param("duplicate_or_move_bug_status") FILTER html %]</b>. All transitions to
-  this [% terms.bug %] status must then be valid (this is the reason why you cannot edit
-  them above).<br>
-  Note: you can change this setting by visiting the
-  <a href="editparams.cgi?section=bugchange#duplicate_or_move_bug_status">Parameters</a>
-  page and editing the <i>duplicate_or_move_bug_status</i> parameter.
+  [% terms.abug %] が他の重複とされ、他のサイトに移動された場合、[% terms.bug %] 
+  ステータスは自動的に <b>[% Param("duplicate_or_move_bug_status") FILTER html %]</b>
+  に設定されます。この [% terms.bug %] ステータスへの全ての変更は有効にされなければなりません。
+  (そのため、上の表では弄れないように設定されています。)<br>
+  注: この設定は
+  <a href="editparams.cgi?section=bugchange#duplicate_or_move_bug_status">パラメータ</a>
+  ページで <i>duplicate_or_move_bug_status</i> パラメータを変更することで変更可能です。
 </p>
 
 <p align="center">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="token" value="[% token FILTER html %]">
-  <input type="submit" value="Commit Changes"> -
-  <a href="editworkflow.cgi">Cancel Changes</a> -
-  <a href="editworkflow.cgi?action=edit_comment">View Current Triggers</a>
+  <input type="submit" value="変更を実行"> -
+  <a href="editworkflow.cgi">変更を取りやめ</a> -
+  <a href="editworkflow.cgi?action=edit_comment">現在のトリガーを見る</a>
 </p>
 
 </form>

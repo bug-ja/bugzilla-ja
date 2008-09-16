@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Gavin Shelley <bugzilla@chimpychompy.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -26,8 +26,8 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% title = BLOCK %]Select version of product
-                   '[% product.name FILTER html %]'[% END %]
+[% title = BLOCK %]プロダクト
+                   '[% product.name FILTER html %]' のバージョンを編集[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
 %]
@@ -43,7 +43,7 @@
 [% columns = [
      { 
        name => "name"
-       heading => "Edit version..."
+       heading => "バージョンを編集"
        contentlink => edit_contentlink
      }
    ]
@@ -62,8 +62,8 @@
 [% END %]
 
 [% columns.push({
-       heading => "Action"
-       content => "Delete"
+       heading => "動作"
+       content => "削除"
        contentlink => delete_contentlink
      })
 %]
@@ -76,7 +76,7 @@
 [% IF ! showbugcounts %]
 
   <p><a href="editversions.cgi?product=[% product.name FILTER url_quote %]&amp;showbugcounts=1">
-      Redisplay table with [% terms.bug %] counts (slower)</a></p>
+      [% terms.bug %] 数をともに再表示 (遅い)</a></p>
 
 [% END %]
 
