@@ -44,20 +44,33 @@
 
 [% DEFAULT title = "エラー" %]
 
+[%##
+  # 訳語統一のための変数
+  #  UI に存在している訳語が変更された場合に迅速にエラーメッセージでも対応できる
+  #  ように、メッセージの一部を変数化しています。適宜、必要であれば追加してください。
+  # %]
+[% ui_words = {
+  "account" => "アカウント",
+  "account_creation" => "新規アカウント登録",
+
+  "Bugzilla" => "Bugzilla"
+  }
+%]
+
 [% error_message = BLOCK %]
   [% IF    error == "account_creation_disabled" %]
-    [% title = "アカウント作成は無効化されています" %]
-    ユーザアカウント作成は無効化されています。
+    [% title = "$ui_words.account_creation は無効化されています" %]
+    [% ui_words.account_creation %] は無効化されています。
     <hr>
-    新規アカウント作成は管理者が行います。
-    管理者は [% Param("maintainer") %] です。
+    [% ui_words.account_creation %] は管理者が行います。
+    管理者 [% Param("maintainer") %] に連絡してください。
 
   [% ELSIF error == "account_creation_restricted" %]
-    [% title = "アカウント作成は制限されています" %]
-    ユーザアカウント作成は制限されています。
+    [% title = "$ui_words.account_creation は制限されています" %]
+    [% ui_words.account_creation %] は制限されています。
     <hr>
     管理者もしくはメンテナー ([% Param("maintainer") %])
-    にアカウント作成のための情報を問い合わせてください。
+    に [% ui_words.account_creation %] のための情報を問い合わせてください。
 
   [% ELSIF error == "account_disabled" %]
     [% title = "アカウントは無効です" %]
