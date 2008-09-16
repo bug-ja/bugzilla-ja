@@ -48,10 +48,15 @@
   # 訳語統一のための変数
   #  UI に存在している訳語が変更された場合に迅速にエラーメッセージでも対応できる
   #  ように、メッセージの一部を変数化しています。適宜、必要であれば追加してください。
+  #
+  #  メモ: 変数化すべき?
+  #    - 認証サービス
   # %]
 [% jawords = {
   "account" => "アカウント",
   "account_creation" => "新規アカウント登録",
+  "account_mail_address" => "メールアドレス",
+  "account_password" => "パスワード",
 
   "admin_administrator" => "管理者",
   "admin_maintainer" => "メンテナ",
@@ -59,6 +64,16 @@
   "admin_param" => "パラメータ",
 
   "attachment" => "添付",
+  "attachment_file" => "ファイル",
+  "attachment_url" => "URL",
+  "attachment_description" => "説明",
+  "attachment_type" => "ファイル型",
+  "attachment_auto_detect" => "自動認識",
+  "attachment_list" => "リストから選択",
+  "attachment_input" => "自分で入力",
+  "attachment_patch" => "パッチ",
+  "attachment_creation_page" => "添付の登録",
+  "attachment_comment" => "コメント",
 
   "bug_alias" => "エイリアス",
   "bug_alias_name" => "エイリアス名",
@@ -99,14 +114,24 @@
   "default_assignee" => "既定の担当者",
   "default_qa_contact" => "既定の QA コンタクト",
 
+  "dependency" => "依存",
+
+  "duplicate" => "重複",
+  "duplicate_target" => "重複先"
+
   "field" => "フィールド",
+  "field_name" => "フィールド名",
   "field_value" => "フィールド値",
+  "field_description" => "フィールドの説明",
+  "field_default_value" => "既定値",
 
   "flag" => "フラグ",
   "flag_type" => "フラグタイプ",
 
   "group" => "グループ",
   "group_access" => "グループ権限",
+  "group_name" => "グループ名",
+  "group_description" => "グループの説明",
   "group_member" => "グループのメンバー",
 
   "login" => "ログイン",
@@ -456,173 +481,181 @@
     [% terms.bug %] があるため、削除できません。
 
   [% ELSIF error == "dependency_loop_multi" %]
-    [% title = "依存関係がループしています" %]
+    [% title = "$jawords.dependency 関係がループしています" %]
     次の変更が加えられた場合、
-    以下の [% terms.bug %] は依存関係の "依存する" "妨害する" の両方に含まれることになります。
+    以下の [% terms.bug %] は [% jawords.dependency %] 関係の
+    "[% jawords.bug_depends_on %]" "[% jawords.bug_blocks %]"
+    の両方に含まれることになります。
     [% FOREACH dep = deps %]
       [%+ dep FILTER bug_link(dep) FILTER none %]
     [% END %].
-    これは依存関係のループを作ることになり、許可できません。
+    これは [% jawords.dependency %] 関係のループを作ることになり、許可できません。
 
   [% ELSIF error == "dependency_loop_single" %]
-    [% title = "依存関係のループが検出されました" %]
-    [% terms.abug %] を自分自身に "依存する" もしくは "妨害する" ことはできません。
+    [% title = "$jawords.dependency 関係のループが検出されました" %]
+    [% terms.abug %] を自分自身に "[% jawords.bug_depends_on %]" もしくは "[% jawords.bug_blocks %]" ことはできません。
 
   [% ELSIF error == "dupe_id_required" %]
-    [% title = "重複先の $terms.Bug ID が入力されていません" %]
-    この [% terms.bug %] の重複先となる [% terms.abug %] ID が入力されていません。
+    [% title = "$jawords.duplicate_target の $terms.Bug ID が入力されていません" %]
+    この [% terms.bug %] の [% jawords.duplicate_target %] となる [% terms.abug %] ID が入力されていません。
 
   [% ELSIF error == "dupe_not_allowed" %]
-    [% title = "$terms.bugs を重複にできません" %]
-    複数の [% terms.bugs %] を更新する際に、[% terms.bugs %] を重複にはできません。
+    [% title = "$terms.bugs を $jawords.duplicate にできません" %]
+    複数の [% terms.bugs %] を更新する際に、[% terms.bugs %] を [% jawords.duplicate %] にはできません。
 
   [% ELSIF error == "dupe_loop_detected" %]
-    [% title = "重複の関係にループがあります" %]
+    [% title = "$jawords.duplicate 関係にループがあります" %]
     [% terms.bug %] [%+ bug_id FILTER html %] を、
     [% IF dupe_of == bug_id %]
       自分自身の
     [% ELSE %]
-      重複のループが出来るため
+      [% jawords.duplicate %] 関係のループが出来るため
       [%+ terms.bug %] [%+ dupe_of FILTER html %]の
     [% END %]
-    重複にはできません。
+    [% jawords.duplicate %] にはできません。
 
   [% ELSIF error == "email_change_in_progress" %]
-    [% title = "メールアドレスの変更は既に申請されています" %]
-    メールアドレスの変更は既に申請されています。メールボックスを確認してください。
+    [% title = "$account_mail_address の変更は既に申請されています" %]
+    [% jawords.account_mail_address %] の変更は既に申請されています。
+    入力した [% jawords.account_mail_address %] のメールボックスを確認してください。
 
   [% ELSIF error == "email_confirmation_failed" %]
-    [% title = "メールアドレスの確認に失敗しました" %]
-    メールアドレス確認の手続きが失敗に終わりました。
+    [% title = "$jawords.account_mail_address の確認に失敗しました" %]
+    [% jawords.account_mail_address %] 確認の手続きが失敗に終わりました。
 
   [% ELSIF error == "email_no_text_plain" %]
     あなたのメッセージは空です。[% terms.Bugzilla %] は HTML のみのメールや、
     添付ファイル付きの HTML メールは受け付けません。
 
   [% ELSIF error == "empty_group_description" %]
-    [% title = "グループの説明を入力してください" %]
-    グループの説明は必須項目です。
+    [% title = "$jawords.group_description を入力してください" %]
+    [% jawords.group_description %] は必須項目です。
 
   [% ELSIF error == "empty_group_name" %]
-    [% title = "グループの名前を入力してください" %]
-    グループの名前は必須項目です。
+    [% title = "$jawords.group_name を入力してください" %]
+    [% jawords.group_name %] は必須項目です。
   
   [% ELSIF error == "entry_access_denied" %]
     [% title = "権限がありません" %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
-    <em>[% product FILTER html %]</em> は存在しないか、あなたはこのプロダクトに
+    <em>[% product FILTER html %]</em> は存在しないか、
+    あなたのアカウントはこの [% jawords.product %] に
     [% terms.abug %] を登録する権限がありません。
 
   [% ELSIF error == "field_already_exists" %]
-    [% title = "指定されたフィールド名は既に存在しています" %]
-    フィールド '[% field.name FILTER html %]' 
+    [% title = "指定された $jawords.field_name は既に存在しています" %]
+    [% jawords.field %] '[% field.name FILTER html %]' 
     ([% field.description FILTER html %]) は既に存在しています。
-    別の名前を選択してください。
+    別の [% jawords.field_name %] を選択してください。
 
   [% ELSIF error == "field_invalid_name" %]
-    [% title = "無効なフィールド名です" %]
-    '[% name FILTER html %]' はフィールド名としては無効です。
+    [% title = "無効な $jawords.field_name です" %]
+    '[% name FILTER html %]' は [% jawords.field_name %] としては無効です。
     英文字、数字、アンダースコア (_) のみが利用可能です。
 
   [% ELSIF error == "field_invalid_sortkey" %]
-    [% title = "フィールドのソート順が無効です" %]
-    指定されたソート順 [% sortkey FILTER html %] は妥当な正の整数ではありません。
+    [% title = "$jawords.field の $jawords.sortkey が無効です" %]
+    指定された [% jawords.sortkey %] [% sortkey FILTER html %] は妥当な正の整数ではありません。
 
   [% ELSIF error == "field_missing_description" %]
-    [% title = "フィールドの説明を入力してください" %]
-    フィールドの説明は必須項目です。
+    [% title = "$jawords.field_description を入力してください" %]
+    [% jawords.field_description %] は必須項目です。
 
   [% ELSIF error == "field_missing_name" %]
-    [% title = "フィールドの名前を入力してください" %]
-    フィールドの名前は必須項目です。
+    [% title = "$jawords.field_name を入力してください" %]
+    [% jawords.field_name %] は必須項目です。
 
   [% ELSIF error == "fieldname_invalid" %]
-    [% title = "指定されたフィールドは存在しません" %]
-    フィールド '[% field FILTER html %]' は存在しないか、
+    [% title = "指定された $jawords.field は存在しません" %]
+    [% jawords.field %] '[% field FILTER html %]' は存在しないか、
     このインターフェースでは編集できません。
 
   [% ELSIF error == "fieldname_not_specified" %]
-    [% title = "フィールド名が指定されていません" %]
-    編集しようとするフィールドの名前が指定されていません。
+    [% title = "$jawords.field_name が指定されていません" %]
+    編集しようとする [% jawords.field_name %] が指定されていません。
 
   [% ELSIF error == "fieldvalue_already_exists" %]
-    [% title = "指定されたフィールド値は既に存在しています" %]
-    フィールド '[%- field.description FILTER html %]' には既に値として
+    [% title = "指定された $jawords.field_value は既に存在しています" %]
+    [% jawords.field %] '[%- field.description FILTER html %]' には既に値として
     '[% value FILTER html %]' は存在しています。
 
   [% ELSIF error == "fieldvalue_doesnt_exist" %]
-    [% title = "指定されたフィールド値は存在しません" %]
-    フィールド '[% field FILTER html %]' には値として
+    [% title = "指定された $jawords.field_value は存在しません" %]
+    [% jawords.field %] '[% field FILTER html %]' には
+    [% jawords.field_value %] として
     '[% value FILTER html %]' は存在しません。
 
   [% ELSIF error == "fieldvalue_is_default" %]
-    [% title = "指定されたフィールド値は既定値です" %]
-    '[% value FILTER html %]' はフィールド '[% field.description FILTER html %]'
-    の既定値ですので削除できません。
+    [% title = "指定された $jawords.field_value は既定値です" %]
+    '[% value FILTER html %]' は [% jawords.field%] '[% field.description FILTER html %]'
+    の [% jawords.field_default_value %] ですので削除できません。
     [% IF user.groups.tweakparams %]
-      先に既定値を <a href="editparams.cgi?section=bugfields#
+      先に [% jawords.field_default_value %] を
+      <a href="editparams.cgi?section=bugfields#
       [%- param_name FILTER url_quote %]">変更</a> する必要があります。
     [% END %]
 
   [% ELSIF error == "fieldvalue_name_too_long" %]
-    [% title = "フィールド値が長すぎます" %]
-    フィールド値は 60 文字に制限されています。
+    [% title = "$jawords.field_value が長すぎます" %]
+    [% jawords.field_value %] は 60 文字に制限されています。
     '[% value FILTER html %]' は長すぎます ([% value.length %] 文字入力されています)。
 
   [% ELSIF error == "fieldvalue_not_editable" %]
-    [% title = "指定されたフィールド値は編集できません" %]
-    フィールド '[% field.description FILTER html %]' で特殊な役割を担っているため、
-    フィールド値 '[% old_value FILTER html %]' は変更できません。
+    [% title = "指定された $jawords.field_value は編集できません" %]
+    [% jawords.field %] '[% field.description FILTER html %]' で特殊な役割を担っているため、
+    [% jawords.field_value %] '[% old_value FILTER html %]' は変更できません。
 
   [% ELSIF error == "fieldvalue_not_deletable" %]
-    [% title = "指定されたフィールド値は削除できません" %]
-    フィールド '[% field.description FILTER html %]' で特殊な役割を担っているため、
-    フィールド値 '[% value FILTER html %]' は削除できません。
+    [% title = "指定された $jawords.field_value は削除できません" %]
+    [% jawords.field %] '[% field.description FILTER html %]' で特殊な役割を担っているため、
+    [% jawords.field_value %] '[% value FILTER html %]' は削除できません。
 
   [% ELSIF error == "fieldvalue_not_specified" %]
-    [% title = "フィールド値が指定されていません" %]
-    フィールド値を編集しようとしましたが、フィールド値が指定されていません。
+    [% title = "$jawords.field_value が指定されていません" %]
+    [% jawords.field_value %] を編集しようとしましたが、[% jawords.field_value %] が指定されていません。
 
   [% ELSIF error == "fieldvalue_reserved_word" %]
-    [% title = "指定されたフィールド値は予約されています" %]
-    フィールド '[% field.description FILTER html %]' に
-    フィールド値 '[% value FILTER html %]' は使えません。
-    指定された値はシステム内部で予約されています。
-    他の値を選択してください。
+    [% title = "指定された $jawords.field_value は予約されています" %]
+    [% jawords.field %] '[% field.description FILTER html %]' に
+    [% jawords.field_value %] '[% value FILTER html %]' は使えません。
+    指定された [% jawords.field_value %] はシステム内部で予約されています。
+    他の [% jawords.field_value %] を選択してください。
 
   [% ELSIF error == "fieldvalue_sortkey_invalid" %]
-    [% title = "フィールド値のソート順が無効です" %]
-    フィールド '[% name FILTER html %]' に指定されたソート順
+    [% title = "$jawords.field_value の $jawords.sortkey が無効です" %]
+    [% jawords.field %] '[% name FILTER html %]' に指定された [% jawords.sortkey %]
     '[% sortkey FILTER html %]' は妥当な正の整数ではありません。
 
   [% ELSIF error == "fieldvalue_still_has_bugs" %]
-    [% title = "指定されたフィールド値は削除できません" %]
+    [% title = "指定された $jawords.field_value は削除できません" %]
     [%+ count FILTER html %] [%+ terms.bugs %] で使用されているため、
-    フィールド '[% field FILTER html %]' からフィールド値
+    [% jawords.field %] '[% field FILTER html %]' から [% jawords.field_value %]
     '[% value FILTER html %]' を削除できません。
 
   [% ELSIF error == "fieldvalue_undefined" %]
-    [% title = "未定義のフィールド値は許可されていません" %]
-    値を指定する必要があります。
+    [% title = "未定義の $jawords.field_value は許可されていません" %]
+    [% jawords.field_value %] を指定する必要があります。
 
   [% ELSIF error == "file_not_specified" %]
-    [% title = "ファイルが指定されていません" %]
-    添付するファイルが指定されていません。
+    [% title = "$jawords.attachment_file が指定されていません" %]
+    [% jawords.attachment_file %] が指定されていません。
 
   [% ELSIF error == "file_too_large" %]
-    [% title = "ファイルが大きすぎます" %]
-    添付しようとしたファイルは [% filesize FILTER html %] KB あります。
-    パッチ以外の添付ファイルは [%+ Param('maxattachmentsize') %] KB
-    を超えることはできません。 <br>
-    添付ファイルをウェブのどこかに保存して、
+    [% title = "$jawords.attachment_file が大きすぎます" %]
+    アップロードしようとした [% jawords.attachment_file %] は
+    [% filesize FILTER html %] KB あります。
+    [% jawords.attachment_patch %] 以外の [% jawords.attachment_file %] は
+    [%+ Param('maxattachmentsize') %] KB を超えることはできません。 <br>
+    [% jawords.attachment_file %] をウェブのどこかに保存して、
     [% IF Param("allow_attach_url") %]
-      URL を添付を行うページの <b>AttachURL</b> フィールドに指定してください。
+      URL を [% jawords.attachment_creation_page %] の
+      <b>[% jawords.attachment_url %]</b> に指定してください。
     [% ELSE %]
-      URL をコメントとして、もしくは、[% terms.bug %] の URL
-      フィールドに入力してください。
+      URL を [% jawords.attachment_comment %] に、
+      もしくは [% terms.bug %] の [% jawords.bug_url %] に入力してください。
     [% END %]
-    <br>また、添付ファイルが画像ファイルなら、圧縮形式、たとえば JPG や PNG
-    などの形式に変換してもう一度試してください。
+    <br>また、[% jawords.attachment_file %] が画像ファイルなら、圧縮形式、
+    たとえば JPG や PNG などの形式に変換してもう一度試してください。
 
   [% ELSIF error == "flag_not_multiplicable" %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
