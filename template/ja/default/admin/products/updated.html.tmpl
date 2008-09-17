@@ -48,7 +48,7 @@
      [%- classification.name FILTER url_quote %]
   [% END %]
   [% classification_text = BLOCK %] 
-    classification '[% classification.name FILTER html %]' ‚Ì
+    classification '[% classification.name FILTER html %]' ã®
   [% END %]
 [% END %]
 
@@ -62,10 +62,10 @@
 
 [% IF product.name != old_product.name %]
   <p>
-  ƒvƒƒ_ƒNƒg–¼‚ğ '[% old_product.name FILTER html %]' ‚©‚ç
+  ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆåã‚’ '[% old_product.name FILTER html %]' ã‹ã‚‰
   <a href="editproducts.cgi?action=edit&amp;product=
   [%- product.name FILTER url_quote %]
-  [%- classification_url_part FILTER none %]">[% product.name FILTER html %]</a> ‚É•ÏX‚·‚éB
+  [%- classification_url_part FILTER none %]">[% product.name FILTER html %]</a> ã«å¤‰æ›´ã™ã‚‹ã€‚
   </p>
   [% updated = 1 %]
 [% END %]
@@ -73,7 +73,7 @@
 
 [% IF product.description != old_product.description %]
   <p>
-    •ÏXŒã‚Ìà–¾:
+    å¤‰æ›´å¾Œã®èª¬æ˜:
   </p>
   <p style="margin: 1em 3em 1em 3em">[% product.description FILTER html_light %]</p>
   [% updated = 1 %]
@@ -81,72 +81,72 @@
 
 [% IF product.disallow_new != old_product.disallow_new %]
   <p>
-  [% terms.bugs %] ‚ÌV‹K•ñ‚ª
+  [% terms.bugs %] ã®æ–°è¦å ±å‘ŠãŒ
   [% IF product.disallow_new %]
-    •s‰Â”\
+    ä¸å¯èƒ½
   [% ELSE %]
-    ‰Â”\
+    å¯èƒ½
   [% END %]
-  ‚É‚È‚è‚Ü‚µ‚½B
+  ã«ãªã‚Šã¾ã—ãŸã€‚
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.milestone_url != old_product.milestone_url %]
   <p>
-  ƒ}ƒCƒ‹ƒXƒg[ƒ“‚Ì URL ‚ª
+  ãƒã‚¤ãƒ«ã‚¹ãƒˆãƒ¼ãƒ³ã® URL ãŒ
   [% IF old_product.milestone_url != '' %]
     <br> <a href="[%- old_product.milestone_url FILTER html %]">
-    [%- old_product.milestone_url FILTER html %]</a> ‚©‚ç
+    [%- old_product.milestone_url FILTER html %]</a> ã‹ã‚‰
   [% END %]
   [% IF product.milestone_url != '' %]
      <br><a href="[%- product.milestone_url FILTER html %]">
      [%- product.milestone_url FILTER html %]</a>
   [% ELSE %]
-    ‹ó
+    ç©º
   [% END %]
-  ‚É•ÏX‚³‚ê‚Ü‚µ‚½B
+  ã«å¤‰æ›´ã•ã‚Œã¾ã—ãŸã€‚
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.default_milestone != old_product.default_milestone %]
   <p>
-  Šù’è‚Ìƒ}ƒCƒ‹ƒXƒg[ƒ“‚ª '[% old_product.default_milestone FILTER html %]' ‚©‚ç
-  '[% product.default_milestone FILTER html %]' ‚É•ÏX‚³‚ê‚Ü‚µ‚½B
+  æ—¢å®šã®ãƒã‚¤ãƒ«ã‚¹ãƒˆãƒ¼ãƒ³ãŒ '[% old_product.default_milestone FILTER html %]' ã‹ã‚‰
+  '[% product.default_milestone FILTER html %]' ã«å¤‰æ›´ã•ã‚Œã¾ã—ãŸã€‚
   </p>
   [% updated = 1 %]
 [% END %]
   
 [% IF product.votes_per_user != old_product.votes_per_user %]
   <p>
-  ˆêl“–‚½‚è‚ÌÅ‘å“Š•[” ‚ª
-  [%+ old_product.votes_per_user FILTER html %] ‚©‚ç
-  [%+ product.votes_per_user FILTER html %] ‚É•ÏX‚³‚ê‚Ü‚µ‚½B
+  ä¸€äººå½“ãŸã‚Šã®æœ€å¤§æŠ•ç¥¨æ•° ãŒ
+  [%+ old_product.votes_per_user FILTER html %] ã‹ã‚‰
+  [%+ product.votes_per_user FILTER html %] ã«å¤‰æ›´ã•ã‚Œã¾ã—ãŸã€‚
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.max_votes_per_bug != old_product.max_votes_per_bug %]
   <p>
-  ˆê‚Â‚Ì [% terms.Bug %] ‚ ‚½‚è‚Ìˆêl‚ÌÅ‘å“Š•[” ‚ª
-  [%+ old_product.max_votes_per_bug FILTER html %] ‚©‚ç
-  [%+ product.max_votes_per_bug FILTER html %] ‚É•ÏX‚³‚ê‚Ü‚µ‚½B
+  ä¸€ã¤ã® [% terms.Bug %] ã‚ãŸã‚Šã®ä¸€äººã®æœ€å¤§æŠ•ç¥¨æ•° ãŒ
+  [%+ old_product.max_votes_per_bug FILTER html %] ã‹ã‚‰
+  [%+ product.max_votes_per_bug FILTER html %] ã«å¤‰æ›´ã•ã‚Œã¾ã—ãŸã€‚
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.votes_to_confirm != old_product.votes_to_confirm %]
   <p>
-  Šm”F‚³‚ê‚½‚Æ‚İ‚È‚·•[” ‚ª
-  [%+ old_product.votes_to_confirm FILTER html %] ‚©‚ç
-  [%+ product.votes_to_confirm FILTER html %] ‚É•ÏX‚³‚ê‚Ü‚µ‚½B
+  ç¢ºèªã•ã‚ŒãŸã¨ã¿ãªã™ç¥¨æ•° ãŒ
+  [%+ old_product.votes_to_confirm FILTER html %] ã‹ã‚‰
+  [%+ product.votes_to_confirm FILTER html %] ã«å¤‰æ›´ã•ã‚Œã¾ã—ãŸã€‚
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% UNLESS updated %]
-  <p>'[% product.name FILTER html %]' ‚Í•ÏX‚³‚ê‚Ü‚¹‚ñ‚Å‚µ‚½B</p>
+  <p>'[% product.name FILTER html %]' ã¯å¤‰æ›´ã•ã‚Œã¾ã›ã‚“ã§ã—ãŸã€‚</p>
 [% END %]
 
 [%# Note that this display of changed votes and/or confirmed bugs is
@@ -157,31 +157,31 @@
 [% IF checkvotes %]
   <hr>
 
-  <p>ˆê‚Â‚Ì [% terms.Bug %] ‚ ‚½‚è‚Ìˆêl‚ÌÅ‘å“Š•[” ‚É‘Î‚µ‚Ä‘½‚·‚¬‚é“Š•[‚ª–³‚¢‚©Šm”F‚µ‚Ä‚¢‚Ü‚·...<br>
+  <p>ä¸€ã¤ã® [% terms.Bug %] ã‚ãŸã‚Šã®ä¸€äººã®æœ€å¤§æŠ•ç¥¨æ•° ã«å¯¾ã—ã¦å¤šã™ãã‚‹æŠ•ç¥¨ãŒç„¡ã„ã‹ç¢ºèªã—ã¦ã„ã¾ã™...<br>
   [% IF toomanyvotes.size > 0 %]
     [% FOREACH detail = toomanyvotes %]
       &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
      [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> ‚Ö‚Ì“Š•[‚ª [% detail.name FILTER html %] ‚©‚çíœ‚³‚ê‚Ü‚µ‚½B<br>
+     [%- detail.id FILTER html %]</a> ã¸ã®æŠ•ç¥¨ãŒ [% detail.name FILTER html %] ã‹ã‚‰å‰Šé™¤ã•ã‚Œã¾ã—ãŸã€‚<br>
     [% END %]
   [% ELSE %]
-    &rarr;–â‘è‚ ‚è‚Ü‚¹‚ñ‚Å‚µ‚½B
+    &rarr;å•é¡Œã‚ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚
   [% END %]
   </p>
 
-  <p>ˆêl“–‚½‚è‚ÌÅ‘å“Š•[” ‚ª‘½‚·‚¬‚éƒAƒJƒEƒ“ƒg‚ª–³‚¢‚©Šm”F‚µ‚Ä‚¢‚Ü‚·...<br>
+  <p>ä¸€äººå½“ãŸã‚Šã®æœ€å¤§æŠ•ç¥¨æ•° ãŒå¤šã™ãã‚‹ã‚¢ã‚«ã‚¦ãƒ³ãƒˆãŒç„¡ã„ã‹ç¢ºèªã—ã¦ã„ã¾ã™...<br>
   [% IF toomanytotalvotes.size > 0 %]
     [% FOREACH detail = toomanytotalvotes %]
       &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
      [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> ‚Ö‚Ì“Š•[‚ª [% detail.name FILTER html %] ‚©‚çíœ‚³‚ê‚Ü‚µ‚½B<br>
+     [%- detail.id FILTER html %]</a> ã¸ã®æŠ•ç¥¨ãŒ [% detail.name FILTER html %] ã‹ã‚‰å‰Šé™¤ã•ã‚Œã¾ã—ãŸã€‚<br>
     [% END %]
   [% ELSE %]
-    &rarr;–â‘è‚ ‚è‚Ü‚¹‚ñ‚Å‚µ‚½B
+    &rarr;å•é¡Œã‚ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚
   [% END %]
   </p>
 
-  <p>“Š•[‚É‚æ‚èŠm”F‚³‚ê‚½‚Æ‚İ‚È‚·‚±‚Æ‚ª‚Å‚«‚é [% terms.bugs %] ‚ª–³‚¢‚©Šm”F‚µ‚Ä‚¢‚Ü‚·...<br>
+  <p>æŠ•ç¥¨ã«ã‚ˆã‚Šç¢ºèªã•ã‚ŒãŸã¨ã¿ãªã™ã“ã¨ãŒã§ãã‚‹ [% terms.bugs %] ãŒç„¡ã„ã‹ç¢ºèªã—ã¦ã„ã¾ã™...<br>
   [% IF confirmedbugs.size > 0 %]
     [% FOREACH id = confirmedbugs %]
 
@@ -195,7 +195,7 @@
       %]
     [% END %]
   [% ELSE %]
-    &rarr;‚ ‚è‚Ü‚¹‚ñ‚Å‚µ‚½B
+    &rarr;ã‚ã‚Šã¾ã›ã‚“ã§ã—ãŸã€‚
   [% END %]
   </p>
 
