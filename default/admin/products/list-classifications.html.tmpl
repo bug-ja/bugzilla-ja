@@ -37,26 +37,26 @@
 [% columns = [
      { 
        name => "name"
-       heading => "Edit products of..."
+       heading => "プロダクトを編集"
        contentlink => edit_contentlink
      },
      { 
        name => "description"
-       heading => "Description"
+       heading => "説明"
        allow_html_content => 1
      },
      { 
        name => "product_count"
        align => "right"
-       heading => "Product Count"
+       heading => "プロダクト数"
      }
    ]
 %]
 
 [% IF user.in_group('editcomponents') %]
   [% columns.push({
-       heading => "Action..."
-       content => "Add product"
+       heading => "操作"
+       content => "プロダクトを追加"
        contentlink => add_contentlink })
   %]
 [% END %]
