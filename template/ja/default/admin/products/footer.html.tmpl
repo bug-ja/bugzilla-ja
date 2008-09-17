@@ -30,7 +30,7 @@
 
 [% IF Param('useclassification') && classification %]
   [% classification_text = BLOCK %] 
-    classification '[% classification.name FILTER html %]' の
+    classification '[% classification.name FILTER html %]'
   [% END %]
   [% classification_url_part = BLOCK %]&amp;classification=
      [%- classification.name FILTER url_quote %]
