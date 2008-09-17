@@ -48,7 +48,7 @@
      [%- classification.name FILTER url_quote %]
   [% END %]
   [% classification_text = BLOCK %] 
-    of classification '[% classification.name FILTER html %]'
+    classification '[% classification.name FILTER html %]' の
   [% END %]
 [% END %]
 
@@ -62,10 +62,10 @@
 
 [% IF product.name != old_product.name %]
   <p>
-  Updated product name from '[% old_product.name FILTER html %]' to 
+  プロダクト名を '[% old_product.name FILTER html %]' から
   <a href="editproducts.cgi?action=edit&amp;product=
   [%- product.name FILTER url_quote %]
-  [%- classification_url_part FILTER none %]">[% product.name FILTER html %]</a>.
+  [%- classification_url_part FILTER none %]">[% product.name FILTER html %]</a> に変更する。
   </p>
   [% updated = 1 %]
 [% END %]
@@ -73,7 +73,7 @@
 
 [% IF product.description != old_product.description %]
   <p>
-    Updated description to:
+    変更後の説明:
   </p>
   <p style="margin: 1em 3em 1em 3em">[% product.description FILTER html_light %]</p>
   [% updated = 1 %]
@@ -81,72 +81,72 @@
 
 [% IF product.disallow_new != old_product.disallow_new %]
   <p>
-  Product is now
+  [% terms.bugs %] の新規報告が
   [% IF product.disallow_new %]
-    closed to
+    不可能
   [% ELSE %]
-    open for 
+    可能
   [% END %]
-  new [% terms.bugs %].
+  になりました。
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.milestone_url != old_product.milestone_url %]
   <p>
-  Updated milestone URL 
+  マイルストーンの URL が
   [% IF old_product.milestone_url != '' %]
-    from<br> <a href="[%- old_product.milestone_url FILTER html %]">
-    [%- old_product.milestone_url FILTER html %]</a>
+    <br> <a href="[%- old_product.milestone_url FILTER html %]">
+    [%- old_product.milestone_url FILTER html %]</a> から
   [% END %]
-  to
   [% IF product.milestone_url != '' %]
      <br><a href="[%- product.milestone_url FILTER html %]">
-     [%- product.milestone_url FILTER html %]</a>.
+     [%- product.milestone_url FILTER html %]</a>
   [% ELSE %]
-    be empty.
+    空
   [% END %]
+  に変更されました。
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.default_milestone != old_product.default_milestone %]
   <p>
-  Updated default milestone from '[% old_product.default_milestone FILTER html %]' to
-  '[% product.default_milestone FILTER html %]'.
+  既定のマイルストーンが '[% old_product.default_milestone FILTER html %]' から
+  '[% product.default_milestone FILTER html %]' に変更されました。
   </p>
   [% updated = 1 %]
 [% END %]
   
 [% IF product.votes_per_user != old_product.votes_per_user %]
   <p>
-  Updated votes per user from
-  [%+ old_product.votes_per_user FILTER html %] to 
-  [%+ product.votes_per_user FILTER html %].
+  一人当たりの最大投票数 が
+  [%+ old_product.votes_per_user FILTER html %] から
+  [%+ product.votes_per_user FILTER html %] に変更されました。
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.max_votes_per_bug != old_product.max_votes_per_bug %]
   <p>
-  Updated maximum votes per [% terms.bug %] from 
-  [%+ old_product.max_votes_per_bug FILTER html %] to 
-  [%+ product.max_votes_per_bug FILTER html %].
+  一つの [% terms.Bug %] あたりの一人の最大投票数 が
+  [%+ old_product.max_votes_per_bug FILTER html %] から
+  [%+ product.max_votes_per_bug FILTER html %] に変更されました。
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% IF product.votes_to_confirm != old_product.votes_to_confirm %]
   <p>
-  Updated number of votes needed to confirm a [% terms.bug %] from
-  [%+ old_product.votes_to_confirm FILTER html %] to 
-  [%+ product.votes_to_confirm FILTER html %].
+  確認されたとみなす票数 が
+  [%+ old_product.votes_to_confirm FILTER html %] から
+  [%+ product.votes_to_confirm FILTER html %] に変更されました。
   </p>
   [% updated = 1 %]
 [% END %]
 
 [% UNLESS updated %]
-  <p>Nothing changed for product '[% product.name FILTER html %]'.</p>
+  <p>'[% product.name FILTER html %]' は変更されませんでした。</p>
 [% END %]
 
 [%# Note that this display of changed votes and/or confirmed bugs is
@@ -157,34 +157,31 @@
 [% IF checkvotes %]
   <hr>
 
-  <p>Checking existing votes in this product for anybody who now
-  has too many votes for [% terms.abug %]...<br>
+  <p>一つの [% terms.Bug %] あたりの一人の最大投票数 に対して多すぎる投票が無いか確認しています...<br>
   [% IF toomanyvotes.size > 0 %]
     [% FOREACH detail = toomanyvotes %]
-      &rarr;removed votes for [% terms.bug %] <a href="show_bug.cgi?id=
+      &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
      [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> from [% detail.name FILTER html %]<br>
+     [%- detail.id FILTER html %]</a> への投票が [% detail.name FILTER html %] から削除されました。<br>
     [% END %]
   [% ELSE %]
-    &rarr;there were none.
+    &rarr;問題ありませんでした。
   [% END %]
   </p>
 
-  <p>Checking existing votes in this product for anybody
-  who now has too many total votes...<br>
+  <p>一人当たりの最大投票数 が多すぎるアカウントが無いか確認しています...<br>
   [% IF toomanytotalvotes.size > 0 %]
     [% FOREACH detail = toomanytotalvotes %]
-      &rarr;removed votes for [% terms.bug %] <a href="show_bug.cgi?id=
+      &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
      [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> from [% detail.name FILTER html %]<br>
+     [%- detail.id FILTER html %]</a> への投票が [% detail.name FILTER html %] から削除されました。<br>
     [% END %]
   [% ELSE %]
-    &rarr;there were none.
+    &rarr;問題ありませんでした。
   [% END %]
   </p>
 
-  <p>Checking unconfirmed [% terms.bugs %] in this product for any which now have
-  sufficient votes...<br>
+  <p>投票により確認されたとみなすことができる [% terms.bugs %] が無いか確認しています...<br>
   [% IF confirmedbugs.size > 0 %]
     [% FOREACH id = confirmedbugs %]
 
@@ -198,7 +195,7 @@
       %]
     [% END %]
   [% ELSE %]
-    &rarr;there were none.
+    &rarr;ありませんでした。
   [% END %]
   </p>
 
