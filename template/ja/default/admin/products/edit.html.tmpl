@@ -24,7 +24,7 @@
   #                                                  the product is in
   #%]
 
-[% title = BLOCK %]Edit Product '[% product.name FILTER html %]'[% END %]
+[% title = BLOCK %]プロダクト '[% product.name FILTER html %]' の編集[% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
@@ -45,7 +45,7 @@
     <tr>
       <th align="right" valign="top">
         <a href="editcomponents.cgi?product=[% product.name FILTER url_quote %]">
-        Edit components:
+        コンポーネントの編集:
         </a>
       </th>
       <td>
@@ -55,19 +55,18 @@
             [% IF component.description %]
               [% component.description FILTER html_light %]
             [% ELSE %]
-              <font color="red">description missing</font>
+              <font color="red">説明がありません</font>
             [% END %]
             <br>
           [% END %]
         [% ELSE %]
-          <font color="red">missing</font>
+          <font color="red">(無し)</font>
         [% END %]
       </td>
     </tr>
     <tr>
       <th align="right" valign="top">
-        <a href="editversions.cgi?product=[% product.name FILTER url_quote %]">Edit
-versions:</a>
+        <a href="editversions.cgi?product=[% product.name FILTER url_quote %]">バージョンを編集:</a>
       </th>
       <td>
         [%- IF product.versions.size -%]
@@ -76,7 +75,7 @@ versions:</a>
             <br>
           [% END %]
         [% ELSE %]
-          <font color="red">missing</font>
+          <font color="red">(無し)</font>
         [% END %]
       </td>
     </tr>
@@ -84,7 +83,7 @@ versions:</a>
       <tr>
         <th align="right" valign="top">
           <a href="editmilestones.cgi?product=[% product.name FILTER url_quote %]">
-          Edit milestones:</a>
+          マイルストーンを編集:</a>
         </th>
         <td>
           [%- IF product.milestones.size -%]
@@ -93,7 +92,7 @@ versions:</a>
             <br>
             [% END %]
           [% ELSE %]
-            <font color="red">missing</font>
+            <font color="red">(無し)</font>
           [% END %]
         </td>
       </tr>
@@ -103,7 +102,7 @@ versions:</a>
         <a href="editproducts.cgi?action=editgroupcontrols&product=
           [%- product.name FILTER url_quote %]&classification=
           [%- classification.name FILTER url_quote %]">
-          Edit Group Access Controls:
+          グループによる制限を編集:
         </a>
       </th>
       <td>
@@ -124,7 +123,7 @@ versions:</a>
             <br>
           [% END %]
         [% ELSE %]
-          no groups
+          グループがありません
         [% END %]
       </td>
     </tr>
@@ -141,7 +140,7 @@ versions:</a>
   <input type="hidden" name="token" value="[% token FILTER html %]">
   <input type="hidden" name="classification"
          value="[% classification.name FILTER html %]">
-  <input type="submit" name="submit" value="Save Changes">
+  <input type="submit" name="submit" value="変更を保存">
 </form>
   
 [% PROCESS "admin/products/footer.html.tmpl"
