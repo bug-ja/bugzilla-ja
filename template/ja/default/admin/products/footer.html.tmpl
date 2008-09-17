@@ -73,14 +73,14 @@
   <a 
   href="editproducts.cgi?
         [%- classification_url_part_start FILTER none %]">
-          [% classification_text %] の他のプロダクト</a>を編集する。
+          [% classification_text %] の他のプロダクト</a> を編集する。
 
 [% END %]
 
 [% IF Param('useclassification') && classification %]
   classification <a href="editclassifications.cgi?action=edit
     [%- classification_url_part %]">'
-    [%- classification.name FILTER html %]'</a>を編集する。
+    [%- classification.name FILTER html %]'</a> を編集する。
 
 [% END %]
 
