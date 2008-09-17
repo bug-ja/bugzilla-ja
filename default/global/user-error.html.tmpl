@@ -1276,7 +1276,7 @@
     この[% jawords.report_series_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "missing_query" %]
-    [% title = "指定された [% jawords.saved_search FILTER html %] がありません" %]
+    [% title = "指定された $jawords.saved_search がありません" %]
     [% docslinks = {'query.html' => "$terms.bugs の検索",
                     'query.html#list' => "$terms.Bug リスト"} %]
     <em>[% queryname FILTER html %]</em> という [% jawords.search_saved_search FILTER html %] は
