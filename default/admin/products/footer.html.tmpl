@@ -30,7 +30,7 @@
 
 [% IF Param('useclassification') && classification %]
   [% classification_text = BLOCK %] 
-    classification '[% classification.name FILTER html %]'
+    classification '[% classification.name FILTER html %]' の
   [% END %]
   [% classification_url_part = BLOCK %]&amp;classification=
      [%- classification.name FILTER url_quote %]
@@ -48,7 +48,7 @@
     classification if they are enabled, but I'm just being paranoid %]
   [% IF Param('useclassification') && classification %]
     (<a title="classification '
-               [%- classification.name FILTER html %]' にプロダクトを追加する"
+               [%- classification.name FILTER html %]' プロダクトを追加する"
          href="editproducts.cgi?action=add
                [%- classification_url_part %]">classification
     '[% classification.name FILTER html %]'</a> に)
@@ -59,8 +59,7 @@
 
 [% IF product && !no_edit_product_link %]
   プロダクト <a 
-  title="プロダクト '[% product.name FILTER html %] の編集' 
-         [%- classification_text %]"
+  title="[%- classification_text %] プロダクト '[% product.name FILTER html %] の編集'"
   href="editproducts.cgi?action=edit&amp;product=
         [%- product.name FILTER url_quote %]
         [%- classification_url_part %]">
@@ -73,7 +72,7 @@
   <a 
   href="editproducts.cgi?
         [%- classification_url_part_start FILTER none %]">
-          [% classification_text %] の他のプロダクト</a> を編集する。
+          [% classification_text %] 他のプロダクト</a> を編集する。
 
 [% END %]
 
