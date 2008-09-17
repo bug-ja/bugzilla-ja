@@ -891,7 +891,7 @@
     変更しようとしましたが、
     [% IF privs < 3 %]
       [% terms.bug %] の [% jawords.bug_assignee FILTER html %]
-      [% IF privs < 2 %] もしくは [% jawords.bug_reporter %] [% END FILTER html %]
+      [% IF privs < 2 %] もしくは [% jawords.bug_reporter FILTER html %] [% END%]
       もしくは
     [% END %]
     権限を持つ [% jawords.user FILTER html %] のみが [% jawords.field FILTER html %] を変更できます。
