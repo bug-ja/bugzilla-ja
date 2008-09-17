@@ -30,7 +30,7 @@
 
 [% IF Param('useclassification') && classification %]
   [% classification_text = BLOCK %] 
-    classification '[% classification.name FILTER html %]' ‚Ì
+    classification '[% classification.name FILTER html %]' ã®
   [% END %]
   [% classification_url_part = BLOCK %]&amp;classification=
      [%- classification.name FILTER url_quote %]
@@ -48,23 +48,23 @@
     classification if they are enabled, but I'm just being paranoid %]
   [% IF Param('useclassification') && classification %]
     (<a title="classification '
-               [%- classification.name FILTER html %]' ‚Éƒvƒƒ_ƒNƒg‚ğ’Ç‰Á‚·‚é"
+               [%- classification.name FILTER html %]' ã«ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆã‚’è¿½åŠ ã™ã‚‹"
          href="editproducts.cgi?action=add
                [%- classification_url_part %]">
-     classification '[% classification.name FILTER html %]'</a> ‚É)
+     classification '[% classification.name FILTER html %]'</a> ã«)
   [% END %].
-  ƒvƒƒ_ƒNƒg‚ğ <a title="ƒvƒƒ_ƒNƒg‚Ì’Ç‰Á"
-     href="editproducts.cgi?action=add">’Ç‰Á‚·‚é</a>B[% -%]
+  ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆã‚’ <a title="ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆã®è¿½åŠ "
+     href="editproducts.cgi?action=add">è¿½åŠ ã™ã‚‹</a>ã€‚[% -%]
 [% END %]
 
 [% IF product && !no_edit_product_link %]
-  ƒvƒƒ_ƒNƒg <a 
-  title="ƒvƒƒ_ƒNƒg '[% product.name FILTER html %] ‚Ì•ÒW' 
+  ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆ <a 
+  title="ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆ '[% product.name FILTER html %] ã®ç·¨é›†' 
          [%- classification_text %]"
   href="editproducts.cgi?action=edit&amp;product=
         [%- product.name FILTER url_quote %]
         [%- classification_url_part %]">
-        '[% product.name FILTER html %]'</a> ‚ğ•ÒW‚·‚éB
+        '[% product.name FILTER html %]'</a> ã‚’ç·¨é›†ã™ã‚‹ã€‚
 [% END %]
 
 
@@ -73,14 +73,14 @@
   <a 
   href="editproducts.cgi?
         [%- classification_url_part_start FILTER none %]">
-          [% classification_text %] ‚Ì‘¼‚Ìƒvƒƒ_ƒNƒg</a>‚ğ•ÒW‚·‚éB
+          [% classification_text %] ã®ä»–ã®ãƒ—ãƒ­ãƒ€ã‚¯ãƒˆ</a>ã‚’ç·¨é›†ã™ã‚‹ã€‚
 
 [% END %]
 
 [% IF Param('useclassification') && classification %]
   classification <a href="editclassifications.cgi?action=edit
     [%- classification_url_part %]">'
-    [%- classification.name FILTER html %]'</a>‚ğ•ÒW‚·‚éB
+    [%- classification.name FILTER html %]'</a>ã‚’ç·¨é›†ã™ã‚‹ã€‚
 
 [% END %]
 
