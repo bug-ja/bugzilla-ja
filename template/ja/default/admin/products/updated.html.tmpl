@@ -52,8 +52,8 @@
   [% END %]
 [% END %]
 
-[% title = BLOCK %]Updating Product '[% product.name FILTER html %]' 
-                   [% classification_text FILTER none %][% END %]
+[% title = BLOCK %][% classification_text FILTER none %] プロダクト '[% product.name FILTER html %]' 
+                   を変更しました[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
   style_urls = ['skins/standard/admin.css']
@@ -65,7 +65,7 @@
   プロダクト名を '[% old_product.name FILTER html %]' から
   <a href="editproducts.cgi?action=edit&amp;product=
   [%- product.name FILTER url_quote %]
-  [%- classification_url_part FILTER none %]">[% product.name FILTER html %]</a> に変更する。
+  [%- classification_url_part FILTER none %]">[% product.name FILTER html %]</a> に変更しました。
   </p>
   [% updated = 1 %]
 [% END %]
