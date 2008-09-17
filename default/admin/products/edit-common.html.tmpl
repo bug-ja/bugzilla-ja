@@ -31,13 +31,13 @@
 [% END %]
     
 <tr>
-  <th align="right">�v���_�N�g:</th>
+  <th align="right">プロダクト:</th>
   <td><input size="64" maxlength="64" name="product" 
              value="[% product.name FILTER html %]">
   </td>
 </tr>
 <tr>
-  <th align="right">����:</th>
+  <th align="right">説明:</th>
   <td><textarea rows="4" cols="64" wrap="virtual" name="description">
         [% product.description FILTER html %]</textarea>
   </td>
@@ -45,13 +45,13 @@
 
 [% IF Param('usetargetmilestone') -%]
   <tr>
-    <th align="right">���̃v���_�N�g�̃}�C���X�g�[���ɂ��Đ������Ă��� URL:</th>
+    <th align="right">このプロダクトのマイルストーンについて説明している URL:</th>
     <td><input type="text" size="64" maxlength="255" name="milestoneurl"
                value="[% product.milestoneurl FILTER html %]">
     </td>
   </tr>
   <tr>
-    <th align="right">����̃}�C���X�g�[��:</th>
+    <th align="right">既定のマイルストーン:</th>
     <td>
       [% IF product.milestones.size %]
         <select name="defaultmilestone">
@@ -70,7 +70,7 @@
 [% END %]
     
 <tr>
-  <th align="right">[% terms.Bug %] ��V�K�쐬�\:</th>
+  <th align="right">[% terms.Bug %] を新規作成可能:</th>
   <td><input type="checkbox" name="disallownew" value="1"
        [% IF product.disallownew == "1" %]
              checked="checked"[% END %]>
@@ -81,18 +81,18 @@
 <tr class="param_disabled">
   <td colspan="2"
       style="font-family: arial; font-style: italic; font-size: 0.7em; text-align: center;">
-    'usevotes' �p�����[�^�͌��݁A'off' �ł��B
-    ���[�Ɋւ���ݒ�́A'uservotes' �p�����[�^�����ɗL�������ꂽ�ۂɔ��f����܂��B
+    'usevotes' パラメータは現在、'off' です。
+    投票に関する設定は、'uservotes' パラメータが次に有効化された際に反映されます。
 </tr>
 [% END %]
 <tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
-  <th align="right">��l������̍ő哊�[��:</th>
+  <th align="right">一人当たりの最大投票数:</th>
   <td><input size="5" maxlength="5" name="votesperuser" 
              value="[% product.votesperuser FILTER html %]">
   </td>
 </tr>
 <tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
-  <th align="right">��� [% terms.Bug %] ������̈�l�̍ő哊�[��:
+  <th align="right">一つの [% terms.Bug %] あたりの一人の最大投票数:
   </th>
   <td><input size="5" maxlength="5" name="maxvotesperbug" 
              value="[% product.maxvotesperbug FILTER html %]">
@@ -100,12 +100,12 @@
 </tr>
 <tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
   <th align="right">
-    �m�F���ꂽ�Ƃ݂Ȃ��[��:
+    確認されたとみなす票数:
   </th>
   <td>
-    �����I��
+    自動的に
     <a href="page.cgi?id=fields.html#status">[% get_status("UNCONFIRMED") FILTER html %]</a>
-    ��Ԃ��������铊�[������͂��Ă�������<br>
+    状態を解除する投票数を入力してください<br>
     <input size="5" maxlength="5" name="votestoconfirm" 
            value="[% product.votestoconfirm FILTER html %]">
   </td>
