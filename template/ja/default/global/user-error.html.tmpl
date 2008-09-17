@@ -287,21 +287,21 @@
 
 [% error_message = BLOCK %]
   [% IF    error == "account_creation_disabled" %]
-    [% title = "$jawords.account_creation は無効化されています" %]
+    [% title = BLOCK %] [% jawords.account_creation FILTER html %] は無効化されています [% END %]
     [% jawords.account_creation FILTER html %] は無効化されています。
     <hr>
     [% jawords.account_creation FILTER html %] は [% jawords.admin_administrator FILTER html %] が行います。
     [% jawords.admin_administrator FILTER html %] [% Param("maintainer") %] に連絡してください。
 
   [% ELSIF error == "account_creation_restricted" %]
-    [% title = "$jawords.account_creation は制限されています" %]
+    [% title = BLOCK %] [% jawords.account_creation FILTER html %] は制限されています [% END %]
     [% jawords.account_creation FILTER html %] は制限されています。
     <hr>
     [% jawords.admin_administrator FILTER html %] もしくは [% jawords.admin_maintainer FILTER html %] ([% Param("maintainer") %])
     に [% jawords.account_creation FILTER html %] のための情報を問い合わせてください。
 
   [% ELSIF error == "account_disabled" %]
-    [% title = "$jawords.account は無効です" %]
+    [% title = BLOCK %] [% jawords.account FILTER html %] は無効です [% END %]
     [% disabled_reason FILTER none %]
     <hr>
     [% jawords.account FILTER html %] が再度、有効化されるべきだと思う場合、
@@ -309,7 +309,7 @@
     [% Param("maintainer") %] までメールで申請してください。
 
   [% ELSIF error == "account_exists" %]
-    [% title = "指定の $jawords.account は既に存在します" %]
+    [% title = BLOCK %] 指定の [% jawords.account FILTER html %] は既に存在します [% END %]
     指定された
     [% IF email %]
       [% jawords.login_name FILTER html %] ([% email FILTER html %]).
@@ -319,35 +319,35 @@
     の [% jawords.account FILTER html %] は既に存在しています。
 
   [% ELSIF error == "alias_has_comma_or_space" %]
-    [% title = "$jawords.bug_alias に無効な文字が含まれています" %]
+    [% title = BLOCK %] [% jawords.bug_alias FILTER html %] に無効な文字が含まれています [% END %]
     入力された [% jawords.bug_alias FILTER html %] <em>[% alias FILTER html %]</em> には一つ以上のカンマ、
     もしくはスペースが含まれています。これらの文字はリストの中でのセパレータとして利用されますので、
     名称としては利用できません。カンマやスペースを含まない [% jawords.bug_alias_name FILTER html %] をつけてください。
 
   [% ELSIF error == "alias_in_use" %]
-    [% title = "$jawords.bug_alias は既に利用されています" %]
+    [% title = BLOCK %] [% jawords.bug_alias FILTER html %] は既に利用されています [% END %]
     [% terms.Bug FILTER html %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
     は既に <em>[% alias FILTER html %]</em> という [% jawords.bug_alias FILTER html %] を持ちます。
     別の名称を選択してください。
 
   [% ELSIF error == "alias_is_numeric" %]
-    [% title = "$jawords.bug_alias が数字です" %]
+    [% title = BLOCK %] [% jawords.bug_alias FILTER html %] が数字です [% END %]
     この[% terms.bug FILTER html %] に [% jawords.bug_alias FILTER html %] <em>[% alias FILTER html %]</em> をつけようとしましたが、
     [% terms.bug FILTER html %] ID と混同する可能性があるため、[% jawords.bug_alias FILTER html %] は数字だけでは適用できません。
     少なくとも一文字は英文字を含む [% jawords.bug_alias FILTER html %] を選択してください。
 
   [% ELSIF error == "alias_too_long" %]
-    [% title = "$jawords.bug_alias が長すぎます" %]
+    [% title = BLOCK %] [% jawords.bug_alias FILTER html %] が長すぎます [% END %]
     [% terms.Bug FILTER html %] の [% jawords.bug_alias FILTER html %] は 20 文字 (byte) 以上にはできません。
     より短いものにしてください。
 
   [% ELSIF error == "auth_cant_create_account" %]
-    [% title = "$jawords.account を作成できません" %]
+    [% title = BLOCK %] [% jawords.account FILTER html %] を作成できません [% END %]
     このサイトが利用している認証サービスは、[% jawords.account_creation FILTER html %] を許可していません。
     [% jawords.account_creation FILTER html %] については、[% jawords.admin_administrator FILTER html %] に問い合わせてください。
 
   [% ELSIF error == "auth_failure" %]
-    [% title = "認証が必要です" %]
+    [% title = BLOCK %] 認証が必要です [% END %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
     [% IF group %]
       あなたは、'[% group FILTER html %]' [% jawords.group_member FILTER html %] ではありません。
@@ -445,21 +445,21 @@
     [% Hook.process("auth_failure") %]
 
   [% ELSIF error == "attachment_deletion_disabled" %]
-    [% title = "$jawords.attachment の削除はできません" %]
+    [% title = BLOCK %] [% jawords.attachment FILTER html %] の削除はできません [% END %]
     この [% jawords.site FILTER html %] では [% jawords.attachment FILTER html %] は削除できません。
 
   [% ELSIF error == "attachment_removed" %]
-    [% title = "$jawords.attachment は削除されました" %]
+    [% title = BLOCK %] [% jawords.attachment FILTER html %] は削除されました [% END %]
     削除しようとした [% jawords.attachment FILTER html %] は既に削除されています。
 
   [% ELSIF error == "bug_access_denied" %]
-    [% title = "アクセスは拒否されました" %]
+    [% title = BLOCK %] アクセスは拒否されました [% END %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
     あなたの [% jawords.account FILTER html %] には
     [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
 
   [% ELSIF error == "bug_access_query" %]
-    [% title = "アクセスは拒否されました" %]
+    [% title = BLOCK %] アクセスは拒否されました [% END %]
     [% docslinks = {'myaccount.html' => 'アカウント作成'} %]
     あなたの [% jawords.account FILTER html %] には
     [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
@@ -469,14 +469,14 @@
     [% jawords.account FILTER html %] で [% jawords.login FILTER html %]</a> してください。
 
   [% ELSIF error == "buglist_parameters_required" %]
-    [% title = "$jawords.search_term が入力されていません" %]
+    [% title = BLOCK %] [% jawords.search_term FILTER html %] が入力されていません [% END %]
     [% docslinks = {'query.html' => "$terms.bugs の検索",
                     'query.html#list' => "$terms.Bug リスト"} %]
     [% jawords.search_term FILTER html %] 無しでは、[% jawords.search FILTER html %]
     や [%jawords.search_saved_search_creation FILTER html %] はできません。
 
   [% ELSIF error == "chart_too_large" %]
-    [% title = "%jawords.chart が大きすぎます" %]
+    [% title = BLOCK %] %jawords.chart が大きすぎます [% END %]
     [% jawords.chart FILTER html %] の最大サイズは 2000 &times; 2000 に制限されています。
 
   [% ELSIF error == "comment_invalid_isprivate" %]
@@ -485,7 +485,7 @@
     [% terms.bug %] の妥当な [% jawords.bug_comment FILTER html %] ID ではありません。
 
   [% ELSIF error == "comment_required" %]
-    [% title = "$jawords.bug_comment をつけてください" %]
+    [% title = BLOCK %] [% jawords.bug_comment FILTER html %] をつけてください [% END %]
     [% IF old && new %]
       [% terms.abug %] の [% jawords.bug_status FILTER html %] を
       [%+ old.name FILTER html %] から [% new.name FILTER html %]
@@ -498,38 +498,38 @@
     を記述する必要があります。
 
   [% ELSIF error == "comment_too_long" %]
-    [% title = "$jawords.bug_comment が長すぎます" %]
+    [% title = BLOCK %] [% jawords.bug_comment FILTER html %] が長すぎます [% END %]
     [% jawords.bug_comment FILTER html %] は 65,535 文字以上にはできません。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
-    [% title = "指定された $jawords.classification は無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.classification FILTER html %] は無効です [% END %]
     [% jawords.classification FILTER html %] は無効です。
 
   [% ELSIF error == "classification_not_specified" %]
-    [% title = "$jawords.classification 名を指定してください" %]
+    [% title = BLOCK %] [% jawords.classification FILTER html %] 名を指定してください [% END %]
     [% jawords.classification FILTER html %] 名を入力してください。
 
   [% ELSIF error == "classification_already_exists" %]
-    [% title = "指定された $jawords.classification が既に存在しています" %]
+    [% title = BLOCK %] 指定された [% jawords.classification FILTER html %] が既に存在しています [% END %]
     '[% name FILTER html %]' の [% jawords.classification FILTER html %] は既に存在しています。
 
   [% ELSIF error == "classification_doesnt_exist" %]
-    [% title = "指定された $jawords.classification は存在していません" %]
+    [% title = BLOCK %] 指定された [% jawords.classification FILTER html %] は存在していません [% END %]
     指定した [% jawords.classification FILTER html %] '[% name FILTER html %]' は存在していません。
 
   [% ELSIF error == "classification_doesnt_exist_for_product" %]
-    [% title = "指定された $jawords.classification は指定の $jawords.product に対して存在していません" %]
+    [% title = BLOCK %] 指定された [% jawords.classification FILTER html %] は指定の [% jawords.product FILTER html %] に対して存在していません [% END %]
     [% jawords.classification FILTER html %] '[% classification FILTER html %]' は
     [% jawords.product FILTER html %] '[% product FILTER html %]' には存在していません。
 
   [% ELSIF error == "classification_invalid_sortkey" %]
-    [% title = "$jawords.classification の $jawords.sortkey が無効です" %]
+    [% title = BLOCK %] [% jawords.classification FILTER html %] の [% jawords.sortkey FILTER html %] が無効です [% END %]
     [% jawords.classification FILTER html %] '[% name FILTER html %]' には
     [% jawords.sortkey FILTER html %] として <em>[% sortkey FILTER html %]</em> は利用できません。
     正の整数である必要があります。
 
   [% ELSIF error == "classification_not_deletable" %]
-    [% title = "既定の $jawords.classification は削除できません" %]
+    [% title = BLOCK %] 既定の [% jawords.classification FILTER html %] は削除できません [% END %]
     既定の [% jawords.classification FILTER html %] は削除できません。
 
   [% ELSIF error == "classification_has_products" %]
@@ -537,17 +537,17 @@
     削除するには、これらの [% jawords.product FILTER html %] を他の [% jawords.classification FILTER html %] に移動してください。
 
   [% ELSIF error == "component_already_exists" %]
-    [% title = "指定された $jawords.component は既に存在しています" %]
+    [% title = BLOCK %] 指定された [% jawords.component FILTER html %] は既に存在しています [% END %]
     指定された [% jawords.component_name FILTER html %] <em>[% name FILTER html %]</em>
     は [% jawords.product FILTER html %] <em>[% product.name FILTER html %]</em>
     に既に存在しています。
 
   [% ELSIF error == "component_blank_description" %]
-    [% title = "$jawords.component_description を入力してください" %]
+    [% title = BLOCK %] [% jawords.component_description FILTER html %] を入力してください [% END %]
     [% jawords.component_description FILTER html %] は必須項目です。
 
   [% ELSIF error == "component_blank_name" %]
-    [% title = "$jawords.component_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.component_name FILTER html %] を入力してください [% END %]
     [% jawords.component_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "component_has_bugs" %]
@@ -556,35 +556,35 @@
     削除するには [% terms.bugs %] を他の [% jawords.component FILTER html %] に移動してください。
 
   [% ELSIF error == "component_name_too_long" %]
-    [% title = "$jawords.component_name が長すぎます" %]
+    [% title = BLOCK %] [% jawords.component_name FILTER html %] が長すぎます [% END %]
     [% jawords.component_name FILTER html %] は 64 文字以上にはできません。
     '[% name FILTER html %]' は長すぎます ([% name.length %] 文字入力されています)。
 
   [% ELSIF error == "component_need_initialowner" %]
-    [% title = "$jawords.component には既定の担当者が必要です" %]
+    [% title = BLOCK %] [% jawords.component FILTER html %] には既定の担当者が必要です [% END %]
     [% jawords.component FILTER html %] には [% jawords.default_assignee FILTER html %] が必要です。
 
   [% ELSIF error == "customfield_nonexistent" %]
-    [% title = "定義されていない $jawords.custom_field" %]
+    [% title = BLOCK %] 定義されていない [% jawords.custom_field FILTER html %] [% END %]
     定義されていない [% jawords.custom_field FILTER html %] '[% name FILTER html %]' が存在します。
 
   [% ELSIF error == "customfield_not_obsolete" %]
-    [% title = "$jawords.custom_field が \"$jawords.obsolete_custom_field\" に設定されていません" %]
+    [% title = BLOCK %] [% jawords.custom_field FILTER html %] が \"$jawords.obsolete_custom_field\" に設定されていません [% END %]
     [% jawords.custom_field FILTER html %] '[% name FILTER html %]' は "[% jawords.obsolete_custom_field FILTER html %]" に設定されていません。
     削除する前に "[% jawords.obsolete_custom_field FILTER html %]" に設定してください。
 
   [% ELSIF error == "customfield_has_activity" %]
-    [% title = "指定された $jawords.custom_field は利用されています" %]
+    [% title = BLOCK %] 指定された [% jawords.custom_field FILTER html %] は利用されています [% END %]
     [% jawords.custom_field FILTER html %] '[% name FILTER html %]' は [% jawords.bug_history FILTER html %]
     に記録されているため、削除できません。
 
   [% ELSIF error == "customfield_has_contents" %]
-    [% title = "指定された $jawords.custom_field に情報が残っています" %]
+    [% title = BLOCK %] 指定された [% jawords.custom_field FILTER html %] に情報が残っています [% END %]
     [% jawords.custom_field FILTER html %] '[% name FILTER html %]' に情報を保存している
     [% terms.bug %] があるため、削除できません。
 
   [% ELSIF error == "dependency_loop_multi" %]
-    [% title = "$jawords.dependency 関係がループしています" %]
+    [% title = BLOCK %] [% jawords.dependency FILTER html %] 関係がループしています [% END %]
     次の変更が加えられた場合、
     以下の [% terms.bug %] は [% jawords.dependency FILTER html %] 関係の
     "[% jawords.bug_depends_on FILTER html %]" "[% jawords.bug_blocks FILTER html %]"
@@ -595,19 +595,19 @@
     これは [% jawords.dependency FILTER html %] 関係のループを作ることになり、許可できません。
 
   [% ELSIF error == "dependency_loop_single" %]
-    [% title = "$jawords.dependency 関係のループが検出されました" %]
+    [% title = BLOCK %] [% jawords.dependency FILTER html %] 関係のループが検出されました [% END %]
     [% terms.abug %] を自分自身に "[% jawords.bug_depends_on FILTER html %]" もしくは "[% jawords.bug_blocks FILTER html %]" ことはできません。
 
   [% ELSIF error == "dupe_id_required" %]
-    [% title = "$jawords.duplicate_target の $terms.bug ID が入力されていません" %]
+    [% title = BLOCK %] [% jawords.duplicate_target FILTER html %] の [% terms.bug %] ID が入力されていません [% END %]
     この [% terms.bug %] の [% jawords.duplicate_target FILTER html %] となる [% terms.Bug FILTER html %] ID が入力されていません。
 
   [% ELSIF error == "dupe_not_allowed" %]
-    [% title = "$terms.bugs を $jawords.duplicate にできません" %]
+    [% title = BLOCK %] [% terms.bugs %] を [% jawords.duplicate FILTER html %] にできません [% END %]
     複数の [% terms.bugs %] を更新する際に、[% terms.bugs %] を [% jawords.duplicate FILTER html %] にはできません。
 
   [% ELSIF error == "dupe_loop_detected" %]
-    [% title = "$jawords.duplicate 関係にループがあります" %]
+    [% title = BLOCK %] [% jawords.duplicate FILTER html %] 関係にループがあります [% END %]
     [% terms.bug %] [%+ bug_id FILTER html %] を、
     [% IF dupe_of == bug_id %]
       自分自身の
@@ -618,12 +618,12 @@
     [% jawords.duplicate FILTER html %] にはできません。
 
   [% ELSIF error == "email_change_in_progress" %]
-    [% title = "$account_mail_address の変更は既に申請されています" %]
+    [% title = BLOCK %] $account_mail_address の変更は既に申請されています [% END %]
     [% jawords.account_mail_address FILTER html %] の変更は既に申請されています。
     入力した [% jawords.account_mail_address FILTER html %] のメールボックスを確認してください。
 
   [% ELSIF error == "email_confirmation_failed" %]
-    [% title = "$jawords.account_mail_address の確認に失敗しました" %]
+    [% title = BLOCK %] [% jawords.account_mail_address FILTER html %] の確認に失敗しました [% END %]
     [% jawords.account_mail_address FILTER html %] 確認の手続きが失敗に終わりました。
 
   [% ELSIF error == "email_no_text_plain" %]
@@ -631,65 +631,65 @@
     添付ファイル付きの HTML メールは受け付けません。
 
   [% ELSIF error == "empty_group_description" %]
-    [% title = "$jawords.group_description を入力してください" %]
+    [% title = BLOCK %] [% jawords.group_description FILTER html %] を入力してください [% END %]
     [% jawords.group_description FILTER html %] は必須項目です。
 
   [% ELSIF error == "empty_group_name" %]
-    [% title = "$jawords.group_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.group_name FILTER html %] を入力してください [% END %]
     [% jawords.group_name FILTER html %] は必須項目です。
   
   [% ELSIF error == "entry_access_denied" %]
-    [% title = "権限がありません" %]
+    [% title = BLOCK %] 権限がありません [% END %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
     <em>[% product FILTER html %]</em> は存在しないか、
     あなたのアカウントはこの [% jawords.product FILTER html %] に
     [% terms.abug %] を登録する権限がありません。
 
   [% ELSIF error == "field_already_exists" %]
-    [% title = "指定された $jawords.field_name は既に存在しています" %]
+    [% title = BLOCK %] 指定された [% jawords.field_name FILTER html %] は既に存在しています [% END %]
     [% jawords.field FILTER html %] '[% field.name FILTER html %]' 
     ([% field.description FILTER html %]) は既に存在しています。
     別の [% jawords.field_name FILTER html %] を選択してください。
 
   [% ELSIF error == "field_invalid_name" %]
-    [% title = "無効な $jawords.field_name です" %]
+    [% title = BLOCK %] 無効な [% jawords.field_name FILTER html %] です [% END %]
     '[% name FILTER html %]' は [% jawords.field_name FILTER html %] としては無効です。
     英文字、数字、アンダースコア (_) のみが利用可能です。
 
   [% ELSIF error == "field_invalid_sortkey" %]
-    [% title = "$jawords.field の $jawords.sortkey が無効です" %]
+    [% title = BLOCK %] [% jawords.field FILTER html %] の [% jawords.sortkey FILTER html %] が無効です [% END %]
     指定された [% jawords.sortkey FILTER html %] [% sortkey FILTER html %] は妥当な正の整数ではありません。
 
   [% ELSIF error == "field_missing_description" %]
-    [% title = "$jawords.field_description を入力してください" %]
+    [% title = BLOCK %] [% jawords.field_description FILTER html %] を入力してください [% END %]
     [% jawords.field_description FILTER html %] は必須項目です。
 
   [% ELSIF error == "field_missing_name" %]
-    [% title = "$jawords.field_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.field_name FILTER html %] を入力してください [% END %]
     [% jawords.field_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "fieldname_invalid" %]
-    [% title = "指定された $jawords.field は存在しません" %]
+    [% title = BLOCK %] 指定された [% jawords.field FILTER html %] は存在しません [% END %]
     [% jawords.field FILTER html %] '[% field FILTER html %]' は存在しないか、
     このインターフェースでは編集できません。
 
   [% ELSIF error == "fieldname_not_specified" %]
-    [% title = "$jawords.field_name が指定されていません" %]
+    [% title = BLOCK %] [% jawords.field_name FILTER html %] が指定されていません [% END %]
     編集しようとする [% jawords.field_name FILTER html %] が指定されていません。
 
   [% ELSIF error == "fieldvalue_already_exists" %]
-    [% title = "指定された $jawords.field_value は既に存在しています" %]
+    [% title = BLOCK %] 指定された [% jawords.field_value FILTER html %] は既に存在しています [% END %]
     [% jawords.field FILTER html %] '[%- field.description FILTER html %]' には既に値として
     '[% value FILTER html %]' は存在しています。
 
   [% ELSIF error == "fieldvalue_doesnt_exist" %]
-    [% title = "指定された $jawords.field_value は存在しません" %]
+    [% title = BLOCK %] 指定された [% jawords.field_value FILTER html %] は存在しません [% END %]
     [% jawords.field FILTER html %] '[% field FILTER html %]' には
     [% jawords.field_value FILTER html %] として
     '[% value FILTER html %]' は存在しません。
 
   [% ELSIF error == "fieldvalue_is_default" %]
-    [% title = "指定された $jawords.field_value は既定値です" %]
+    [% title = BLOCK %] 指定された [% jawords.field_value FILTER html %] は既定値です [% END %]
     '[% value FILTER html %]' は [% jawords.field FILTER html %] '[% field.description FILTER html %]'
     の [% jawords.field_default_value FILTER html %] ですので削除できません。
     [% IF user.groups.tweakparams %]
@@ -699,52 +699,52 @@
     [% END %]
 
   [% ELSIF error == "fieldvalue_name_too_long" %]
-    [% title = "$jawords.field_value が長すぎます" %]
+    [% title = BLOCK %] [% jawords.field_value FILTER html %] が長すぎます [% END %]
     [% jawords.field_value FILTER html %] は 60 文字に制限されています。
     '[% value FILTER html %]' は長すぎます ([% value.length %] 文字入力されています)。
 
   [% ELSIF error == "fieldvalue_not_editable" %]
-    [% title = "指定された $jawords.field_value は編集できません" %]
+    [% title = BLOCK %] 指定された [% jawords.field_value FILTER html %] は編集できません [% END %]
     [% jawords.field FILTER html %] '[% field.description FILTER html %]' で特殊な役割を担っているため、
     [% jawords.field_value FILTER html %] '[% old_value FILTER html %]' は変更できません。
 
   [% ELSIF error == "fieldvalue_not_deletable" %]
-    [% title = "指定された $jawords.field_value は削除できません" %]
+    [% title = BLOCK %] 指定された [% jawords.field_value FILTER html %] は削除できません [% END %]
     [% jawords.field FILTER html %] '[% field.description FILTER html %]' で特殊な役割を担っているため、
     [% jawords.field_value FILTER html %] '[% value FILTER html %]' は削除できません。
 
   [% ELSIF error == "fieldvalue_not_specified" %]
-    [% title = "$jawords.field_value が指定されていません" %]
+    [% title = BLOCK %] [% jawords.field_value FILTER html %] が指定されていません [% END %]
     [% jawords.field_value FILTER html %] を編集しようとしましたが、[% jawords.field_value FILTER html %] が指定されていません。
 
   [% ELSIF error == "fieldvalue_reserved_word" %]
-    [% title = "指定された $jawords.field_value は予約されています" %]
+    [% title = BLOCK %] 指定された [% jawords.field_value FILTER html %] は予約されています [% END %]
     [% jawords.field FILTER html %] '[% field.description FILTER html %]' に
     [% jawords.field_value FILTER html %] '[% value FILTER html %]' は使えません。
     指定された [% jawords.field_value FILTER html %] はシステム内部で予約されています。
     他の [% jawords.field_value FILTER html %] を選択してください。
 
   [% ELSIF error == "fieldvalue_sortkey_invalid" %]
-    [% title = "$jawords.field_value の $jawords.sortkey が無効です" %]
+    [% title = BLOCK %] [% jawords.field_value FILTER html %] の [% jawords.sortkey FILTER html %] が無効です [% END %]
     [% jawords.field FILTER html %] '[% name FILTER html %]' に指定された [% jawords.sortkey FILTER html %]
     '[% sortkey FILTER html %]' は妥当な正の整数ではありません。
 
   [% ELSIF error == "fieldvalue_still_has_bugs" %]
-    [% title = "指定された $jawords.field_value は削除できません" %]
+    [% title = BLOCK %] 指定された [% jawords.field_value FILTER html %] は削除できません [% END %]
     [%+ count FILTER html %] [%+ terms.bugs %] で使用されているため、
     [% jawords.field FILTER html %] '[% field FILTER html %]' から [% jawords.field_value FILTER html %]
     '[% value FILTER html %]' を削除できません。
 
   [% ELSIF error == "fieldvalue_undefined" %]
-    [% title = "未定義の $jawords.field_value は許可されていません" %]
+    [% title = BLOCK %] 未定義の [% jawords.field_value FILTER html %] は許可されていません [% END %]
     [% jawords.field_value FILTER html %] を指定する必要があります。
 
   [% ELSIF error == "file_not_specified" %]
-    [% title = "$jawords.attachment_file が指定されていません" %]
+    [% title = BLOCK %] [% jawords.attachment_file FILTER html %] が指定されていません [% END %]
     [% jawords.attachment_file FILTER html %] が指定されていません。
 
   [% ELSIF error == "file_too_large" %]
-    [% title = "$jawords.attachment_file が大きすぎます" %]
+    [% title = BLOCK %] [% jawords.attachment_file FILTER html %] が大きすぎます [% END %]
     アップロードしようとした [% jawords.attachment_file FILTER html %] は
     [% filesize FILTER html %] KB あります。
     [% jawords.attachment_patch FILTER html %] 以外の [% jawords.attachment_file FILTER html %] は
@@ -767,13 +767,13 @@
     [% jawords.flag FILTER html %] を [% jawords.flag_request FILTER html %] することはできません。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
-    [% title = "$jawords.flag の $jawords.flag_request_target のアカウントに権限が必要です" %]
+    [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] のアカウントに権限が必要です [% END %]
     [% requestee.identity FILTER html %] は <em>[% flagtype.name FILTER html %]</em>
     [% jawords.flag FILTER html %] を設定する権限を持っていません。<em>[% flagtype.grant_group.name FILTER html %]</em>
     [% jawords.group FILTER html %] に所属する [% jawords.user FILTER html %] を選択してください。
 
   [% ELSIF error == "flag_requestee_unauthorized" %]
-    [% title = "$jpword.flag の $jawords.flag_request_target の $jawords.account は認証されていません" %]
+    [% title = BLOCK %] $jpword.flag の [% jawords.flag_request_target FILTER html %] の [% jawords.account FILTER html %] は認証されていません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
@@ -791,7 +791,7 @@
     その人を [% jawords.bug_cc_list FILTER html %] に追加してください。
 
   [% ELSIF error == "flag_requestee_unauthorized_attachment" %]
-    [% title = "$jawords.flag の $jawords.flag_request_target の $jawords.account は認証されていません" %]
+    [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] の [% jawords.account FILTER html %] は認証されていません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
@@ -811,28 +811,28 @@
     [% jawords.admin_administrator FILTER html %] に依頼してください。
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
-    [% title = "$jawords.flag の $jawords.bug_cc_list が適当ではありません" %]
+    [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.bug_cc_list FILTER html %] が適当ではありません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
     [% jawords.bug_cc_list FILTER html %] [% cc_list FILTER html %] は 200 文字以下でなければいけません。
 
   [% ELSIF error == "flag_type_component_without_product" %]
-    [% title = "$jawords.product が指定されていません" %]
+    [% title = BLOCK %] [% jawords.product FILTER html %] が指定されていません [% END %]
     [% jawords.component FILTER html %] が選択されていますが、
     [% jawords.product FILTER html %] が選択されていません。
 
   [% ELSIF error == "flag_type_description_invalid" %]
-    [% title = "$jawords.flag_description が適当ではありません" %]
+    [% title = BLOCK %] [% jawords.flag_description FILTER html %] が適当ではありません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
     [% jawords.flag_description FILTER html %] は 32KB 以内でなければいけません (日本語で約一万文字)。
 
   [% ELSIF error == "flag_type_name_invalid" %]
-    [% title = "$jawords.flag_name が適当ではありません" %]
+    [% title = BLOCK %] [% jawords.flag_name FILTER html %] が適当ではありません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
     [% jawords.flag_name FILTER html %] <em>[% name FILTER html %]</em> は 1 ～ 50 文字で、
     スペースやカンマを含むことはできません。
 
   [% ELSIF error == "flag_update_denied" %]
-    [% title = "$jawords.flag の編集が拒否されました" %]
+    [% title = BLOCK %] [% jawords.flag FILTER html %] の編集が拒否されました [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
@@ -855,24 +855,24 @@
     権限を持つ [% jawords.user FILTER html %] のみがこの操作が可能です。
 
   [% ELSIF error == "format_not_found" %]
-    [% title = "$jawords.output_format が存在していません" %]
+    [% title = BLOCK %] [% jawords.output_format FILTER html %] が存在していません [% END %]
     指定された [% jawords.output_format FILTER html %] <em>[% format FILTER html %]</em> は
     <em>[% ctype FILTER html %]</em> の [% jawords.output_content_type FILTER html %] で出力できません。
 
   [% ELSIF error == "flag_type_sortkey_invalid" %]
-    [% title = "$jawords.flag の $jawords.sortkey が無効です" %]
+    [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.sortkey FILTER html %] が無効です [% END %]
     [% jawords.flag FILTER html %] の [% jawords.sortkey FILTER html %] は 0 ～ 32767 の整数でなくてはいけません。
     <em>[% sortkey FILTER html %]</em> には設定できません。
 
   [% ELSIF error == "freetext_too_long" %]
-    [% title = "$jawords.text が長すぎます" %]
+    [% title = BLOCK %] [% jawords.text FILTER html %] が長すぎます [% END %]
     入力された [% jawords.text FILTER html %] が長すぎます
     (最長、[% constants.MAX_FREETEXT_LENGTH FILTER none %] ですが、
     [% text.length FILTER html %] 文字入力されています):
     <p><em>[% text FILTER html %]</em></p>
 
   [% ELSIF error == "group_cannot_delete" %]
-    [% title = "$jawords.group を削除できません" %]
+    [% title = BLOCK %] [% jawords.group FILTER html %] を削除できません [% END %]
     <em>[% name FILTER html %]</em> [% jawords.group FILTER html %] は削除できません。
     データベース中で以下の
     <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">[% jawords.record FILTER html %]</a>
@@ -880,17 +880,17 @@
     先にこの [% jawords.group FILTER html %] への全ての参照を削除してください。
 
   [% ELSIF error == "group_change_denied" %]
-    [% title = "$jawords.group を追加、または削除できません" %]
+    [% title = BLOCK %] [% jawords.group FILTER html %] を追加、または削除できません [% END %]
     [% jawords.group FILTER html %] ID [% group_id FILTER html %] を
     [% terms.bug %] [%+ bug.id FILTER html %]
     から削除しようとしましたが、あなたはこの権限を持っていません。
 
   [% ELSIF error == "group_exists" %]
-    [% title = "$jawords.group は既に存在しています" %]
+    [% title = BLOCK %] [% jawords.group FILTER html %] は既に存在しています [% END %]
     [% jawords.group FILTER html %] [% name FILTER html %] は既に存在しています。
 
   [% ELSIF error == "group_has_special_role" %]
-    [% title = "$jawords.group を削除できません" %]
+    [% title = BLOCK %] [% jawords.group FILTER html %] を削除できません [% END %]
     [% jawords.group FILTER html %] '[% name FILTER html %]' は
     '[% groups.join("' and '") FILTER html %]' の [% jawords.param FILTER html %] で利用されています。
     この [% jawords.group FILTER html %] を削除するには、先に他の [% jawords.group FILTER html %]
@@ -909,40 +909,40 @@
     を指定された [% jawords.group FILTER html %] に制限することはできません。
 
   [% ELSIF error == "group_not_specified" %]
-    [% title = "$jawords.group が指定されていません" %]
+    [% title = BLOCK %] [% jawords.group FILTER html %] が指定されていません [% END %]
     [% jawords.group FILTER html %] が指定されていません。
 
   [% ELSIF error == "system_group_not_deletable" %]
-    [% title = "$jawords.group_system_group は削除できません" %]
+    [% title = BLOCK %] [% jawords.group_system_group FILTER html %] は削除できません [% END %]
     <em>[% name FILTER html %]</em> は [% jawords.group_system_group FILTER html %] です。
     この [% jawords.group FILTER html %] は削除できません。
 
   [% ELSIF error == "group_unknown" %]
-    [% title = "不明な $jawords.group" %]
+    [% title = BLOCK %] 不明な [% jawords.group FILTER html %] [% END %]
     [% jawords.group FILTER html %] [% name FILTER html %] は存在していません。
     有効な [% jawords.group_name FILTER html %] を指定してください。
     必要なのであれば、先に作ってください。
 
   [% ELSIF error == "illegal_at_least_x_votes" %]
-    [% title = "指定された $jawords.search_inputs が無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.search_inputs FILTER html %] が無効です [% END %]
     <em>[% jawords.search_min_votes FILTER html %]</em> のフィールドは単純な数字でなくてはいけません。
     指定された <tt>[% value FILTER html %]</tt> は適当ではありません。
     
   [% ELSIF error == "illegal_attachment_edit" %]
-    [% title = "認証されていない操作です" %]
+    [% title = BLOCK %] 認証されていない操作です [% END %]
     [% jawords.attachment FILTER html %] [% attach_id FILTER html %] を編集する権限がありません。
 
   [% ELSIF error == "illegal_attachment_edit_bug" %]
-    [% title = "認証されていない操作です" %]
+    [% title = BLOCK %] 認証されていない操作です [% END %]
     [% terms.bug %] [%+ bug_id FILTER html %] の
     [% jawords.attachment FILTER html %] を編集する権限がありません。
          
   [% ELSIF error == "illegal_attachment_is_patch" %]
-    [% title = "指定された $jawords.search_inputs が無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.search_inputs FILTER html %] が無効です [% END %]
     <em>[% jawords.search_attachment_is_patch FILTER html %]</em> の [% jawords.field FILTER html %] の有効な値は 0 と 1 のみです。
 
   [% ELSIF error == "illegal_bug_status_transition" %]
-    [% title = "$terms.bug $jawords.bug_status の変更はできません" %]
+    [% title = BLOCK %] [% terms.bug %] [% jawords.bug_status FILTER html %] の変更はできません [% END %]
     [% IF old.defined %]
       あなたは [% terms.bug %] [% jawords.bug_status FILTER html %] を
       [%+ old.name FILTER html %] から
@@ -953,7 +953,7 @@
     [% END %]
 
   [% ELSIF error == "illegal_change" %]
-    [% title = "許可されていない変更を行おうとしました" %]
+    [% title = BLOCK %] 許可されていない変更を行おうとしました [% END %]
     <strong>[% field_descs.$field FILTER html %]</strong> の [% jawords.field FILTER html %] を
     [% IF oldvalue.defined %]
       <em>[% oldvalue.join(', ') FILTER html %]</em> から
@@ -970,26 +970,26 @@
     権限を持つ [% jawords.user FILTER html %] のみが [% jawords.field FILTER html %] を変更できます。
 
   [% ELSIF error == "illegal_change_deps" %]
-    [% title = "許可されていない変更を行おうとしました" %]
+    [% title = BLOCK %] 許可されていない変更を行おうとしました [% END %]
     <strong>[% field_descs.$field FILTER html %]</strong>
     [% jawords.field FILTER html %] を変更しようとしましたが、変更を受ける全ての
     [% terms.bugs %] の変更権限がある [% jawords.user FILTER html %] のみが、この [% jawords.field FILTER html %] を変更できます。
 
   [% ELSIF error == "illegal_changed_in_last_x_days" %]
-    [% title = "指定された $jawords.search_inputs が無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.search_inputs FILTER html %] が無効です [% END %]
     <em>[% jawords.search_days_since_bug_changed FILTER html %]</em> の
     [% jawords.field FILTER html %] は単純な数字でなくてはいけません。
     指定された <tt>[% value FILTER html %]</tt> は適当ではありません。
     
   [% ELSIF error == "illegal_date" %]
-    [% title = "指定された $jawords.search_date は無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.search_date FILTER html %] は無効です [% END %]
     '<tt>[% date FILTER html %]</tt>' は有効な [% jawords.date FILTER html %] ではありません。
     [% IF format %]
       '<tt>[% format FILTER html %]</tt>' の形式で入力してください。
     [% END %]
     
   [% ELSIF error == "illegal_email_address" %]
-    [% title = "指定された $jawords.mail_address は無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.mail_address FILTER html %] は無効です [% END %]
     指定された [% jawords.mail_address FILTER html %] (<b>[% addr FILTER html %]</b>) 
     は、[% jawords.mail_address FILTER html %] の文法検査で無効だと判断されました。
     [% IF default %]
@@ -1002,21 +1002,21 @@
     や空白文字(スペース等)を含むことはできません。
 
   [% ELSIF error == "illegal_frequency" %]
-    [% title = "指定された $jawords.report_frequency は高すぎます" %]
+    [% title = BLOCK %] 指定された [% jawords.report_frequency FILTER html %] は高すぎます [% END %]
     あなたが [% jawords.admin_administrator FILTER html %] ではないのであれば、[% minimum FILTER html %]
     日に一度以上の頻度で動作する [% jawords.report_series FILTER html %] は作成できません。
 
   [% ELSIF error == "illegal_group_control_combination" %]
-    [% title = "$jawords.group 制限の組み合わせが無効です" %]
+    [% title = BLOCK %] [% jawords.group FILTER html %] 制限の組み合わせが無効です [% END %]
     [% admindocslinks = {'groups.html' => 'プロダクトのグループの割り当て'} %]
     [% jawords.group FILTER html %] の組み合わせ &quot;[% groupname FILTER html %]&quot; は無効です。
 
   [% ELSIF error == "illegal_is_obsolete" %]
-    [% title = "指定された $jawords.search_inputs が無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.search_inputs FILTER html %] が無効です [% END %]
     <em>[% jawords.search_attachment_is_obsolete FILTER html %]</em> の [% jawords.filter FILTER html %] の有効な値は 0 と 1のみです。
 
   [% ELSIF error == "illegal_query_name" %]
-    [% title = "指定された $jawords.search_name は無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.search_name FILTER html %] は無効です [% END %]
     [% jawords.search_name FILTER html %] には次の文字を含むことはできません。
     &lt;, &gt;, &amp;.
 
@@ -1032,7 +1032,7 @@
     実行には [% jawords.creator FILTER html %] であるか、[% jawords.admin_administrator FILTER html %] 権限が必要です。
 
   [% ELSIF error == "illegal_time" %]
-    [% title = "指定された時刻は無効です" %]
+    [% title = BLOCK %] 指定された時刻は無効です [% END %]
     '<tt>[% time FILTER html %]</tt>' は有効な [% jawords.search_time FILTER html %] ではありません。
     [% IF format %]
       '<tt>[% format FILTER html %]</tt>' の形式で入力してください。
@@ -1043,7 +1043,7 @@
     [% jawords.report_graph FILTER html %] を作成するために十分なデータが (まだ) ありません。
 
   [% ELSIF error == "invalid_attach_id" %]
-    [% title = "$jawords.attachment ID が無効です" %]
+    [% title = BLOCK %] [% jawords.attachment FILTER html %] ID が無効です [% END %]
     [% jawords.attachment FILTER html %] ID [% attach_id FILTER html %] が無効です。
 
   [% ELSIF error == "bug_id_does_not_exist" %]
@@ -1067,28 +1067,28 @@
     [% END %]
 
   [% ELSIF error == "invalid_changedsince" %]
-    [% title = "'$jawords.search_changed_since' が無効です" %]
+    [% title = BLOCK %] '$jawords.search_changed_since' が無効です [% END %]
     '[% jawords.search_changed_since FILTER html %]' の値 '[% changedsince FILTER html %]' は 0 以上の整数でなくてはいけません。
 
   [% ELSIF error == "invalid_content_type" %]
-    [% title = "$jawords.attachment_content_type が無効です" %]
+    [% title = BLOCK %] [% jawords.attachment_content_type FILTER html %] が無効です [% END %]
     [% jawords.attachment_content_type FILTER html %] <em>[% contenttype FILTER html %]</em> は無効です。
     [% jawords.attachment_content_type FILTER html %] は <em>foo/bar</em> の形式で、<em>foo</em> には
     <em>application, audio, image, message, model, multipart, text, video</em>
     のいずれかでなくてはいけません。
     
   [% ELSIF error == "invalid_context" %]
-    [% title = "コンテキストが無効です" %]
+    [% title = BLOCK %] コンテキストが無効です [% END %]
     コンテキスト [% context FILTER html %] は無効です (有効な値は数値か、
     "file" もしくは "patch" です)。
 
   [% ELSIF error == "invalid_datasets" %]
-    [% title = "$jawords.report_dataset が無効です" %]
+    [% title = BLOCK %] [% jawords.report_dataset FILTER html %] が無効です [% END %]
     [% jawords.report_dataset FILTER html %] <em>[% datasets FILTER html %]</em> は無効です。
     数値、文字、コロンのみが利用できます。
 
   [% ELSIF error == "invalid_format" %]
-    [% title = "$jawords.output_format が無効です" %]
+    [% title = BLOCK %] [% jawords.output_format FILTER html %] が無効です [% END %]
     [% jawords.output_format FILTER html %] "[% format FILTER html %]" は無効です (
     [% FOREACH my_format = formats %]
       "[% my_format FILTER html %]"
@@ -1096,32 +1096,32 @@
     のいずれかでなければいけません)。
 
   [% ELSIF error == "invalid_group_ID" %]
-    [% title = "指定された $jawords.group ID が無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.group FILTER html %] ID が無効です [% END %]
     指定された [% jawords.group FILTER html %] は存在しません。
 
   [% ELSIF error == "invalid_group_name" %]
-    [% title = "指定された $jawords.group_name が無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.group_name FILTER html %] が無効です [% END %]
     指定された [% jawords.group FILTER html %] [% name FILTER html %] はここでは有効ではありません。
 
   [% ELSIF error == "invalid_maxrows" %]
-    [% title = "最大行数が無効です" %]
+    [% title = BLOCK %] 最大行数が無効です [% END %]
     最大行数 '[% maxrows FILTER html %]' は無効です。
     正の整数でなくてはいけません。
 
   [% ELSIF error == "invalid_parameter" %]
-    [% title = "$jawords.param が無効です" %]
+    [% title = BLOCK %] [% jawords.param FILTER html %] が無効です [% END %]
     指定された値 [% name FILTER html %] は無効です: [% err FILTER html %].
 
   [% ELSIF error == "invalid_product_name" %]
-    [% title = "$jawords.product_name が無効です" %]
+    [% title = BLOCK %] [% jawords.product_name FILTER html %] が無効です [% END %]
     [% jawords.product_name FILTER html %] '[% product FILTER html %]' は無効か存在しません。
 
   [% ELSIF error == "invalid_regexp" %]
-    [% title = "無効な正規表現です" %]
+    [% title = BLOCK %] 無効な正規表現です [% END %]
     指定された正規表現は無効です。
 
   [% ELSIF error == "invalid_user_group" %]
-    [% title = "$jawords.group は無効です" %]
+    [% title = BLOCK %] [% jawords.group FILTER html %] は無効です [% END %]
     [% jawords.user FILTER html %] '[% users.join(', ') FILTER html %]' は
     [% IF bug_id %]
       [% terms.bug %] '[% bug_id FILTER html %]' の
@@ -1137,97 +1137,97 @@
     を編集することはできません。
 
   [% ELSIF error == "invalid_username" %]
-    [% title = "$jawords.account_login_name が無効です" %]
+    [% title = BLOCK %] [% jawords.account_login_name FILTER html %] が無効です [% END %]
     <tt>[% name FILTER html %]</tt> は有効な [% jawords.account_login_name FILTER html %] ではありません。
     [% jawords.account_login_name FILTER html %] を間違えているか、まだ [% terms.Bugzilla %]
     [% jawords.account FILTER html %] を作成していない可能性があります。
 
   [% ELSIF error == "invalid_username_or_password" %]
-    [% title = "$jawords.account_login_name 、もしくは $jawords.account_password が無効です" %]
+    [% title = BLOCK %] [% jawords.account_login_name FILTER html %] 、もしくは [% jawords.account_password FILTER html %] が無効です [% END %]
     指定された [% jawords.account_login_name FILTER html %]、もしくは [% jawords.password FILTER html %] が無効です。
 
   [% ELSIF error == "keyword_already_exists" %]
-    [% title = "指定された $jawords.keyword は既に存在しています" %]
+    [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は既に存在しています [% END %]
     [% name FILTER html %] という名前の [% jawords.keyword FILTER html %] は既に存在しています。
 
   [% ELSIF error == "keyword_blank_description" %]
-    [% title = "$jawords.keyword_description を入力してください" %]
+    [% title = BLOCK %] [% jawords.keyword_description FILTER html %] を入力してください [% END %]
     [% jawords.keyword_description FILTER html %] は必須項目です。
      
   [% ELSIF error == "keyword_blank_name" %]
-    [% title = "$jawords.keyword_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.keyword_name FILTER html %] を入力してください [% END %]
     [% jawords.keyword_name FILTER html %] は必須項目です。
      
   [% ELSIF error == "keyword_invalid_name" %]
-    [% title = "$jawords.keyword_name が無効です" %]
+    [% title = BLOCK %] [% jawords.keyword_name FILTER html %] が無効です [% END %]
     [% jawords.keyword_name FILTER html %] にはカンマやスペースは利用できません。
      
   [% ELSIF error == "local_file_too_large" %]
-    [% title = "$jawords.attachment_file のサイズが大きすぎます" %]
+    [% title = BLOCK %] [% jawords.attachment_file FILTER html %] のサイズが大きすぎます [% END %]
     アップロードする [% jawords.attachment_file FILTER html %] は
     [% Param('maxlocalattachment') %] MB 以下でなくてはいけません。
 
   [% ELSIF error == "login_needed_for_password_change" %]
-    [% title = "$jawords.account_login_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.account_login_name FILTER html %] を入力してください [% END %]
     [% jawords.account_password FILTER html %] 変更時には
     [% jawords.account_login_name FILTER html %] を入力する必要があります。
 
   [% ELSIF error == "login_required_for_pronoun" %]
-    [% title = "$jawords.account_login_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.account_login_name FILTER html %] を入力してください [% END %]
     [% jawords.search FILTER html %] %user% は [% jawords.account_login FILTER html %] しなければ利用できません。
     %user% はあなたの [% jawords.account_login_name FILTER html %] を参照する必要がありますが、それができません。
 
   [% ELSIF error == "milestone_already_exists" %]
-    [% title = "指定された $jawords.milestone は既に存在しています" %]
+    [% title = BLOCK %] 指定された [% jawords.milestone FILTER html %] は既に存在しています [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
                          'milestones.html' => 'マイルストーン'} %]
     [% jawords.milestone FILTER html %] '[% name FILTER html %]' は [% jawords.product FILTER html %]
     '[%- product FILTER html %]' に既に存在しています。
 
   [% ELSIF error == "milestone_blank_name" %]
-    [% title = "$jawords.milestone_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.milestone_name FILTER html %] を入力してください [% END %]
     [% jawords.milestone_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "milestone_is_default" %]
-    [% title = "$jawords.milestone_default は削除できません" %]
+    [% title = BLOCK %] [% jawords.milestone_default FILTER html %] は削除できません [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
                          'milestones.html' => 'マイルストーン'} %]
     [% milestone.name FILTER html %] は '[% milestone.product.name FILTER html %]'
     の [% jawords.milestone_default FILTER html %] です。そのため、削除することができません。
 
   [% ELSIF error == "milestone_name_too_long" %]
-    [% title = "$jawords.milestone_name が長すぎます" %]
+    [% title = BLOCK %] [% jawords.milestone_name FILTER html %] が長すぎます [% END %]
     [% jawords.milestone_name FILTER html %]は 20 文字以内でなくてはいけません。
     '[% name FILTER html %]' は長すぎます ([% name.length %] 文字です).
 
   [% ELSIF error == "milestone_required" %]
-    [% title = "$jawords.milestone を指定してください" %]
+    [% title = BLOCK %] [% jawords.milestone FILTER html %] を指定してください [% END %]
     [% terms.bug %] [%+ bug.id FILTER html %] を担当する場合、
     [% jawords.bug_target_milestone FILTER html %] を選択してください。
     [%+ terms.abug %] を担当するにはいつ頃解決可能であるか、
     目処を立てなくてはいけません。
 
   [% ELSIF error == "milestone_sortkey_invalid" %]
-    [% title = "$jawords.milestone の $jawords.sortkey が無効です" %]
+    [% title = BLOCK %] [% jawords.milestone FILTER html %] の [% jawords.sortkey FILTER html %] が無効です [% END %]
     [% jawords.sortkey FILTER html %] '[% sortkey FILTER html %]' が
     [%+ constants.MIN_SMALLINT FILTER html %] 以上
     [%+ constants.MAX_SMALLINT FILTER html %] 以下の範囲ではありません。
 
   [% ELSIF error == "misarranged_dates" %]
-    [% title = "指定された $jawords.search_date の範囲が間違っています" %]
+    [% title = BLOCK %] 指定された [% jawords.search_date FILTER html %] の範囲が間違っています [% END %]
     [% jawords.search_date_first FILTER html %] ([% datefrom FILTER html %]) が
     [% jawords.search_date_last FILTER html %] ([% dateto FILTER html %]) よりも後です。
     
   [% ELSIF error == "missing_attachment_description" %]
-    [% title = "$jawords.attachment_description が入力されていません" %]
+    [% title = BLOCK %] [% jawords.attachment_description FILTER html %] が入力されていません [% END %]
     [% jawords.attachment_description FILTER html %] は必須項目です。
     
   [% ELSIF error == "missing_category" %]
-    [% title = "$jawords.report_category が指定されていません" %]
+    [% title = BLOCK %] [% jawords.report_category FILTER html %] が指定されていません [% END %]
     この [% jawords.report_series FILTER html %] の [% jawords.report_category FILTER html %] が指定されていません。
 
   [% ELSIF error == "missing_component" %]
-    [% title = "$jawords.component がありません" %]
+    [% title = BLOCK %] [% jawords.component FILTER html %] がありません [% END %]
     [% admindocslinks = {'products.html'   => 'プロダクトの管理',
                          'components.html' => 'コンポーネントの作成'} %]
     [% jawords.product FILTER html %] <em>[% product.name FILTER html %]</em> に [% terms.abug %]
@@ -1239,13 +1239,13 @@
     [% END %]
 
   [% ELSIF error == "missing_content_type" %]
-    [% title = "Content-Type の自動判別に失敗しました" %]
+    [% title = BLOCK %] Content-Type の自動判別に失敗しました [% END %]
      [% terms.Bugzilla %] に添付ファイルの Content-Type を自動で判定するように要請されましたが、
      ブラウザからファイルをアップロードする際に情報がありませんでした。
      手動で入力してください。
 
   [% ELSIF error == "missing_content_type_method" %]
-    [% title = "$jawords.attachment_content_type の $jawords.attachment_type_method が指定されていません" %]
+    [% title = BLOCK %] [% jawords.attachment_content_type FILTER html %] の [% jawords.attachment_type_method FILTER html %] が指定されていません [% END %]
     <em>[% jawords.attachment_auto_detect FILTER html %]</em>、
     <em>[% jawords.attachment_list FILTER html %]</em>、
     <em>[% jawords.input FILTER html %]</em>
@@ -1253,31 +1253,31 @@
     [% jawords.attachment_type_method FILTER html %] を指定してください。
 
   [% ELSIF error == "missing_cookie" %]
-    [% title = "$jawords.cookie がありません" %]
+    [% title = BLOCK %] [% jawords.cookie FILTER html %] がありません [% END %]
     最後の [% jawords.search_result FILTER html %] を保存していた [% jawords.cookie FILTER html %] が無くなっているようです。
     <a href="query.cgi">[% jawords.search_page FILTER html %]</a> からもう一度 [% jawords.search FILTER html %] を行ってください。
 
   [% ELSIF error == "missing_datasets" %]
-    [% title = "$jawords.report_dataset が選択されていません" %]
+    [% title = BLOCK %] [% jawords.report_dataset FILTER html %] が選択されていません [% END %]
     [% docslinks = {'reporting.html' => 'レポート'} %]
     [% jawords.report_plot FILTER html %] 用の一つ以上の [% jawords.report_dataset FILTER html %] を選択する必要があります。
 
   [% ELSIF error == "missing_email_type" %]
-    [% title = "指定された $jawords.search_inputs が無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.search_inputs FILTER html %] が無効です [% END %]
     <tt>[% email FILTER html %]</tt> で [% jawords.search FILTER html %] するには一つ以上の [% jawords.field FILTER html %] を指定する必要があります。
 
   [% ELSIF error == "missing_frequency" %]
-    [% title = "$jawords.report_frequency が入力されていません" %]
+    [% title = BLOCK %] [% jawords.report_frequency FILTER html %] が入力されていません [% END %]
     [% docslinks = {'reporting.html' => 'レポート'} %]
     この [% jawords.report_series FILTER html %] に適当な更新頻度が入力されていません。
 
   [% ELSIF error == "missing_name" %]
-    [% title = "$jawords.report_series_name が入力されていません" %]
+    [% title = BLOCK %] [% jawords.report_series_name FILTER html %] が入力されていません [% END %]
     [% docslinks = {'reporting.html' => 'レポート'} %]
     この[% jawords.report_series_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "missing_query" %]
-    [% title = "指定された $jawords.saved_search がありません" %]
+    [% title = BLOCK %] 指定された [% jawords.saved_search FILTER html %] がありません [% END %]
     [% docslinks = {'query.html' => "$terms.bugs の検索",
                     'query.html#list' => "$terms.Bug リスト"} %]
     <em>[% queryname FILTER html %]</em> という [% jawords.search_saved_search FILTER html %] は
@@ -1288,7 +1288,7 @@
     [% END %]
 
   [% ELSIF error == "missing_resolution" %]
-    [% title = "$jawords.bug_resolution が指定されていません" %]
+    [% title = BLOCK %] [% jawords.bug_resolution FILTER html %] が指定されていません [% END %]
     [% terms.bugs %] を [%+ status FILTER upper FILTER html %]
     として処理するには有効な [% jawords.bug_resolution FILTER html %] が必要です。
 
@@ -1298,11 +1298,11 @@
     この操作が必要な場合は、[% Param("maintainer") %] に連絡してください。
 
   [% ELSIF error == "missing_subcategory" %]
-    [% title = "$jawords.report_sub_category が指定されていません" %]
+    [% title = BLOCK %] [% jawords.report_sub_category FILTER html %] が指定されていません [% END %]
     この [% jawords.report_series FILTER html %] に [% jawords.report_sub_category FILTER html %] が指定されていません。
 
   [% ELSIF error == "missing_version" %]
-    [% title = "利用可能な $jawords.version が登録されていません" %]
+    [% title = BLOCK %] 利用可能な [% jawords.version FILTER html %] が登録されていません [% END %]
     [% admindocslinks = {'versions.html' => 'バージョンの指定'} %]
     [% terms.abug %] を登録するには、[% jawords.product FILTER html %]
     <em>[% product.name FILTER html %]</em>
@@ -1314,16 +1314,16 @@
     [% END %]
 
   [% ELSIF error == "need_quip" %]
-    [% title = "$jawords.quip が入力されていません" %]
+    [% title = BLOCK %] [% jawords.quip FILTER html %] が入力されていません [% END %]
     [% docslinks = {'quips.html' => 'About quips'} %]
     [% jawords.quip FILTER html %] を [% jawords.text_field FILTER html %] に入力してください。
 
   [% ELSIF error == "new_password_missing" %]
-    [% title = "$jawords.account_new_password が入力されていません" %]
+    [% title = BLOCK %] [% jawords.account_new_password FILTER html %] が入力されていません [% END %]
     [% jawords.account_new_password FILTER html %] が入力されていません。
 
   [% ELSIF error == "no_axes_defined" %]
-    [% title = "$jawords.report_axes が定義されていません" %]
+    [% title = BLOCK %] [% jawords.report_axes FILTER html %] が定義されていません [% END %]
     [% docslinks = {'reporting.html' => 'Reporting'} %]
     [% jawords.report_plot FILTER html %] する [% jawords.report_axes FILTER html %]  が定義されていません。
 
@@ -1343,7 +1343,7 @@
     する [% terms.Bugs %] が選択されていません。
 
   [% ELSIF error == "no_bugs_in_list" %]
-    [% title = "$jawords.tag を削除して良いですか?" %]
+    [% title = BLOCK %] [% jawords.tag FILTER html %] を削除して良いですか? [% END %]
     [% jawords.tag FILTER html %] [% tag FILTER html %] から全ての [% terms.bugs %] を削除します。
     この操作を実行すると、完全に [% jawords.tag FILTER html %] を削除します(やり直すことはできません)。
     本当に実行するかを確認してから
@@ -1351,47 +1351,47 @@
     [%- tag FILTER url_quote %]">削除を実行</a>してください。
 
   [% ELSIF error == "no_bugs_to_remove" %]
-    [% title = "$jawords.tag が選択されていません" %]
+    [% title = BLOCK %] [% jawords.tag FILTER html %] が選択されていません [% END %]
     [% terms.bugs %] から削除する [% jawords.tag FILTER html %] が選択されていません。
 
   [% ELSIF error == "no_dupe_stats" %]
-    [% title = "重複する $jawords.stats は見つかりませんでした" %]
+    [% title = BLOCK %] 重複する [% jawords.stats FILTER html %] は見つかりませんでした [% END %]
     [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
     今日 ([% today FILTER html %]) か昨日に重複する [% jawords.stats FILTER html %] は設定されていません。
 
   [% ELSIF error == "no_dupe_stats_error_today" %]
-    [% title = "今日の重複データを読み込む際にエラーが発生しました" %]
+    [% title = BLOCK %] 今日の重複データを読み込む際にエラーが発生しました [% END %]
     [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
     今日の重複のデータファイルを開く際にエラーが発生しました: [% error_msg FILTER html %]
 
   [% ELSIF error == "no_dupe_stats_error_whenever" %]
-    [% title = "過去の重複データを読み込む際にエラーが発生しました" %]
+    [% title = BLOCK %] 過去の重複データを読み込む際にエラーが発生しました [% END %]
     [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
     [% changedsince FILTER html %] 日前 ([% whenever FILTER html %])
     の重複データファイルを開く際にエラーが発生しました: [% error_msg FILTER html %]
 
   [% ELSIF error == "no_dupe_stats_error_yesterday" %]
-    [% title = "昨日の重複データを読み込む際にエラーが発生しました" %]
+    [% title = BLOCK %] 昨日の重複データを読み込む際にエラーが発生しました [% END %]
     [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
     今日 ([% today FILTER html %]) の重複の [% jawords.stats_data FILTER html %] が存在せず、
     昨日の [% jawords.stats_data FILTER html %] を開く際にもエラーが発生しました: [% error_msg FILTER html %]
 
   [% ELSIF error == "no_initial_bug_status" %]
-    [% title = "$terms.Bug $jawords.bug_status の初期値がありません" %]
+    [% title = BLOCK %] [% terms.Bug %] [% jawords.bug_status FILTER html %] の初期値がありません [% END %]
     [% terms.bug %] を作成時に選択可能な [% terms.bug %] [% jawords.bug_status FILTER html %] がありません。
     [% Param("maintainer") %] にこの問題を報告してください。
 
   [% ELSIF error == "no_new_quips" %]
-    [% title = "新規 $jawords.quip は無効です" %]
+    [% title = BLOCK %] 新規 [% jawords.quip FILTER html %] は無効です [% END %]
     [% admindocslinks = {'quips.html' => 'quip の利用方法の制御'} %]
     新しい [% jawords.quip FILTER html %] を追加することはこの [% jawords.site FILTER html %] では許可されていません。
 
   [% ELSIF error == "no_page_specified" %]
-    [% title = "$jawords.page が指定されていません" %]
+    [% title = BLOCK %] [% jawords.page FILTER html %] が指定されていません [% END %]
     表示する [% jawords.page FILTER html %] の ID が指定されていません。
 
   [% ELSIF error == "no_products" %]
-    [% title = "$jawords.product がありません" %]
+    [% title = BLOCK %] [% jawords.product FILTER html %] がありません [% END %]
     [% admindocslinks = {'products.html'   => 'プロダクトの設定',
                          'components.html' => 'プロダクトにコンポーネントを追加する',
                          'groups.html'     => 'グループセキュリティ'} %]
@@ -1399,21 +1399,21 @@
     あなたの [% jawords.account FILTER html %] にはアクセスする権限がありません。
 
   [% ELSIF error == "no_valid_action" %]
-    [% title = "有効な動作が指定されていません" %]
+    [% title = BLOCK %] 有効な動作が指定されていません [% END %]
     [% field_descs.$field FILTER html %] を編集できません: 有効な動作が指定されていません
 
   [% ELSIF error == "number_not_numeric" %]
-    [% title = "数値が必要です" %]
+    [% title = BLOCK %] 数値が必要です [% END %]
     The value '[% num FILTER html %]' in the 
     <em>[% field_descs.$field FILTER html %]</em> [% jawords.field_value FILTER html %] が数値ではありません。
 
   [% ELSIF error == "number_too_large" %]
-    [% title = "指定された数値は大きすぎます" %]
+    [% title = BLOCK %] 指定された数値は大きすぎます [% END %]
     <em>[% field_descs.$field FILTER html %]</em> [% jawords.field_value FILTER html %]、'[% num FILTER html %]'
    は大きすぎます。'[% max_num FILTER html %]' までの数値を入力してください。
 
   [% ELSIF error == "number_too_small" %]
-    [% title = "指定された数値は小さすぎます" %]
+    [% title = BLOCK %] 指定された数値は小さすぎます [% END %]
     <em>[% field_descs.$field FILTER html %]</em> [% jawords.field_value FILTER html %]、'[% num FILTER html %]'
     は小さすぎます。'[% min_num FILTER html %]' 以上の数値を入力してください。
 
@@ -1434,34 +1434,34 @@
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
-    [% title = "$jawords.account_current_password が違います" %]
+    [% title = BLOCK %] [% jawords.account_current_password FILTER html %] が違います [% END %]
     [% jawords.account_current_password FILTER html %] が正しく入力されていません。
 
   [% ELSIF error == "old_password_required" %]
-    [% title = "$jawords.account_current_password が入力されていません" %]
+    [% title = BLOCK %] [% jawords.account_current_password FILTER html %] が入力されていません [% END %]
     [% jawords.account_mail_address FILTER html %] を変更する際には、
     [% jawords.account_current_password FILTER html %] は必須項目です。
 
   [% ELSIF error == "password_change_requests_not_allowed" %]
-    [% title = "$jawords.account_password の変更は許可されていません" %]
+    [% title = BLOCK %] [% jawords.account_password FILTER html %] の変更は許可されていません [% END %]
     この [% jawords.site FILTER html %] では [% jawords.account_password FILTER html %] を変更できるように設定されていません。
 
   [% ELSIF error == "passwords_dont_match" %]
-    [% title = "$jawords.account_password が一致しませんでした" %]
+    [% title = BLOCK %] [% jawords.account_password FILTER html %] が一致しませんでした [% END %]
     入力された二つの [% jawords.account_password FILTER html %] が一致していません。
 
   [% ELSIF error == "password_too_long" %]
-    [% title = "$jawords.account_password が長すぎます" %]
+    [% title = BLOCK %] [% jawords.account_password FILTER html %] が長すぎます [% END %]
     入力された [% jawords.account_password FILTER html %] は長すぎます。
     [%+ constants.USER_PASSWORD_MAX_LENGTH FILTER html %] 文字以内にしてください。
 
   [% ELSIF error == "password_too_short" %]
-    [% title = "$jawords.account_password が短すぎます" %]
+    [% title = BLOCK %] [% jawords.account_password FILTER html %] が短すぎます [% END %]
     入力された [% jawords.account_password FILTER html %] は短すぎます。
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 文字以上にしてください。
 
   [% ELSIF error == "patch_too_large" %]
-    [% title = "$jawords.attachment_patch_file が大きすぎます" %]
+    [% title = BLOCK %] [% jawords.attachment_patch_file FILTER html %] が大きすぎます [% END %]
     アップロードしようとした [% jawords.attachment_file FILTER html %] は [% filesize FILTER html %] KB もあります。
     [% jawords.attachment_patch_file FILTER html %] のサイズは最大で [% Param('maxpatchsize') %] KB です。
     [% jawords.attachment_patch_file FILTER html %] を分割することを検討してください。
@@ -1471,53 +1471,53 @@
     あなたの [% jawords.account FILTER html %] にはアクセスする権限がありません。
 
   [% ELSIF error == "product_doesnt_exist" %]
-    [% title = "指定された $jawords.product は存在していません" %]
+    [% title = BLOCK %] 指定された [% jawords.product FILTER html %] は存在していません [% END %]
     [% jawords.product FILTER html %] '[% product FILTER html %]' は存在していません。
 
   [% ELSIF error == "product_votes_per_bug_must_be_nonnegative" %]
-    [% title = "$jawords.product_max_votes_per_bug に負の数値は設定できません" %]
+    [% title = BLOCK %] [% jawords.product_max_votes_per_bug FILTER html %] に負の数値は設定できません [% END %]
     [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
     <em>'[% jawords.product_max_votes_per_bug FILTER html %]'</em> [% jawords.field FILTER html %] に
     '[% maxvotesperbug FILTER html %]' は指定できません。
     値は '0' か、正の整数を入力してください。
 
   [% ELSIF error == "product_votes_per_user_must_be_nonnegative" %]
-    [% title = "$jawords.product_max_votes_per_person に負の数値は設定できません" %]
+    [% title = BLOCK %] [% jawords.product_max_votes_per_person FILTER html %] に負の数値は設定できません [% END %]
     [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
     <em>'[% jawords.product_max_votes_per_person FILTER html %]'</em> [% jawords.field FILTER html %]に
     '[% votesperuser FILTER html %]' は指定できません。
     値は '0' か、正の整数を入力してください。
 
   [% ELSIF error == "product_votes_to_confirm_must_be_nonnegative" %]
-    [% title = "承認するための票数に負の数値は設定できません" %]
+    [% title = BLOCK %] 承認するための票数に負の数値は設定できません [% END %]
     [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
     <em>'[% jawords.product_confirmation_threshold FILTER html %]'</em> [% jawords.field FILTER html %]に
     '[% votestoconfirm FILTER html %]' は指定できません。
     値は '0' か、正の整数を入力してください。
 
   [% ELSIF error == "product_cant_delete_description" %]
-    [% title = "$jawords.product_description は削除できません" %]
+    [% title = BLOCK %] [% jawords.product_description FILTER html %] は削除できません [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
     '[% product FILTER html %]' の [% jawords.product_description FILTER html %] は削除できません。
 
   [% ELSIF error == "product_cant_delete_name" %]
-    [% title = "$jawords.product_name は削除できません" %]
+    [% title = BLOCK %] [% jawords.product_name FILTER html %] は削除できません [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
     '[% product FILTER html %]' の [% jawords.product_name FILTER html %] は削除できません。
 
   [% ELSIF error == "product_name_already_in_use" %]
-    [% title = "指定された $jawords.product_name は既に利用されています" %]
+    [% title = BLOCK %] 指定された [% jawords.product_name FILTER html %] は既に利用されています [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
     [% jawords.product_name FILTER html %] '[% product FILTER html %]' は既に利用されています。
   
   [% ELSIF error == "product_name_diff_in_case" %]
-    [% title = "指定された $jawords.product_name は既存のものと大文字・小文字の差異しかありません" %]
+    [% title = BLOCK %] 指定された [% jawords.product_name FILTER html %] は既存のものと大文字・小文字の差異しかありません [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
     [% jawords.product_name FILTER html %] '[% product FILTER html %]' は既に存在している
     '[% existing_product FILTER html %]' と大文字・小文字の違いしかありません。
 
   [% ELSIF error == "product_must_define_defaultmilestone" %]
-    [% title = "新しい $jawords.milestone_default を新規作成してください" %]
+    [% title = BLOCK %] 新しい [% jawords.milestone_default FILTER html %] を新規作成してください [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
                          'milestones.html' => 'マイルストーン'} %]
     [% IF classification %]
@@ -1534,11 +1534,11 @@
     を作成してください。
 
   [% ELSIF error == "product_admin_denied" %]
-    [% title = "$jawords.product にアクセスできません" %]
+    [% title = BLOCK %] [% jawords.product FILTER html %] にアクセスできません [% END %]
     あなたの [% jawords.account FILTER html %] は [% jawords.product FILTER html %] '[% product FILTER html %]' を編集する権限がありません。
 
   [% ELSIF error == "product_blank_name" %]
-    [% title = "$jawords.product_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.product_name FILTER html %] を入力してください [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
     [% jawords.product_name FILTER html %] は必須項目です。
   
@@ -1549,7 +1549,7 @@
     [% terms.abug %] の新規追加は無効化されています。
 
   [% ELSIF error == "product_edit_denied" %]
-    [% title = "$jawords.product の編集ができません" %]
+    [% title = BLOCK %] [% jawords.product FILTER html %] の編集ができません [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
                          'groups.html'   => 'グループセキュリティー'} %]
     あなたの [% jawords.account FILTER html %] は [% jawords.product FILTER html %] [%+ product FILTER html %] の
@@ -1562,18 +1562,18 @@
     これらの [% terms.bugs %] を別の [% jawords.product FILTER html %] に移動させてから削除してください。
 
   [% ELSIF error == "product_must_have_description" %]
-    [% title = "$jawords.product_description を入力してください" %]
+    [% title = BLOCK %] [% jawords.product_description FILTER html %] を入力してください [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
     '[% product FILTER html %]' の [% jawords.product_description FILTER html %] は必須項目です。
 
   [% ELSIF error == "product_must_have_version" %]
-    [% title = "$jawords.product に $jawords.version を追加してください" %]
+    [% title = BLOCK %] [% jawords.product FILTER html %] に [% jawords.version FILTER html %] を追加してください [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
                          'versions.html' => 'バージョンの管理'} %]
     [% jawords.product FILTER html %] '[% product FILTER html %]' の [% jawords.version FILTER html %] は必須項目です。
 
   [% ELSIF error == "product_not_specified" %]
-    [% title = "$jawords.product が指定されていません" %]
+    [% title = BLOCK %] [% jawords.product FILTER html %] が指定されていません [% END %]
     [% admindocslinks = {'products.html'   => 'プロダクトの管理',
                          'components.html' => 'コンポーネントの管理',
                          'milestones.html' => 'マイルストーンの管理',
@@ -1583,7 +1583,7 @@
     [% jawords.product FILTER html %] が指定されていません。
 
   [% ELSIF error == "query_name_exists" %]
-    [% title = "指定された $jawords.search_name は既に利用されています" %]
+    [% title = BLOCK %] 指定された [% jawords.search_name FILTER html %] は既に利用されています [% END %]
     [% jawords.search_name FILTER html %] <em>[% name FILTER html %]</em> は既に利用されています。
     この [% jawords.search_name FILTER html %] を利用したい場合、保存されている同名の
     [% jawords.search_saved_search FILTER html %] を
@@ -1591,16 +1591,16 @@
     [%- name FILTER url_quote %]">削除</a> してください。
 
   [% ELSIF error == "query_name_missing" %]
-    [% title = "$jaword.search_name が入力されていません" %]
+    [% title = BLOCK %] $jaword.search_name が入力されていません [% END %]
     [% docslinks = {'query.html#list' => "$terms.Bug lists"} %]
     [% jawords.search_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "query_name_too_long" %]
-    [% title = "$jaword.search_name が長すぎます" %]
+    [% title = BLOCK %] $jaword.search_name が長すぎます [% END %]
     [% jawords.search_name FILTER html %] は 64 文字以内で入力してください。
 
   [% ELSIF error == "quicksearch_unknown_field" %]
-    [% title = "認識できない $jawords.quick_search_field です" %]
+    [% title = BLOCK %] 認識できない [% jawords.quick_search_field FILTER html %] です [% END %]
     [% IF fields.unique.size == 1 %]
       [% jawords.quick_search_field FILTER html %] <code>[% fields.first FILTER html %]</code> は有効な
       [% jawords.quick_search_field FILTER html %] ではありません。
@@ -1616,21 +1616,21 @@
     <a href="page.cgi?id=quicksearchhack.html">[% jawords.help FILTER html %] にリストアップされています</a>。
 
   [% ELSIF error == "reassign_to_empty" %]
-    [% title = "新しい $jawords.bug_assignee の $jawords.mail_address が指定されていません" %]
+    [% title = BLOCK %] 新しい [% jawords.bug_assignee FILTER html %] の [% jawords.mail_address FILTER html %] が指定されていません [% END %]
     [% terms.abug %] を他の [% jawords.account FILTER html %] に担当を設定する場合、
     新しい [% jawords.bug_assignee FILTER html %] の [% jawords.mail_address FILTER html %] を入力する必要があります。
 
   [% ELSIF error == "require_component" %]
-    [% title = "$jawords.component が指定されていません" %]
+    [% title = BLOCK %] [% jawords.component FILTER html %] が指定されていません [% END %]
     [% terms.bug %] を新規追加する際には、[% jawords.component FILTER html %] を選択しなくてはいけません。
     どの [% jawords.component FILTER html %] が適当か判断できないのであれば、想像して決めてください。
 
   [% ELSIF error == "require_new_password" %]
-    [% title = "$jawords.account_new_password が入力されていません" %]
+    [% title = BLOCK %] [% jawords.account_new_password FILTER html %] が入力されていません [% END %]
     [% jawords.account_password FILTER html %] を変更する際には [% jawords.account_new_password FILTER html %] は必須項目です。
 
   [% ELSIF error == "require_summary" %]
-    [% title = "$jawords.bug_summary が入力されていません" %]
+    [% title = BLOCK %] [% jawords.bug_summary FILTER html %] が入力されていません [% END %]
     [% terms.bug %] には [% jawords.bug_summary FILTER html %] が必須項目です。
 
   [% ELSIF error == "resolution_cant_clear" %]
@@ -1638,25 +1638,25 @@
     [% jawords.bug_resolution FILTER html %] をクリアすることはできません。
 
   [% ELSIF error == "resolution_not_allowed" %]
-    [% title = "$jawords.bug_resolution を設定できません" %]
+    [% title = BLOCK %] [% jawords.bug_resolution FILTER html %] を設定できません [% END %]
     開かれている [% terms.bugs %] に [% jawords.bug_resolution FILTER html %] は設定できません。
 
   [% ELSIF error == "saved_search_used_by_whines" %]
-    [% title = "$jawords.search_saved_search は利用されています" %]
+    [% title = BLOCK %] [% jawords.search_saved_search FILTER html %] は利用されています [% END %]
     [% docslinks = {'whining.html' => 'Whine について'} %]
     [% jawords.search_saved_search FILTER html %] <em>[% search_name FILTER html %]</em> はすでに
     <a href="editwhines.cgi">[% jawords.whine_event FILTER html %]</a> で
     [%+ subjects FILTER html %] という名前で利用されています。
 
   [% ELSIF error == "search_content_without_matches" %]
-    [% title = "無効な $jawords.search です" %]
+    [% title = BLOCK %] 無効な [% jawords.search FILTER html %] です [% END %]
     [% jawords.search_content_field FILTER html %] は
     [% jawords.search_match_search FILTER html %] でのみ利用可能です。
     また、[% jawords.search_match_search FILTER html %] は
     [% jawords.search_content_field FILTER html %] を利用したときのみ利用可能です。
 
   [% ELSIF error == "series_already_exists" %]
-    [% title = "$jawords.report_series は既に存在しています" %]
+    [% title = BLOCK %] [% jawords.report_series FILTER html %] は既に存在しています [% END %]
     [% docslinks = {'reporting.html' => 'レポート'} %]
       [% jawords.report_series_name FILTER html %] <em>[% series.category FILTER html %] /
       [%+ series.subcategory FILTER html %] / 
@@ -1684,7 +1684,7 @@
     [% END %]
 
   [% ELSIF error == "sudo_in_progress" %]
-    [% title = "$jawords.session を実行中です" %]
+    [% title = BLOCK %] [% jawords.session FILTER html %] を実行中です [% END %]
     [% jawords.sudo_session FILTER html %]
     ([% jawords.impersonating FILTER html %] [% target FILTER html %]) が実行中です。
     [% jawords.footer FILTER html %] にあるリンクでこの
@@ -1692,7 +1692,7 @@
     [% jawords.session FILTER html %] を実行してください。
 
   [% ELSIF error == "sudo_password_required" %]
-    [% title = "$jawords.account_password が必要です" %]
+    [% title = BLOCK %] [% jawords.account_password FILTER html %] が必要です [% END %]
     [% jawords.sudo_session FILTER html %] を開始するには、あなたの
     [% terms.Bugzilla %] の [% jawords.account_password FILTER html %] が必要です。
     <a href="relogin.cgi?action=prepare-sudo&target_login=
@@ -1701,19 +1701,19 @@
     [% jawords.account_password FILTER html %] を入力してください。
 
   [% ELSIF error == "sudo_preparation_required" %]
-    [% title = "準備が必要です" %]
+    [% title = BLOCK %] 準備が必要です [% END %]
     [% jawords.sudo_session FILTER html %] を直接開始することはできません。
     <a href="relogin.cgi?action=prepare-sudo&target_login=
     [%- target_login FILTER html %]&reason=
     [%- reason FILTER html %]">通常の [% jawords.session FILTER html %] を開始してから</a> 実行してください。
 
   [% ELSIF error == "sudo_protected" %]
-    [% title = "$jawords.user は保護されています" %]
+    [% title = BLOCK %] [% jawords.user FILTER html %] は保護されています [% END %]
     [% jawords.user FILTER html %] [% login FILTER html %] は
     [% jawords.sudo FILTER html %] の対象にはできません。
 
   [% ELSIF error == "too_many_votes_for_bug" %]
-    [% title = "$jawords.vote_count が多すぎます" %]
+    [% title = BLOCK %] [% jawords.vote_count FILTER html %] が多すぎます [% END %]
     [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
     <tt>[% product FILTER html %]</tt> [% jawords.product FILTER html %] では、
     ひとつの [%+ terms.bug %] につき、
@@ -1721,18 +1721,18 @@
     しかし、[% votes FILTER html %] 票を投じようとしました。
 
   [% ELSIF error == "too_many_votes_for_product" %]
-    [% title = "$jawords.vote_count が多すぎます" %]
+    [% title = BLOCK %] [% jawords.vote_count FILTER html %] が多すぎます [% END %]
     [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
     <tt>[% product FILTER html %]</tt> [% jawords.product FILTER html %] で [% votes FILTER html %]
     票を投じようとしましたが、この [% jawords.product FILTER html %] では最高 [%+ max FILTER html %]
     票しか投票できません。
 
   [% ELSIF error == "token_does_not_exist" %]
-    [% title = "入力された $jawords.token は存在していません" %]
+    [% title = BLOCK %] 入力された [% jawords.token FILTER html %] は存在していません [% END %]
     入力された [% jawords.token FILTER html %] は存在していないか、期限切れか、既にキャンセルされています。
 
   [% ELSIF error == "too_soon_for_new_token" %]
-    [% title = "新規 $jawords.token_request が早すぎます" %]
+    [% title = BLOCK %] 新規 [% jawords.token_request FILTER html %] が早すぎます [% END %]
     [% IF type == "password" %]
       [% jawords.account_password_reset FILTER html %]
     [% ELSIF type == "account" %]
@@ -1742,23 +1742,23 @@
     しばらく待ってから再申請してください。
 
   [% ELSIF error == "unknown_keyword" %]
-    [% title = "指定された $jawords.keyword は存在していません" %]
+    [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は存在していません [% END %]
     <code>[% keyword FILTER html %]</code> は登録された [% jawords.keyword FILTER html %] ではありません。
     利用可能な [% jawords.keyword FILTER html %] は
     <a href="describekeywords.cgi">[% jawords.help FILTER html %] にリストアップ</a> されています。
 
   [% ELSIF error == "unknown_tab" %]
-    [% title = "指定された $jawords.tab は存在していません" %]
+    [% title = BLOCK %] 指定された [% jawords.tab FILTER html %] は存在していません [% END %]
     <code>[% current_tab_name FILTER html %]</code> は有効な [% jawords.tab_name FILTER html %] ではありません。
 
   [% ELSIF error == "version_already_exists" %]
-    [% title = "入力された $jawords.version は既に存在しています" %]
+    [% title = BLOCK %] 入力された [% jawords.version FILTER html %] は既に存在しています [% END %]
     [% admindocslinks = {'versions.html' => 'バージョンの管理'} %]
     [% jawords.product FILTER html %] '[%- product FILTER html %]' に
     [% jawords.version FILTER html %] '[% name FILTER html %]' は既に存在しています。
 
   [% ELSIF error == "version_blank_name" %]
-    [% title = "$jawords.version_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.version_name FILTER html %] を入力してください [% END %]
     [% jawords.version_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "version_has_bugs" %]
@@ -1767,16 +1767,16 @@
     これらの [% terms.bugs %] を先に他の [% jawords.version FILTER html %] に変更してから削除してください。
 
   [% ELSIF error == "version_not_specified" %]
-    [% title = "$jawords.version が指定されていません" %]
+    [% title = BLOCK %] [% jawords.version FILTER html %] が指定されていません [% END %]
     [% jawords.version FILTER html %] を編集しようとしましたが、対象の [% jawords.version FILTER html %] が指定されていません。
 
   [% ELSIF error == "users_deletion_disabled" %]
-    [% title = "$jawords.account を削除することはできません" %]
+    [% title = BLOCK %] [% jawords.account FILTER html %] を削除することはできません [% END %]
     [% admindocslinks = {'useradmin.html' => 'ユーザ管理'} %]
     [% jawords.account FILTER html %] の削除は許可されていません。
 
   [% ELSIF error == "user_has_responsibility" %]
-    [% title = "$jawords.account を削除することができません" %]
+    [% title = BLOCK %] [% jawords.account FILTER html %] を削除することができません [% END %]
     [% admindocslinks = {'useradmin.html' => 'ユーザ管理'} %]
     削除しようとした [% jawords.user FILTER html %] が [% terms.bug %] の
     [% jawords.default_assignee FILTER html %]
@@ -1787,48 +1787,48 @@
     このため、この [% jawords.account FILTER html %] を削除することができません。
 
   [% ELSIF error == "user_login_required" %]
-    [% title = "$jawords.login_name を入力してください" %]
+    [% title = BLOCK %] [% jawords.login_name FILTER html %] を入力してください [% END %]
     [% admindocslinks = {'useradmin.html' => 'ユーザ管理'} %]
     [% jawords.user FILTER html %] を新規登録する際には、[% jawords.login_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "user_match_failed" %]
-    [% title = "$jawords.login_name が一致しませんでした" %]
+    [% title = BLOCK %] [% jawords.login_name FILTER html %] が一致しませんでした [% END %]
     <tt>[% name FILTER html %]</tt> は登録されていないか、
     あなたの [% jawords.account FILTER html %] にこの
     [% jawords.user FILTER html %] を閲覧する権限がありません。
 
   [% ELSIF error == "votes_must_be_nonnegative" %]
-    [% title = "指定された $jawords.vote_count が負の数値です" %]
+    [% title = BLOCK %] 指定された [% jawords.vote_count FILTER html %] が負の数値です [% END %]
     [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
     [% terms.bug %] への [% jawords.vote_count FILTER html %] は '0' か 正の整数で入力してください。
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
-    [% title = "無効な $jawords.token です" %]
+    [% title = BLOCK %] 無効な [% jawords.token FILTER html %] です [% END %]
     この [% jawords.token FILTER html %] は
     [% jawords.account_mail_address_change FILTER html %] のキャンセルには利用できません。
 
   [% ELSIF error == "wrong_token_for_changing_passwd" %]
-    [% title = "無効な $jawords.token です" %]
+    [% title = BLOCK %] 無効な [% jawords.token FILTER html %] です [% END %]
     この [% jawords.token FILTER html %] は
     [% jawords.account_password_reset FILTER html %] には利用できません。
 
   [% ELSIF error == "wrong_token_for_confirming_email_change" %]
-    [% title = "無効な $jawords.token です" %]
+    [% title = BLOCK %] 無効な [% jawords.token FILTER html %] です [% END %]
     この [% jawords.token FILTER html %] は
     [% jawords.account_mail_address_change FILTER html %] には利用できません。
 
   [% ELSIF error == "wrong_token_for_creating_account" %]
-    [% title = "無効な $jawords.token です" %]
+    [% title = BLOCK %] 無効な [% jawords.token FILTER html %] です [% END %]
     この [% jawords.token FILTER html %] は
     [% jawords.account_creation FILTER html %] には利用できません。
 
   [% ELSIF error == "zero_length_file" %]
-    [% title = "指定された $jawords.attachment_file は空です" %]
+    [% title = BLOCK %] 指定された [% jawords.attachment_file FILTER html %] は空です [% END %]
     アップロードしようとした [% jawords.attachment_file FILTER html %]
     は空ファイルであるか、存在しないか、読み込む権限がありません。
 
   [% ELSIF error == "illegal_user_id" %]
-    [% title = "指定された $jawords.user ID は無効です" %]
+    [% title = BLOCK %] 指定された [% jawords.user FILTER html %] ID は無効です [% END %]
     [% jawords.user FILTER html %] ID '[% userid FILTER html %]'
     は妥当な整数でなくてはいけません。
 
@@ -1838,7 +1838,7 @@
     [% error_message = Hook.process("errors") %]
 
     [% IF not error_message %]
-      [% title = "エラーメッセージが登録されていませんでした" %]
+      [% title = BLOCK %] エラーメッセージが登録されていませんでした [% END %]
       <code>[% error FILTER html %]</code> に該当するエラーメッセージは登録されていませんでした。
       [% Param("maintainer") %] にメールで連絡し、
       このエラーが表示された時の操作手順を説明してください。
