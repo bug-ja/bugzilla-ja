@@ -22,7 +22,7 @@
   #%]
 
 [% title = BLOCK %]
-    Update group access controls for [% product.name FILTER html %]
+    [% product.name FILTER html %] のグループによる制限を更新
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -31,21 +31,19 @@
 <p>
 [% IF removed_na.size > 0 %]
   [% FOREACH g = removed_na %]
-    Removing [% terms.bugs %] from group '[% g.name FILTER html %]' which
-    no longer applies to this product<p>
-    [% g.bug_count FILTER html %] [%+ terms.bugs %] removed<p>
+    このプロダクトには適用されなくなったグループ '[% g.name FILTER html %]' から [% terms.bugs %] を削除しています<p>
+    [% g.bug_count FILTER html %] 件の [%+ terms.bugs %] を処理しました<p>
   [% END %]
 [% END %]
 
 [% IF added_mandatory.size > 0 %]
   [% FOREACH g = added_mandatory %]
-    Adding [% terms.bugs %] to group '[% g.name FILTER html %]' which is 
-    mandatory for this product<p>
-    [% g.bug_count FILTER html %] [%+ terms.bugs %] added<p>
+    このプロダクトには適用されるグループ '[% g.name FILTER html %]' に [% terms.bugs %] を追加しています<p>
+    [% g.bug_count FILTER html %] 件の [%+ terms.bugs %] を処理しました<p>
   [% END %]
 [% END %]
 
-Group control updates done<p>
+グループによる制限を更新しました。<p>
 
 [% PROCESS admin/products/footer.html.tmpl %]
 

@@ -21,7 +21,7 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% title = BLOCK %]
-    Edit Group Controls for [% product.name FILTER html %]
+    [% product.name FILTER html %] のグループによる制限を編集
 [% END %]
 [% PROCESS global/header.html.tmpl 
    title = title 
@@ -36,11 +36,11 @@
 
   <table id="form" cellspacing="0" cellpadding="4" border="1">
     <tr bgcolor="#6666ff">
-      <th>Group</th>
-      <th>Entry</th>
-      <th>MemberControl</th>
-      <th>OtherControl</th>
-      <th>Canedit</th>
+      <th>グループ</th>
+      <th>新規追加</th>
+      <th>メンバーの操作</th>
+      <th>メンバー以外の操作</th>
+      <th>編集可能</th>
       <th>editcomponents</th>
       <th>canconfirm</th>
       <th>editbugs</th>
@@ -53,7 +53,7 @@
             [% group.name FILTER html %]
           </td>
           <td align="center" colspan=7>
-            Disabled
+            無効
           </td>
           <td>
             [% group.bugcount %]
@@ -73,22 +73,22 @@
               <option value=[% const.CONTROLMAPNA %]
                 [% " selected=\"selected\""
                   IF group.membercontrol == const.CONTROLMAPNA %]
-                >NA
+                >利用不可
               </option>
               <option value=[% const.CONTROLMAPSHOWN %]
                 [% " selected=\"selected\""
                   IF group.membercontrol == const.CONTROLMAPSHOWN %]
-                >Shown
+                >オプション
               </option>
               <option value=[% const.CONTROLMAPDEFAULT %]
                 [% " selected=\"selected\""
                   IF group.membercontrol == const.CONTROLMAPDEFAULT %]
-                >Default
+                >標準
               </option>
               <option value=[% const.CONTROLMAPMANDATORY %]
                 [% " selected=\"selected\""
                   IF group.membercontrol == const.CONTROLMAPMANDATORY %]
-                >Mandatory
+                >強制
               </option>
             </select>
           </td>
@@ -97,22 +97,22 @@
               <option value=[% const.CONTROLMAPNA %]
                 [% " selected=\"selected\""
                   IF group.othercontrol == const.CONTROLMAPNA %]
-                >NA
+                >利用不可
               </option>
               <option value=[% const.CONTROLMAPSHOWN %]
                 [% " selected=\"selected\""
                   IF group.othercontrol == const.CONTROLMAPSHOWN %]
-                >Shown
+                >オプション
               </option>
               <option value=[% const.CONTROLMAPDEFAULT %]
                 [% " selected=\"selected\""
                   IF group.othercontrol == const.CONTROLMAPDEFAULT %]
-                >Default
+                >標準
               </option>
               <option value=[% const.CONTROLMAPMANDATORY %]
                 [% " selected=\"selected\""
                   IF group.othercontrol == const.CONTROLMAPMANDATORY %]
-                >Mandatory
+                >強制
               </option>
             </select>
           </td>
@@ -141,187 +141,184 @@
 
   </table>
   <br>
-  <input type=submit name="submit" value="submit">
+  <input type=submit name="submit" value="変更">
   <br>
 </form>
 
 
 <p>
-These settings control the relationship of the groups to this
-product.
+これらの設定はグループとプロダクトの関係をコントロールできます。
 </p>
 <p>
-If any group has <b>Entry</b> selected, then this product will
-restrict [% terms.bug %] entry to only those users who are members of all the
-groups with entry selected.
+<b>新規追加</b> がいずれかのグループで選択されている場合、
+[% terms.bug %] の新規作成が、新規追加 を選択された全てのグループに所属しているユーザのみが可能なように制限されます。
 </p>
 <p>
-If any group has <b>Canedit</b> selected, then this product
-will be read-only for any users who are not members of all of
-the groups with Canedit selected. ONLY users who are members of
-all the canedit groups will be able to edit. This is an additional
-restriction that further restricts what can be edited by a user.
+<b>編集可能</b> がいずれかのグループで選択されている場合、
+全てのグループに所属していないユーザにとっては閲覧専用となります。
+編集可能 なグループ全てに所属しているユーザのみが編集可能です。
+これはユーザが何を編集可能であるかを選択する追加の設定です。
 </p>
 <p>
-The following settings control let you choose privileges on a <b>per-product basis</b>.
-This is a convenient way to give privileges to some users for some products
-only, without having to give them global privileges which would affect all
-products:
+以下の設定は<b>プロダクト単位</b>で権限をコントロールすることができます。
+これは全ての製品に対しての、グローバルな権限を変更することなく、
+特定のプロダクトに対してのみ、特定のユーザに権限を与えるのに便利です。
 </p>
 <p>
-Any group having <b>editcomponents</b> selected allows users who are
-in this group to edit all aspects of this product, including components,
-milestones and versions.
+<b>editcomponents</b> が選択されたグループのユーザはこのプロダクトの全ての内容
+(コンポーネント、マイルストーン、バージョン)
+を編集することができます。
 </p>
 <p>
-Any group having <b>canconfirm</b> selected allows users who are
-in this group to confirm [% terms.bugs %] in this product.
+<b>canconfirm</b> が選択されたグループのユーザはこのプロダクトの [% terms.bugs %]
+を承認することができます。
 </p>
 <p>
-Any group having <b>editbugs</b> selected allows users who are
-in this group to edit all fields of [% terms.bugs %] in this product.
+<b>editbugs</b> が選択されたグループのユーザはこのプロダクトの [% terms.bugs %]
+を編集することができます。
 </p>
 <p>
-The <b>MemberControl</b> and <b>OtherControl</b> fields
-indicate which [% terms.bugs %] will be placed in
-this group according to the following definitions.
+<b>メンバーの操作</b> と <b>メンバー以外の操作</b> フィールドはそのグループが
+[% terms.bugs %] に対して以下の権限を持つことを示します
 </p>
 
 <table border=1>
   <tr>
     <th>
-      MemberControl
+      メンバーの操作
     </th>
     <th>
-      OtherControl
+      メンバー以外の操作
     </th>
     <th>
-      Interpretation
+      解説
     </th>
   </tr>
   <tr>
     <td>
-      NA
+      利用不可
     </td>
     <td>
-      NA
+      利用不可
     </td>
     <td>
-      [% terms.Bugs %] in this product are never associated with this group.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Shown
-    </td>
-    <td>
-      NA
-    </td>
-    <td>
-      [% terms.Bugs %] in this product are permitted to be restricted to this
-      group.  Users who are members of this group will be able to place [% terms.bugs %] in
-      this group.
+      このプロダクトの [% terms.Bugs %] はこのグループに関連づけられません。
     </td>
   </tr>
   <tr>
     <td>
-      Shown
+      オプション
     </td>
     <td>
-      Shown
+      利用不可
     </td>
     <td>
-      [% terms.Bugs %] in this product can be placed in this group by anyone
-      with permission to edit the [% terms.bug %] even if they are not a member
-      of this group.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Shown
-    </td>
-    <td>
-      Default
-    </td>
-    <td>
-      [% terms.Bugs %] in this product can be placed in this group by anyone
-      with permission to edit the [% terms.bug %] even if they are not a member
-      of this group. Non-members place [% terms.bugs %] in this group by default.
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      このグループのメンバーのユーザはこのグループに [% terms.Bug %] を制限することができます。
     </td>
   </tr>
   <tr>
     <td>
-      Shown
+      オプション
     </td>
     <td>
-      Mandatory
+      オプション
     </td>
     <td>
-      [% terms.Bugs %] in this product are permitted to be restricted to this
-      group.  Users who are members of this group will be able to place [% terms.bugs %]
-       in this group.  Non-members will be forced to restrict [% terms.bugs %] to
-       this group when they initially enter [% terms.abug %] in this product.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Default
-    </td>
-    <td>
-      NA
-    </td>
-    <td>
-      [% terms.Bugs %] in this product are permitted to be restricted to this
-      group and are placed in this group by default.  Users who are members of this
-      group will be able to place [% terms.bugs %] in this group.
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、[% terms.Bug %] を編集する権限を持っていれば、このグループのメンバーではないユーザでも、
+      このグループに制限することができます。
     </td>
   </tr>
   <tr>
     <td>
-      Default
+      オプション
     </td>
     <td>
-      Default
+      標準
     </td>
     <td>
-      [% terms.Bugs %] in this product are permitted to be restricted to this
-      group and are placed in this group by default.  Users who are members of this group
-      will be able to place [% terms.bugs %] in this group.  Non-members will be
-      able to restrict [% terms.bugs %] to this group on entry and will do so by default.
-    </td>
-  </tr>
-  <tr>
-    <td>
-      Default
-    </td>
-    <td>
-      Mandatory
-    </td>
-    <td>
-      [% terms.Bugs %] in this product are permitted to be restricted to this
-      group and are placed in this group by default.  Users who are members of this group
-      will be able to place [% terms.bugs %] in this group. Non-members will be forced
-      to place [% terms.bugs %] in this group on entry.
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、[% terms.Bug %] を編集する権限を持っていれば、このグループのメンバーではないユーザでも、
+      このグループに制限することができます。
+      このグループのメンバーではないユーザは作成時に標準でこの [% terms.bugs %] をこのグループに制限します。
     </td>
   </tr>
   <tr>
     <td>
-      Mandatory
+      オプション
     </td>
     <td>
-      Mandatory
+      強制
     </td>
     <td>
-      [% terms.Bugs %] in this product are required to be restricted to this
-      group.  Users are not given any option.
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      このグループのメンバーではないユーザが [% terms.Bug %] をこのプロダクトに登録する場合、
+      その [% terms.abug %] はこのグループに強制的に制限されます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      標準
+    </td>
+    <td>
+      利用不可
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、作成時には標準で制限されます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      標準
+    </td>
+    <td>
+      標準
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、作成時には標準で制限されます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      このグループのメンバー以外のユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      また、このグループのメンバー以外が作成時にも標準で制限されます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      標準
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、作成時には標準で制限されます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      このグループのメンバーではないユーザが [% terms.Bug %] をこのプロダクトに登録する場合、
+      その [% terms.abug %] はこのグループに強制的に制限されます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      強制
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されます。
+      ユーザには選択できません。
     </td>
   </tr>
 </table>
 <p>
-Please note that the above table delineates the only allowable combinations
-for the <b>MemberControl</b> and <b>OtherControl</b> field settings.
-Attempting to submit a combination not listed there (e.g. Mandatory/NA,
-Default/Shown, etc.) will produce an error message.
+上の表は <b>メンバーの操作</b> と <b>メンバー以外の操作</b>
+フィールドの可能な組み合わせの全てであることに注意してください。
+ここにリストされていない組み合わせ (例えば、強制/利用不可 や 標準/オプション 等)
+で変更しようとしてもエラーとなります。
 </p>
 [% PROCESS global/footer.html.tmpl %]
 
