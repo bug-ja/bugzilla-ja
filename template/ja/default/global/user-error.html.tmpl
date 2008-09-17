@@ -1731,7 +1731,7 @@
     入力された [% jawords.token FILTER html %] は存在していないか、期限切れか、既にキャンセルされています。
 
   [% ELSIF error == "too_soon_for_new_token" %]
-    [% title = "新規 [% jawords.token_request FILTER html %] が早すぎます" %]
+    [% title = "新規 $jawords.token_request が早すぎます" %]
     [% IF type == "password" %]
       [% jawords.account_password_reset FILTER html %]
     [% ELSIF type == "account" %]
