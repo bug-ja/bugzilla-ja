@@ -37,6 +37,7 @@
 [% title = "whine の設定" %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
   doc_section = "whining.html"
 %]
 
@@ -87,10 +88,9 @@
 
 [% FOREACH event = events %]
 
-<table cellspacing="2" cellpadding="2" width="100%"
-       style="border: 1px solid;">
+<table cellspacing="2" cellpadding="2" style="border: 1px solid;">
   <tr>
-    <th align="left" bgcolor="#FFFFFF" colspan="2">
+    <th align="left">
       イベント: 
     </th>
     <td align="right">
@@ -104,7 +104,7 @@
     <td valign="top" align="right">
       メールのタイトル:
     </td>
-    <td>
+    <td colspan="2">
       <input type="text" name="event_[% event.key %]_subject"
              size="60" maxlength="128" value="
              [%- event.value.subject FILTER html %]">
@@ -115,7 +115,7 @@
     <td valign="top" align="right">
       whine メッセージに付ける説明の文章:
     </td>
-    <td>
+    <td colspan="2">
       [% INCLUDE global/textarea.html.tmpl
          name           = "event_${event.key}_body"
          minrows        = 3
@@ -133,7 +133,7 @@
       <td valign="top" align="right">
         スケジュール:
       </td>
-      <td align="left" bgcolor="#FFEEEE">
+      <td class="unset" colspan="2">
         指定済みのスケジュールがありません<br>
         <input type="submit" value="スケジュールの追加"
                name="add_schedule_[% event.key %]"
@@ -144,7 +144,7 @@
   [% ELSE %]
 
     <tr>
-      <td valign="top" align="right">
+      <td class="set" colspan="2">
         スケジュール:
       </td>
       <td align="left" bgcolor="#EEFFEE">
@@ -154,11 +154,13 @@
             <th>
               間隔
             </th>
-            [% IF mail_others %]
-              <th>
+            <th>
+              [% IF mail_others %]
                 メール送信先
-              </th>
-            [% END %]
+              [% END %]
+            </th>
+            <th>
+            </th>
           </tr>
           [% FOREACH schedule = event.value.schedule %]
             <tr>
@@ -201,7 +203,7 @@
           [% END %]
 
         <tr>
-          <td>
+          <td colspan="3">
             <input type="submit" value="新規スケジュール追加"
                    name="add_schedule_[% event.key %]"
                    id="add_schedule_[% event.key %]">
@@ -211,7 +213,6 @@
         </table>
 
       </td>
-
     </tr>
 
   [% END %]
@@ -222,7 +223,7 @@
       <td valign="top" align="right">
         検索:
       </td>
-      <td align="left" colspan="1">
+      <td align="left">
         指定済みの検索がありません <br>
         <input type="submit" value="検索の追加"
                name="add_query_[% event.key %]"
@@ -239,13 +240,15 @@
       <td valign="top" align="right">
         検索:
       </td>
-      <td align="left">
+      <td align="left" colspan="2">
 
         <table>
           <tr>
             <th>ソート</th>
             <th>検索</th>
             <th>タイトル</th>
+            <th></th>
+            <th></th>
           </tr>
 
           [% FOREACH query = event.value.queries %]
@@ -272,10 +275,10 @@
               <td align="left">
                 <input type="hidden" value="[% query.onemailperbug FILTER html %]"
                        name="orig_query_onemailperbug_[% query.id %]">
-                <input type="checkbox" [% IF query.onemailperbug == 1 %]
-                       checked [% END %]name="query_onemailperbug_
-                       [% query.id %]">
-                [% terms.bug %] ごとにメール
+                <input type="checkbox" [% IF query.onemailperbug == 1 %] checked [% END %]
+                       id="query_onemailperbug_[% query.id %]"
+                       name="query_onemailperbug_[% query.id %]">
+                <label for="query_onemailperbug_[% query.id %]">[% terms.bug %] ごとにメール</label>
               </td>
               <td align="right">
                 <input type="submit" value="削除"
@@ -292,13 +295,12 @@
                      name="add_query_[% event.key %]"
                      id="add_query_[% event.key %]">
             </td>
+            <td align="right" colspan="2">
+              <input type="submit" value="更新 / 追加" name="commit" id="update">
+            </td>
           </tr>
-
         </table>
 
-      </td>
-      <td align="right" valign="bottom">
-        <input type="submit" value="更新 / 追加" name="commit" id="update">
       </td>
     </tr>
 
