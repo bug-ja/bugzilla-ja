@@ -31,10 +31,10 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-[% group_control = {${constants.CONTROLMAPNA}        => 'NA',
-                    ${constants.CONTROLMAPSHOWN}     => 'Shown',
-                    ${constants.CONTROLMAPDEFAULT}   => 'Default',
-                    ${constants.CONTROLMAPMANDATORY} => 'Mandatory'}
+[% group_control = {${constants.CONTROLMAPNA}        => '利用不可',
+                    ${constants.CONTROLMAPSHOWN}     => 'オプション',
+                    ${constants.CONTROLMAPDEFAULT}   => '標準',
+                    ${constants.CONTROLMAPMANDATORY} => '強制'}
  %]
 
 <form method="post" action="editproducts.cgi">
@@ -112,13 +112,13 @@
             [% IF g.group.isactive %]
               [% group_control.${g.membercontrol} FILTER html %]/
               [% group_control.${g.othercontrol} FILTER html %]
-              [% IF g.entry %], ENTRY[% END %]
-              [% IF g.canedit %], CANEDIT[% END %]
-              [% IF g.editcomponents %], editcomponents[% END %]
-              [% IF g.canconfirm %], canconfirm[% END %]
-              [% IF g.editbugs %], editbugs[% END %]
+              [% IF g.entry %]、新規追加[% END %]
+              [% IF g.canedit %]、編集可能[% END %]
+              [% IF g.editcomponents %]、コンポーネントの編集可能[% END %]
+              [% IF g.canconfirm %]、承認可能[% END %]
+              [% IF g.editbugs %]、[% terms.Bugs %] の編集可能[% END %]
             [% ELSE %]
-              DISABLED
+              無効
             [% END %]
             <br>
           [% END %]
