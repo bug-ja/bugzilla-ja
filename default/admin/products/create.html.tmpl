@@ -20,7 +20,7 @@
   #
   #%]
 
-[% title = BLOCK %]Add Product[% END %]
+[% title = BLOCK %]プロダクトの追加[% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
@@ -41,18 +41,18 @@
     [% PROCESS "admin/products/edit-common.html.tmpl" %]
 
     <tr>
-      <th align="right">Version:</th>
+      <th align="right">バージョン:</th>
       <td><input size="64" maxlength="255" name="version" 
                 value="[% version FILTER html %]">
       </td>
     </tr>
     <tr>
-      <th align="right">Create chart datasets for this product:</th>
+      <th align="right">このプロダクトで chart のデータセットを作成できるようにする:</th>
       <td><input type="checkbox" name="createseries" value="1"></td>
     </tr>
   </table>
 
-  <input type="submit" value="Add">
+  <input type="submit" value="追加">
   <input type="hidden" name="subcategory" value="-All-">
   <input type="hidden" name="open_name"   value="All Open">
   <input type="hidden" name="action" value="new">
