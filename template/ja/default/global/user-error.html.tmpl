@@ -473,7 +473,7 @@
     [% docslinks = {'query.html' => "$terms.bugs の検索",
                     'query.html#list' => "$terms.Bug リスト"} %]
     [% jawords.search_term FILTER html %] 無しでは、[% jawords.search FILTER html %]
-    や [%jawords.search_saved_search_creation %] はできません。
+    や [%jawords.search_saved_search_creation FILTER html %] はできません。
 
   [% ELSIF error == "chart_too_large" %]
     [% title = "%jawords.chart が大きすぎます" %]
@@ -861,7 +861,7 @@
 
   [% ELSIF error == "flag_type_sortkey_invalid" %]
     [% title = "$jawords.flag の $jawords.sortkey が無効です" %]
-    [% jawords.flag %] の [% jawords.sortkey FILTER html %] は 0 ～ 32767 の整数でなくてはいけません。
+    [% jawords.flag FILTER html %] の [% jawords.sortkey FILTER html %] は 0 ～ 32767 の整数でなくてはいけません。
     <em>[% sortkey FILTER html %]</em> には設定できません。
 
   [% ELSIF error == "freetext_too_long" %]
