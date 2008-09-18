@@ -41,9 +41,9 @@
       <th>メンバーの操作</th>
       <th>メンバー以外の操作</th>
       <th>編集可能</th>
-      <th>コンポーネントの編集可能</th>
+      <th>コンポーネントを編集可能</th>
       <th>承認可能</th>
-      <th>[% terms.Bugs %] の編集可能</th>
+      <th>[% terms.Bugs %] を編集可能</th>
       <th>[% terms.Bugs %]</th>
     </tr>
     [% FOREACH group = groups %]
@@ -73,17 +73,17 @@
               <option value=[% const.CONTROLMAPNA %]
                 [% " selected=\"selected\""
                   IF group.membercontrol == const.CONTROLMAPNA %]
-                >利用不可
+                >無関係
               </option>
               <option value=[% const.CONTROLMAPSHOWN %]
                 [% " selected=\"selected\""
                   IF group.membercontrol == const.CONTROLMAPSHOWN %]
-                >オプション
+                >選択可能
               </option>
               <option value=[% const.CONTROLMAPDEFAULT %]
                 [% " selected=\"selected\""
                   IF group.membercontrol == const.CONTROLMAPDEFAULT %]
-                >標準
+                >標準で選択
               </option>
               <option value=[% const.CONTROLMAPMANDATORY %]
                 [% " selected=\"selected\""
@@ -97,17 +97,17 @@
               <option value=[% const.CONTROLMAPNA %]
                 [% " selected=\"selected\""
                   IF group.othercontrol == const.CONTROLMAPNA %]
-                >利用不可
+                >無関係
               </option>
               <option value=[% const.CONTROLMAPSHOWN %]
                 [% " selected=\"selected\""
                   IF group.othercontrol == const.CONTROLMAPSHOWN %]
-                >オプション
+                >選択可能
               </option>
               <option value=[% const.CONTROLMAPDEFAULT %]
                 [% " selected=\"selected\""
                   IF group.othercontrol == const.CONTROLMAPDEFAULT %]
-                >標準
+                >標準で選択
               </option>
               <option value=[% const.CONTROLMAPMANDATORY %]
                 [% " selected=\"selected\""
@@ -165,7 +165,7 @@
 特定のプロダクトに対してのみ、特定のユーザに権限を与えるのに便利です。
 </p>
 <p>
-<b>コンポーネントの編集可能</b> が選択されたグループのユーザはこのプロダクトの全ての内容
+<b>コンポーネントを編集可能</b> が選択されたグループのユーザはこのプロダクトの全ての内容
 (コンポーネント、マイルストーン、バージョン)
 を編集することができます。
 </p>
@@ -174,7 +174,7 @@
 を承認することができます。
 </p>
 <p>
-<b>[% terms.Bugs %] の編集可能</b> が選択されたグループのユーザはこのプロダクトの [% terms.bugs %]
+<b>[% terms.Bugs %] を編集可能</b> が選択されたグループのユーザはこのプロダクトの [% terms.bugs %]
 を編集することができます。
 </p>
 <p>
@@ -196,10 +196,10 @@
   </tr>
   <tr>
     <td>
-      利用不可
+      無関係
     </td>
     <td>
-      利用不可
+      無関係
     </td>
     <td>
       このプロダクトの [% terms.Bugs %] はこのグループに関連づけられません。
@@ -207,10 +207,10 @@
   </tr>
   <tr>
     <td>
-      オプション
+      選択可能
     </td>
     <td>
-      利用不可
+      無関係
     </td>
     <td>
       このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
@@ -219,10 +219,10 @@
   </tr>
   <tr>
     <td>
-      オプション
+      選択可能
     </td>
     <td>
-      オプション
+      選択可能
     </td>
     <td>
       このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
@@ -232,10 +232,10 @@
   </tr>
   <tr>
     <td>
-      オプション
+      選択可能
     </td>
     <td>
-      標準
+      標準で選択
     </td>
     <td>
       このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
@@ -246,7 +246,7 @@
   </tr>
   <tr>
     <td>
-      オプション
+      選択可能
     </td>
     <td>
       強制
@@ -260,10 +260,10 @@
   </tr>
   <tr>
     <td>
-      標準
+      標準で選択
     </td>
     <td>
-      利用不可
+      無関係
     </td>
     <td>
       このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
@@ -273,10 +273,10 @@
   </tr>
   <tr>
     <td>
-      標準
+      標準で選択
     </td>
     <td>
-      標準
+      標準で選択
     </td>
     <td>
       このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
@@ -288,7 +288,7 @@
   </tr>
   <tr>
     <td>
-      標準
+      標準で選択
     </td>
     <td>
       強制
@@ -317,7 +317,7 @@
 <p>
 上の表は <b>メンバーの操作</b> と <b>メンバー以外の操作</b>
 フィールドの可能な組み合わせの全てであることに注意してください。
-ここにリストされていない組み合わせ (例えば、強制/利用不可 や 標準/オプション 等)
+ここにリストされていない組み合わせ (例えば、強制/無関係 や 標準で選択/選択可能 等)
 で変更しようとしてもエラーとなります。
 </p>
 [% PROCESS global/footer.html.tmpl %]
