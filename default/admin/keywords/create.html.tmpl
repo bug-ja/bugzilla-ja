@@ -24,18 +24,18 @@
   #%]
   
 [% PROCESS global/header.html.tmpl
-  title = "Add keyword"
-  subheader = "This page allows you to add a new keyword."
+  title = "キーワードの追加"
+  subheader = "このページからキーワードを新しく追加することができます。"
 %]
 
 <form method="post" action="editkeywords.cgi">
   <table border="0" cellpadding="4" cellspacing="0">
     <tr>
-      <th align="right">Name:</th>
+      <th align="right">名前:</th>
       <td><input size="64" maxlength="64" name="name" value=""></td>
     </tr>
     <tr>
-      <th align="right">Description:</th>
+      <th align="right">説明:</th>
       <td>
         [% INCLUDE global/textarea.html.tmpl
           name    = 'description'
@@ -48,11 +48,11 @@
   </table>
   <hr>
   <input type="hidden" name="id" value="-1">
-  <input type="submit" id="create" value="Add">
+  <input type="submit" id="create" value="追加">
   <input type="hidden" name="action" value="new">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
 
-<p><a href="editkeywords.cgi">Edit other keywords</a>.</p>
+<p><a href="editkeywords.cgi">他のキーワードを編集する</a>。</p>
 
 [% PROCESS global/footer.html.tmpl %]
