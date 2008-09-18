@@ -28,8 +28,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% title = BLOCK %]Select value for the '[% field.description FILTER html %]'
-                   ([% field.name FILTER html %]) field[% END %]
+[% title = BLOCK %]'[% field.description FILTER html %]' ([% field.name FILTER html %]) フィールドの値を選択してください[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
 %]
@@ -43,17 +42,17 @@
 [% columns = [
      { 
        name => "name"
-       heading => "Edit field value..."
+       heading => "フィールドの値を編集"
        contentlink => edit_contentlink
      },
      { 
        name => "sortkey"
-       heading => "Sortkey"
+       heading => "ソート順"
      },
      {
        name => "action"
-       heading => "Action"
-       content => "Delete"
+       heading => "操作"
+       content => "削除"
        contentlink => delete_contentlink
      } ]
 %]
@@ -63,7 +62,7 @@
        match_value => "$default"
        match_field => 'name'
        override_content => 1
-       content => "(Default value)"
+       content => "(既定値)"
        override_contentlink => 1
        contentlink => undef
      } ]
@@ -80,7 +79,7 @@
          match_value => "$static_value"
          match_field => 'name'
          override_content => 1
-         content => "(Non-deletable value)"
+         content => "(非既定値)"
          override_contentlink => 1
          contentlink => undef
        })

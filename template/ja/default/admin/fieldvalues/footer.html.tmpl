@@ -30,24 +30,24 @@
 <p>
 
 [% UNLESS no_add_link %]
-  <a title="Add a value for the '[% field.description FILTER html %]' field."
+  値を
+  <a title="'[% field.description FILTER html %]' フィールドに値を追加"
      href="editvalues.cgi?action=add&amp;field=
-          [%- field.name FILTER url_quote %]">Add</a> a value.
+          [%- field.name FILTER url_quote %]">追加</a> する。
 [% END %]
 
 [% IF value && !no_edit_link %]
-  Edit value <a 
-  title="Edit value '[% value FILTER html %]' for the '
-         [%- field.name FILTER html %]' field"
+  値 <a 
+  title="'[%- field.name FILTER html %]' フィールドの値 '[% value FILTER html %]' を編集"
   href="editvalues.cgi?action=edit&amp;field=
         [%- field.name FILTER url_quote %]&amp;value=[% value FILTER url_quote %]">
-        '[% value FILTER html %]'</a>.
+        '[% value FILTER html %]'</a> を編集する。
 [% END %]
 
 [% UNLESS no_edit_other_link %]
-  Edit other values for the <a 
+  <a 
   href="editvalues.cgi?field=
-        [%- field.name FILTER url_quote %]">'[% field.description FILTER html %]'</a> field.
+        [%- field.name FILTER url_quote %]">'[% field.description FILTER html %]'</a> フィールドの他の値を編集する。
 
 [% END %]
 
