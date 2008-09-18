@@ -44,11 +44,11 @@ nakano	nakano	x	./admin/fieldvalues/select-field.html.tmpl
 nakano	nakano	x	./admin/flag-type/confirm-delete.html.tmpl
 nakano	nakano	x	./admin/flag-type/edit.html.tmpl
 nakano	nakano	x	./admin/flag-type/list.html.tmpl
-shimono	shimono	x	./admin/groups/confirm-remove.html.tmpl
-shimono	shimono	x	./admin/groups/create.html.tmpl
-nakano	x	x	./admin/groups/delete.html.tmpl
-nakano	x	x	./admin/groups/edit.html.tmpl
-nakano	x	x	./admin/groups/list.html.tmpl
+shimono	shimono	nakano	./admin/groups/confirm-remove.html.tmpl
+shimono	shimono	nakano	./admin/groups/create.html.tmpl
+nakano	nakano	x	./admin/groups/delete.html.tmpl
+nakano	nakano	x	./admin/groups/edit.html.tmpl
+nakano	nakano	x	./admin/groups/list.html.tmpl
 nakano	nakano	x	./admin/keywords/confirm-delete.html.tmpl
 nakano	nakano	x	./admin/keywords/create.html.tmpl
 nakano	nakano	x	./admin/keywords/edit.html.tmpl
