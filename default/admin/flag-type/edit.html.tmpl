@@ -24,20 +24,20 @@
 [% PROCESS "global/js-products.html.tmpl" %]
 
 [% IF type.target_type == "bug" %]
-  [% title = BLOCK %]Create Flag Type for [% terms.Bugs %][% END %]
+  [% title = BLOCK %][% terms.Bugs %] のフラグタイプを作成[% END %]
   [% typeLabelLowerPlural = BLOCK %][% terms.bugs %][% END %]
   [% typeLabelLowerSingular = BLOCK %][% terms.bug %][% END %]
 [% ELSE %]
-  [% title = "Create Flag Type for Attachments" %]
-  [% typeLabelLowerPlural = BLOCK %]attachments[% END %]
-  [% typeLabelLowerSingular = BLOCK %]attachment[% END %]
+  [% title = "添付のフラグタイプを作成" %]
+  [% typeLabelLowerPlural = BLOCK %]添付[% END %]
+  [% typeLabelLowerSingular = BLOCK %]添付[% END %]
 [% END %]
 
 [% doc_section = "flags-overview.html#flags-create" %]
 [% IF last_action == "copy" %]
-  [% title = BLOCK %]Create Flag Type Based on [% type.name FILTER html %][% END %]
+  [% title = BLOCK %][% type.name FILTER html %] からフラグタイプを作成[% END %]
 [% ELSIF last_action == "edit" %]
-  [% title = BLOCK %]Edit Flag Type [% type.name FILTER html %][% END %]
+  [% title = BLOCK %]フラグタイプ [% type.name FILTER html %] を編集[% END %]
   [% doc_section = "flags-overview.html#flags-edit" %]
 [% END %]
 
@@ -66,22 +66,22 @@
 
   [%# Add a hidden button at the top of the form so that the user pressing "return"
     # really submit the form, as expected. %]
-  <input type="submit" id="commit" value="Submit" style="display: none;">
+  <input type="submit" id="commit" value="更新" style="display: none;">
 
   <table id="form" cellspacing="0" cellpadding="4" border="0">
     <tr>
-      <th>Name:</th>
+      <th>名前:</th>
       <td>
-        a short name identifying this type<br>
+        このタイプを識別するための短い名前<br>
         <input type="text" name="name" value="[% type.name FILTER html %]"
                size="50" maxlength="50">
       </td>
     </tr>
 
     <tr>
-      <th>Description:</th>
+      <th>説明:</th>
       <td>
-        a comprehensive description of this type<br>
+        このタイプに関する説明<br>
         [% INCLUDE global/textarea.html.tmpl
           name           = 'description'
           minrows        = 4
@@ -92,18 +92,16 @@
     </tr>
 
     <tr>
-      <th>Category:</th>
+      <th>カテゴリ:</th>
 
       <td>
-        the products/components to which [% typeLabelLowerPlural %] must
-        (inclusions) or must not (exclusions) belong in order for users
-        to be able to set flags of this type for them
+        ユーザがこのタイプのフラグを [% typeLabelLowerPlural %] で利用することができることができるプロダクト/コンポーネント
         <table>
           <tr>
             <td style="vertical-align: top;">
-              <b>Product/Component:</b><br>
+              <b>プロダクト/コンポーネント:</b><br>
               <select name="product" onchange="selectProduct(this, this.form.component, null, null, '__Any__');">
-                <option value="">__Any__</option>
+                <option value="">__どれでも__</option>
                 [% FOREACH prod = products %]
                   <option value="[% prod.name FILTER html %]" 
                           [% "selected" IF type.product.name == prod.name %]>
@@ -111,25 +109,25 @@
                 [% END %]
               </select><br>
               <select name="component">
-                <option value="">__Any__</option>
+                <option value="">__どれでも__</option>
                 [% FOREACH comp = components %]
                   <option value="[% comp FILTER html %]" 
                           [% "selected" IF type.component.name == comp %]>
                           [% comp FILTER html %]</option>
                 [% END %]
               </select><br>
-              <input type="submit" name="categoryAction-include" value="Include">
-              <input type="submit" name="categoryAction-exclude" value="Exclude">
+              <input type="submit" name="categoryAction-include" value="利用可能">
+              <input type="submit" name="categoryAction-exclude" value="利用不可">
             </td>
             <td style="vertical-align: top;">
-              <b>Inclusions:</b><br>
+              <b>利用可能:</b><br>
               [% PROCESS "global/select-menu.html.tmpl" name="inclusion_to_remove" multiple="1" size="7" options=type.inclusions %]<br>
-              <input type="submit" name="categoryAction-removeInclusion" value="Remove Inclusion">
+              <input type="submit" name="categoryAction-removeInclusion" value="利用可能から削除">
             </td>
             <td style="vertical-align: top;">
-              <b>Exclusions:</b><br>
+              <b>利用不可:</b><br>
               [% PROCESS "global/select-menu.html.tmpl" name="exclusion_to_remove" multiple="1" size="7" options=type.exclusions %]<br>
-              <input type="submit" name="categoryAction-removeExclusion" value="Remove Exclusion">
+              <input type="submit" name="categoryAction-removeExclusion" value="利用不可から削除">
             </td>
           </tr>
         </table>
@@ -137,12 +135,10 @@
     </tr>
 
     <tr>
-      <th>Sort Key:</th>
+      <th>ソート順:</th>
       <td>
-        a number between 1 and 32767 by which this type will be sorted
-        when displayed to users in a list; ignore if you don't care
-        what order the types appear in or if you want them to appear
-        in alphabetical order<br>
+        1 から 32767 の数値で、リストとして表示される際のソート順を指定できます。
+        表示順を気にしないか、アルファベット順で表示したい場合はこのままにしてください<br>
         <input type="text" name="sortkey" value="[% type.sortkey || 1 %]" size="5" maxlength="5">
       </td>
     </tr>
@@ -152,7 +148,7 @@
       <td>
         <input type="checkbox" id="is_active" name="is_active"
                [% " checked" IF type.is_active || !type.is_active.defined %]>
-        <label for="is_active">active (flags of this type appear in the UI and can be set)</label>
+        <label for="is_active">有効 (このタイプのフラグは UI に表示され、利用可能)</label>
       </td>
     </tr>
 
@@ -161,20 +157,18 @@
       <td>
         <input type="checkbox" id="is_requestable" name="is_requestable"
                [% " checked" IF type.is_requestable || !type.is_requestable.defined %]>
-        <label for="is_requestable">requestable (users can ask for flags of this type to be set)</label>
+        <label for="is_requestable">要求可能 (このタイプのフラグでユーザが要求することが可能)</label>
       </td>
     </tr>
 
     <tr>
-      <th>CC List:</th>
+      <th>CC リスト:</th>
       <td>
-        if requestable, who should get carbon copied on email notification of requests.
-        This is a comma-separated list of full e-mail addresses which do not
-        need to be [% terms.Bugzilla %] logins.
+        要求可能な場合、要求された通知メールを受け取る人を設定できます。
+        カンマ区切りのメールアドレス ([% terms.Bugzilla %] にログインするためのメールアドレスでなくてもかまいません) を入力してください。
         [% IF Param('emailsuffix') %]
-          Note that the configured emailsuffix
-          <kbd>[% Param('emailsuffix') %]</kbd> will <em>not</em> be appended
-          to these addresses, so you should add it explicitly if so desired.
+          設定されている emailsuffix <kbd>[% Param('emailsuffix') %]</kbd> はこれらのアドレスに追加<em>されません</em>。
+          必要があれば、明示的に追加してください。
         [% END %]<br>
         <input type="text" name="cc_list" value="[% type.cc_list FILTER html %]" size="80" maxlength="200">
       </td>
@@ -185,8 +179,8 @@
       <td>
         <input type="checkbox" id="is_requesteeble" name="is_requesteeble"
                [% " checked" IF type.is_requesteeble || !type.is_requesteeble.defined %]>
-        <label for="is_requesteeble">specifically requestable (users can ask specific other users
-          to set flags of this type as opposed to just asking the wind)</label>
+        <label for="is_requesteeble">特定のユーザにリクエスト可能 (単に不特定多数に要求するのとは違い、
+        指定したユーザにこのタイプのフラグをセットしてもらえるように要求できます)</label>
       </td>
     </tr>
 
@@ -195,26 +189,26 @@
       <td>
         <input type="checkbox" id="is_multiplicable" name="is_multiplicable"
                [% " checked" IF type.is_multiplicable || !type.is_multiplicable.defined %]>
-        <label for="is_multiplicable">multiplicable (multiple flags of this type can be set on
-          the same [% typeLabelLowerSingular %])</label>
+        <label for="is_multiplicable">複数のユーザに対してリクエスト可能 (同じ [% typeLabelLowerSingular %]
+                                      でこのタイプのフラグを複数、設定可能とします)</label>
       </td>
     </tr>
 
     <tr>
-      <th>Grant Group:</th>
+      <th>承認できるグループ:</th>
       <td>
-        the group allowed to grant/deny flags of this type
-        (to allow all users to grant/deny these flags, select no group)<br>
+        このタイプのフラグを承認、または拒否に変更できるグループ
+        (全てのユーザが編集可能としたいのであれば、グループによる制限無し を選択してください)<br>
         [% PROCESS select selname = "grant_group" %]
       </td>
     </tr>
 
     <tr>
-      <th>Request Group:</th>
+      <th>要求できるグループ:</th>
       <td>
-        if flags of this type are requestable, the group allowed to request them
-        (to allow all users to request these flags, select no group)<br>
-        Note that the request group alone has no effect if the grant group is not defined!<br>
+        このタイプのフラグを要求可能にしている場合、要求を出すことができるグループ
+        (全てのユーザが要求可能としたいのであれば、グループによる制限無し を選択してください)<br>
+        承認できるグループを設定しない場合、この設定は機能しないことに注意してください<br>
         [% PROCESS select selname = "request_group" %]
       </td>
     </tr>
@@ -223,8 +217,8 @@
       <th></th>
       <td>
         <input type="submit" id="save" value="
-          [%- IF (last_action == "enter" || last_action == "copy") %]Create
-          [%- ELSE %]Save Changes
+          [%- IF (last_action == "enter" || last_action == "copy") %]作成
+          [%- ELSE %]変更を保存
           [%- END %]">
       </td>
     </tr>
@@ -242,7 +236,7 @@
 
 [% BLOCK select %]
   <select name="[% selname %]" id="[% selname %]">
-    <option value="">(no group)</option>
+    <option value="">(グループによる制限無し)</option>
     [% FOREACH group = groups %]
       <option value="[% group.name FILTER html %]"
         [% " selected" IF (type.${selname} && type.${selname}.name == group.name) %]>
