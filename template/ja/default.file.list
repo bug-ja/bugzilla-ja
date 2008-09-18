@@ -46,9 +46,9 @@ nakano	nakano	x	./admin/flag-type/edit.html.tmpl
 nakano	nakano	x	./admin/flag-type/list.html.tmpl
 shimono	shimono	x	./admin/groups/confirm-remove.html.tmpl
 shimono	shimono	x	./admin/groups/create.html.tmpl
-shimono	x	x	./admin/groups/delete.html.tmpl
-shimono	x	x	./admin/groups/edit.html.tmpl
-shimono	x	x	./admin/groups/list.html.tmpl
+nakano	x	x	./admin/groups/delete.html.tmpl
+nakano	x	x	./admin/groups/edit.html.tmpl
+nakano	x	x	./admin/groups/list.html.tmpl
 nakano	nakano	x	./admin/keywords/confirm-delete.html.tmpl
 nakano	nakano	x	./admin/keywords/create.html.tmpl
 nakano	nakano	x	./admin/keywords/edit.html.tmpl
