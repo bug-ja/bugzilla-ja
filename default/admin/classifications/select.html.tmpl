@@ -45,7 +45,7 @@
       [% IF (cl.id == 1) %]
         <td valign="top">[% cl.product_count FILTER html %]</td>
       [% ELSE %]
-        <td valign="top"><a href="editclassifications.cgi?action=reclassify&amp;classification=[% cl.name FILTER url_quote %]">プロダクトの Classification の編集 ([% cl.product_count FILTER html %])</a></td>
+        <td valign="top"><a href="editclassifications.cgi?action=reclassify&amp;classification=[% cl.name FILTER url_quote %]">プロダクトの Classification の変更 ([% cl.product_count FILTER html %])</a></td>
       [% END %]
 
       [%# don't allow user to delete the default id. %]
@@ -58,8 +58,8 @@
   [% END %]
 
   <tr>
-    <td valign="top" colspan=4>Classification を追加する</td>
-    <td valign="top" align="center"><a href="editclassifications.cgi?action=add">追加する</a></td>
+    <td valign="top" colspan=4>Classification を追加</td>
+    <td valign="top" align="center"><a href="editclassifications.cgi?action=add">追加</a></td>
   </tr>
 </table>
 
