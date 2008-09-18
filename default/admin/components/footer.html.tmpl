@@ -27,28 +27,28 @@
 <hr>
 
 <p>
-Edit 
 
 [% IF comp && !no_edit_component_link %]
-  component <a 
+  コンポーネント <a 
   title="Edit Component '[% comp.name FILTER html %]'"
   href="editcomponents.cgi?action=edit&amp;product=
   [%- product.name FILTER url_quote %]&amp;component=[% comp.name FILTER url_quote %]">
    '[% comp.name FILTER html %]'</a> 
-  or edit
+  を編集する。
 [% END %]
 
 [% IF !no_edit_other_components_link %]
-other components of product <a 
+プロダクト <a 
   title="Choose a component from product '[% product.name FILTER html %]' to edit"
   href="editcomponents.cgi?product=
-  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>, 
-  or edit 
+  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+  の他のコンポーネントを編集する。
 [% END %]
 
-product <a 
+プロダクト <a 
   title="Edit Product '[% product.name FILTER html %]'"
   href="editproducts.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>.
+  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+  を編集する。
 
 </p>

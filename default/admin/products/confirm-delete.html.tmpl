@@ -231,14 +231,10 @@
       <tr>
         <td>
           このプロダクトに
-          [% IF product.bug_count > 1 %]
-            [% product.bug_count FILTER html %] [%+ terms.bugs %]
-          [% ELSE %]
-            1 [% terms.bug %]
-          [% END %]
-          が登録されていました!
-          このプロダクトを削除する場合、<b><blink>全ての</blink></b>
-          ストアされた [% terms.bugs %] とその履歴も削除されます。
+          [% product.bug_count FILTER html %] 件の [%+ terms.bugs %]
+          が登録されています!
+          このプロダクトを削除すると、<b><blink>全ての</blink></b>
+          登録されている [% terms.bugs %] とその履歴が削除されます。
         </td>
       </tr>
     </table>

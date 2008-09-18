@@ -29,7 +29,7 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% title = BLOCK %]
-  Edit component '[% comp.name FILTER html %]' of product '[% product.name FILTER html %]'
+  コンポーネント '[% comp.name FILTER html %]' of product '[% product.name FILTER html %]' の編集
 [% END %]
 [% PROCESS global/header.html.tmpl
   title = title
@@ -39,12 +39,12 @@
   <table border="0" cellpadding="4" cellspacing="0">
 
     <tr>
-      <td valign="top">Component:</td>
+      <td valign="top">コンポーネント:</td>
       <td><input size="64" maxlength="64" name="component" value="
       [%- comp.name FILTER html %]"></td>
     </tr>
     <tr>
-      <td valign="top">Component Description:</td>
+      <td valign="top">説明:</td>
       <td>
         [% INCLUDE global/textarea.html.tmpl
           name           = 'description'
@@ -56,7 +56,7 @@
       </td>
     </tr>
     <tr>
-      <td valign="top"><label for="initialowner">Default Assignee:</label></td>
+      <td valign="top"><label for="initialowner">既定の担当者:</label></td>
       <td>
         [% INCLUDE global/userselect.html.tmpl
            name => "initialowner"
@@ -70,7 +70,7 @@
 [% IF Param('useqacontact') %]
     </tr>
     <tr>
-      <td valign="top"><label for="initialqacontact">Default QA contact:</label></td>
+      <td valign="top"><label for="initialqacontact">既定の QA コンタクト:</label></td>
       <td>
         [% INCLUDE global/userselect.html.tmpl
            name => "initialqacontact"
@@ -85,7 +85,7 @@
     </tr>
     <tr>
       <td valign="top">
-        <label for="initialcc">Default CC List:</label>
+        <label for="initialcc">既定の CC リスト:</label>
       </td>
       <td>
         [% INCLUDE global/userselect.html.tmpl
@@ -97,7 +97,7 @@
         %]
         <br>
         [% IF !Param("usemenuforusers") %]
-          <em>Enter user names for the CC list as a comma-separated list.</em>
+          <em>CC リストに追加するユーザ名をカンマ区切りで入力してください。</em>
         [% END %]
       </td>
     </tr>
@@ -110,7 +110,7 @@
                 [%- comp.name FILTER url_quote %]&amp;product=
                 [%- product.name FILTER url_quote %]">[% comp.bug_count %]</a>
 [% ELSE %]
-        None
+        無し
 [% END %]
       </td>
     </tr>
@@ -121,7 +121,7 @@
    <input type="hidden" name="componentold" value="[% comp.name FILTER html %]">
    <input type="hidden" name="product" value="[% product.name FILTER html %]">
    <input type="hidden" name="token" value="[% token FILTER html %]">
-   <input type="submit" value="Save Changes" id="update"> or <a 
+   <input type="submit" value="変更を保存" id="update"> or <a 
         href="editcomponents.cgi?action=del&amp;product=
         [%- product.name FILTER url_quote %]&amp;component=
         [%- comp.name FILTER url_quote %]">Delete</a> this component.
