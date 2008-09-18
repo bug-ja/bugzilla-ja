@@ -19,16 +19,16 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = "Select classification"
+  title = "編集する classification を選択してください"
 %]
 
 <table border=1 cellpadding=4 cellspacing=0>
   <tr bgcolor="#6666ff">
-    <th align="left">Edit Classification ...</th>
-    <th align="left">Description</th>
-    <th align="left">Sortkey</th>
-    <th align="left">Products</th>
-    <th align="left">Action</th>
+    <th align="left">Classification を編集</th>
+    <th align="left">説明</th>
+    <th align="left">ソート順</th>
+    <th align="left">プロダクト</th>
+    <th align="left">操作</th>
   </tr>
 
   [% FOREACH cl = classifications %]
@@ -38,28 +38,28 @@
       [% IF cl.description %]
         [% cl.description FILTER html_light %]
       [% ELSE %]
-        <font color="red">none</font>
+        <font color="red">無し</font>
       [% END %]
       </td>
       <td valign="top">[% cl.sortkey FILTER html %]</td>
       [% IF (cl.id == 1) %]
         <td valign="top">[% cl.product_count FILTER html %]</td>
       [% ELSE %]
-        <td valign="top"><a href="editclassifications.cgi?action=reclassify&amp;classification=[% cl.name FILTER url_quote %]">reclassify ([% cl.product_count FILTER html %])</a></td>
+        <td valign="top"><a href="editclassifications.cgi?action=reclassify&amp;classification=[% cl.name FILTER url_quote %]">プロダクトの Classification の編集 ([% cl.product_count FILTER html %])</a></td>
       [% END %]
 
       [%# don't allow user to delete the default id. %]
       [% IF (cl.id == 1) %]
         <td valign="top">&nbsp;</td>
       [% ELSE %]
-        <td valign="top"><a href="editclassifications.cgi?action=del&amp;classification=[% cl.name FILTER url_quote %]">delete</a></td>
+        <td valign="top"><a href="editclassifications.cgi?action=del&amp;classification=[% cl.name FILTER url_quote %]">削除</a></td>
       [% END %]
     </tr>
   [% END %]
 
   <tr>
-    <td valign="top" colspan=4>Add a new classification</td>
-    <td valign="top" align="center"><a href="editclassifications.cgi?action=add">Add</a></td>
+    <td valign="top" colspan=4>Classification を追加する</td>
+    <td valign="top" align="center"><a href="editclassifications.cgi?action=add">追加する</a></td>
   </tr>
 </table>
 
