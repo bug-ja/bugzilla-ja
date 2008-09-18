@@ -32,8 +32,8 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = "Edit Groups"
-  subheader = "This lets you edit the groups available to put users in."
+  title = "グループの一覧"
+  subheader = "このページでユーザをメンバーとするグループを編集することができます"
   doc_section = "groups.html"
 %]
 
@@ -42,26 +42,26 @@
 
 [% columns =
   [{name               => 'name'
-    heading            => 'Name'
+    heading            => '名前'
     contentlink        => edit_contentlink
    }
    {name               => 'description'
-    heading            => 'Description'
+    heading            => '説明'
     allow_html_content => 1
    }
    {name               => 'userregexp'
-    heading            => 'User RegExp'
+    heading            => '含める正規表現'
    }
    {name               => 'is_active_bug_group'
-    heading            => "Use For $terms.Bugs"
+    heading            => "$terms.Bugs で利用"
     align              => 'center'
    }
    {name               => 'type'
-    heading            => 'Type'
+    heading            => '型'
     align              => 'center'
    }
    {name               => 'action'
-    heading            => 'Action'
+    heading            => '操作'
    }
   ]
 %]
@@ -88,31 +88,31 @@
      match_value => Param("chartgroup")
      match_field => 'name'
      override_content => 1
-     content => "(used as the 'chartgroup')"
+     content => "('chartgroup' として利用)"
    },
    {
      match_value => Param("insidergroup")
      match_field => 'name'
      override_content => 1
-     content => "(used as the 'insidergroup')"
+     content => "('insidergroup' として利用)"
    },
    {
      match_value => Param("timetrackinggroup")
      match_field => 'name'
      override_content => 1
-     content => "(used as the 'timetrackinggroup')"
+     content => "('timetrackinggroup' として利用)"
    },
    {
      match_value => Param("querysharegroup")
      match_field => 'name'
      override_content => 1
-     content => "(used as the 'querysharegroup')"
+     content => "('querysharegroup' として利用)"
    },
    {
      match_value => "1"
      match_field => 'isbuggroup'
      override_content => 1
-     content => "Delete"
+     content => "削除"
      override_contentlink => 1
      contentlink => del_contentlink
    }]
@@ -120,13 +120,13 @@
      match_value => "0"
      match_field => 'isbuggroup'
      override_content => 1
-     content => "system"
+     content => "システム"
    },
    {
      match_value => "1"
      match_field => 'isbuggroup'
      override_content => 1
-     content => "user"
+     content => "ユーザ"
    }]
 %] 
 
@@ -139,38 +139,35 @@
 <p><a href="editgroups.cgi?action=add">Add Group</a></p>
 
 <p>
-  <b>Name</b> is what is used with the B<!-- blah -->ugzilla->user->in_group()
-function in any customized cgi files you write that use a given group.
-It can also be used by people submitting [% terms.bugs %] by email to
-limit [% terms.abug %] to a certain set of groups.
+<b>名前</b> は B<!-- blah -->ugzilla->user->in_group() 関数で利用され、
+特定のグループに対する独自 cgi を書くときに利用できます。
+また、メールで登録した [% terms.bugs %] をある [% terms.abug %] グループに限る
+ときにも利用可能です。
 </p>
 
 <p>
-  <b>Description</b> is what will be shown in the [% terms.bug %] reports
-to members of the group where they can choose whether the [% terms.bug %]
-will be restricted to others in the same group.
+<b>説明</b> は [% terms.bug %] 報告で、グループに該当するユーザに対して表示され、
+[% terms.bug %] を同じグループのみに制限するかどうかを指定できます。
 </p>
 
 <p>
-  <b>User RegExp</b> is optional, and if filled in, will automatically
-grant membership to this group to anyone with an email address
-that matches this perl regular expression. Do not forget
-the trailing '$'.  Example '@mycompany\.com$'
+<b>含める正規表現</b> はオプションです。もし設定されていれば、この正規表現に
+メールアドレスが合致するユーザは自動的に権限を取得します。
+末尾に '$' を付けることを忘れないように注意してください。
+例えば、'@mycompany\.com$' としなくてはいけません。
 </p>
 
 <p>
-  The <b>Use For [% terms.Bugs %]</b> flag determines whether or not
-the group is eligible to be used for [% terms.bugs %]. If you remove
-this flag, it will no longer be possible for users to add [% terms.bugs %]
-to this group, although [% terms.bugs %] already in the group will remain
-in the group. Doing so is a much less drastic way to stop a group
-from growing than deleting the group as well as a way to maintain
-lists of users without cluttering the lists of groups used
-for [% terms.bug %] restrictions.
+<p><b>[% terms.Bugs %] で利用する</b> フラグは、グループを [% terms.bugs %] に
+アクセスできるユーザに制限するために利用するかどうかをしめします。
+これを設定しなければ、[% terms.bugs %] をこのグループに加えることはできなくなりますが、
+[% terms.bugs %] がすでにグループに制限されていればそのままです。
+[% terms.bug %] を制限するためのグループの整理されたリストで、ユーザのリストを管理するのと同様に、
+グループを削除するよりこちらを利用する方が、グループの所属数を増やさなくて済む手軽な方法です。
 </p>
 
 <p>
-  The <b>Type</b> field identifies system groups.
+  <b>型</b> フィールドはシステムグループを識別できます。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
