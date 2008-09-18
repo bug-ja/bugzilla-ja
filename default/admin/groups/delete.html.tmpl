@@ -35,15 +35,15 @@
 
 
 [% PROCESS global/header.html.tmpl
-  title = "Delete group"
+  title = "グループの削除"
   doc_section = "groups.html"
 %]
 
 <table border="1">
   <tr>
-    <th>Id</th>
-    <th>Name</th>
-    <th>Description</th>
+    <th>ID</th>
+    <th>名前</th>
+    <th>説明</th>
   </tr>
   <tr>
     <td>[% gid FILTER html %]</td>
@@ -54,80 +54,70 @@
 
 <form method="post" action="editgroups.cgi">
   [% IF hasusers %]
-    <p><b>One or more users belong to this group. You cannot delete
-    this group while there are users in it.</b>
+    <p><b>まだこのグループに所属しているユーザが居ます。
+    これらのユーザが所属している間は削除することができません。</b>
 
-    <br><a href="editusers.cgi?action=list&groupid=[% gid FILTER html %]&grouprestrict=1">Show
-    me which users</a> - <input type="checkbox" name="removeusers">Remove
-    all users from this group for me.</p>
+    <br><a href="editusers.cgi?action=list&groupid=[% gid FILTER html %]&grouprestrict=1">該当するユーザを表示する</a>
+     - <input type="checkbox" name="removeusers">このグループから全てのユーザを削除する。</p>
   [% END %]
 
   [% IF hasbugs %]
-    <p><b>One or more [% terms.bug %] reports are visible only to this group.
-    You cannot delete this group while any [% terms.bugs %] are using it.</b>
+    <p><b>まだこのグループからのみ閲覧可能な [% terms.bug %] レポートがあります。
+    このグループを利用している [% terms.bugs %] がある間は削除することができません。</b>
 
-    <br><a href="buglist.cgi?bug_id=[% buglist FILTER html %]">Show me
-    which [% terms.bugs %]</a> - <input type="checkbox" name="removebugs">Remove
-    all [% terms.bugs %] from this group restriction for me.</p>
+    <br><a href="buglist.cgi?bug_id=[% buglist FILTER html %]">該当する [% terms.bugs %] を表示する</a>
+     - <input type="checkbox" name="removebugs">このグループから全ての [% terms.bugs %] を削除する。</p>
 
-    <p><b>NOTE:</b> It's quite possible to make confidential [% terms.bugs %]
-    public by checking this box.  It is <B>strongly</B> suggested
-    that you review the [% terms.bugs %] in this group before checking
-    the box.</p>
+    <p><b>※注意:</b> このチェックボックスを使うことで、該当する [% terms.bugs %]
+    を公開することは可能です。しかし、このチェックボックスをオンにする前に、
+    このグループの [% terms.bugs %] を全て確認することを <b>強く</b> 推奨します。</p>
   [% END %]
 
   [% IF hasproduct %]
-    <p><b>This group is tied to the <U>[% name FILTER html %]</U> product.
-    You cannot delete this group while it is tied to a product.</b>
+    <p><b>このグループは <U>[% name FILTER html %]</U> に関連づけられています。
+    このグループがプロダクトに関連づけられている間は削除することができません。</b>
 
-    <br><input type="checkbox" name="unbind">Delete this group anyway,
-    and make the product <U>[% name FILTER html %]</U> publicly visible.</p>
+    <br><input type="checkbox" name="unbind">このグループを強制的に削除し、
+    プロダクト <U>[% name FILTER html %]</U> を公開します。</p>
   [% END %]
-  
-  [% IF hasflags %]
-    <p><b>This group restricts who can make changes to flags of certain types.
-    You cannot delete this group while there are flag types using it.</b>
 
-    <br><a href="editflagtypes.cgi?action=list&group=[% gid FILTER html %]">Show
-    me which types</a> - <input type="checkbox" name="removeflags">Remove all
-    flag types from this group for me.</p>
+  [% IF hasflags %]
+    <p><b>このグループで承認可能なフラグタイプがあります。
+    このグループがフラグタイプから利用されている間は削除することができません。</b>
+
+    <br><a href="editflagtypes.cgi?action=list&group=[% gid FILTER html %]">該当のフラグタイプを表示する</a>
+     - <input type="checkbox" name="removeflags">このグループから全てのフラグタイプを削除する。</p>
   [% END %]
 
   [% IF shared_queries %]
     <p>
-      <b>There
+      <b>このグループで共有されている "保存した検索" があります。</b>
+      このグループを削除した場合、
       [% IF shared_queries > 1 %]
-        are [% shared_queries %] saved searches
+        それら
       [% ELSE %]
-        is a saved search
+        それ
       [% END %]
-      being shared with this group.</b>
-      If you delete this group,
-      [% IF shared_queries > 1 %]
-        these saved searches
-      [% ELSE %]
-        this saved search
-      [% END %]
-      will fall back to being private again.
+      はプライベートなものになります。
     </p>
   [% END %]
 
-  <h2>Confirmation</h2>
+  <h2>確認</h2>
 
-  <p>Do you really want to delete this group?</p>
+  <p>本当にこのグループを削除してもよろしいですか?</p>
   [% IF (hasusers || hasbugs || hasproduct || hasflags) %]
-    <p><b>You must check all of the above boxes or correct the
-          indicated problems first before you can proceed.</b></p>
+    <p><b>上記のチェックボックス全てにチェックを入れるか、
+          指摘された問題を解決しなければ処理できません。</b></p>
   [% END %]
 
   <p>
-    <input type="submit" id="delete" value="Yes, delete">
+    <input type="submit" id="delete" value="はい、削除します">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="group" value="[% gid FILTER html %]">
     <input type="hidden" name="token" value="[% token FILTER html %]">
   </p>
 </form>
 
-Go back to the <a href="editgroups.cgi">group list</a>.
+<a href="editgroups.cgi">グループの一覧</a> に戻る。
 
 [% PROCESS global/footer.html.tmpl %] 

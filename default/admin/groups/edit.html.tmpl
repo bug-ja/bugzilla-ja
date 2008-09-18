@@ -30,7 +30,7 @@
   #               available values for each grant.
   #%]
 
-[% title = BLOCK %]Change Group: [% group.name FILTER html %][% END %]
+[% title = BLOCK %]グループ [% group.name FILTER html %] の編集[% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
@@ -53,7 +53,7 @@
 
   <table border="1" cellpadding="4">
     <tr>
-      <th>Group:</th>
+      <th>グループ:</th>
       <td>
         [% IF group.is_bug_group %]
           <input type="text" name="name" size="60" 
@@ -65,7 +65,7 @@
     </tr>
 
     <tr>
-      <th>Description:</th>
+      <th>説明:</th>
       <td>
         [% IF group.is_bug_group %]
           <input type="text" name="desc" size="70" 
@@ -77,7 +77,7 @@
     </tr>
 
     <tr>
-      <th>User Regexp:</th>
+      <th>含める正規表現:</th>
       <td>
         <input type="text" name="regexp" size="40" 
                value="[% group.user_regexp FILTER html %]">
@@ -86,7 +86,7 @@
 
     <tr>
       <th>
-        Icon URL:
+        アイコンの URL:
         [% IF group.icon_url %]
           <img src="[% group.icon_url FILTER html %]" alt="[% group.name FILTER html %]">
         [% END %]
@@ -99,7 +99,7 @@
 
     [% IF group.is_bug_group %]
       <tr>
-        <th>Use For [% terms.Bugs %]:</th>
+        <th>[% terms.Bugs %] で利用する:</th>
         <td>
           <input type="checkbox" name="isactive" 
                  value="1" [% 'checked="checked"' IF group.is_active %]>
@@ -108,16 +108,16 @@
     [% END %]
   </table>
 
-  <h4>Group Permissions</h4>
+  <h4>グループの権限</h4>
 
   <table class="grant_table">
     <tr>
-      <th class="one">Groups That Are a Member of This Group<br>
-        (&quot;Users in <var>X</var> are automatically in  
-         [%+ group.name FILTER html %]&quot;)</th>
-      <th>Groups That This Group Is a Member Of<br>
-        (&quot;If you are in [% group.name FILTER html %], you are 
-         automatically also in...&quot;)</th>
+      <th class="one">このグループのメンバーとなるグループ<br>
+        (&quot;<var>X</var> のユーザは自動的に
+         [%+ group.name FILTER html %] のメンバーとなります&quot;)</th>
+      <th>このグループがメンバーであるグループ<br>
+        (&quot;[% group.name FILTER html %] グループに所属しているユーザは、
+         自動的にこれらのグループにも所属します&quot;)</th>
     </tr>
     <tr>
       <td class="one">
@@ -135,13 +135,13 @@
   <table class="grant_table">
     <tr>
       <th class="one">
-        Groups That Can Grant Membership in This Group<br>
-        (&quot;Users in <var>X</var> can add other users to 
-         [%+ group.name FILTER html %]&quot;)
+        このグループにメンバーを追加することができるグループ<br>
+        (&quot;<var>X</var> のユーザは他のユーザを
+         [%+ group.name FILTER html %] に追加できます&quot;)
 
       </th>
-     <th>Groups That This Group Can Grant Membership In<br>
-       (&quot;Users in [% group.name FILTER html %] can add users to...&quot;)
+     <th>このグループがメンバーを追加することができるグループ<br>
+       (&quot;[% group.name FILTER html %] のユーザがメンバーを追加できるグループです&quot;)
      </th>
     </tr>
     <tr>
@@ -161,12 +161,12 @@
     <table class="grant_table">
       <tr>
         <th class="one">
-          Groups That Can See This Group<br>
-          (&quot;Users in <var>X</var> can see users in
-           [%+ group.name FILTER html %]&quot;)
+          このグループを閲覧することができるグループ<br>
+          (&quot;<var>X</var> のユーザは [%+ group.name FILTER html %]
+                 のユーザを閲覧することができます&quot;)
         </th>
-       <th>Groups That This Group Can See<br>
-         (&quot;Users in [% group.name FILTER html %] can see users in...&quot;)
+       <th>このグループが閲覧することができるグループ<br>
+         (&quot;[% group.name FILTER html %] のユーザがメンバーを見ることができるグループです&quot;)
        </th>
       </tr>
       <tr>
@@ -183,26 +183,23 @@
     </table>
   [% END %]
 
-  <input type="submit" value="Update Group">
+  <input type="submit" value="グループを更新">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
   
-<h4>Mass Remove</h4>
+<h4>大量削除</h4>
 
-<p>You can use this form to do mass-removal of users from groups.
-  This is often very useful if you upgraded from [% terms.Bugzilla %] 
-  2.16.</p>
+<p>このフォームを使って、グループからユーザを一度に削除することができます。
+  これは [% terms.Bugzilla %] 2.16 からアップグレードした場合に便利なツールかもしれません。</p>
 
 <table><tr><td>
 <form method="post" action="editgroups.cgi">
   <fieldset>
-    <legend>Remove all explict memberships from users whose login names
-      match the following regular expression:</legend>
+    <legend>ログイン名が次の正規表現と一致するユーザをグループから削除します:</legend>
     <input type="text" size="20" name="regexp">
     <input type="submit" value="Remove Memberships">
 
-    <p>If you leave the field blank, all explicit memberships in 
-      this group will be removed.</p>
+    <p>もし、空白のままで実行すると、このグループから全てのメンバーが削除されます。</p>
 
     <input type="hidden" name="action" value="confirm_remove">
     <input type="hidden" name="group_id" value="[% group.id FILTER html %]">
@@ -210,17 +207,17 @@
 </form>
 </td></tr></table>
  
-<p>Back to the <a href="editgroups.cgi">group list</a>.</p>
+<p><a href="editgroups.cgi">グループの一覧</a> に戻る。</p>
 
 [% PROCESS global/footer.html.tmpl %] 
 
 [% BLOCK select_pair %]
   <table class="select_pair">
     <tr>
-      <th><label for="[% "${name}_add" FILTER html %]">Add<br>
-        (select to add)</label></th>
-      <th><label for="[% "${name}_remove" FILTER html %]">Current<br>
-        (select to remove)</label></th>
+      <th><label for="[% "${name}_add" FILTER html %]">追加<br>
+        (選択したものを追加)</label></th>
+      <th><label for="[% "${name}_remove" FILTER html %]">現状<br>
+        (選択したものを削除)</label></th>
     </tr>
     <tr>
       <td>
