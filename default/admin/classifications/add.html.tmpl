@@ -19,7 +19,7 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = "Add new classification"
+  title = "classification の追加"
 %]
 
 <form method=post action="editclassifications.cgi">
@@ -29,7 +29,7 @@
       <td><input size=64 maxlength=64 name="classification"></td>
     </tr>
     <tr>
-      <th align="right">Description:</th>
+      <th align="right">説明:</th>
       <td>
         [% INCLUDE global/textarea.html.tmpl
           name    = 'description'
@@ -40,18 +40,18 @@
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">Sortkey:</label></th>
+      <th align="right"><label for="sortkey">ソート順:</label></th>
       <td><input id="sortkey" size="20" maxlength="20" name="sortkey" 
                  value=""></td>
     </tr>
   </table>
   <hr>
-  <input type=submit value="Add">
+  <input type=submit value="追加">
   <input type=hidden name="action" value="new">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </FORM>
 
-<p>Back to the <a href="./">main [% terms.bugs %] page</a>
-or <a href="editclassifications.cgi"> edit</a> more classifications.
+<p><a href="./">メイン [% terms.bugs %] ページ</a> に戻る。
+ 他の classification を <a href="editclassifications.cgi">編集する</a>。
 
 [% PROCESS global/footer.html.tmpl %] 
