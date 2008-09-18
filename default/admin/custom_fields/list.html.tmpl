@@ -20,7 +20,7 @@
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% PROCESS global/header.html.tmpl
-  title = "Custom Fields"
+  title = "カスタムフィールドの一覧"
   doc_section = "custom-fields.html"
 %]
 
@@ -29,36 +29,36 @@
 [% columns = [
      {
        name => "name"
-       heading => "Edit custom field..."
+       heading => "カスタムフィールドを編集"
        contentlink => "editfields.cgi?action=edit&amp;name=%%name%%"
      },
      {
        name => "description"
-       heading => "Description"
+       heading => "説明"
      },
      {
        name => "sortkey"
-       heading => "Sortkey"
+       heading => "ソート順"
      },
      {
        name => "type"
-       heading => "Type"
+       heading => "型"
      },
      {
        name => "enter_bug"
-       heading => "Editable on $terms.Bug Creation"
+       heading => "$terms.bug 作成時に設定可能"
      },
      {
        name => "mailhead"
-       heading => "In ${terms.Bug}mail on $terms.Bug Creation"
+       heading => "$terms.bug 作成時に $terms.bug メールに表示"
      },
      {
        name => "obsolete"
-       heading => "Is Obsolete"
+       heading => "用済み"
      },
      {
        name => "action"
-       heading => "Action"
+       heading => "操作"
        content => ""
      }
    ]
@@ -85,7 +85,7 @@
      match_value => 1
      match_field => 'obsolete'
      override_content => 1
-     content => "Delete"
+     content => "削除"
      override_contentlink => 1
      contentlink => delete_contentlink
    } ]
@@ -98,7 +98,7 @@
 %]
 
 <p>
-  <a href="editfields.cgi?action=add">Add a new custom field</a>
+  <a href="editfields.cgi?action=add">カスタムフィールドを追加</a>
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
