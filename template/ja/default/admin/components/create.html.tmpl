@@ -24,7 +24,7 @@
   #               which the component belongs.
   #%]
   
-[% title = BLOCK %]Add component to the [% product.name FILTER html %] product[% END %]
+[% title = BLOCK %][% product.name FILTER html %] プロダクトへのコンポーネントの追加[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
 %]
@@ -32,11 +32,11 @@
 <form method="post" action="editcomponents.cgi">
   <table border="0" cellpadding="4" cellspacing="0">
     <tr>
-      <th align="right">Component:</th>
+      <th align="right">コンポーネント:</th>
       <td><input size="64" maxlength="64" name="component" value=""></td>
     </tr>
     <tr>
-      <th align="right">Description:</th>
+      <th align="right">説明:</th>
       <td>
         [% INCLUDE global/textarea.html.tmpl
           name    = 'description'
@@ -47,7 +47,7 @@
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="initialowner">Default Assignee:</label></th>
+      <th align="right"><label for="initialowner">既定の担当者:</label></th>
       <td>
         [% INCLUDE global/userselect.html.tmpl
            name => "initialowner"
@@ -61,7 +61,7 @@
 [% IF Param('useqacontact') %]
     <tr>
       <th align="right">
-        <label for="initialqacontact">Default QA Contact:</label></th>
+        <label for="initialqacontact">既定の QA コンタクト:</label></th>
       <td>
         [% INCLUDE global/userselect.html.tmpl
            name => "initialqacontact"
@@ -75,7 +75,7 @@
 [% END %]
     <tr>
       <th align="right">
-        <label for="initialcc">Default CC List:</label>
+        <label for="initialcc">既定の CC リスト:</label>
       </th>
       <td>
         [% INCLUDE global/userselect.html.tmpl
@@ -87,13 +87,13 @@
         %]
         <br>
         [% IF !Param("usemenuforusers") %]
-          <em>Enter user names for the CC list as a comma-separated list.</em>
+          <em>CC リストに追加するユーザ名をカンマ区切りで入力してください。</em>
         [% END %]
       </td>
     </tr>
   </table>
   <hr>
-  <input type="submit" id="create" value="Add">
+  <input type="submit" id="create" value="追加">
   <input type="hidden" name="action" value="new">
   <input type="hidden" name='product' value="[% product.name FILTER html %]">
   <input type="hidden" name="token" value="[% token FILTER html %]">
