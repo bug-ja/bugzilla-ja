@@ -62,7 +62,7 @@
 [% END %]
 
 [% columns.push({
-       heading => "動作"
+       heading => "操作"
        content => "削除"
        contentlink => delete_contentlink
      })
@@ -76,7 +76,7 @@
 [% IF ! showbugcounts %]
 
   <p><a href="editversions.cgi?product=[% product.name FILTER url_quote %]&amp;showbugcounts=1">
-      [% terms.bug %] 数をともに再表示 (遅い)</a></p>
+      [% terms.bug %] 数とともに表示 (遅い)</a></p>
 
 [% END %]
 
