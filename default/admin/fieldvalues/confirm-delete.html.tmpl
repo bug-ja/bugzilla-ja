@@ -24,8 +24,7 @@
   #%]
 
 [% title = BLOCK %]
-  Delete Value '[% value FILTER html %]' from the '[% field.description FILTER html %]'
-  ([% field.name FILTER html %]) field
+  '[% field.description FILTER html %]' ([% field.name FILTER html %]) フィールドから値 '[% value FILTER html %]' の削除
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -35,80 +34,75 @@
 
 <table border="1" cellpadding="4" cellspacing="0">
 <tr bgcolor="#6666FF">
-  <th valign="top" align="left">Field</th>
-  <th valign="top" align="left">Value</th>
+  <th valign="top" align="left">フィールド</th>
+  <th valign="top" align="left">値</th>
 </tr>
 <tr>
-  <td valign="top">Field Name:</td>
+  <td valign="top">フィールド名:</td>
   <td valign="top">[% field.description FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">Field Value:</td>
+  <td valign="top">フィールド値:</td>
   <td valign="top">[% value FILTER html %]</td>
 </tr>
 <tr>
   <td valign="top">[% terms.Bugs %]:</td>
   <td valign="top">
 [% IF bug_count %]
-  <a title="List of [% terms.bugs %] where '[% field.description FILTER html %]' is '
-            [% value FILTER html %]'"
+  <a title="'[% field.description FILTER html %]' が '[% value FILTER html %]' の [% terms.bugs %] のリスト"
      href="buglist.cgi?[% field.name FILTER url_quote %]=[%- value FILTER url_quote %]">[% bug_count FILTER html %]</a>
 [% ELSE %]
-  None
+  無し
 [% END %]
   </td>
 </tr>
 </table>
 
-<h2>Confirmation</h2>
+<h2>確認</h2>
 
 [% IF (param_name.defined && Param(param_name) == value) || bug_count || (value_count == 1) %]
 
-  <p>Sorry, but the '[% value FILTER html %]' value cannot be deleted
-  from the '[% field.description FILTER html %]' field for the following reason(s):</p>
+  <p>'[% value FILTER html %]' 値は '[% field.description FILTER html %]' フィールドから以下の理由により、削除できません:</p>
 
   <ul class="warningmessages">
     [% IF param_name.defined && Param(param_name) == value %]
-      <li>'[% value FILTER html %]' is the default value for
-          the '[% field.description FILTER html %]' field.
+      <li>'[% value FILTER html %]' は '[% field.description FILTER html %]' フィールドの既定値です。
           [% IF user.groups.tweakparams %]
-            You first have to <a href="editparams.cgi?section=bugfields#
-            [%- param_name FILTER url_quote %]">change the default value</a> for
-            this field before you can delete this value.
+            まずこのフィールドの <a href="editparams.cgi?section=bugfields#
+            [%- param_name FILTER url_quote %]">既定の値を変更</a> してから削除してください。
           [% END %]
     [% END %]
 
     [% IF bug_count %]
-      <li>There
-          [% IF bug_count > 1 %] 
-            are [% bug_count FILTER html %] [%+ terms.bugs %] 
+      <li>[% IF bug_count > 1 %] 
+            [% bug_count FILTER html %] 件の [%+ terms.bugs %] 
           [% ELSE %]
-            is 1 [% terms.bug %] 
+            [% terms.bug %] が一件
           [% END %]
-          with this field value. You must change the field value on
-          <a title="List of [% terms.bugs %] where '[% field.description FILTER html %]' is '[% value FILTER html %]'"
+          この値を使用しています。
+          <a title="'[% field.description FILTER html %]' が '[% value FILTER html %]' の [% terms.bugs %] のリスト"
              href="buglist.cgi?[% field.name FILTER url_quote %]=[% value FILTER url_quote %]">
             [% IF bug_count > 1 %]
-              those [% terms.bugs %] 
+              これらの [% terms.bugs %] 
             [% ELSE %]
-              that [% terms.bug %]
+              この [% terms.bug %]
             [% END %]
           </a>
-          to another value before you can delete this value.
+          を先に別の値に変更しないと削除できません。
     [% END %]
 
     [% IF value_count == 1 %]
-      <li>'[% value FILTER html %]' is the last value for
-          '[%- field.description FILTER html %]', and so it can not be deleted.
+      <li>'[% value FILTER html %]' は '[%- field.description FILTER html %]'
+          の最後の値です。そのため、削除することはできません。
     [% END %]
   </ul>
 
 [% ELSE %]
 
-  <p>Do you really want to delete this value?</p>
+  <p>本当にこの値を削除してもよろしいですか?</p>
 
   <form method="post" action="editvalues.cgi">
-    <input type="submit" value="Yes, delete" id="delete">
+    <input type="submit" value="はい、削除します" id="delete">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="field" value="[% field.name FILTER html %]">
     <input type="hidden" name="value" value="[% value FILTER html %]">

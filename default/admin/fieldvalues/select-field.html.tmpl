@@ -26,13 +26,13 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
-  title = "Edit values for which field?"
+  title = "値を編集するフィールドを選択してください"
 %]
 
 [% columns = [
      { 
        name => "name"
-       heading => "Edit field values for..."
+       heading => "フィールドの値を編集"
        content_use_field = 1
        contentlink => "editvalues.cgi?field=%%name%%"
      }

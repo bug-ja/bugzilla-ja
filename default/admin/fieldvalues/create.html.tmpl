@@ -19,48 +19,48 @@
   #%]
   
 [% title = BLOCK %]
-  Add Value for the '[% field.description FILTER html %]' ([% field.name FILTER html %]) field
+  '[% field.description FILTER html %]' ([% field.name FILTER html %]) フィールドに値を追加
 [% END %]
 [% PROCESS global/header.html.tmpl
   title = title
 %]
 
 <p>
-  This page allows you to add a new value for the '[% field.description FILTER html %]' field.
+  このページで '[% field.description FILTER html %]' フィールドに新しい値を追加することができます。
 </p>
 
 <form method="post" action="editvalues.cgi">
   <table border="0" cellpadding="4" cellspacing="0">
     <tr>
-      <th align="right"><label for="value">Value:</label></th>
+      <th align="right"><label for="value">値:</label></th>
       <td><input id="value" size="30" maxlength="60" name="value"
                  value=""></td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">Sortkey:</label></th>
+      <th align="right"><label for="sortkey">ソート順:</label></th>
       <td><input id="sortkey" size="10" maxlength="20" name="sortkey"
                  value=""></td>
     </tr>
     [% IF field.name == "bug_status" %]
       <tr>
-        <th align="right"><label for="is_open">Status Type:</label></th>
+        <th align="right"><label for="is_open">ステータスの型:</label></th>
         <td>
           <input type="radio" id="open_status" name="is_open" value="1" checked="checked">
-          <label for="open_status">Open</label><br>
+          <label for="open_status">活動中</label><br>
           <input type="radio" id="closed_status" name="is_open" value="0">
-          <label for="closed_status">Closed (requires a Resolution)</label>
+          <label for="closed_status">終了済 (処理方法が必要です)</label>
         </td>
       </tr>
       <tr>
         <th>&nbsp;</th>
         <td>
-          Note: The open/close attribute can only be set now, when you create
-          the status. It cannot be edited later.
+          ※注意: 活動中/終了済 属性はステータスを作成する場合にのみ設定可能です。
+          これは後から編集することができません。
         </td>
       </tr>
     [% END %]
   </table>
-  <input type="submit" id="create" value="Add">
+  <input type="submit" id="create" value="追加">
   <input type="hidden" name="action" value="new">
   <input type="hidden" name='field' value="[% field.name FILTER html %]">
   <input type="hidden" name="token" value="[% token FILTER html %]">
