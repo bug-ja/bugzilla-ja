@@ -63,12 +63,6 @@
         <input type="hidden" name="cmdtype" value="doit">
         <input type="hidden" name="remtype" value="asnamed">
         <input type="hidden" name="list_of_bugs" value="1">
-        <select id="lob_action" name="action" onchange="update_text();">
-          <option value="add">追加</option>
-          [% IF lists_of_bugs.size %]
-            <option value="remove">削除</option>
-          [% END %]
-        </select>
 
         [% IF Param('docs_urlbase') %]
           <a href="[% docs_urlbase FILTER html %]query.html#individual-buglists">名前付きタグ</a>
@@ -94,7 +88,14 @@
         <input type="text" name="bug_ids" size="12" maxlength="80"
          [%- " value=\"$bugids\"" IF bugids %]>
         <span id="lob_direction">に</span>
-        <input type="submit" value="Commit" id="commit_list_of_bugs">
+        <select id="lob_action" name="action" onchange="update_text();">
+          <option value="add">追加</option>
+          [% IF lists_of_bugs.size %]
+            <option value="remove">削除</option>
+          [% END %]
+        </select>
+        を
+        <input type="submit" value="実行" id="commit_list_of_bugs">
       </form>
     </li></ul>
   </li>
