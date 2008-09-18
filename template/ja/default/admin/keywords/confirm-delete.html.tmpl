@@ -25,19 +25,17 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = "Delete Keyword"
+  title = "キーワードの削除"
 %]
 
 <p>
   [% IF keyword.bug_count == 1 %]
-    There is one [% terms.bug %] with this keyword set.
+    このキーワードを利用している [% terms.bug %] がひとつあります。
   [% ELSE %]
-    There are [% keyword.bug_count FILTER html %] [%+ terms.bugs %] with
-    this keyword set.
+    このキーワードを利用している [% keyword.bug_count FILTER html %] 件の [%+ terms.bugs %] があります。
   [% END %]
-  
-  Are you <b>sure</b> you want to delete
-  the <code>[% keyword.name FILTER html %]</code> keyword?
+
+  <b>本当に</b>この <code>[% keyword.name FILTER html %]</code> キーワードを削除してもよろしいですか?
 </p>
 
 <form method="post" action="editkeywords.cgi">
@@ -46,9 +44,9 @@
   <input type="hidden" name="reallydelete" value="1">
   <input type="hidden" name="token" value="[% token FILTER html %]">
   <input type="submit" id="delete"
-         value="Yes, really delete the keyword">
+         value="はい、このキーワードを削除します">
 </form>
 
-<p><a href="editkeywords.cgi">Edit other keywords</a>.</p>
+<p><a href="editkeywords.cgi">他のキーワードを編集する</a>。</p>
 
 [% PROCESS global/footer.html.tmpl %] 
