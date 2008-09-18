@@ -21,7 +21,7 @@
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% title = BLOCK %]
-  Delete the Custom Field '[% field.name FILTER html %]' ([% field.description FILTER html %])
+  カスタムフィールド '[% field.name FILTER html %]' ([% field.description FILTER html %]) の削除
 [% END %]
 
 [% PROCESS global/header.html.tmpl
@@ -31,36 +31,36 @@
 
 <table border="1" cellpadding="4" cellspacing="0">
 <tr bgcolor="#6666FF">
-  <th valign="top" align="left">Field</th>
-  <th valign="top" align="left">Value</th>
+  <th valign="top" align="left">フィールド</th>
+  <th valign="top" align="left">値</th>
 </tr>
 <tr>
-  <td valign="top">Custom Field:</td>
+  <td valign="top">カスタムフィールド:</td>
   <td valign="top">[% field.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">Description:</td>
+  <td valign="top">説明:</td>
   <td valign="top">[% field.description FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">Type:</td>
+  <td valign="top">型:</td>
   <td valign="top">[% field_types.${field.type} FILTER html %]</td>
 </tr>
 </table>
 
-<h2>Confirmation</h2>
+<h2>確認</h2>
 
 <p>
-  Are you sure you want to remove this field from the database?<br>
-  <em>This action will only be successful if the field is obsolete,
-  and has never been used in [% terms.abug FILTER html %].</em>
+  本当にこのフィールドをデータベースから削除してもよろしいですか?<br>
+  <em>この操作が可能なのは、フィールドが "用済み" となっているか、
+  [% terms.abug FILTER html %] で利用されていない場合のみです。</em>
 </p>
 
 <a href="editfields.cgi?action=delete&amp;name=[% field.name FILTER html %]&amp;token=[% token FILTER html %]">
-  Delete field '[% field.description FILTER html %]'</a>
+  フィールド '[% field.description FILTER html %]' を削除</a>
 
 <p>
-  <a href="editfields.cgi">Back to the list of existing custom fields</a>
+  <a href="editfields.cgi">カスタムフィールドの一覧に戻る</a>
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
