@@ -28,18 +28,18 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
-  title = "Edit milestones for which product?"
+  title = "編集するマイルストーンを含むプロダクトを選択してください"
 %]
 
 [% columns = [
      { 
        name => "name"
-       heading => "Edit milestones of..."
+       heading => "プロダクトのマイルストーンを編集"
        contentlink => "editmilestones.cgi?product=%%name%%" 
      },
      { 
        name => "description"
-       heading => "Description" 
+       heading => "説明" 
        allow_html_content => 1
      }
    ]
@@ -64,7 +64,7 @@
 
 [% IF !showbugcounts %]
   <p><a href="editmilestones.cgi?showbugcounts=1">
-      Redisplay table with [% terms.bug %] counts (slower)</a></p>
+      [% terms.bug %] 数とともに表示 (遅い)</a></p>
 [% END %]
 
 [% PROCESS global/footer.html.tmpl %]

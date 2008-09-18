@@ -30,7 +30,7 @@
 
 [% IF comp && !no_edit_component_link %]
   コンポーネント <a 
-  title="Edit Component '[% comp.name FILTER html %]'"
+  title="コンポーネント '[% comp.name FILTER html %]' の編集"
   href="editcomponents.cgi?action=edit&amp;product=
   [%- product.name FILTER url_quote %]&amp;component=[% comp.name FILTER url_quote %]">
    '[% comp.name FILTER html %]'</a> 
@@ -39,14 +39,14 @@
 
 [% IF !no_edit_other_components_link %]
 プロダクト <a 
-  title="Choose a component from product '[% product.name FILTER html %]' to edit"
+  title="プロダクト '[% product.name FILTER html %]' のコンポーネントを選択して編集"
   href="editcomponents.cgi?product=
   [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
   の他のコンポーネントを編集する。
 [% END %]
 
 プロダクト <a 
-  title="Edit Product '[% product.name FILTER html %]'"
+  title="プロダクト '[% product.name FILTER html %]' の編集"
   href="editproducts.cgi?action=edit&amp;product=
   [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
   を編集する。
