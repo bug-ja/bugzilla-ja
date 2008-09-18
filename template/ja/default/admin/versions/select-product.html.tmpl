@@ -28,7 +28,7 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
-  title = "どのプロダクトのバージョンを編集しますか?"
+  title = "編集するバージョンを含むプロダクトを選択してください"
 %]
 
 [% columns = [
@@ -64,7 +64,7 @@
 
 [% IF !showbugcounts %]
   <p><a href="editversions.cgi?showbugcounts=1">
-      [% terms.bug %] 数をともに再表示 (遅い)</a></p>
+      [% terms.bug %] 数とともに表示 (遅い)</a></p>
 [% END %]
 
 [% PROCESS global/footer.html.tmpl %]
