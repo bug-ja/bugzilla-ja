@@ -20,7 +20,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% title = BLOCK %]Confirm Deletion of Flag Type '[% flag_type.name FILTER html %]'[% END %]
+[% title = BLOCK %]フラグタイプ '[% flag_type.name FILTER html %]' の削除の確認[% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
@@ -28,30 +28,30 @@
 %]
 
 <p>
-   There are [% flag_type.flag_count %] flags of type [% flag_type.name FILTER html %].
-   If you delete this type, those flags will also be deleted.  Note that
-   instead of deleting the type you can
+   タイプ [% flag_type.name FILTER html %] のフラグが [% flag_type.flag_count %] 件あります。
+   もしこのタイプを削除すれば、これらのフラグも削除されます。
+   この操作の代わりに
    <a href="editflagtypes.cgi?action=deactivate&amp;id=[% flag_type.id %]&amp;token=
-           [%- token FILTER html %]">deactivate it</a>,
-   in which case the type and its flags will remain in the database
-   but will not appear in the [% terms.Bugzilla %] UI.
+           [%- token FILTER html %]">タイプを無効化する</a> こともできます。
+   これを利用すれば、フラグタイプと、フラグは共にデータベースに残りますが、
+   [% terms.Bugzilla %] の UI では表示されなくなります。
 </p>
 
 <table>
    <tr>
       <td colspan="2">
-         Do you really want to delete this type?
+         本当にこのフラグタイプを削除してもよろしいですか?
       </td>
    </tr>
    <tr>
       <td>
          <a href="editflagtypes.cgi?action=delete&amp;id=[% flag_type.id %]&amp;token=
-                 [%- token FILTER html %]">Yes, delete
+                 [%- token FILTER html %]">はい、削除します
          </a>
       </td>
       <td align="right">
          <a href="editflagtypes.cgi">
-            No, don't delete
+            いいえ、削除しません
          </a>
       </td>
    </tr>
