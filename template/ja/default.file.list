@@ -240,8 +240,8 @@ x	x	x	./reports/report.csv.tmpl
 x	x	x	./reports/report.html.tmpl
 x	x	x	./reports/series-common.html.tmpl
 x	x	x	./reports/series.html.tmpl
-x	x	x	./request/email.txt.tmpl
-x	x	x	./request/queue.html.tmpl
+nakano	x	x	./request/email.txt.tmpl
+nakano	x	x	./request/queue.html.tmpl
 shimono	shimono	x	./search/boolean-charts.html.tmpl
 shimono	shimono	x	./search/form.html.tmpl
 shimono	shimono	x	./search/knob.html.tmpl
