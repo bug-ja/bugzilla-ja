@@ -24,25 +24,24 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-   title = "Default Preferences"
+   title = "既定の設定"
  %]
 
 [% PROCESS "global/setting-descs.none.tmpl" %]
 
 <p>
-This lets you edit the default preferences values.
+ここでは既定の設定を変更できます。
 </p>
 <p>
-The Default Value displayed for each preference will apply to all users who
-do not choose their own value, and to anyone who is not logged in.
+ここで設定した各設定の既定値はログインしていない全てのユーザで、
+ユーザ自身が値を設定していない場合に適用されます。
 </p>
 <p>
-The 'Enabled' checkbox controls whether or not this preference is available
-to users.<br>
-If it is checked, users will see this preference on their User Preferences page,
-and will be allowed to choose their own value if they desire.<br>
-If it is not checked, this preference will not appear on the User Preference
-page, and the Default Value will automatically apply to everyone.
+'有効' のチェックボックスでこの設定がユーザによって設定可能かどうかを制御できます。<br>
+チェックが入っている場合、この設定はユーザの環境設定ページに表示され、
+ユーザ自身が望む設定に変更することができます。<br>
+チェックが入っていない場合、この設定はユーザの環境設定ページには表示されません。
+また、全員に既定値が自動的に適用されます。
 </p>
 <hr>
 
@@ -50,9 +49,9 @@ page, and the Default Value will automatically apply to everyone.
     <form name="adminsettingform" method="post" action="editsettings.cgi">
       <table border="1" cellpadding="4">
       <tr>
-        <th>Preference Text</th>
-        <th>Default Value</th>
-        <th>Enabled</th>
+        <th>設定項目</th>
+        <th>既定値</th>
+        <th>有効</th>
       </tr>
 
       [% FOREACH name = settings.keys %]
@@ -88,14 +87,14 @@ page, and the Default Value will automatically apply to everyone.
       <tr>
         <td width="150"></td>
         <td>
-          <input type="submit" id="update" value="Submit Changes">
+          <input type="submit" id="update" value="変更を保存">
         </td>
       </tr>
     </table>
   
   </form>
 [% ELSE %]
-  There are no preferences to edit.
+  変更可能な設定がありません。
 [% END %]
 
 [% PROCESS global/footer.html.tmpl %]
