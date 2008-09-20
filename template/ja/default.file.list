@@ -158,7 +158,7 @@ shimono	shimono	x	./bug/summarize-time.html.tmpl
 -	o	shimono	./bug/time.html.tmpl
 shimono	shimono	x	./bug/votes/delete-all.html.tmpl
 shimono	shimono	x	./bug/votes/list-for-bug.html.tmpl
-shimono	shimono	x	./bug/votes/list-for-user.html.tmpl
+shimono	shimono	nakano	./bug/votes/list-for-user.html.tmpl
 -	o	shimono	./config.js.tmpl
 -	o	shimono	./config.rdf.tmpl
 shimono	shimono	x	./email/newchangedmail.txt.tmpl
