@@ -91,7 +91,7 @@ nakano	nakano	x	./admin/products/list.html.tmpl
 nakano	nakano	x	./admin/products/updated.html.tmpl
 shimono	shimono	x	./admin/sanitycheck/list.html.tmpl
 shimono	x	x	./admin/sanitycheck/messages.html.tmpl
-nakano	x	x	./admin/settings/edit.html.tmpl
+nakano	nakano	x	./admin/settings/edit.html.tmpl
 x	x	x	./admin/sudo.html.tmpl
 x	x	x	./admin/table.html.tmpl
 nakano	nakano	x	./admin/users/confirm-delete.html.tmpl
@@ -187,7 +187,7 @@ shimono	shimono	x	./global/message.html.tmpl
 x	x	x	./global/messages.html.tmpl
 shimono shimono	x	./global/per-bug-queries.html.tmpl
 -	o	shimono	./global/select-menu.html.tmpl
-shimono	shimono	x	./global/setting-descs.none.tmpl
+shimono	shimono	nakano	./global/setting-descs.none.tmpl
 shimono	shimono	x	./global/site-navigation.html.tmpl
 -	o	shimono	./global/tabs.html.tmpl
 -	o	shimono	./global/textarea.html.tmpl
