@@ -153,13 +153,13 @@
       <br>
       投票の変更には、
       [% IF multivoteproduct %]
-        新しい票数を入力する (0 は投票なしを意味します)
-        [% " か " IF onevoteproduct %]
+        新しい票数を入力 (0 は投票なしを意味します)
+        [% " するか " IF onevoteproduct %]
       [% END %]
       [% IF onevoteproduct %]
-        チェックボックスを変更する
+        チェックボックスを変更
       [% END %]
-      を行い、<b>投票を変更する</b> をクリックしてください。
+      し、<b>投票を変更する</b> をクリックしてください。
     [% ELSE %]
        <a href="buglist.cgi?bug_id=[% all_bug_ids.join(",") FILTER url_quote %]">全てを
          [% terms.bug %] リストとしてみる</a>
@@ -177,7 +177,7 @@
 [% END %]
 
 <p>
-  <a href="page.cgi?id=voting.html">投票機能のヘルプ</a>.
+  <a href="page.cgi?id=voting.html">投票機能のヘルプ</a>。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
