@@ -116,8 +116,7 @@
           <li>
             [% otheruser.login FILTER html %] は、
             <a href="buglist.cgi?emailreporter1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">[%+ reporter %] 件の [%+ terms.bugs %]
-            [% END %]</a>
+               [%- otheruser.login FILTER url_quote %]">[%+ reporter %] 件の [%+ terms.bugs %]</a>
             を報告しています。
             もし、このユーザアカウントを削除すると、データベースのレコードに不整合が発生します。
             その結果、
