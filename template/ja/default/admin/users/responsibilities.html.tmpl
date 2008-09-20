@@ -23,12 +23,12 @@
     [% END %]
     <tbody>
     <tr>
-      <th colspan="3" class="product">Product: [% item.product.name FILTER html %]</th>
+      <th colspan="3" class="product">プロダクト: [% item.product.name FILTER html %]</th>
     </tr>
     <tr>
-      <th>Component</th>
-      <th>Default Assignee</th>
-      <th>Default QA Contact</th>
+      <th>コンポーネント</th>
+      <th>既定の担当者</th>
+      <th>既定の QA コンタクト</th>
     </tr>
     [% FOREACH component = item.components %]
       <tr>
@@ -45,7 +45,7 @@
         </td>
         [% FOREACH responsibility = ['default_assignee', 'default_qa_contact'] %]
           <td class="center">
-            [% component.$responsibility.id == otheruser.id ? "X" : "&nbsp;" %]
+            [% component.$responsibility.id == otheruser.id ? "×" : "&nbsp;" %]
           </td>
         [% END %]
       </tr>
@@ -55,7 +55,6 @@
 </table>
 
 [% IF hidden_products %]
-  <p class="criticalmessages">The user is involved in at least one product which you cannot
-  see (and so is not listed above). You have to ask an administrator with enough
-  privileges to edit this user's roles for these products.</p>
+  <p class="criticalmessages">このユーザはあなたのアカウントでは閲覧できないプロダクトの関係者です (そのプロダクトは一覧には含まれていません)。
+  このユーザのこれらのプロダクトにおける役割を編集できる権限を持った管理者に問い合わせる必要があります。</p>
 [% END %]

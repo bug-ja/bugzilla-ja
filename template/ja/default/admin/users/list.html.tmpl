@@ -22,7 +22,7 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = "Select user"
+  title = "ユーザを選択してください"
   style_urls = ['skins/standard/editusers.css']
   doc_section = "useradmin.html"
 %]
@@ -35,15 +35,15 @@
 
 [% columns =
   [{name               => 'login_name'
-    heading            => 'Edit user...'
+    heading            => 'ユーザを編集'
     contentlink        => 'editusers.cgi?action=edit&amp;userid=%%userid%%' _
                           listselectionurlparams
    }
    {name               => 'realname'
-    heading            => 'Real name'
+    heading            => '名前'
    }
-   {heading            => 'Account History'
-    content            => 'View'
+   {heading            => 'アカウントの履歴'
+    content            => '表示'
     contentlink        => 'editusers.cgi?action=activity' _
                                   '&amp;userid=%%userid%%' _
                                   listselectionurlparams
@@ -52,8 +52,8 @@
 %]
 
 [% IF Param('allowuserdeletion') && editusers %]
-  [% columns.push({heading     => 'Action'
-                   content     => 'Delete'
+  [% columns.push({heading     => '操作'
+                   content     => '削除'
                    contentlink => 'editusers.cgi?action=del' _
                                   '&amp;userid=%%userid%%' _
                                   listselectionurlparams
@@ -97,7 +97,7 @@
   [% END %]
 [% END %]
 
-<p>[% users.size %] user[% "s" UNLESS users.size == 1 %] found.</p>
+<p>[% users.size %] 人のユーザが見つかりました。</p>
 
 [% PROCESS admin/table.html.tmpl
   columns = columns
@@ -106,13 +106,13 @@
 %]
 
 <p>
-  If you do not wish to modify a user account at this time, you can
-  <a href="editusers.cgi">find other users</a>
+  ユーザを編集する以外に、
+  <a href="editusers.cgi">他のユーザを検索</a>
   [% IF editusers %]
-    or
-    <a href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">add
-    a new user</a>
-  [% END %].
+    したり、
+    <a href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">ユーザを追加</a>
+  [% END %]
+  することができます。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]

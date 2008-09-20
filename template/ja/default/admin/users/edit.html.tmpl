@@ -24,7 +24,7 @@
   #                      canbless) for viewed user.
   #%]
 
-[% title = BLOCK %]Edit user [% otheruser.identity FILTER html %][% END %]
+[% title = BLOCK %]ユーザ [% otheruser.identity FILTER html %] の編集[% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
@@ -46,13 +46,13 @@
   %]
   [% IF groups.size %]
     <tr>
-      <th>Group access:</th>
+      <th>グループとの関係:</th>
       <td>
         <table class="groups">
           <tr>
             [% IF editusers %]
               <th colspan="3">
-                Can turn these bits on for other users
+                他のユーザのこれらの権限を編集することができます
               </th>
             [% END %]
           </tr>
@@ -60,7 +60,7 @@
             [% IF editusers %]
               <td style="text-align: center; font-weight: bold">|</td>
             [% END %]
-            <th colspan="2">User is a member of these groups</th>
+            <th colspan="2">ユーザはこれらのグループに所属しています</th>
           </tr>
           [% FOREACH group = groups %]
             [% perms = permissions.${group.id} %]
@@ -98,47 +98,45 @@
   [% END %]
 
   <tr>
-    <th>Product responsibilities:</th>
+    <th>プロダクトへの責任:</th>
     <td>
       [% IF otheruser.product_responsibilities.size %]
         [% PROCESS admin/users/responsibilities.html.tmpl otheruser = otheruser %]
       [% ELSE %]
-        <em>none</em>
+        <em>無し</em>
       [% END %]
     </td>
   </tr>
 </table>
 
 <p>
-  <input type="submit" id="update" value="Save Changes" />
+  <input type="submit" id="update" value="変更を保存" />
   <input type="hidden" name="userid" value="[% otheruser.id %]" />
   <input type="hidden" name="action" value="update" />
   <input type="hidden" name="token" value="[% token FILTER html %]">
   [% INCLUDE listselectionhiddenfields %]
 
-  or <a href="editusers.cgi?action=activity&amp;userid=[% otheruser.id %]"
-        title="View Account History for '
-        [%- otheruser.login FILTER html %]'">View Account History</a>
+  または、 <a href="editusers.cgi?action=activity&amp;userid=[% otheruser.id %]"
+        title="'[%- otheruser.login FILTER html %]' のアカウントの履歴を表示">アカウントの履歴を表示</a>
 </p>
 </form>
 <p>
-  User is a member of any groups shown with a check or grey bar.
-  A grey bar indicates indirect membership, either derived from other
-  groups (marked with square brackets) or via regular expression
-  (marked with '*').
+  ユーザがグループに所属している場合、チェックが入っているか、グレーの背景で表示されます。
+  グレーの背景のもので、角括弧 ('[' ']') が付いているものは、
+  直接所属している訳ではありませんが、他のグループから継承したものです。
+  また、アスタリスク ('*') が付いているものは、正規表現によりグループに追加されたことを意味しています。
 </p>
 [% IF editusers %]
   <p>
-    Square brackets around the bless checkbox indicate the ability
-    to bless users (grant them membership in the group) as a result
-    of membership in another group.
+    角括弧 ('[' ']') でくくられているチェックボックスは、他のグループに所属した結果、
+    そのユーザが持っている権限であることを意味しています。
   </p>
 [% END %]
 
 [% IF Param('allowuserdeletion') && editusers %]
   <form method="post" action="editusers.cgi">
   <p>
-    <input type="submit" id="delete" value="Delete User" />
+    <input type="submit" id="delete" value="ユーザを削除" />
     <input type="hidden" name="action" value="del" />
     <input type="hidden" name="userid" value="[% otheruser.id %]" />
     [% INCLUDE listselectionhiddenfields %]
@@ -147,22 +145,21 @@
 [% END %]
 
 <p>
-  You can also
+  または、
   [% IF editusers %]
-    <a href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">add
-    a new user</a>
-    [% IF listselectionvalues %],
+    <a href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">ユーザを作成する</a>
+    [% IF listselectionvalues %]
+      か、
     [% END %]
   [% END %]
   [% IF listselectionvalues.matchtype != 'exact' %]
-    go
-    <a href="editusers.cgi?action=list[% INCLUDE listselectionurlparams %]">back
-    to the user list</a>,
+    <a href="editusers.cgi?action=list[% INCLUDE listselectionurlparams %]">ユーザの一覧に戻る</a>
   [% END %]
   [% IF editusers OR listselectionvalues %]
-    or
+    か、
   [% END %]
-  <a href="editusers.cgi">find other users</a>.
+  <a href="editusers.cgi">他のユーザを検索</a>
+  することができます。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
