@@ -32,16 +32,16 @@
 [% IF flag.status == '?' %]
   [% subject_status = "が要求されました" %]
   [% IF flag.setter.id == user.id %]
-    [% to_identity = flag.requestee.identity %]
+    [% to_identity = flag.requestee.identity _ " へ" %]
   [% ELSE %]
     [% on_behalf_of = 1 %]
     [% IF flag.requestee %][% to_identity = flag.requestee.identity %][% END %]
   [% END %]
 [% ELSE %]
   [% IF flag.requester %]
-    [% to_identity = flag.requester.identity %]
+    [% to_identity = flag.requester.identity _ " の" %]
   [% END %]
-  [% subject_status = statuses.${flag.status} _ "されました" %]
+  [% subject_status = "が" _ statuses.${flag.status} _ "されました" %]
 [% END %]
 From: [% Param('mailfrom') %]
 To: [% to %]
@@ -55,10 +55,9 @@ X-Bugzilla-Type: request
 [%- FILTER bullet = wrap(80) -%]
 
 [% IF on_behalf_of %]
-[% user.identity %] は [% flag.setter.identity %] が要求していた [% flag.type.name %] を
-[% to_identity %] へ変更しました:
+[% user.identity %] は [% flag.setter.identity %] が要求していた [% flag.type.name %] の要求先を [% to_identity %] へ変更しました:
 [% ELSE %]
-[% user.identity %] は [%+ to_identity %] への [%+ flag.type.name %] を [% statuses.${flag.status} %] しました:
+[% user.identity %] は [%+ to_identity %] [%+ flag.type.name %] を [% statuses.${flag.status} %] しました:
 [% END %]
 
 [% terms.Bug %] [%+ bugidsummary %]
