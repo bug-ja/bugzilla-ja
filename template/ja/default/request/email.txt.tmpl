@@ -55,8 +55,9 @@ X-Bugzilla-Type: request
 [%- FILTER bullet = wrap(80) -%]
 
 [% IF on_behalf_of %]
-[% user.identity %] は [% flag.setter.identity %] が要求していた
-[% flag.type.name %] の要求先を [% to_identity %] へ変更しました:
+[% user.identity %] は
+[% flag.setter.identity %] が要求していた
+ [% flag.type.name %] の要求先を [% to_identity %] へ変更しました:
 [% ELSE %]
 [% user.identity %] は [%+ to_identity %]
 [%+ flag.type.name %] を [% statuses.${flag.status} %] しました:
