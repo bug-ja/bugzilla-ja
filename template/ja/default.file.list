@@ -30,7 +30,7 @@ nakano	nakano	x	./admin/components/edit.html.tmpl
 nakano	nakano	x	./admin/components/footer.html.tmpl
 nakano	nakano	x	./admin/components/list.html.tmpl
 nakano	nakano	x	./admin/components/select-product.html.tmpl
-nakano	x	x	./admin/confirm-action.html.tmpl
+nakano	nakano	x	./admin/confirm-action.html.tmpl
 nakano	nakano	x	./admin/custom_fields/confirm-delete.html.tmpl
 nakano	nakano	x	./admin/custom_fields/create.html.tmpl
 nakano	nakano	x	./admin/custom_fields/edit.html.tmpl
