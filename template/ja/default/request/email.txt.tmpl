@@ -39,7 +39,7 @@
   [% END %]
 [% ELSE %]
   [% IF flag.requester %]
-    [% to_identity = flag.requester.identity _ " が指定していた" %]
+    [% to_identity = flag.requester.identity _ " が要求していた" %]
   [% END %]
   [% subject_status = "が" _ statuses.${flag.status} _ "されました" %]
 [% END %]
