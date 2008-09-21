@@ -26,7 +26,7 @@
 [% PROCESS "global/js-products.html.tmpl" %]
 
 [% PROCESS global/header.html.tmpl
-  title="Request Queue"
+  title="フラグ要求の一覧"
   style = "
     table.requests th { text-align: left; }
     table#filtering th { text-align: right; }
@@ -36,10 +36,9 @@
 %]
 
 <p>
-When you are logged in, only requests made by you or addressed to you
-are shown by default.  You can change the criteria using the form below.
-When you are logged out, all pending requests that are not restricted
-to some group are shown by default.
+ログインしている場合、あなた要求したフラグとあなたへの要求のみが既定で表示されています。
+下のフォームでこの基準を変更することができます。
+ログアウトしている場合、特定のグループに制限されていない要求中のフラグのみが既定で表示されています。
 </p>
 
 <form action="request.cgi" method="get">
@@ -47,13 +46,13 @@ to some group are shown by default.
 
   <table id="filtering">
     <tr>
-      <th>Requester:</th>
+      <th>要求者:</th>
       <td><input type="text" name="requester" value="[% cgi.param('requester') FILTER html %]" size="20" 
-           title="Requester's email address"></td>
-      <th>Product:</th>
+           title="要求者のメールアドレス"></td>
+      <th>プロダクト:</th>
       <td>
-        <select name="product" onchange="selectProduct(this, this.form.component, null, null, 'Any');">
-          <option value="">Any</option>
+        <select name="product" onchange="selectProduct(this, this.form.component, null, null, 'どれでも');">
+          <option value="">どれでも</option>
           [% FOREACH prod = products %]
             <option value="[% prod.name FILTER html %]"
                     [% "selected" IF cgi.param('product') == prod.name %]>
@@ -61,7 +60,7 @@ to some group are shown by default.
           [% END %]
         </select>
       </td>
-      <th>Flag:</th>
+      <th>フラグ:</th>
       <td>
         [% PROCESS "global/select-menu.html.tmpl"
                     name="type"
@@ -71,7 +70,7 @@ to some group are shown by default.
 
       [%# We could let people see a "queue" of non-pending requests. %]
       <!--
-      <th>Status:</th>
+      <th>フラグの状態:</th>
       <td>
         [%# PROCESS "global/select-menu.html.tmpl"
                     name="status"
@@ -84,45 +83,45 @@ to some group are shown by default.
     <tr>
       <th>Requestee:</th>
       <td><input type="text" name="requestee" value="[% cgi.param('requestee') FILTER html %]" size="20" 
-           title="Requestee's email address or &quot;-&quot; (hyphen) for requests with no requestee"></td>
-      <th>Component:</th>
+           title="被要求者のメールアドレスか、被要求者が無しのものは &quot;-&quot; (ハイフン)"></td>
+      <th>コンポーネント:</th>
       <td>
         <select name="component">
-          <option value="">Any</option>
+          <option value="">どれでも</option>
           [% FOREACH comp = components %]
             <option value="[% comp FILTER html %]" [% "selected" IF cgi.param('component') == comp %]>
               [% comp FILTER html %]</option>
           [% END %]
         </select>
       </td>
-      <th>Group By:</th>
+      <th>次の項目でグループ化:</th>
       <td>
         [% groups = {
-            "Requester" => 'requester' ,
-            "Requestee" => 'requestee',
-            "Flag" => 'type' ,
-            "Product/Component" => 'category'
+            "要求者" => 'requester' ,
+            "被要求者" => 'requestee',
+            "フラグ" => 'type' ,
+            "プロダクト/コンポーネント" => 'category'
           } %]
         [% PROCESS "global/select-menu.html.tmpl" name="group" options=groups default=cgi.param('group') %]
       </td>
-      <td><input type="submit" id="filter" value="Filter"></td>
+      <td><input type="submit" id="filter" value="絞り込む"></td>
     </tr>
   </table>
 
 </form>
 
 [% column_headers = {
-      "type"       => "Flag" ,
-      "status"     => "Status" ,
+      "type"       => "フラグ" ,
+      "status"     => "ステータス" ,
       "bug"        => "$terms.Bug" ,
-      "attachment" => "Attachment" ,
-      "requester"  => "Requester" ,
-      "requestee"  => "Requestee" ,
-      "created"    => "Created" ,
-      "category"   => "Product/Component"    } %]
+      "attachment" => "添付" ,
+      "requester"  => "要求者" ,
+      "requestee"  => "被要求者" ,
+      "created"    => "作成日時" ,
+      "category"   => "プロダクト/コンポーネント"    } %]
 
 [% DEFAULT display_columns = ["requester", "requestee", "type", "bug", "attachment", "created"]
-           group_field     = "Requestee"
+           group_field     = "被要求者"
            group_value     = ""
 %]
 
@@ -132,7 +131,7 @@ to some group are shown by default.
 
 [% IF requests.size == 0 %]
   <p>
-    No requests.
+    要求中のフラグはありません。
   </p>
 [% ELSE %]
   [% FOREACH request = requests %]
@@ -157,7 +156,7 @@ to some group are shown by default.
 [% PROCESS global/footer.html.tmpl %]
 
 [% BLOCK start_new_table %]
-  <h3>[% column_headers.$group_field %]: [% (request.$group_field || "None") FILTER html %]</h3>
+  <h3>[% column_headers.$group_field %]: [% (request.$group_field || "無し") FILTER html %]</h3>
   <table class="requests" cellspacing="0" cellpadding="4" border="1">
     <tr>
       [% FOREACH column = display_columns %]
@@ -185,7 +184,7 @@ to some group are shown by default.
     <a href="attachment.cgi?id=[% request.attach_id %]&amp;action=edit">
       [% request.attach_id %]: [%+ request.attach_summary FILTER html %]</a>
   [% ELSE %]
-    N/A
+    --
   [% END %]
 [% END %]
 
