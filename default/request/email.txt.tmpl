@@ -24,30 +24,30 @@
 
 [% bugidsummary = bug.bug_id _ ': ' _ bug.short_desc %]
 [% attidsummary = attachment.id _ ': ' _ attachment.description %]
-[% statuses = { '+' => "granted" , '-' => 'denied' , 'X' => "canceled" ,
-                '?' => "asked" } %]
+[% statuses = { '+' => "承認" , '-' => '拒否' , 'X' => "キャンセル" ,
+                '?' => "要求" } %]
 
 [% to_identity = "" %]
 [% on_behalf_of = 0 %]
 [% IF flag.status == '?' %]
-  [% subject_status = "requested" %]
+  [% subject_status = "が要求されました" %]
   [% IF flag.setter.id == user.id %]
-    [% to_identity = flag.requestee.identity _ " for" %]
+    [% to_identity = flag.requestee.identity %]
   [% ELSE %]
     [% on_behalf_of = 1 %]
-    [% IF flag.requestee %][% to_identity = " to " _ flag.requestee.identity %][% END %]
+    [% IF flag.requestee %][% to_identity = flag.requestee.identity %][% END %]
   [% END %]
 [% ELSE %]
   [% IF flag.requester %]
-    [% to_identity = flag.requester.identity _ "'s request for" %]
+    [% to_identity = flag.requester.identity %]
   [% END %]
-  [% subject_status = statuses.${flag.status} %]
+  [% subject_status = statuses.${flag.status} _ "されました" %]
 [% END %]
 From: [% Param('mailfrom') %]
 To: [% to %]
 Subject: [% flag.type.name %] [%+ subject_status %]: [[% terms.Bug %] [%+ bug.bug_id %]] [% bug.short_desc %]
 [%- IF attachment %] :
-  [Attachment [% attachment.id %]] [% attachment.description %][% END %]
+  [添付 [% attachment.id %]] [% attachment.description %][% END %]
 X-Bugzilla-Type: request
 [%+ threadingmarker %]
 
@@ -55,10 +55,10 @@ X-Bugzilla-Type: request
 [%- FILTER bullet = wrap(80) -%]
 
 [% IF on_behalf_of %]
-[% user.identity %] has reassigned [% flag.setter.identity %]'s request for [% flag.type.name %]
-[% to_identity %]:
+[% user.identity %] は [% flag.setter.identity %] が要求していた [% flag.type.name %] を
+[% to_identity %] へ変更しました:
 [% ELSE %]
-[% user.identity %] has [% statuses.${flag.status} %] [%+ to_identity %] [%+ flag.type.name %]:
+[% user.identity %] は [%+ to_identity %] への [%+ flag.type.name %] を [% statuses.${flag.status} %] しました:
 [% END %]
 
 [% terms.Bug %] [%+ bugidsummary %]
@@ -67,7 +67,7 @@ X-Bugzilla-Type: request
 [% IF attachment %]
 
 [% FILTER bullet = wrap(80) %]
-Attachment [% attidsummary %]
+添付 [% attidsummary %]
 [%- END %]
 [%+ urlbase %]attachment.cgi?id=[% attachment.id %]&action=edit
 [%- END %]
@@ -75,7 +75,7 @@ Attachment [% attidsummary %]
 
 [% USE Bugzilla %]
 [% IF Bugzilla.cgi.param("comment") && Bugzilla.cgi.param("comment").length > 0 %]
-------- Additional Comments from [% user.identity %]
+------- [% user.identity %] からの コメント
 [%+ Bugzilla.cgi.param("comment") %]
 [% END %]
 
