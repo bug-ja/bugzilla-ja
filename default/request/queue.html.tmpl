@@ -74,14 +74,14 @@
       <td>
         [%# PROCESS "global/select-menu.html.tmpl"
                     name="status"
-                    options=["all", "?", "+-", "+", "-"]
+                    options=["全て", "?", "+-", "+", "-"]
                     default=cgi.param('status') %]
       </td>
       -->
 
     </tr>
     <tr>
-      <th>Requestee:</th>
+      <th>被要求者:</th>
       <td><input type="text" name="requestee" value="[% cgi.param('requestee') FILTER html %]" size="20" 
            title="被要求者のメールアドレスか、被要求者が無しのものは &quot;-&quot; (ハイフン)"></td>
       <th>コンポーネント:</th>
