@@ -67,8 +67,8 @@ shimono	shimono	x	./admin/params/bugfields.html.tmpl
 shimono	shimono	x	./admin/params/bugmove.html.tmpl
 shimono	shimono	x	./admin/params/common.html.tmpl
 shimono	shimono	x	./admin/params/core.html.tmpl
-shimono	x	x	./admin/params/dependencygraph.html.tmpl
-shimono	x	x	./admin/params/editparams.html.tmpl
+shimono	shimono	x	./admin/params/dependencygraph.html.tmpl
+shimono	shimono	x	./admin/params/editparams.html.tmpl
 shimono	x	x	./admin/params/groupsecurity.html.tmpl
 shimono	x	x	./admin/params/index.html.tmpl
 shimono	x	x	./admin/params/ldap.html.tmpl
@@ -90,7 +90,7 @@ nakano	nakano	x	./admin/products/list-classifications.html.tmpl
 nakano	nakano	x	./admin/products/list.html.tmpl
 nakano	nakano	x	./admin/products/updated.html.tmpl
 shimono	shimono	x	./admin/sanitycheck/list.html.tmpl
-shimono	x	x	./admin/sanitycheck/messages.html.tmpl
+shimono	shimono	x	./admin/sanitycheck/messages.html.tmpl
 nakano	nakano	x	./admin/settings/edit.html.tmpl
 x	x	x	./admin/sudo.html.tmpl
 nakano	nakano	x	./admin/table.html.tmpl

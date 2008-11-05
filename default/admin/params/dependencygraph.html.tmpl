@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
    title = "Dependency Graphs"
@@ -24,26 +24,27 @@
 %]
 
 [% param_descs = {
-  webdotbase => "It is possible to show graphs of dependent ${terms.bugs}. You may set
-                 this parameter to any of the following:
+  webdotbase => "${terms.bugs} の依存グラフを表示することが可能です。
+                 この機能を利用する場合、以下のいずれかを設定する必要があります。
                  <ul>
                    <li>
-                     A complete file path to 'dot' (part of
-                     <a href=\"http://www.graphviz.org\">GraphViz</a>) will
-                     generate the graphs locally.
+                     'dot' コマンドへの完全なパス
+                     (<a href=\"http://www.graphviz.org\">GraphViz</a> の一部です)
+                     を入力するとローカルでグラフを生成します。
                    </li>
                    <li>
-                     A URL prefix pointing to an installation of the
+                     URL
                      <a href=\"http://www.research.att.com/~north/cgi-bin/webdot.cgi\">webdot
-                     package</a> will generate the graphs remotely.
+                     パッケージ</a> がインストールされた URL の先頭部分を入力すると、
+                     グラフの生成をリモートサーバに依頼します。
                    </li>
                    <li>
-                     A blank value will disable dependency graphing.
+                     空白にすると依存グラフ機能を無効にします。
                    </li>
                  </ul>
-                 The default value is a publicly-accessible webdot server. If you change
-                 this value, make certain that the webdot server can read files from your
-                 webdot directory. On Apache you do this by editing the .htaccess file,
-                 for other systems the needed measures may vary. You can run checksetup.pl
-                 to recreate the .htaccess file if it has been lost."}
+                 既定値は誰でも利用可能な webdot サーバになっています。この値を変更する場合、
+                 webdot サーバがあなたの webdot ディレクトリのファイルを読めるように設定する必要があります。
+                 Apache では .htaccess ファイルを編集することでできますが、
+                 その他のシステムでの方法はまちまちです。
+                 .htaccess ファイルがなくなった場合は、checksetu.pl で再生性できます。"}
 %]
