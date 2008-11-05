@@ -16,43 +16,40 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
    title = "LDAP"
-   desc = "Configure this first before choosing LDAP as an authentication method"
+   desc = "LDAP を認証方法として選択する前にここを設定してください"
 %]
 
 [% param_descs = {
-  LDAPserver => "The name (and optionally port) of your LDAP server " _
-                "(e.g. ldap.company.com, or ldap.company.com:portnum). " _
-                "URI syntax can also be used, such as "_
-                "ldaps://ldap.company.com (for a secure connection) or " _
-                "ldapi://%2fvar%2flib%2fldap_sock (for a socket-based " _
-                "local connection. Multiple hostnames or URIs can be comma " _
-                "separated; each will be tried in turn until a connection is " _
-                "established.",
+  LDAPserver => "LDAP サーバ名 (とそのオプションの指定) " _
+                "(e.g. ldap.company.com, or ldap.company.com:portnum) です。" _
+                "以下のような URI 形式も利用可能です。"_
+                "ldaps://ldap.company.com (暗号化接続)、" _
+                "ldapi://%2fvar%2flib%2fldap_sock (socket でローカル接続)" _
+                "複数のホスト名や URI をカンマ区切りで指定できます。" _
+                "最初に接続できるまで順に試されます。",
 
-  LDAPstarttls => "Whether to require encrypted communication once a normal " _
-                  "LDAP connection is achieved with the server.",
+  LDAPstarttls => "サーバへの LDAP 接続が完了したあとに暗号化通信に移行するかどうか。",
 
-  LDAPbinddn => "If your LDAP server requires that you use a binddn and password " _
-                "instead of binding anonymously, enter it here " _
-                "(e.g. cn=default,cn=user:password). " _
-                "Leave this empty for the normal case of an anonymous bind.",
+  LDAPbinddn => "LDAP サーバが匿名接続でなく binddn やパスワードを要求する場合、" _
+                "ここに入力してください。" _
+                "(例 cn=default,cn=user:password)" _
+                "通常の匿名接続の場合は空白のままにしてください。",
 
-  LDAPBaseDN => "The BaseDN for authenticating users against " _
-                "(e.g. ou=People,o=Company).",
+  LDAPBaseDN => "ユーザを認証する際の BaseDN です。" _
+                "(例 ou=People,o=Company).",
 
-  LDAPuidattribute => "The name of the attribute containing the user's login name.",
+  LDAPuidattribute => "ユーザのログイン名が格納されている属性名です。",
 
-  LDAPmailattribute => "The name of the attribute of a user in your " _
-                       "directory that contains the email address, to be " _
-                       "used as $terms.Bugzilla username. If this parameter " _
-                       "is empty, $terms.Bugzilla will use the LDAP username"_
-                       " as the $terms.Bugzilla username. You may also want" _
-                       " to set the \"emailsuffix\" parameter, in this case.",
+  LDAPmailattribute => "$terms.Bugzilla のユーザ名として利用される、" _
+                       "ユーザのメールアドレスが格納されている属性名です。" _
+                       "このパラメータが空の場合、$terms.Bugzilla は LDAP ユーザ名" _
+                       "を $terms.Bugzilla ユーザ名として利用します。" _
+                       "この場合、\"emailsuffix\" パラメータも設定する必要があるでしょう。",
 
-  LDAPfilter => "LDAP filter to AND with the <tt>LDAPuidattribute</tt> for " _
-                "filtering the list of valid users." }
+  LDAPfilter => "有効なユーザリストをフィルタリングするためのフィルタ指定子で、" _
+                "<tt>LDAPuidattribute</tt> と AND でフィルタが行われます。" }
 %]

@@ -15,19 +15,19 @@
   # Copyright (C) 1998 Netscape Communications Corporation. All
   # Rights Reserved.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 <p>
-  All parameters are displayed below, per section.
-  If you cannot find one from here, then the parameter does not exist.
+  セクションごとの全パラメータのリストです。
+  この中に発見できないパラメータは存在しません。
 </p>
 
 <div align="center">
   <table>
     <tr>
-      <th>Parameter</th>
-      <th>Section</th>
+      <th>パラメータ名</th>
+      <th>セクション名</th>
     </tr>
     [% FOREACH panel = panels %]
       [% FOREACH param = panel.param_list.sort('name') %]
