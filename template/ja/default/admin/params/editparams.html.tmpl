@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%# INTERFACE:
   # panels: array of hashes representing the panels available.
@@ -45,9 +45,9 @@
 
 [% title = BLOCK %]
   [% IF curpanel == -1 %]
-    Parameters: Index
+    パラメータ: 一覧
   [% ELSE %]
-    Configuration:
+    設定リスト:
     [%+ current_panel.title FILTER html %]
   [% END %]
 [% END %]
@@ -67,7 +67,7 @@
       <table id="menu">
         <tr>
           <td class="index">
-            <a href="editparams.cgi?section=index" title="Show all parameters">Index</a>
+            <a href="editparams.cgi?section=index" title="Show all parameters">一覧</a>
           </td>
         </tr>
         [% FOREACH panel = panels %]
@@ -91,18 +91,17 @@
         [% PROCESS admin/params/index.html.tmpl panels = panels %]
       [% ELSE %]
 
-        <div class="contribute"><strong>Note:</strong>
-          [%+ terms.Bugzilla %] is developed entirely by volunteers. The
-          best way to give back to the [% terms.Bugzilla %] project is
-          to <a href="http://www.bugzilla.org/contribute/">contribute</a>
-          yourself! You don't have to be a programmer to contribute, there are
-          lots of things that we need.
+        <div class="contribute"><strong>注:</strong>
+          [%+ terms.Bugzilla %] はボランティアによって開発されています。
+          [% terms.Bugzilla %] プロジェクトに協力する最善の手は、あなた自身が
+          <a href="http://www.bugzilla.org/contribute/">貢献する</a> ことです !
+          貢献するにはプログラマである必要はなく、必要なことはたくさんあります。
         </div>
 
         <p>
-          This lets you edit the basic operating parameters of [% terms.Bugzilla %].
-          Be careful!<br>
-          Any item you check "Reset" on will get reset to its default value.
+          この画面で [% terms.Bugzilla %] の基本的な動作パラメータを編集できます。
+          注意してください !<br>
+          "リセット" チェックボックスをチェックした値は全て既定値に設定されます。
         </p>
 
         [%# CONTENT PANEL %]
@@ -111,8 +110,8 @@
           <input type="hidden" name="section" value="[% current_panel.name FILTER html %]">
           <input type="hidden" name="action" value="save">
           <input type="hidden" name="token" value="[% token FILTER html %]">
-          <input type="reset" value="Reset form">
-          <input type="submit" name="action" value="Save Changes">
+          <input type="reset" value="フォームリセット">
+          <input type="submit" name="action" value="変更を保存">
         </form>
       [% END %]
     </td>
