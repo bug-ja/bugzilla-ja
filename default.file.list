@@ -69,9 +69,9 @@ shimono	shimono	x	./admin/params/common.html.tmpl
 shimono	shimono	x	./admin/params/core.html.tmpl
 shimono	shimono	x	./admin/params/dependencygraph.html.tmpl
 shimono	shimono	x	./admin/params/editparams.html.tmpl
-shimono	x	x	./admin/params/groupsecurity.html.tmpl
-shimono	x	x	./admin/params/index.html.tmpl
-shimono	x	x	./admin/params/ldap.html.tmpl
+shimono	shimono	x	./admin/params/groupsecurity.html.tmpl
+shimono	shimono	x	./admin/params/index.html.tmpl
+shimono	shimono	x	./admin/params/ldap.html.tmpl
 shimono	x	x	./admin/params/mta.html.tmpl
 shimono	x	x	./admin/params/patchviewer.html.tmpl
 shimono	x	x	./admin/params/query.html.tmpl

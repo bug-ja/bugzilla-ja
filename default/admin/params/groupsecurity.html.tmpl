@@ -16,47 +16,42 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
-   title = "Group Security"
-   desc = "Decide how you will use Security Groups"
+   title = "グループ権限"
+   desc = "セキュリティーグループの利用方法の設定"
 %]
 
 [% param_descs = {
-  makeproductgroups => "If this is on, $terms.Bugzilla will associate a $terms.bug group " _
-                       "with each product in the database, and use it for querying ${terms.bugs}.",
+  makeproductgroups => "有効の場合、$terms.Bugzilla は $terms.bug グループをデータベース中で" _
+                       "それぞれのプロダクトに関連付け、${terms.bugs} で利用します。",
 
-  useentrygroupdefault => "If this is on, $terms.Bugzilla will use product $terms.bug groups " _
-                          "by default to restrict who can enter ${terms.bugs}. If this is on, " _
-                          "users can see any product to which they have entry access in search menus. " _
-                          "If this is off, users can see any product to which they have not " _
-                          "been excluded by a mandatory restriction.",
+  useentrygroupdefault => "有効の場合、$terms.Bugzilla は プロダクトの $terms.bug グループ制限を" _
+                          " ${terms.bugs} 入力時に適用します。この場合、検索画面でユーザは権限を持つ" _
+                          "プロダクトのみを見られることになります。" _
+                          "無効の場合、ユーザは個々の制限で除外されていない限り全てのプロダクトを" _
+                          "見ることができます。",
 
-  chartgroup => "The name of the group of users who can use the 'New Charts' " _
-                "feature. Administrators should ensure that the public categories " _
-                "and series definitions do not divulge confidential information " _
-                "before enabling this for an untrusted population. If left blank, " _
-                "no users will be able to use New Charts.",
+  chartgroup => "'新規チャート作成' 機能を利用可能なユーザグループです。" _
+                "管理者は、これを全体に有効にする前に、公開されたカテゴリやシリーズ定義に" _
+                "隠すべき情報が含まれていないことを確認してください。" _
+                "空白の場合、誰も新規チャート作成ができなくなります。",
 
-  insidergroup => "The name of the group of users who can see/change private " _
-                  "comments and attachments.",
+  insidergroup => "プライベートコメントや添付を参照・変更できるユーザグループ名です。",
 
-  timetrackinggroup => "The name of the group of users who can see/change time tracking " _
-                       "information.",
+  timetrackinggroup => "所要時間情報を参照・変更できるユーザグループ名です。",
 
-  querysharegroup => "The name of the group of users who can share their " _
-                     "saved searches with others.",
+  querysharegroup => "保存した検索をほかのユーザと共有できるユーザグループ名です。",
 
-  usevisibilitygroups => "Do you wish to restrict visibility of users to members of " _
-                         "specific groups?",
+  usevisibilitygroups => "ユーザの閲覧制限を特定のグループのみに限りますか ?",
   
-  strict_isolation => "Don't allow users to be assigned to, " _
-                      "be qa-contacts on, " _
-                      "be added to CC list, " _
-                      "or make or remove dependencies " _
-                      "involving any bug that is in a product on which that " _
-                      "user is forbidden to edit.", 
+  strict_isolation => "ユーザがバグに対する変更ができないプロダクトにおいて、" _
+                      "担当者にする、" _
+                      "qa コンタクト にする、" _
+                      "CC リストに追加する、" _
+                      "依存関係を追加したり削除したりする、" _
+                      "ことを禁止しますか ?", 
 
  }
 %]
