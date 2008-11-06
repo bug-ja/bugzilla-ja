@@ -72,12 +72,12 @@ shimono	shimono	x	./admin/params/editparams.html.tmpl
 shimono	shimono	x	./admin/params/groupsecurity.html.tmpl
 shimono	shimono	x	./admin/params/index.html.tmpl
 shimono	shimono	x	./admin/params/ldap.html.tmpl
-shimono	x	x	./admin/params/mta.html.tmpl
-shimono	x	x	./admin/params/patchviewer.html.tmpl
-shimono	x	x	./admin/params/query.html.tmpl
-shimono	x	x	./admin/params/radius.html.tmpl
-shimono	x	x	./admin/params/shadowdb.html.tmpl
-shimono	x	x	./admin/params/usermatch.html.tmpl
+shimono	shimono	x	./admin/params/mta.html.tmpl
+shimono	shimono	x	./admin/params/patchviewer.html.tmpl
+shimono	shimono	x	./admin/params/query.html.tmpl
+shimono	shimono	x	./admin/params/radius.html.tmpl
+shimono	shimono	x	./admin/params/shadowdb.html.tmpl
+shimono	shimono	x	./admin/params/usermatch.html.tmpl
 nakano	nakano	x	./admin/products/confirm-delete.html.tmpl
 nakano	nakano	x	./admin/products/create.html.tmpl
 nakano	nakano	x	./admin/products/edit-common.html.tmpl
@@ -92,7 +92,7 @@ nakano	nakano	x	./admin/products/updated.html.tmpl
 shimono	shimono	x	./admin/sanitycheck/list.html.tmpl
 shimono	shimono	x	./admin/sanitycheck/messages.html.tmpl
 nakano	nakano	x	./admin/settings/edit.html.tmpl
-x	x	x	./admin/sudo.html.tmpl
+shimono	shimono	x	./admin/sudo.html.tmpl
 nakano	nakano	x	./admin/table.html.tmpl
 nakano	nakano	x	./admin/users/confirm-delete.html.tmpl
 nakano	nakano	x	./admin/users/create.html.tmpl

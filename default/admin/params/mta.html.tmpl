@@ -16,61 +16,59 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
    title = "Email"
-   desc = "How will outgoing mail be delivered?"
+   desc = "外部へのメールの配信方法をどうしますか ?"
 %]
 
 [% param_descs = {
-  mail_delivery_method => "Defines how email is sent, or if it is sent at all.<br>
+  mail_delivery_method => "メールをどのように送信するか、もしくはまったく送信しないかを設定してください。<br>
                            <ul>
                              <li>
-                               'Sendmail', 'SMTP' and 'Qmail' are all MTAs.
-                               You need to install a third-party sendmail replacement if
-                               you want to use sendmail on Windows.
+                               'Sendmail'、'SMTP'、'Qmail' は全て MTA です。
+                               Windows で sendmail の設定を利用したい場合は、
+                               何らかのサードパーティーの sendmail 互換ソフトをインストールする必要があります。
                              </li>
                              <li>
-                               'Test' is useful for debugging: all email is stored
-                               in 'data/mailer.testfile' instead of being sent.
+                               'Test' はデバッグに有用です。全てのメールは
+                               'data/mailer.testfile' に送信されずに保存されます。
                              </li>
                              <li>
-                               'none' will completely disable email. $terms.Bugzilla continues
-                               to act as though it is sending mail, but nothing is sent or
-                               stored.
+                               'none' は完全にメールを無効にします。$terms.Bugzilla
+                               はメールを送信するかのように動作しますが、
+                               一切送信も保存も行われません。
                              </li>
                            </ul>",
 
-  mailfrom => "The email address of the $terms.Bugzilla mail daemon.  Some email systems " _
-              "require this to be a valid email address.",
+  mailfrom => "$terms.Bugzilla メールデーモンが利用するメールアドレスです。" _
+              "いくつかのメールシステムでは有効なメールアドレスである必要があります。",
 
-  sendmailnow => "Sites using anything older than version 8.12 of 'sendmail' " _
-                 "can achieve a significant performance increase in the " _
-                 "UI -- at the cost of delaying the sending of mail -- by " _
-                 "disabling this parameter. Sites using 'sendmail' 8.12 or " _
-                 "higher should leave this on, as they will see no benefit from " _
-                 "turning it off. Sites using an MTA other than 'sendmail' " _
-                 "<b>must</b> leave it on, or no $terms.bug mail will be sent.",
+  sendmailnow => "'sendmail' 8.12 以前を利用しているサイトでは、無効にすることで UI " _
+                 "上でかなりのパフォーマンス改善が可能です。 -- メール送信での遅延。" _
+                 "'sendmail' 8.12 以降を利用しているサイトでは有効のままにしてください。" _
+                 "無効にしても効果はありません。'sendmail' 以外の MTA を利用している場合は、" _
+                 "<b>必ず</b> 有効のままである必要があり、そうでなければ $terms.bug " _
+                 "メールが一切送信されなくなります。",
 
-  smtpserver => "The SMTP server address (if using SMTP for mail delivery).",
+  smtpserver => "SMTP サーバアドレス (SMTP を選択した場合)",
 
-  smtp_username => "The username to pass to the SMTP server for SMTP authentication. " _
-                   "Leave this field empty if your SMTP server doesn't require authentication.",
+  smtp_username => "SMTP 認証に利用する SMTP サーバのユーザ名です。" _
+                   "SMTP サーバが認証を要求しない場合は空にしてください。",
 
-  smtp_password => "The password to pass to the SMTP server for SMTP authentication. " _
-                   "This field has no effect if the smtp_username parameter is left empty.",
+  smtp_password => "SMTP 認証に利用するパスワードです。" _
+                   "smtp_username が空の場合は無視されます。",
 
-  smtp_debug => "If enabled, this will print detailed information to your" _
-                " web server's error log about the communication between" _
-                " $terms.Bugzilla and your SMTP server. You can use this to" _
-                " troubleshoot email problems.",
+  smtp_debug => "有効なら、ウェブサーバのエラーログに $terms.Bugzilla と SMTP サーバ間" _
+                "の詳細な通信ログが出力されます。メールに関する問題の解決のために" _
+                "この情報が有用でしょう。",
 
-  whinedays => "The number of days that we'll let a $terms.bug sit untouched in a NEW " _
-               "state before our cronjob will whine at the owner.<br> " _
-               "Set to 0 to disable whining.",
+  whinedays => "この日数の間 NEW 状態で放置されたままの $terms.bug について、cronjob が " _
+               "whine メールを担当者に送信します。<br>" _
+               "whine を無効にするなら 0 に設定してください。",
 
-  globalwatchers => "A comma-separated list of users who should receive a " _
-                    "copy of every notification mail the system sends." }
+  globalwatchers => "カンマ区切りのユーザリストで、システムが送信する全ての通知メールの" _
+                    "コピーが送信されるユーザ名です。" }
 
 %]
