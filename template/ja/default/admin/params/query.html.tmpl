@@ -16,45 +16,42 @@
   # Rights Reserved.
   #
   # Contributor(s): Dave Miller <justdave@bugzilla.org>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 [%
-   title = "Query Defaults"
-   desc = "Default options for query and $terms.bug lists"
+   title = "既定のクエリ"
+   desc = "クエリと $terms.bug リストの既定値"
 %]
 
 [% param_descs = {
-  quip_list_entry_control => "Controls how easily users can add entries to the quip list.
+  quip_list_entry_control => "quip リストに追加するための権限の設定です。
                               <ul>
                                 <li>
-                                  open - Users may freely add to the quip list, and
-                                  their entries will immediately be available for viewing.
+                                  open - ユーザは自由に追加でき、すぐに表示されるようになります。
                                 </li>
                                 <li>
-                                  moderated - quips can be entered, but need to be approved
-                                  by an admin before they will be shown.
+                                  moderated - quip を追加できますが、管理者が有効にしなければなりません。
                                 </li>
                                 <li>
-                                  closed - no new additions to the quips list are allowed.
+                                  closed - quip への新規追加はできません。
                                 </li>
                               </ul>",
 
-  mostfreqthreshold => "The minimum number of duplicates $terms.abug needs to show up on the " _
-                       "<a href=\"duplicates.cgi\">most frequently reported $terms.bugs page</a>. " _
-                       "If you have a large database and this page takes a long time to " _
-                       "load, try increasing this number.",
+  mostfreqthreshold => "$terms.abug の重複がこの数以上であれば、" _
+                       "<a href=\"duplicates.cgi\">最近のよく報告される $terms.bugs ページ</a>" _
+                       "に表示されます。もし、巨大なデータベースでこのページを表示するのに時間が" _
+                       "かかるようならば、数を増やしてください。",
 
-  mybugstemplate => "This is the URL to use to bring up a simple 'all of my $terms.bugs' " _
-                    "list for a user. %userid% will get replaced with the login name of a user.",
+  mybugstemplate => "'わたしの $terms.bug' リンクが指す URL に利用されます。" _
+                    "%userid% はユーザのログイン名に置換されます。",
 
-  defaultquery => "This is the default query that initially comes up when you " _
-                  "access the advanced query page. It's in URL parameter " _
-                  "format, which makes it hard to read. Sorry!",
+  defaultquery => "高度な検索ページを表示したときの初期表示の検索内容です。" _
+                  "URL パラメータ形式ですので読みにくいですがご了承を !",
 
-  quicksearch_comment_cutoff => "The maximum number of search terms for a QuickSearch " _
-                                "to search comments. If the QuickSearch query contains " _
-                                "more terms than this value, QuickSearch will not search comments.",
+  quicksearch_comment_cutoff => "簡易検索で利用できる検索語の最大数です。" _
+                                "QuickSearch へのクエリがこれ以上の語を含む場合、" _
+                                "コメントは検索対象から外れます。",
 
-  specific_search_allow_empty_words => "Whether to allow a search on the 'Find a Specific " _
-                                       "Bug' page with an empty 'Words' field." }
+  specific_search_allow_empty_words => "空の単語リストで 'バグの表示' から検索を許可するか" _
+                                       "どうか。" }
 %]
