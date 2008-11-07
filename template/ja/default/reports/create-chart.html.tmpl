@@ -26,7 +26,7 @@
   #%]
 
 [% PROCESS global/header.html.tmpl 
-  title = "Create Chart"
+  title = "チャートの作成"
 %]
 
 [% PROCESS "reports/series-common.html.tmpl" 
@@ -56,7 +56,7 @@ function subcatSelected() {
 }
 </script>
   
-[% gttext = "Grand Total" %]
+[% gttext = "全計" %]
 
 <form method="get" action="chart.cgi" name="chartform">  
   
@@ -64,16 +64,16 @@ function subcatSelected() {
     [% IF NOT category OR category.size == 0 %]
       <tr>
         <td>
-          <i>No data sets exist, or none are visible to you.</i>
+          <i>データセットが存在しないか、あなたが見れるものが存在しません。</i>
         </td>
       </tr>
     [% ELSE %]
       <tr>
-        <th><label for="category">Category</label>:</th>
+        <th><label for="category">カテゴリ</label>:</th>
         <th></th>
-        <th><label for="subcategory">Sub-category</label>:</th>
+        <th><label for="subcategory">サブカテゴリ</label>:</th>
         <th></th>
-        <th><label for="name" accesskey="N">Name</label>:</th>
+        <th><label for="name" accesskey="N">名前</label>:</th>
         <th><br>
         </th>
       </tr>
@@ -86,7 +86,7 @@ function subcatSelected() {
                                    
         <td>
           <noscript>
-            <input type="submit" name="action-assemble" value="Update --&gt;"
+            <input type="submit" name="action-assemble" value="更新 --&gt;"
                    id="action-assemble">
           </noscript>
         </td>
@@ -97,7 +97,7 @@ function subcatSelected() {
                                    
         <td>
           <noscript>
-            <input type="submit" name="action-assemble" value="Update --&gt;"
+            <input type="submit" name="action-assemble" value="更新 --&gt;"
                    id="action-assemble">
           </noscript>
         </td>
@@ -117,7 +117,7 @@ function subcatSelected() {
         </td>
 
         <td align="center" valign="middle"> 
-          <input type="submit" name="action-add" value="Add To List"
+          <input type="submit" name="action-add" value="リストに追加"
                  id="action-add"><br>
         </td>
       </tr>
@@ -132,15 +132,15 @@ function subcatSelected() {
     subcatSelected();
   </script>
 
-  <h3>List Of Data Sets To Plot</h3>
+  <h3>プロットするデータセットのリスト</h3>
 
   [% IF chart.lines.size > 0 %]
     <table cellspacing="2" cellpadding="2">
       <tr>
-        <th style="width: 5em;">Select</th>
-        <th>Label</th>
+        <th style="width: 5em;">選択</th>
+        <th>ラベル</th>
         <th></th>
-        <th>Data Set</th>
+        <th>データセット</th>
         <th></th>
       </tr>
       
@@ -189,13 +189,13 @@ function subcatSelected() {
             <td align="center">
               [% IF user.id == series.creator OR user.in_group("admin") %]
                <a href="chart.cgi?action=edit&amp;series_id=
-                       [% series.series_id %]">Edit</a> |
+                       [% series.series_id %]">編集</a> |
               [% END %]
               <a href="buglist.cgi?cmdtype=dorem&amp;namedcmd=
                 [% series.category FILTER url_quote %]%20/%20
                 [% series.subcategory FILTER url_quote %]%20/%20
                 [% series.name FILTER url_quote -%]&amp;series_id=
-                [% series.series_id %]&amp;remaction=runseries">Run Search</a>
+                [% series.series_id %]&amp;remaction=runseries">検索実行</a>
             </td>        
           </tr>
         [% END %]
@@ -226,41 +226,41 @@ function subcatSelected() {
 
       <tr>
         <td valign="bottom" style="text-align: center;">
-          <input type="submit" name="action-sum" value="Sum" 
+          <input type="submit" name="action-sum" value="合計" 
                  style="width: 5em;" id="action-sum"><br>
-          <input type="submit" name="action-remove" value="Remove"
+          <input type="submit" name="action-remove" value="削除"
                  style="width: 5em;" id="action-remove">
         </td>
 
         <td style="text-align: right; vertical-align: bottom;">
-          <label for="cumulate"><b>Cumulate</b></label>:
+          <label for="cumulate"><b>累積する</b></label>:
           <input type="checkbox" name="cumulate" id="cumulate" value="1"
           [% " checked" IF chart.cumulate %]>
         </td>
 
         <td></td>
         <td valign="bottom">
-          <label for="datefrom"><b>Date Range</b></label>:
+          <label for="datefrom"><b>対象期間</b></label>:
           <input type="text" size="12" name="datefrom" id="datefrom"
             value="[% time2str("%Y-%m-%d", chart.datefrom) IF chart.datefrom%]">
-          <label for="dateto"><b>to</b></label>
+          <label for="dateto"><b>から</b></label>
           <input type="text" size="12" name="dateto" id="dateto"
             value="[% time2str("%Y-%m-%d", chart.dateto) IF chart.dateto %]">
         </td>
 
         <td style="text-align: right" valign="bottom">
-          <input type="submit" name="action-wrap" value="Chart This List"
+          <input type="submit" name="action-wrap" value="このリストで作成"
                  id="action-wrap">
         </td>
       </tr>
     </table>
   [% ELSE %]
-  <p><i>None</i></p>
+  <p><i>なし</i></p>
   [% END %]  
 </form>
 
 [% IF user.in_group('editbugs') %]
-  <h3><a href="query.cgi?format=create-series">Create New Data Set</a></h3>
+  <h3><a href="query.cgi?format=create-series">新しいデータセットを作成</a></h3>
 [% END %]                 
 
 [% PROCESS global/footer.html.tmpl %]
