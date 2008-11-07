@@ -49,10 +49,14 @@
 <input type="hidden" name="confirm_product_change" value="1">
     
 [%# Verify the version, component, and target milestone fields. %]
-<h3>バージョン、コンポーネント[% "、ターゲットマイルストーン" IF Param("usetargetmilestone") %]を確認</h3>
+<h3>バージョン、コンポーネント[% "、ターゲットマイルストーン" 
+    IF Param("usetargetmilestone") 
+        && bug.check_can_change_field('target_milestone', 0, 1) %]を確認</h3>
 
 <p>
-[% IF Param("usetargetmilestone") %]
+[% IF Param("usetargetmilestone") 
+   && bug.check_can_change_field('target_milestone', 0, 1) 
+%]
   あなたは [% terms.bug %] をプロダクト
   <b>[% product.name FILTER html %]</b> に移動しましたので、
   バージョン、コンポーネント、ターゲットマイルストーンは有効でなくなりました。
@@ -93,7 +97,9 @@
                  default=default_component
                  size=10 %]
     </td>
-    [% IF Param("usetargetmilestone") %]
+    [% IF Param("usetargetmilestone") 
+          && bug.check_can_change_field('target_milestone', 0, 1) 
+    %]
       <td>
         <b>ターゲットマイルストーン:</b><br>
       [% PROCESS "global/select-menu.html.tmpl"

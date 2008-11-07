@@ -16,7 +16,7 @@
   # Rights Reserved.
   #
   # Contributor(s): Gervase Markham <gerv@gerv.net>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -438,6 +438,8 @@
       スケジューリング
     [% ELSIF action == "use" %]
       利用
+    [% ELSIF action == "approve" %]
+      承認
     [% END %]
 
     は許可されていません。

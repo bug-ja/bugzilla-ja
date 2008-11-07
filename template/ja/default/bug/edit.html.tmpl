@@ -250,6 +250,8 @@
                      cols      = constants.COMMENT_COLS
           %]
           <br>
+          <a name="bug_status_bottom"></a>
+          [% PROCESS bug/knob.html.tmpl %]
           <div id="knob-buttons">
             <input type="submit" value="登録" id="commit">
             [% IF bug.user.canmove %]
@@ -261,7 +263,7 @@
             <legend>メモ</legend>
             <p>
               この [% terms.bug %] にコメントしたり変更を加える前に
-              <a href="show_bug.cgi?id=[% bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a>
+              <a href="[% IF Param('ssl') != 'never' %][% Param('sslbase') %][% END %]show_bug.cgi?id=[% bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a>
               が必要です。
             </p>
           </fieldset>
@@ -279,12 +281,6 @@
     </tr>
   </table>
 </form>
-
-[% IF use_keywords %]
-  [% PROCESS "bug/keyword-chooser.html.tmpl"
-    sel_keywords = bug.keywords.split(', ')
-  %]
-[% END %]
 
 [%############################################################################%]
 [%# Block for the Title (alias and short desc)                               #%]
@@ -419,7 +415,20 @@
       <b><a href="page.cgi?id=fields.html#status">ステータス</a></b>:
     </td>
     <td id="bz_field_status">
-      [% PROCESS bug/knob.html.tmpl %]
+      <span id="static_bug_status">
+        [% get_status(bug.bug_status) FILTER html %]
+        [% IF bug.resolution %]
+          [% IF bug.dup_id %]
+            <span id="duplicate_display">
+            [% "${terms.bug} ${bug.dup_id}" FILTER bug_link(bug.dup_id) FILTER none %]への</span>
+          [% END %]
+          [%+ get_resolution(bug.resolution) FILTER html %]
+        [% END %]
+        [% IF bug.user.canedit || bug.user.isreporter %]
+          (<a href="#bug_status_bottom" 
+              onclick="document.getElementById('bug_status').focus();return false;">編集</a>)
+        [% END %]
+      </span>
     </td>
   </tr>
 [% END %]
@@ -631,8 +640,7 @@
           <b><a href="describekeywords.cgi">キーワード (<u>K</u>)</a></b></label>:
       </td>
       [% PROCESS input inputname => "keywords" size => 40 colspan => 2
-                       value => bug.keywords.join(', ')
-                       onfocus => "this.chooser.open()" %]
+                       value => bug.keywords.join(', ') %]
     </tr>
   [% END %]
 [% END %]
@@ -1094,7 +1102,6 @@
        <input id="[% inputname %]" name="[% inputname %]"
               value="[% val FILTER html %]"[% " size=\"$size\"" IF size %]
               [% " maxlength=\"$maxlength\"" IF maxlength %]
-              [% " onfocus=\"$onfocus\"" IF onfocus %]
               [% " spellcheck=\"$spellcheck\"" IF spellcheck %]>
     [% ELSE %]
       [% IF size && val.length > size %]
@@ -1113,7 +1120,6 @@
   [% colspan = 0 %]
   [% size = 0 %]
   [% value = undef %]
-  [% onfocus = undef %]
   [% spellcheck = undef %]
 [% END %]
 

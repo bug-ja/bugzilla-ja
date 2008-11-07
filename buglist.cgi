@@ -1184,7 +1184,6 @@ if ($dotweak && scalar @bugs) {
                                         object => 'multiple_bugs'});
     }
     $vars->{'dotweak'} = 1;
-    $vars->{'valid_keywords'} = [map($_->name, Bugzilla::Keyword->get_all)];
     $vars->{'use_keywords'} = 1 if Bugzilla::Keyword::keyword_count();
 
     $vars->{'products'} = Bugzilla->user->get_enterable_products;
@@ -1206,9 +1205,12 @@ if ($dotweak && scalar @bugs) {
     # It also accepts transitions where the bug status doesn't change.
     $bug_status_ids =
       $dbh->selectcol_arrayref(
-            'SELECT DISTINCT new_status
+            'SELECT DISTINCT sw1.new_status
                FROM status_workflow sw1
-              WHERE NOT EXISTS 
+         INNER JOIN bug_status
+                 ON bug_status.id = sw1.new_status
+              WHERE bug_status.isactive = 1
+                AND NOT EXISTS 
                    (SELECT * FROM status_workflow sw2
                      WHERE sw2.old_status != sw1.new_status 
                            AND '

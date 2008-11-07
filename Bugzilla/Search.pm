@@ -801,8 +801,10 @@ sub init {
                  $field =~ /^(relevance|actual_time|percentage_complete)/);
         # The structure of fields is of the form:
         # [foo AS] {bar | bar.baz} [ASC | DESC]
-        # Only the mandatory part bar OR bar.baz is of interest
-        if ($field =~ /(?:.*\s+AS\s+)?(\w+(\.\w+)?)(?:\s+(ASC|DESC))?$/i) {
+        # Only the mandatory part bar OR bar.baz is of interest.
+        # But for Oracle, it needs the real name part instead.
+        my $regexp = $dbh->GROUPBY_REGEXP;
+        if ($field =~ /$regexp/i) {
             push(@groupby, $1) if !grep($_ eq $1, @groupby);
         }
     }
@@ -889,12 +891,9 @@ sub GetByWordList {
         my $word = $w;
         if ($word ne "") {
             $word =~ tr/A-Z/a-z/;
-            $word = $dbh->quote(quotemeta($word));
+            $word = $dbh->quote('(^|[^a-z0-9])' . quotemeta($word) . '($|[^a-z0-9])');
             trick_taint($word);
-            $word =~ s/^'//;
-            $word =~ s/'$//;
-            $word = '(^|[^a-z0-9])' . $word . '($|[^a-z0-9])';
-            push(@list, $dbh->sql_regexp($field, "'$word'"));
+            push(@list, $dbh->sql_regexp($field, $word));
         }
     }
 

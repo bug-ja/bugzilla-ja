@@ -166,8 +166,7 @@
         <i>
         <span class="vcard">
           <a class="fn email" href="mailto:[% comment.author.email FILTER html %]">
-            [% (comment.author.name || comment.author.login) FILTER html %]
-          </a> からの
+            [% (comment.author.name || comment.author.login) FILTER html %]</a> からの
         </span>
         [% comment_label FILTER html %]
         <a name="c[% count %]" href="show_bug.cgi?id=[% bug.bug_id %]#c[% count %]">
