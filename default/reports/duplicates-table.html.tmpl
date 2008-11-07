@@ -50,15 +50,15 @@
     <thead>
       <tr bgcolor="#CCCCCC">
         [% FOREACH column = [ { name => "id", description => "$terms.Bug #" },
-                              { name => "count", description => "Dupe<br>Count" },
+                              { name => "count", description => "重複<br>数" },
                               { name => "delta",
-                                description => "Change in last<br>$changedsince day(s)" },
-                              { name => "component", description => "Component" },
-                              { name => "bug_severity", description => "Severity" },
-                              { name => "op_sys", description => "Op Sys" },
+                                description => "$changedsince 日以内<br>に更新" },
+                              { name => "component", description => "コンポーネント" },
+                              { name => "bug_severity", description => "深刻度" },
+                              { name => "op_sys", description => "OS" },
                               { name => "target_milestone",
-                                description => "Target<br>Milestone" },
-                              { name => "short_desc", description => "Summary" } ]
+                                description => "ターゲット<br>マイルストーン" },
+                              { name => "short_desc", description => "要約" } ]
          %]
 
           [%# Small hack to keep delta column out if we don't need it %]
@@ -141,5 +141,5 @@
     </tbody>
   </table>
 [% ELSE %]
-  <h3>No duplicate [% terms.bugs %] found.</h3>
+  <h3>重複 [% terms.bugs %] は検出されませんでした。</h3>
 [% END %]

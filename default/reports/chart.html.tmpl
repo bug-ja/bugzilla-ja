@@ -26,7 +26,7 @@
 %]
 
 [% PROCESS global/header.html.tmpl 
-  title = "Chart"
+  title = "チャート"
   header_addl_info = time2str("%Y-%m-%d %H:%M:%S", time)
 %]
 
@@ -37,27 +37,27 @@
     [% width %]&amp;height=[% height -%]
   [% END %]
 
-  <img alt="Graphical report results" src="[% imageurl %]"
+  <img alt="画像でのレポート出力" src="[% imageurl %]"
     width="[% width %]" height="[% height %]">
   <p>
     [% sizeurl = BLOCK %]chart.cgi?
       [% imagebase FILTER html %]&amp;action=wrap
     [% END %]
     <a href="[% sizeurl %]&amp;width=[% width %]&amp;height=
-             [% height + 100 %]">Taller</a><br>
+             [% height + 100 %]">より高く</a><br>
     <a href="[% sizeurl %]&amp;width=[% width - 100 %]&amp;height=
-             [% height %]">Thinner</a> * 
+             [% height %]">より細く</a> * 
     <a href="[% sizeurl %]&amp;width=[% width + 100 %]&amp;height=
-             [% height %]">Fatter</a>&nbsp;&nbsp;&nbsp;&nbsp;<br>
+             [% height %]">より太く</a>&nbsp;&nbsp;&nbsp;&nbsp;<br>
     <a href="[% sizeurl %]&amp;width=[% width %]&amp;height=
-             [% height - 100 %]">Shorter</a><br>
+             [% height - 100 %]">より短く</a><br>
   </p>
   
   <p>
     <a href="chart.cgi?
       [% imagebase FILTER html %]&amp;ctype=csv&amp;action=plot">CSV</a> |
-    <a href="chart.cgi?[% imagebase FILTER html %]&amp;action=assemble">Edit 
-    this chart</a>
+    <a href="chart.cgi?[% imagebase FILTER html %]&amp;action=assemble">
+    このチャートを編集</a>
   </p>
  
 </div>

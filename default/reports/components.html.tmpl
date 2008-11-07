@@ -23,7 +23,7 @@
   #%]
 
 [% title = BLOCK %]
-  Components for [% product.name FILTER html %]
+  [% product.name FILTER html %] のコンポーネント
 [% END %]
 
 [% PROCESS global/header.html.tmpl title = title %]
@@ -40,10 +40,10 @@
 
 <table>
   <tr>
-    <th align="left">Component</th>
-    <th align="left">Default Assignee</th>
+    <th align="left">コンポーネント</th>
+    <th align="left">既定の担当者</th>
     [% IF Param("useqacontact") %]
-      <th align="left">Default QA Contact</th>
+      <th align="left">既定の QA コンタクト</th>
     [% END %]
   </tr>
 
