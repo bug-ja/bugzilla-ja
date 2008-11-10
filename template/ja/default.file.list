@@ -210,10 +210,10 @@ shimono	shimono	x	./list/server-push.html.tmpl
 shimono	shimono	x	./list/table.html.tmpl
 x	x	x	./pages/bug-writing.html.tmpl
 x	x	x	./pages/fields.html.tmpl
-x	x	x	./pages/linked.html.tmpl
-x	x	x	./pages/linkify.html.tmpl
-x	x	x	./pages/quicksearch.html.tmpl
-x	x	x	./pages/quicksearchhack.html.tmpl
+shimono	shimono	x	./pages/linked.html.tmpl
+shimono	shimono	x	./pages/linkify.html.tmpl
+shimono	shimono	x	./pages/quicksearch.html.tmpl
+shimono	shimono	x	./pages/quicksearchhack.html.tmpl
 x	x	x	./pages/release-notes.html.tmpl
 x	x	x	./pages/sudo.html.tmpl
 x	x	x	./pages/voting.html.tmpl

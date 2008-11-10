@@ -17,58 +17,54 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% INCLUDE global/header.html.tmpl
-   title  = "$terms.Bugzilla QuickSearch (for Hackers)",
+   title  = "$terms.Bugzilla 簡易検索 (ハッカー向け)",
    style  = 'th {text-align: left}'
    onload = 'document.forms[\'f\'].quicksearch.focus()'
  %]
 
 <p>
-  Type in one or more words (or word fragments) to search for:
+  検索対象のひとつ以上の単語 (もしくは単語の断片) を入力してください :
 </p>
 
 <form name="f" action="buglist.cgi" method="get"
       onsubmit="if (this.quicksearch.value == '')
-                { alert('Please enter one or more search terms first.');
+                { alert('ひとつ以上の検索語を入力してください。');
                   return false; } return true;">
   <input type="text" size="40" name="quicksearch">
   <input type="submit" value="Find" id="find">
-  <input type="submit" name="load" value="Load Search Form" id="load">
+  <input type="submit" name="load" value="検索フォーム読み込み" id="load">
 </form>
 
 <p>
-  This is a case-insensitive &ldquo;all words as substrings&rdquo; search;
-  words are separated by spaces.
-  By default, the following fields are relevant: Summary, Keywords,
-  Product, Component, Status Whiteboard.
-  If a word looks like a part of a URL, that field is included in the search,
-  too.
+  これは、大文字小文字を無視する &ldquo;全てが部分一致の&rdquo; 空白区切りの単語による検索です。
+  初期状態では、要約、キーワード、プロダクト、コンポーネント、ステータスホワイトボード、
+  が検索対象のフィールドです。
+  URL などを検索対象に含める場合は、フィールドを検索に追加してください。
 </p>
 <p>
-  The generic format for a &ldquo;word&rdquo; is
-  <tt>field1,&hellip;,fieldN:value1,&hellip;,valueM</tt>.
-  A [% terms.bug %] qualifies if at least one of the values occurs as a
-  substring in at least one of the fields.
-  For example, <tt>assignee,reporter,qa:ibm,sun</tt> will give you
-  [%+ terms.bugs %] where the assignee, reporter, or qa contact has a login
-  that contains <tt>ibm</tt> or <tt>sun</tt>.
-  If only <tt>value1,&hellip;,valueM</tt> is given, the prefix (roughly) defaults to
-  <tt>summary,keywords,product,component,statuswhiteboard:</tt> as noted above.
-  You can use <tt>-<i>word</i></tt> to express the logical negation of
-  <tt><i>word</i></tt>.
+  &ldquo;検索語&rdquo; の一般的な形式は、
+  <tt>field1,&hellip;,fieldN:value1,&hellip;,valueM</tt> です。
+  [% terms.bug %] のうち、最低ひとつのフィールドの部分文字列が検索語に一致するような、
+  検索語があるものが返ります。
+  たとえば、<tt>assignee,reporter,qa:ibm,sun</tt> は、担当者、報告者か QA コンタクトが、
+  <tt>ibm</tt> もしくは <tt>sun</tt> を含むログイン名を持つ [% terms.bugs %] を返します。
+  もし、<tt>value1,&hellip;,valueM</tt> だけの場合、プレフィックスが初期値の
+  <tt>summary,keywords,product,component,statuswhiteboard:</tt>
+  であるとして上記のように検索されます。
+  <tt>-<i>word</i></tt> を <tt><i>word</i></tt> の論理否定として利用可能です。
 </p>
 <p>
-  Here is a complete listing of available fields (the Shortcut column is just
-  for access speed):
+  以下が検索可能なフィールドの完全なリストです。(ショートカットは入力速度のために用意されています。)
 </p>
 
 <table border="1">
 <thead>
 <tr>
-  <th>Searched by default</th>
-  <th>Shortcut</th>
-  <th>Field Name</th>
-  <th>Aliases</th>
-  <th>Description</th>
+  <th>既定の検索対象か</th>
+  <th>ショートカット</th>
+  <th>フィールド名</th>
+  <th>エイリアス</th>
+  <th>説明</th>
 </tr>
 </thead>
 
@@ -77,12 +73,12 @@
 <tr>
   <td>&nbsp;</td>
   <td rowspan="2">
-    <tt>UNCO,NEW,&hellip;,CLOS,<br>FIX,DUP,&hellip;<i>(as first word)</i></tt>
+    <tt>UNCO,NEW,&hellip;,CLOS,<br>FIX,DUP,&hellip;<i>(先頭に)</i></tt>
   </td>
   <td><tt>status</tt></td>
   <td>&nbsp;</td>
   <td>
-    <a href="page.cgi?id=fields.html#status">Status</a>
+    <a href="page.cgi?id=fields.html#status">ステータス</a>
     <i>(&ldquo;bug_status&rdquo;)</i>
   </td>
 </tr>
@@ -90,7 +86,7 @@
   <td>&nbsp;</td>
   <td><tt>resolution</tt></td>
   <td>&nbsp;</td>
-  <td><a href="page.cgi?id=fields.html#resolution">Resolution</a></td>
+  <td><a href="page.cgi?id=fields.html#resolution">解決方法</a></td>
 </tr>
 <tr>
   <td>&nbsp;</td>
@@ -98,7 +94,7 @@
   <td><tt>platform</tt></td>
   <td>&nbsp;</td>
   <td>
-    <a href="page.cgi?id=fields.html#rep_platform">Platform</a>
+    <a href="page.cgi?id=fields.html#rep_platform">プラットフォーム</a>
     <i>(&ldquo;rep_platform&rdquo;)</i>
   </td>
 </tr>
@@ -117,7 +113,7 @@
   <td><tt>p1,p2</tt> <i>or</i> <tt>p1-2</tt></td>
   <td><tt>priority</tt></td>
   <td><tt>pri</tt></td>
-  <td><a href="page.cgi?id=fields.html#priority">Priority</a></td>
+  <td><a href="page.cgi?id=fields.html#priority">重要度</a></td>
 </tr>
 <tr>
   <td>&nbsp;</td>
@@ -125,7 +121,7 @@
   <td><tt>severity</tt></td>
   <td><tt>sev</tt></td>
   <td>
-    <a href="page.cgi?id=fields.html#bug_severity">Severity</a>
+    <a href="page.cgi?id=fields.html#bug_severity">深刻度</a>
     <i>(&ldquo;bug_severity&rdquo;)</i>
   </td>
 </tr>
@@ -139,7 +135,7 @@
   <td><tt>assignedto</tt></td>
   <td><tt>assignee</tt></td>
   <td>
-    <a href="page.cgi?id=fields.html#assigned_to">Assignee</a>
+    <a href="page.cgi?id=fields.html#assigned_to">担当者</a>
     <i>(&ldquo;assigned_to&rdquo;)</i>
   </td>
 </tr>
@@ -148,21 +144,21 @@
   <td>&nbsp;</td>
   <td><tt>reporter</tt></td>
   <td><tt>rep</tt></td>
-  <td>Reporter (login)</td>
+  <td>報告者 (ログイン名)</td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
   <td><tt>qa</tt></td>
   <td><tt>qacontact</tt></td>
-  <td>QA Contact (login) <i>(&ldquo;qa_contact&rdquo;)</i></td>
+  <td>QA コンタクト (ログイン名) <i>(&ldquo;qa_contact&rdquo;)</i></td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
   <td><tt>cc</tt></td>
   <td>&nbsp;</td>
-  <td>CC (login)</td>
+  <td>CC (ログイン名)</td>
 </tr>
 
 <!-- Product, Version, Component, Target Milestone -->
@@ -172,27 +168,27 @@
   <td rowspan="2"><b>:</b><i>area</i></td>
   <td><tt>product</tt></td>
   <td><tt>prod</tt></td>
-  <td>Product (enum)</td>
+  <td>プロダクト (列挙型)</td>
 </tr>
 <tr>
   <td><i>yes</i></td>
   <td><tt>component</tt></td>
   <td><tt>comp</tt></td>
-  <td><a href="describecomponents.cgi">Component</a></td>
+  <td><a href="describecomponents.cgi">コンポーネント</a></td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
   <td><tt>version</tt></td>
   <td><tt>ver</tt></td>
-  <td>Version (enum)</td>
+  <td>バージョン (列挙型)</td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
   <td><tt>milestone</tt></td>
   <td><tt>target, targetmilestone</tt></td>
-  <td>Target Milestone <i>(&ldquo;target_milestone&rdquo;)</i></td>
+  <td>ターゲットマイルストーン <i>(&ldquo;target_milestone&rdquo;)</i></td>
 </tr>
 
 <!-- Summary, Description, URL, Status whiteboard, Keywords -->
@@ -203,7 +199,7 @@
   <td><tt>summary</tt></td>
   <td><tt>shortdesc</tt></td>
   <td>
-    [% terms.Bug %] Summary (short text)
+    [% terms.Bug %] 要約 (短い説明)
     <i>(&ldquo;short_desc&rdquo;)</i>
   </td>
 </tr>
@@ -213,7 +209,7 @@
   <td><tt>description</tt></td>
   <td><tt>desc, longdesc<!--, comment--></tt></td>
   <!-- reserve "comment" for "added comment" login search?! -->
-  <td>[% terms.Bug %] Description / Comments (long text)</td>
+  <td>[% terms.Bug %] 解説 / コメント (長い説明)</td>
 </tr>
 <tr>
   <td><i>depends</i></td>
@@ -227,21 +223,21 @@
   <td>&nbsp;</td>
   <td><tt>statuswhiteboard</tt></td>
   <td><tt>sw, whiteboard</tt></td>
-  <td>Status Whiteboard <i>(&ldquo;status_whiteboard&rdquo;)</i></td>
+  <td>ステータスホワイトボード <i>(&ldquo;status_whiteboard&rdquo;)</i></td>
 </tr>
 <tr>
   <td><i>yes</i></td>
   <td><b>!</b><i>keyword</i></td>
   <td><tt>keywords</tt></td>
   <td><tt>kw</tt></td>
-  <td><a href="describekeywords.cgi">Keywords</a></td>
+  <td><a href="describekeywords.cgi">キーワード</a></td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
   <td><tt>group</tt></td>
   <td>&nbsp;</td>
-  <td>Group</td>
+  <td>グループ</td>
 </tr>
 
 <!-- Flags -->
@@ -251,20 +247,20 @@
   <td rowspan="2"><i>flag</i><b>?</b><i>requestee</i></td>
   <td><tt>flag</tt></td>
   <td>&nbsp;</td>
-  <td>Flag name and status (+, - or ?)</td>
+  <td>フラグ名と状態 (+, - or ?)</td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td><tt>requestee</tt></td>
   <td><tt>req</tt></td>
-  <td>Flag requestee (login)</td>
+  <td>フラグ要請者 (ログイン名)</td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
   <td><tt>setter</tt></td>
   <td><tt>set</tt></td>
-  <td>Flag setter (login)</td>
+  <td>フラグ設定者 (ログイン名)</td>
 </tr>
 
 <!-- Attachments -->
@@ -275,7 +271,7 @@
   <td><tt>attachmentdesc</tt></td>
   <td><tt>attachdesc</tt></td>
   <td>
-    Attachment Description
+    添付説明
     <i>(&ldquo;attachments.description&rdquo;)</i>
   </td>
 </tr>
@@ -284,14 +280,14 @@
   <td>&nbsp;</td>
   <td><tt>attachmentdata</tt></td>
   <td><tt>attachdata</tt></td>
-  <td>Attachment Data <i>(&ldquo;attach_data.thedata&rdquo;)</i></td>
+  <td>添付データ <i>(&ldquo;attach_data.thedata&rdquo;)</i></td>
 </tr>
 <tr>
   <td>&nbsp;</td>
   <td>&nbsp;</td>
   <td><tt>attachmentmimetype</tt></td>
   <td><tt>attachmimetype</tt></td>
-  <td>Attachment mime-type <i>(&ldquo;attachments.mimetype&rdquo;)</i></td>
+  <td>添付型 (mime-type) <i>(&ldquo;attachments.mimetype&rdquo;)</i></td>
 </tr>
 <tr>
   <td>&nbsp;</td>
@@ -299,21 +295,21 @@
   <td><tt>votes</tt></td>
   <td>&nbsp;</td>
   <td>
-    Number of votes<br>
-    (votes:<i>N</i> and votes&gt;=<i>N</i> mean "at least N votes",
-    votes&gt;<i>N</i> means "more than N votes")
+    投票数<br>
+    (votes:<i>N</i> や votes&gt;=<i>N</i> は "最低 N 票",
+    votes&gt;<i>N</i> は "N 票以上")
   </td>
 </tr>
 </table>
 
 <p>
-  Examples for some useful abbreviations:
+  有用な短縮語の例
 </p>
 <table border="1">
 <thead>
 <tr>
-  <th>Syntax</th>
-  <th>Semantics and Examples</th>
+  <th>形式</th>
+  <th>意味と例</th>
 </tr>
 </thead>
 
@@ -379,9 +375,10 @@
 </table>
 
 <p>
-  More information can be found in the
-  <a href="page.cgi?id=quicksearch.html#features">&ldquo;Features&rdquo;</a>
-  section on the <a href="page.cgi?id=quicksearch.html">introductory page</a>.
+  より詳細には、
+  <a href="page.cgi?id=quicksearch.html">導入ページ</a> の
+  <a href="page.cgi?id=quicksearch.html#features">&ldquo;機能&rdquo;</a>
+  の節を参照してください。
 </p>
 
 [% PROCESS global/footer.html.tmpl %]
