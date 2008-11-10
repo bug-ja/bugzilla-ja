@@ -27,17 +27,17 @@
   #%]
 
 [% PROCESS "reports/series-common.html.tmpl"
-   newtext = "New (name below)" 
+   newtext = "新規 (名称は下記)" 
  %]
   
 <table cellpadding="2" cellspacing="2" border="0"
        style="text-align: left; margin-left: 20px">
   <tbody>
     <tr>
-      <th>Category:</th>
+      <th>カテゴリ:</th>
       <th></th>
-      <th>Sub-category:</th>
-      <th>Name:</th>
+      <th>サブカテゴリ:</th>
+      <th>名称:</th>
       <td></td>
     </tr>
     <tr>
@@ -46,7 +46,7 @@
                                        onchange => "catSelected()" } %]
         <td>
           <noscript>
-            <input type="submit" name="action-edit" value="Update --&gt;"
+            <input type="submit" name="action-edit" value="更新 --&gt;"
                    id="action-edit">
           </noscript>
         </td>
@@ -61,17 +61,17 @@
       </td>
 
       <td valign="top">
-        <span style="font-weight: bold;">Run every</span> &nbsp;
+        <span style="font-weight: bold;">全て実行</span> &nbsp;
         <input type="text" size="2" name="frequency"
                value="[% (default.frequency.0 OR 7) FILTER html %]">
-        <span style="font-weight: bold;">&nbsp;day(s)</span><br>
+        <span style="font-weight: bold;">&nbsp;日</span><br>
         [%# Change 'admin' here and in Series.pm, or remove the check
             completely, if you want to change who can make series public. %]
         [% IF user.in_group('admin') %]      
           <input type="checkbox" name="public"
                  [%+ "checked='checked'" IF default.public.0 %]>
-          <span style="font-weight: bold;">Visible to all<br>
-          (within group restrictions)</span> 
+          <span style="font-weight: bold;">全体に公開<br>
+          (グループ制限の範囲内で)</span> 
         [% END %]
       </td>
     </tr>
