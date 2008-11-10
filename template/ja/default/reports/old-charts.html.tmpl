@@ -10,7 +10,7 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [%# INTERFACE:
@@ -22,8 +22,8 @@
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% PROCESS global/header.html.tmpl
-  title = "$terms.Bug Charts"
-  h1 = "Welcome to the $terms.Bugzilla Charting Kitchen"
+  title = "$terms.Bug チャート"
+  h1 = "$terms.Bugzilla チャート生成システムへようこそ"
   doc_section = "reporting.html#charts"
 %]
 
@@ -35,7 +35,7 @@
     <form id="choose_product" method="get" action="reports.cgi">
       <table border="1" cellpadding="5" cellspacing="2">
         <tr>
-          <th>Product:</th>
+          <th>プロダクト:</th>
           <td align="center">
             <select id="product" name="product">
               [% FOREACH product = products %]
@@ -45,7 +45,7 @@
           </td>
         </tr>
         <tr>
-          <th>Chart datasets:</th>
+          <th>チャートデータ:</th>
           <td align="center">
             <select id="datasets" name="datasets" multiple="multiple" size="5">
               [%# We cannot use translated statuses and resolutions from field-descs.none.html
@@ -60,7 +60,7 @@
         </tr>
         <tr>
           <th colspan="2">
-            <input type="submit" id="submit" value="Continue">
+            <input type="submit" id="submit" value="続ける">
           </th>
         </tr>
       </table>

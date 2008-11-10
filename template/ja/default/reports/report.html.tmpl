@@ -54,7 +54,7 @@
 [% switchbase     = switchbase FILTER html %]
 
 [% title = BLOCK %]
-  Report: 
+  レポート: 
   [% IF tbl_field %]
     [% tbl_field_disp FILTER html %]
   [% END %]
@@ -112,7 +112,7 @@
         [% END %]width=[% width %]&amp;height=[% height %]      
       [% END %]
       
-      <img alt="Graphical report results" src="[% imageurl %]"
+      <img alt="画像レポート" src="[% imageurl %]"
         width="[% width %]" height="[% height %]">
     [% END %]
     <br>
@@ -149,13 +149,13 @@
           [% format FILTER html %][% END %]
         <td align="center">
           <a href="[% sizeurl %]&amp;width=[% width %]&amp;height=
-                   [% height + 100 %]">Taller</a><br>
+                   [% height + 100 %]">高く</a><br>
           <a href="[% sizeurl %]&amp;width=[% width - 100 %]&amp;height=
-                   [% height %]">Thinner</a> * 
+                   [% height %]">細く</a> * 
           <a href="[% sizeurl %]&amp;width=[% width + 100 %]&amp;height=
-                   [% height %]">Fatter</a>&nbsp;&nbsp;&nbsp;&nbsp;<br>
+                   [% height %]">太く</a>&nbsp;&nbsp;&nbsp;&nbsp;<br>
           <a href="[% sizeurl %]&amp;width=[% width %]&amp;height=
-                   [% height - 100 %]">Shorter</a><br>
+                   [% height - 100 %]">低く</a><br>
         </td>
       [% END %]
     </tr>
@@ -163,12 +163,11 @@
 
   <p>
     [% IF format == "table" %]
-      <a href="query.cgi?[% switchbase %]&amp;format=report-table">Edit 
-      this report</a>
+      <a href="query.cgi?[% switchbase %]&amp;format=report-table">このレポートを編集</a>
     [% ELSE %]
       <a href="query.cgi?[% switchbase %]&amp;chart_format=
         [% format %]&amp;format=report-graph&amp;cumulate=[% cumulate %]">
-        Edit this report
+        このレポートを編集
       </a>
     [% END %]
   </p>
