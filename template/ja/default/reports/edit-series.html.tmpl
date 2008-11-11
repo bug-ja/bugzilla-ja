@@ -18,7 +18,7 @@
   # Contributor(s): Gervase Markham <gerv@gerv.net>
   #%]
 
-[% title = "Edit Series" %]
+[% title = "シリーズの編集" %]
 [% subheader = BLOCK %]
   [% default.category FILTER html %] / 
   [%+ default.subcategory FILTER html %] /
@@ -30,7 +30,7 @@
 [% IF changes_saved %]
   <p>
     <font color="red">
-      Series updated.
+      シリーズを更新しました。
     </font>
   </p>
 [% END %]
@@ -47,27 +47,26 @@
 </form>
 
 <p>
-  <b>Creator</b>: 
+  <b>作成者</b>: 
   [% IF creator.email %]
     <a href="mailto:[% creator.email FILTER html %]">
     [% creator.email FILTER html %]</a>
   [% ELSE %]
-    (automatically created by [% terms.Bugzilla %])
+    ([% terms.Bugzilla %] による自動生成)
   [% END %]
 </p>
 
-<p>Note: it is not yet possible to edit the search associated with this data
-set.
+<p>注: このデータセットに関連する検索を編集するのはまだ不可能です。
 </p>
 
 <p>
-  <a href="query.cgi?[% default.query FILTER html %]">View 
-    series search parameters</a> |
+  <a href="query.cgi?[% default.query FILTER html %]">
+    シリーズの検索パラメータを見る</a> |
   <a href="buglist.cgi?cmdtype=dorem&amp;namedcmd=
     [% default.category FILTER url_quote %]-
     [% default.subcategory FILTER url_quote %]-
     [% default.name FILTER url_quote %]&amp;remaction=runseries&amp;series_id=
-    [% default.series_id %]">Run series search</a>
+    [% default.series_id %]">シリーズを検索として実行</a>
 </p>
 
 [% PROCESS global/footer.html.tmpl %]

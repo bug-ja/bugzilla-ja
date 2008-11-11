@@ -26,48 +26,48 @@
 [% PROCESS global/variables.none.tmpl %]
 
 [% PROCESS global/header.html.tmpl
-  title = "Reporting and Charting Kitchen"
+  title = "レポート・チャート作成"
   doc_section = "reporting.html"
 %]
 
 <p>
-  [% terms.Bugzilla %] allows you to view and track the state of the [% terms.bug %] database in
-  all manner of exciting ways.
+  [% terms.Bugzilla %] では、既存のさまざまな方法で [% terms.bug %] 
+  データベースの状態を見て、追跡することができます。
 </p>
 
-<h2>Current State</h2>
+<h2>現状</h2>
 
 <ul>
   <li>
-    <strong><a href="query.cgi">Search</a></strong> -
-    list sets of [% terms.bugs %].
+    <strong><a href="query.cgi">検索</a></strong> -
+    [% terms.bugs %] リストの作成
   </li>
   <li>
     <strong>
-      <a href="query.cgi?format=report-table">Tabular reports</a>
+      <a href="query.cgi?format=report-table">表レポート</a>
     </strong> -
-    tables of [% terms.bug %] counts in 1, 2 or 3 dimensions, as HTML or CSV.
+    1, 2, 3 次元の [% terms.bug %] 数の表を HTML か CSV で
   </li>
   <li>
     <strong>
-      <a href="query.cgi?format=report-graph">Graphical reports</a>
+      <a href="query.cgi?format=report-graph">グラフレポート</a>
     </strong> -
-    line graphs, bar and pie charts.
+    線グラフ、バー・パイチャート
   </li>
 </ul>
 
-<h2>Change Over Time</h2>
+<h2>時間変化</h2>
 
 <ul>
   <li>
-    <strong><a href="reports.cgi">Old Charts</a></strong> - 
-    plot the status and/or resolution of [% terms.bugs %] against
-    time, for each product in your database.
+    <strong><a href="reports.cgi">旧形式</a></strong> - 
+    時間、プロダクトごとのデータベースの [% terms.bugs %] のステータス、
+    解決方法のプロット。
   </li>
   [% IF user.in_group(Param("chartgroup")) %]
     <li>
-      <strong><a href="chart.cgi">New Charts</a></strong> - 
-      plot any arbitrary search against time. Far more powerful.
+      <strong><a href="chart.cgi">新形式</a></strong> - 
+      時間ごとの任意の検索結果のプロットで、より高機能。
     </li>
   [% END %]
 </ul>

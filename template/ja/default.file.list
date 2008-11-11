@@ -224,11 +224,11 @@ shimono	shimono	x	./reports/components.html.tmpl
 shimono	shimono	x	./reports/create-chart.html.tmpl
 shimono	shimono	x	./reports/duplicates-simple.html.tmpl
 shimono	shimono	x	./reports/duplicates-table.html.tmpl
-x	x	x	./reports/duplicates.html.tmpl
-x	x	x	./reports/duplicates.rdf.tmpl
-x	x	x	./reports/edit-series.html.tmpl
-x	x	x	./reports/keywords.html.tmpl
-x	x	x	./reports/menu.html.tmpl
+shimono	shimono	x	./reports/duplicates.html.tmpl
+-	o	shimono	./reports/duplicates.rdf.tmpl
+shimono	shimono	x	./reports/edit-series.html.tmpl
+shimono	shimono	x	./reports/keywords.html.tmpl
+shimono	shimono	x	./reports/menu.html.tmpl
 shimono	shimono	x	./reports/old-charts.html.tmpl
 -	o	shimono	./reports/report-bar.png.tmpl
 -	o	shimono	./reports/report-line.png.tmpl
