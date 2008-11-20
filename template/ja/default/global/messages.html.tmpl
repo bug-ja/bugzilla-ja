@@ -433,240 +433,241 @@
     それなりの時間かかります。)
 
   [% ELSIF message_tag == "keyword_updated" %]
-    [% title = "Keyword Updated" %]
+    [% title = "キーワード更新" %]
     [% IF changes.keys.size %]
-      Changes to the <em>[% keyword.name FILTER html %]</em> keyword have
-      been saved:
+      <em>[% keyword.name FILTER html %]</em> キーワードへの変更が保存されました
+      :
       <ul>
         [% IF changes.name.defined %]
           <li>
-            Keyword renamed to <em>[% keyword.name FILTER html %]</em>.
-            <b>After you have finished editing keywords, you need to
-            <a href="sanitycheck.cgi?rebuildkeywordcache=1">rebuild
-            the keyword cache</a></b> (on a very large installation
-            of [% terms.Bugzilla %], this can take several minutes).
+            キーワードは <em>[% keyword.name FILTER html %]</em> に改名されました。
+            <b>キーワード編集完了後、
+            <a href="sanitycheck.cgi?rebuildkeywordcache=1">キーワードキャッシュの再構築
+            </a></b> が必要となります。 ([% terms.Bugzilla %] の大規模サイトでは、
+            数分かかる場合があります。)
           </li>
         [% END %]
         [% IF changes.description.defined %]
-          <li>Description updated to <em>[% keyword.description FILTER html %]</em></li>
+          <li>説明が <em>[% keyword.description FILTER html %]</em> になりました。</li>
         [% END %]
       </ul>
     [% ELSE %]
-      No changes made.
+      変更はありません。
     [% END %]
 
   [% ELSIF message_tag == "logged_out" %]
-    [% title = "Logged Out" %]
+    [% title = "ログアウト" %]
     [% url = "index.cgi?GoAheadAndLogIn=1" %]
-    [% link = "Log in again." %]
-    <b>Your login has been forgotten</b>.
-    The cookie that was remembering your login is now gone. You will be
-    prompted for a login the next time it is required.
+    [% link = "再度ログインする" %]
+    <b>ログイン情報を破棄しました</b>。
+    ログイン名を記録してたクッキーを破棄しました。
+    次回ログインを要求されることになるでしょう。
 
   [% ELSIF message_tag == "login_changed" %]
-    [% title = "$terms.Bugzilla Login Changed" %]
-    Your [% terms.Bugzilla %] login has been changed.
+    [% title = "$terms.Bugzilla ログイン情報変更" %]
+    あなたの [% terms.Bugzilla %] へのログイン情報が変更されました。
 
   [% ELSIF message_tag == "milestone_created" %]
-    [% title = "Milestone Created" %]
-    The milestone <em>[% milestone.name FILTER html %]</em> has been created.
+    [% title = "マイルストーン作成完了" %]
+    マイルストーン <em>[% milestone.name FILTER html %]</em> を作成しました。
 
   [% ELSIF message_tag == "milestone_deleted" %]
-    [% title = "Milestone Deleted" %]
-    The milestone <em>[% milestone.name FILTER html %]</em> has been deleted.
+    [% title = "マイルストーン削除完了" %]
+    マイルストーン <em>[% milestone.name FILTER html %]</em> が削除されました。
     [% IF milestone.bug_count %]
-      [%+ terms.Bugs %] targetted to this milestone have been retargetted to
-      the default milestone <em>[% product.default_milestone FILTER html %]</em>.
+      このマイルストーンが目標とされていた [%+ terms.Bugs %] は全て既定のマイルストーン
+      <em>[% product.default_milestone FILTER html %]</em> に変更されました。
     [% END %]
 
   [% ELSIF message_tag == "milestone_updated" %]
-    [% title = "Milestone Updated" %]
+    [% title = "マイルストーン更新完了" %]
     [% IF changes.size %]
-      Changes to the milestone <em>[% milestone.name FILTER html %]</em>
-      have been saved:
+      マイルストーン <em>[% milestone.name FILTER html %]</em>
+      への変更が完了しました:
       <ul>
         [% IF changes.value.defined %]
-          <li>Milestone name updated to <em>[% milestone.name FILTER html %]</em></li>
+          <li>マイルストーン名が <em>[% milestone.name FILTER html %]</em> となりました</li>
         [% END %]
         [% IF changes.sortkey.defined %]
-          <li>Sortkey updated to <em>[% milestone.sortkey FILTER html %]</em>
+          <li>ソートキーが <em>[% milestone.sortkey FILTER html %]</em> となりました
         [% END %]
       </ul>
     [% ELSE %]
-      No changes made to milestone <em>[% milestone.name FILTER html %]</em>.
+      マイルストーン <em>[% milestone.name FILTER html %]</em> への更新はありません
     [% END %]
 
   [% ELSIF message_tag == "parameters_updated" %]
-    [% title = "Parameters Updated" %]
+    [% title = "パラメータ更新完了" %]
     [% IF param_changed.size > 0 %]
       [% FOREACH param = param_changed %]
-        Changed <em>[% param FILTER html %]</em><br>
+        <em>[% param FILTER html %]</em> パラメータ更新<br>
         [% IF param == 'utf8' && Param('utf8') %]
-          <strong>You must now re-run checksetup.pl.</strong><br>
+          <strong>checksetup.pl を再実行する必要があります</strong><br>
         [% END %]
       [% END %]
     [% ELSE %]
-      No changes made.
+      変更はありませんでした
     [% END %]
 
     [% IF shutdown_is_active == 1 %]
       <hr>
-      [% terms.Bugzilla %] has now been shut down. To re-enable the system,
-      clear the <em>shutdownhtml</em> field.
+      [% terms.Bugzilla %] は現在停止中です。再開するには、
+      <em>shutdownhtml</em> フィールドをクリアしてください。
     [% END%]
 
   [% ELSIF message_tag == "password_change_canceled" %]
-    [% title = "Cancel Request to Change Password" %]
-    Your request has been canceled.
+    [% title = "パスワード変更の中止要請" %]
+    変更は中止されました。
 
   [% ELSIF message_tag == "password_change_request" %]
-    [% title = "Request to Change Password" %]
-    A token for changing your password has been emailed to you.
-    Follow the instructions in that email to change your password.
+    [% title = "パスワード変更要請" %]
+    パスワード変更のためのトークンがメールで送信されました。
+    メールに書かれている指示に従ってパスワードを変更してください。
 
   [% ELSIF message_tag == "password_changed" %]
-    [% title = "Password Changed" %]
-    Your password has been changed.
+    [% title = "パスワード変更完了" %]
+    パスワードは変更されました。
 
   [% ELSIF message_tag == "flag_type_created" %]
-    [% title = "Flag Type Created" %]
-    The flag type <em>[% name FILTER html %]</em> has been created.
+    [% title = "フラグタイプ作成完了" %]
+    フラグタイプ <em>[% name FILTER html %]</em> が作成されました。
 
   [% ELSIF message_tag == "flag_type_changes_saved" %]
-    [% title = "Flag Type Changes Saved" %]
-    Your changes to the flag type <em>[% name FILTER html %]</em>
-    have been saved.
+    [% title = "フラグタイプの更新完了" %]
+    フラグタイプ <em>[% name FILTER html %]</em> への更新が保存されました。
 
   [% ELSIF message_tag == "flag_type_deleted" %]
-    [% title = "Flag Type Deleted" %]
-    The flag type <em>[% name FILTER html %]</em> has been deleted.
+    [% title = "フラグタイプ削除完了" %]
+    フラグタイプ <em>[% name FILTER html %]</em> の削除が完了しました。
 
   [% ELSIF message_tag == "flag_type_deactivated" %]
-    [% title = "Flag Type Deactivated" %]
-    The flag type <em>[% flag_type.name FILTER html %]</em> has been deactivated.
+    [% title = "フラグタイプ無効化" %]
+    フラグタイプ <em>[% flag_type.name FILTER html %]</em> が無効化されました。
 
   [% ELSIF message_tag == "install_admin_get_email" %]
-    Enter the e-mail address of the administrator:
+    管理者のメールアドレスを入力 :
 
   [% ELSIF message_tag == "install_admin_get_name" %]
-    Enter the real name of the administrator:
+    管理者の実名を入力 :
 
   [% ELSIF message_tag == "install_admin_get_password" %]
-    Enter a password for the administrator account:
+    管理者アカウントのパスワードを入力 :
 
   [% ELSIF message_tag == "install_admin_created" %]
-    [% user.login FILTER html %] is now set up as an administrator.
+    [% user.login FILTER html %] が管理者として登録されました。
 
   [% ELSIF message_tag == "install_admin_setup" %]
-    Looks like we don't have an administrator set up yet.
-    Either this is your first time using [% terms.Bugzilla %], or your
-    administrator's privileges might have accidentally been deleted.
+    管理者がまだ設定されていないように見えます。
+    [% terms.Bugzilla %] の利用がはじめてであるか、
+    管理者権限が何らかの事故で削除されたかでしょう。
 
   [% ELSIF message_tag == "install_column_add" %]
-    Adding new column '[% column FILTER html %]' to the '[% table FILTER html %]' table...
+    カラム '[% column FILTER html %]' を '[% table FILTER html %]' テーブルに追加中...
 
   [% ELSIF message_tag == "install_column_drop" %]
-    Deleting the '[% column FILTER html %]' column from the '[% table FILTER html %]' table...
+    からむ '[% column FILTER html %]' を '[% table FILTER html %]' テーブルから削除中...
 
   [% ELSIF message_tag == "install_column_rename" %]
-    Renaming column '[% old FILTER html %]' to '[% new FILTER html %]'...
+    カラム名 '[% old FILTER html %]' を '[% new FILTER html %]' に変更中...
 
   [% ELSIF message_tag == "install_confirm_password" %]
-    Please retype the password to verify:
+    照合のためにパスワードをもう一度入力してください :
 
   [% ELSIF message_tag == "install_default_classification" %]
-    Creating default classification '[% name FILTER html %]'...
+    既定の classification '[% name FILTER html %]' を作成中...
 
   [% ELSIF message_tag == "install_default_product" %]
-    Creating initial dummy product '[% name FILTER html %]'...
+    初期のダミープロダクト '[% name FILTER html %]' を作成中...
 
   [% ELSIF message_tag == "install_file_perms_fix" %]
-    Fixing file permissions...
+    ファイル権限を修正中...
 
   [% ELSIF message_tag == "install_fk_add" %]
-    Adding foreign key: [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %]...
+    外部キー: [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %] を追加中...
 
   [% ELSIF message_tag == "install_fk_drop" %]
-    Dropping foreign key: [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %]...
+    外部キー: [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %] を削除中...
 
   [% ELSIF message_tag == "install_group_create" %]
-    Creating group [% name FILTER html %]...
+    グループ [% name FILTER html %] を作成中...
 
   [% ELSIF message_tag == "install_setting_new" %]
-    Adding a new user setting called '[% name FILTER html %]'
+    新規ユーザの設定 '[% name FILTER html %]' を追加中。
 
   [% ELSIF message_tag == "install_table_drop" %]
-    Dropping the '[% name FILTER html %]' table...
+    '[% name FILTER html %]' テーブルを削除中...
 
   [% ELSIF message_tag == "install_table_rename" %]
-    Renaming the '[% old FILTER html %]' table to '[% new FILTER html %]'...
+    '[% old FILTER html %]' テーブルを '[% new FILTER html %]' に改名中...
 
   [% ELSIF message_tag == "install_urlbase_default" %]
-    Now that you have installed [% terms.Bugzilla %], you should visit the
-    'Parameters' page (linked in the footer of the Administrator
-    account) to ensure it is set up as you wish - this includes
-    setting the 'urlbase' option to the correct URL.
+    [% terms.Bugzilla %] のインストールを行いましたが、
+    'パラメータ' ページ (管理者アカウントのフッタからリンク)
+    から設定を行ってください。これには、'urlbase' オプションを正しい 
+    URL に設定することを含みます。
 
   [% ELSIF message_tag == "install_reset_password" %]
-    Enter a new password for [% user.login FILTER html %]:
+    [% user.login FILTER html %] の新しいパスワードを入力:
 
   [% ELSIF message_tag == "install_reset_password_done" %]
-    New password set.
+    パスワードが設定されました。
 
   [% ELSIF message_tag == "install_webservergroup_empty" %]
     ****************************************************************************
-    WARNING! You have not entered a value for the "webservergroup" parameter
-    in localconfig. This means that certain files and directories which need
-    to be editable by both you and the web server must be world writable, and
-    other files (including the localconfig file which stores your database
-    password) must be world readable. This means that _anyone_ who can obtain
-    local access to this machine can do whatever they want to your 
-    [%+ terms.Bugzilla %] installation, and is probably also able to run 
-    arbitrary Perl code as the user that the web server runs as.
+    警告! localconfig の "webservergroup" パラメータが未設定です。これは、あなた
+    とウェブサーバの両方から編集する必要がある特定のファイルやディレクトリが、誰
+    にでも書き込み可能となり、かつ他のファイル (データベースのパスワードが保存さ
+    れている localconfig を含む) が誰からでも読み込み可能になることを意味します。
+    これは、ローカルにアクセス可能な誰もがあなたの [% terms.Bugzilla %] サイトの
+    操作が可能となることを意味し、かつおそらくウェブサーバが動作する権限で Perl 
+    コードを実行可能になることを意味します。
 
-    You really, really, really need to change this setting.
+    本当に、本当に、本当にこの設定を変更する必要があります。
     ****************************************************************************
 
   [% ELSIF message_tag == "install_webservergroup_not_in" %]
-    Warning: you have entered a value for the "webservergroup" parameter in
-    localconfig, but you are not either a) running this script as [% constants.ROOT_USER FILTER html %]; 
-    or b) a member of this group. This can cause permissions problems and 
-    decreased security.  If you experience problems running [% terms.Bugzilla %]
-    scripts, log in as [% constants.ROOT_USER FILTER html %] and re-run this script, become a 
-    member of the group, or remove the value of the "webservergroup" parameter.
+    警告: localconfig の "webservergroup" に値を設定しましたが、a) このスクリプトを
+    [% constants.ROOT_USER FILTER html %] で実行しているか、b) このグループに所属し
+    ているのどちらでもないようです。この状態では権限問題やセキュリティーの低下が発
+    生します。もし、[% terms.Bugzilla %] を実行する上で問題が発生すれば、
+    [% constants.ROOT_USER FILTER html %] としてログインし、このスクリプトを再実行
+    するか、このグループのメンバーになるか、"webservergroup" パラメータを削除して
+    ください。
 
   [% ELSIF message_tag == "install_webservergroup_windows" %]
-    Warning: You have set webservergroup in [% constants.bz_locations.localconfig FILTER html %]
-    Please understand that this does not bring you any security when
-    running under Windows.
-    Verify that the file permissions in your [% terms.Bugzilla %] directory are
-    suitable for your system. Avoid unnecessary write access.
+    警告: webservergroup を [% constants.bz_locations.localconfig FILTER html %] 
+    に設定しています。この設定は Windows で動かす限りは何もセキュリティー上の
+    メリットをもたらさないことを把握してください。
+    あなたの [% terms.Bugzilla %] ディレクトリにあるファイルの権限が、あなたの
+    システムにとって望ましいことを確認してください。不要な書き込み権限は削除して
+    ください。
 
   [% ELSIF message_tag == "product_created" %]
-    [% title = "Product Created" %]
-    The product <em>[% product.name FILTER html %]</em> has been created. You will need to
+    [% title = "プロダクト作成完了" %]
+    プロダクト <em>[% product.name FILTER html %]</em> の作成を完了しました。
+    このプロダクトに対して [% terms.bugs %] を登録できるようにするには、
     <a href="editcomponents.cgi?action=add&product=[% product.name FILTER url_quote %]">
-    add at least one component</a> before anyone can enter [% terms.bugs %] against this product.
+    最低ひとつのコンポーネントを追加</a> する必要があります。
 
   [% ELSIF message_tag == "product_deleted" %]
-    [% title = "Product Deleted" %]
-    The product <em>[% product.name FILTER html %]</em> and all its versions,
-    components, milestones and group controls have been deleted.
+    [% title = "プロダクト削除完了" %]
+    プロダクト <em>[% product.name FILTER html %]</em> とその全てのバージョン、
+    コンポーネント、マイルストーン、グループ権限が削除されました。
     [% IF product.bug_count %]
-      All [% terms.bugs %] being in this product and all references
-      to them have also been deleted.
+      全てのこのプロダクトにあった [% terms.bugs %] 
+      と参照は全て削除されました。
     [% END %]
 
   [% ELSIF message_tag == "product_invalid" %]
-    [% title = "$terms.Bugzilla Component Descriptions" %]
-    The product <em>[% product FILTER html %]</em> does not exist
-    or you don't have access to it. The following is a list of the
-    products you can choose from.
+    [% title = "$terms.Bugzilla コンポーネント説明" %]
+    プロダクト <em>[% product FILTER html %]</em> は存在しないか、あくせすできません。
+    以下があなたが選択可能なプロダクトのリストです。
+
 
   [% ELSIF message_tag == "remaining_time_zeroed" %]
-    The [% field_descs.remaining_time FILTER html %] field has been 
-    set to zero automatically as part of closing this [% terms.bug %]
-    or moving it from one closed state to another.
+    この [% terms.bug %] を閉じるや閉じられた状態から他に移行するのに伴い、
+    [% field_descs.remaining_time FILTER html %] フィールドは、
+    自動的にゼロに設定されています。
 
   [% ELSIF message_tag == "sanitycheck" %]
     [%# We use this way to call sanitycheck-specific messages so that
@@ -674,84 +675,83 @@
     [% PROCESS "admin/sanitycheck/messages.html.tmpl" %]
 
   [% ELSIF message_tag == "series_all_open" %]
-    All Open
+    活動中全て
 
   [% ELSIF message_tag == "series_all_closed" %]
-    All Closed
+    解決済み全て
 
   [% ELSIF message_tag == "sudo_started" %]
-    [% title = "Sudo session started" %]
-      The sudo session has been started.  For the next 6 hours, or until you 
-      end the session, everything you do you do as the user you are 
-      impersonating ([% target FILTER html %]).
+    [% title = "sudo セッション開始" %]
+      sudo セッションが開始されました。いまから6時間、
+      もしくはセッションを終わるまで、全てのあなたの操作は
+      ([% target FILTER html %]) として実行されます。
   
   [% ELSIF message_tag == "sudo_ended" %]
-    [% title = "Sudo session complete" %]
-      The sudo session has been ended.  From this point forward, everything you 
-      do you do as yourself.
+    [% title = "sudo セッション完了" %]
+      sudo セッションが完了しました。
+      この時点移行、全ての操作はあなた自身のものとなります。
 
   [% ELSIF message_tag == "series_created" %]
-    [% title = "Series Created" %]
-      The series <em>[% series.category FILTER html %] /
+    [% title = "シリーズ作成完了" %]
+      シリーズ <em>[% series.category FILTER html %] /
       [%+ series.subcategory FILTER html %] / 
       [%+ series.name FILTER html %]</em>
-      has been created. Note that you may need to wait up to 
-      [%+ series.frequency * 2 %] days before there will be enough data for a
-      chart of this series to be produced.
+      の作成が完了しました。最大で
+      [%+ series.frequency * 2 %] 日間、
+      チャート作成に十分なデータが蓄積されるのを待つ必要があることに注意してください。
       <br><br>
-      Go back or 
-      <a href="query.cgi?format=create-series">create another series</a>.
-    
+      <a href="query.cgi?format=create-series">他のシリーズの作成</a> に戻る。
+
   [% ELSIF message_tag == "shutdown" %]
-    [% title = "$terms.Bugzilla is Down" %]
+    [% title = "$terms.Bugzilla 停止中" %]
     [% Param("shutdownhtml") %]
     [% IF userid %]
-      <p>For security reasons, you have been logged out automatically.
-      The cookie that was remembering your login is now gone.
+      <p>セキュリティー上の理由から、あなたは自動的にログアウトしています。
+      保存されているクッキーは削除しました。
     [% END %]
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
 
   [% ELSIF message_tag == "unexpected_flag_types" %]
-    Some flags could not be set. Please check your changes.
+    いくつかのフラグは設定不可能です。変更を確認してください。
 
   [% ELSIF message_tag == "user_match_failed" %]
-    You entered a username that did not match any known 
-    [% terms.Bugzilla %] users, so we have instead left
-    the [% match_field FILTER html %] field blank.
+    あなたの入力したユーザ名は、存在する [% terms.Bugzilla %] 
+    ユーザとマッチしませんでしたので、[% match_field FILTER html %]
+    フィールドを空白のままにしています。
 
   [% ELSIF message_tag == "user_match_multiple" %]
-    You entered a username that matched more than one
-    user, so we have instead left the [% match_field FILTER html %]
-    field blank.
+    入力されたユーザ名は一人より多いユーザにマッチしましたので、
+    [% match_field FILTER html %] フィールドを空白のままにしています。
 
   [% ELSIF message_tag == "version_created" %]
-    [% title = "Version Created" %]
-    The version <em>[% version.name FILTER html %]</em> of product
-    <em>[% product.name FILTER html %]</em> has been created.
+    [% title = "バージョン作成完了" %]
+    バージョン <em>[% version.name FILTER html %]</em> がプロダクト
+    <em>[% product.name FILTER html %]</em> に作成されました。
 
   [% ELSIF message_tag == "version_deleted" %]
-    [% title = "Version Deleted" %]
-    The version <em>[% version.name FILTER html %]</em> of product
-    <em>[% product.name FILTER html %]</em> has been deleted.
+    [% title = "バージョン削除完了" %]
+    バージョン <em>[% version.name FILTER html %]</em> がプロダクト
+    <em>[% product.name FILTER html %]</em> から削除されました。
 
   [% ELSIF message_tag == "version_updated" %]
-    [% title = "Version Updated" %]
-    Version renamed as <em>[% version.name FILTER html %]</em>.
+    [% title = "バージョン更新完了" %]
+    バージョンが <em>[% version.name FILTER html %]</em> に変更されました。
 
   [% ELSIF message_tag == "workflow_updated" %]
-    The workflow has been updated.
+    ワークフローが更新されました。
 
   [% ELSE %]
     [%# Give sensible error if error functions are used incorrectly.
-      #%]        
-    You are using [% terms.Bugzilla %]'s messaging functions incorrectly. You
-    passed in the string '[% message_tag %]'. The correct use is to pass
-    in a tag, and define that tag in the file messages.html.tmpl.<br>
+      #%]
+    [% terms.Bugzilla %] のメッセージ機能を間違って利用しています。
+    '[% message_tag %]' が渡されました。正しい利用方法は、
+    タグを渡すようにして、messages.html.tmpl にタグを定義する必要があります。<br>
     <br>
-    If you are a [% terms.Bugzilla %] end-user seeing this message, please 
-    save this page and send it to [% Param('maintainer') %].
-    
+    もし、あなたが [% terms.Bugzilla %] のエンドユーザで、
+    このメッセージを見ているなら、ページを保存して 
+    [% Param('maintainer') %] に連絡してください。
+
   [% END %]
 [% END %]

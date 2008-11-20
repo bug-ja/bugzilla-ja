@@ -184,7 +184,7 @@ shimono	shimono	x	./global/hidden-fields.html.tmpl
 -	o	shimono	./global/js-products.html.tmpl
 shimono	shimono	x	./global/message.html.tmpl
 -	o	shimono	./global/message.txt.tmpl
-shimono	x	x	./global/messages.html.tmpl
+shimono	shimono	x	./global/messages.html.tmpl
 shimono shimono	x	./global/per-bug-queries.html.tmpl
 -	o	shimono	./global/select-menu.html.tmpl
 shimono	shimono	nakano	./global/setting-descs.none.tmpl
