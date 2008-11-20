@@ -209,12 +209,12 @@ shimono	shimono	x	./list/quips.html.tmpl
 shimono	shimono	x	./list/server-push.html.tmpl
 shimono	shimono	x	./list/table.html.tmpl
 x	x	x	./pages/bug-writing.html.tmpl
-x	x	x	./pages/fields.html.tmpl
+shimono	shimono	x	./pages/fields.html.tmpl
 shimono	shimono	x	./pages/linked.html.tmpl
 shimono	shimono	x	./pages/linkify.html.tmpl
 shimono	shimono	x	./pages/quicksearch.html.tmpl
 shimono	shimono	x	./pages/quicksearchhack.html.tmpl
-x	x	x	./pages/release-notes.html.tmpl
+shimono	x	x	./pages/release-notes.html.tmpl
 x	x	x	./pages/sudo.html.tmpl
 x	x	x	./pages/voting.html.tmpl
 -	o	shimono	./reports/chart.csv.tmpl

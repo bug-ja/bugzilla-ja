@@ -21,11 +21,11 @@
 
 [% PROCESS global/variables.none.tmpl %]
 [% PROCESS "global/field-descs.none.tmpl" %]
-[% INCLUDE global/header.html.tmpl title = "A $terms.Bug's Life Cycle" %]
+[% INCLUDE global/header.html.tmpl title = "$terms.Bug のライフサイクル" %]
 
 <p>
-The <b>status</b> and <b>resolution</b> fields define and track the life
-cycle of [% terms.abug %].  
+<b>ステータス</b> と <b>解決方法</b> のフィールドで [% terms.abug %]
+のライフサイクルを定義しており、これを利用して追跡できます。
 </p>
 
 <a name="status"></a>
@@ -34,20 +34,20 @@ cycle of [% terms.abug %].
 <table border="1" cellpadding="4">
   <tr align="center" valign="top">
     <td width="50%">
-      <h1>STATUS</h1>
+      <h1>ステータス</h1>
     </td>
 
     <td>
-      <h1>RESOLUTION</h1>
+      <h1>解決方法</h1>
     </td>
   </tr>
 
   <tr valign="top">
-    <td>The <b>status</b> field indicates the general health of a 
-    [% terms.bug %]. Only certain status transitions are allowed.</td>
+    <td><b>ステータス</b> フィールドは一般的な [% terms.bug %] の状態を示します。
+        定められたステータス繊維のみが許可されます。</td>
 
-    <td>The <b>resolution</b> field indicates what happened to this
-    [%+ terms.bug %].</td>
+    <td><b>解決方法</b> フィールドはこの [% terms.bug %] がどうなったか、
+        を示します。</td>
   </tr>
 
   <tr valign="top">
@@ -57,44 +57,45 @@ cycle of [% terms.abug %].
           <b>[% get_status("UNCONFIRMED") FILTER html %]</b>
         </dt>
         <dd>
-          This [% terms.bug %] has recently been added to the database. 
-          Nobody has validated that this [% terms.bug %] is true. Users
-          who have the "canconfirm" permission set may confirm
-          this [% terms.bug %], changing its state to [% get_status("NEW") FILTER html %]. Or, it may be
-          directly resolved and marked [% get_status("RESOLVED") FILTER html %].
+          この [% terms.bug %] は最近データベースに追加されました。
+          誰もまだ [% terms.bug %] が正しいものかを確認していません。
+          "canconfirm" 権限を持つユーザはこの [% terms.bug %] を承認でき、
+          ステータスを [% get_status("NEW") FILTER html %] に変更可能です。
+          もしくは、直接解決し、[% get_status("RESOLVED") FILTER html %] 
+          とすることも可能です。
         </dd>
 
         <dt>
           <b>[% get_status("NEW") FILTER html %]</b>
         </dt>
         <dd>
-          This [% terms.bug %] has recently been added to the assignee's
-          list of [% terms.bugs %] and must be processed. [% terms.Bugs %] in
-          this state may be accepted, and become <b>[% get_status("ASSIGNED") FILTER html %]</b>, passed
-          on to someone else, and remain <b>[% get_status("NEW") FILTER html %]</b>, or resolved and marked
-          <b>[% get_status("RESOLVED") FILTER html %]</b>.
+          この [% terms.bug %] は最近担当者の [% terms.bugs %] リストに追加され、
+          処理を魔っています。このステータスの [% terms.Bugs %] は承認される可能性があり、
+          <b>[% get_status("ASSIGNED") FILTER html %]</b> になるか、
+          他の誰かに渡されるか、<b>[% get_status("NEW") FILTER html %]</b> のままにされるか、
+          解決され <b>[% get_status("RESOLVED") FILTER html %]</b> となるかでしょう。
         </dd>
 
         <dt>
           <b>[% get_status("ASSIGNED") FILTER html %]</b>
         </dt>
         <dd>
-          This [% terms.bug %] is not yet resolved, but is assigned to the 
-          proper person. From here [% terms.bugs %] can be given to another 
-          person and become <b>[% get_status("NEW") FILTER html %]</b>, or
-          resolved and become <b>[% get_status("RESOLVED") FILTER html %]</b>.
+          この [% terms.bug %] は未解決ですが、ある担当者に割り当てられています。
+          この段階からは、[% terms.bugs %] は他の担当者に再割り当てされ、
+          <b>[% get_status("NEW") FILTER html %]</b> となるか、
+          解決され <b>[% get_status("RESOLVED") FILTER html %]</b> となるでしょう。
         </dd>
 
         <dt>
           <b>[% get_status("REOPENED") FILTER html %]</b>
         </dt>
         <dd>
-          This [% terms.bug %] was once resolved, but the resolution was 
-          deemed incorrect. For example, a <b>[% get_resolution("WORKSFORME") FILTER html %]</b> [% terms.bug %] is
-          <b>[% get_status("REOPENED") FILTER html %]</b> when more information shows up and
-          the [% terms.bug %] is now reproducible. From here [% terms.bugs %] are
-          either marked <b>[% get_status("ASSIGNED") FILTER html %]</b> or
-          <b>[% get_status("RESOLVED") FILTER html %]</b>.
+          この [% terms.bug %] は一度解決されましたが、解決方法が正しくありませんでした。
+          たとえば、<b>[% get_resolution("WORKSFORME") FILTER html %]</b> [% terms.bug %]
+          がより詳細な情報が得られ、再現するようになれば
+          <b>[% get_status("REOPENED") FILTER html %]</b> となるでしょう。
+          この段階からは、[% terms.bugs %] は <b>[% get_status("ASSIGNED") FILTER html %]</b> 
+          となるか、<b>[% get_status("RESOLVED") FILTER html %]</b> となるでしょう。
         </dd>
       </dl>
     </td>
@@ -102,10 +103,8 @@ cycle of [% terms.abug %].
     <td>
       <dl>
         <dd>
-          No resolution yet. All [% terms.bugs %] which are in one of 
-          these "open" states have the resolution set to blank. All 
-          other [% terms.bugs %] will be marked with one of the following 
-          resolutions.
+          解決していません。全ての "未解決" 状態の [% terms.bugs %] は解決方法が空白です。
+          それ以外の [% terms.bugs %] は以下の解決方法のうちの一つになります。
         </dd>
       </dl>
     </td>
@@ -118,31 +117,30 @@ cycle of [% terms.abug %].
           <b>[% get_status("RESOLVED") FILTER html %]</b>
         </dt>
         <dd>
-          A resolution has been taken, and it is awaiting verification by
-          QA. From here [% terms.bugs %] are either re-opened and become 
-          <b>[% get_status("REOPENED") FILTER html %]</b>, are marked
-          <b>[% get_status("VERIFIED") FILTER html %]</b>, or are closed for
-          good and marked <b>[% get_status("CLOSED") FILTER html %]</b>.
+          解決策がとられ、QA の確認待ちの状態です。
+          この段階からは、[% terms.bugs %] は再開され
+          <b>[% get_status("REOPENED") FILTER html %]</b> となるか、確認され
+          <b>[% get_status("VERIFIED") FILTER html %]</b> となるか、
+          問題がなくなり閉じられて <b>[% get_status("CLOSED") FILTER html %]</b>
+          となるかでしょう。
         </dd>
 
         <dt>
           <b>[% get_status("VERIFIED") FILTER html %]</b>
         </dt>
         <dd>
-          QA has looked at the [% terms.bug %] and the resolution and 
-          agrees that the appropriate resolution has been taken. [% terms.Bugs %] remain
-          in this state until the product they were reported
-          against actually ships, at which point they become
-          <b>[% get_status("CLOSED") FILTER html %]</b>.
+          QA が [% terms.bug %] の解決方法を確認し、とられた解決方法に同意しました。
+          [% terms.Bugs %] は、報告対象のプロダクトが提供されている間はこのステータスで、
+          それ以後は <b>[% get_status("CLOSED") FILTER html %]</b> となるでしょう。
         </dd>
 
         <dt>
           <b>[% get_status("CLOSED") FILTER html %]</b>
         </dt>
         <dd>
-          The [% terms.bug %] is considered dead, the resolution is correct. 
-          Any zombie [% terms.bugs %] who choose to walk the earth again must 
-          do so by becoming <b>[% get_status("REOPENED") FILTER html %]</b>.
+          [% terms.bug %] は無効と考えられていますが、解決方法は正しいです。
+          作業したい [% terms.bugs %] があれば、まず
+          <b>[% get_status("REOPENED") FILTER html %]</b> する必要があります。
         </dd>
       </dl>
     </td>
@@ -153,142 +151,136 @@ cycle of [% terms.abug %].
           <b>[% get_resolution("FIXED") FILTER html %]</b>
         </dt>
         <dd>
-          A fix for this [% terms.bug %] is checked into the tree and 
-          tested.
+          この [% terms.bug %] の解決策はツリーにチェックインされ試験されました。
         </dd>
 
         <dt>
           <b>[% get_resolution("INVALID") FILTER html %]</b>
         </dt>
         <dd>
-          The problem described is not [% terms.abug %].
+          述べられている問題は [% terms.abug %] ではありません。
         </dd>
 
         <dt>
           <b>[% get_resolution("WONTFIX") FILTER html %]</b>
         </dt>
         <dd>
-          The problem described is [% terms.abug %] which will never be 
-          fixed.
+          述べられている問題は [% terms.abug %] ですが修正されることはありません。
         </dd>
 
         <dt>
          <b>[% get_resolution("DUPLICATE") FILTER html %]</b>
         </dt>
         <dd>
-          The problem is a duplicate of an existing [% terms.bug %].
-          Marking [% terms.abug %] duplicate requires the [% terms.bug %]#
-          of the duplicating [% terms.bug %] and will at least put
-          that [% terms.bug %] number in the description field.
+          報告された問題は既存の [% terms.bug %] の重複です。
+          [% terms.abug %] を重複とする際には、重複とする先の [% terms.bug %]# 
+          が必要で、説明のフィールドに [% terms.bug %] 番号が記入されます。
         </dd>
 
         <dt>
           <b>[% get_resolution("WORKSFORME") FILTER html %]</b>
         </dt>
         <dd>
-          All attempts at reproducing this [% terms.bug %] were futile, 
-          and reading the code produces no clues as to why the described
-          behavior would occur. If more information appears later,
-          the [% terms.bug %] can be reopened.
+          この [% terms.bug %] を再現しようとする試みは全て失敗し、
+          コードからも述べられた動作が起こる原因が判明しませんでした。
+          より情報が出てくれば、[% terms.bug %] が再開されることもあります。
         </dd>
 
         <dt>
           <b>[% get_resolution("MOVED") FILTER html %]</b>
         </dt>
         <dd>
-          The problem was specific to a related product 
-          whose [% terms.bugs %] are tracked in
-          another [% terms.bug %] database.
-          The [% terms.bug %] has been moved to that database.
+          問題は他の [% terms.bugs %] データベースで扱われているプロダクトに関連する
+          [% terms.bugs %] です。
+          この [% terms.bug %] はそのデータベースに移動しました。
         </dd>
       </dl>
     </td>
   </tr>
 </table>
 
-<h2><a name="importance">Importance</h2>
-The importance of [% terms.abug %] is described as the combination of
-its <a href="#priority">priority</a> and <a href="#bug_severity">severity</a>,
-as described below.
+<h2><a name="importance">重要性</h2>
+[% terms.abug %] の重要性は、以下で述べる
+<a href="#priority">重要度</a> と <a href="#bug_severity">深刻度</a>
+であらわされます。
 
-<h2><a name="priority">Priority</a></h2>
-This field describes the importance and order in which [% terms.abug %]
-should be fixed. This field is utilized by the
-programmers/engineers to prioritize their work to be done. The
-available priorities range from <b>P1</b> (most important) to
-<b>P5</b> (least important).
+<h2><a name="priority">重要度</a></h2>
+このフィールドは重要度を示しており、どの [% terms.abug %] から修正されるべきかを示します。
+このフィールドは、プログラマやエンジニアが、
+どれから片付けるべきかを順序付けするために利用するものです。
+利用可能な重要度は <b>P1</b> (最重要) から <b>P5</b> (重要でない) です。
 
-<h2><a name="bug_severity">Severity</a></h2>
-This field describes the impact of [% terms.abug %]. 
+<h2><a name="bug_severity">深刻度</a></h2>
+[% terms.abug %] の深刻度を示します。
 
 <table>
   <tr>
     <th>Blocker</th>
 
-    <td>Blocks development and/or testing work</td>
+    <td>開発や試験を妨害する</td>
   </tr>
 
   <tr>
     <th>Critical</th>
 
-    <td>crashes, loss of data, severe memory leak</td>
+    <td>クラッシュ、データ喪失、深刻なメモリリーク</td>
   </tr>
 
   <tr>
     <th>Major</th>
 
-    <td>major loss of function</td>
+    <td>主要機能が動作しなくなる</td>
   </tr>
 
   <tr>
     <th>Normal</th>
 
-    <td>regular issue, some loss of functionality under specific circumstances</td>
+    <td>通常の問題で、ある環境下で機能が利用できなくなる</td>
   </tr>
 
 
   <tr>
     <th>Minor</th>
 
-    <td>minor loss of function, or other problem where easy
-    workaround is present</td>
+    <td>機能の一部が利用できなくなるや、
+    簡単なワークラウンドが存在する</td>
   </tr>
 
   <tr>
     <th>Trivial</th>
 
-    <td>cosmetic problem like misspelled words or misaligned
-    text</td>
+    <td>単語のスペルミスやそろっていないテキストなどの、
+        表示上の問題</td>
   </tr>
 
   <tr>
     <th>Enhancement</th>
 
-    <td>Request for enhancement</td>
+    <td>機能要望</td>
 </table>
 
-<h2><a name="rep_platform">Platform</a></h2>
-This is the hardware platform against which the [% terms.bug %] was
-reported. Legal platforms include: 
+<h2><a name="rep_platform">プラットフォーム</a></h2>
+[% terms.bug %] が報告されたハードウェアプラットフォームです。
+有効なプラットフォームには以下のものなどがあります
 
 <ul>
-  <li>All (happens on all platforms; cross-platform [% terms.bug %])</li>
+  <li>All (全てのプラットフォームで再現する; クロスプラットフォーム [% terms.bug %])</li>
 
   <li>Macintosh</li>
 
   <li>PC</li>
 </ul>
-<b>Note:</b> When searching, selecting the option "All" does not 
-select [% terms.bugs %]
-assigned against any platform. It merely selects [% terms.bugs %] that are
-marked as occurring on all platforms, i.e. are designated "All". 
+<b>注:</b> 検索の際は、"All" ではどのプラットフォームにもあたっていない
+[% terms.bugs %] は選択されません。
+全てのプラットフォームで発生するという条件では
+[% terms.bugs %] が該当することは少ないです。
 
-<h2><a name="op_sys">Operating System</a></h2>
-This is the operating system against which the [% terms.bug %] was
-reported. Legal operating systems include: 
+<h2><a name="op_sys">OS</a></h2>
+[% terms.bug %] が報告された OS です。
+有効な OS には以下のものなどがあります。
 
 <ul>
-  <li>All (happens on all operating systems; cross-platform
+  <li>All (全ての OS で再現する; クロスープラットフォーム
   [% terms.bug %])</li>
 
   <li>Windows</li>
@@ -297,22 +289,22 @@ reported. Legal operating systems include:
 
   <li>Linux</li>
 </ul>
-Sometimes the operating system implies the platform, but not
-always. For example, Linux can run on PC and Macintosh and
-others. 
+ものによっては、OS でプラットフォームも決まりますが、必ずではありません。
+たとえば、Linux は PC でも Mac でもその他でも動作します。
 
-<h2><a name="assigned_to">Assigned To</a></h2>
-
-<p>
-This is the person in charge of resolving the [% terms.bug %]. Every time
-this field changes, the status changes to <b>[% get_status("NEW") FILTER html %]</b> to make it
-easy to see which new [% terms.bugs %] have appeared on a person's list.</p>
+<h2><a name="assigned_to">担当者</a></h2>
 
 <p>
-The default status for queries is set to [% get_status("NEW") FILTER html %],
-[%+ get_status("ASSIGNED") FILTER html %] and [% get_status("REOPENED") FILTER html %].
-When searching for [% terms.bugs %] that have been resolved or
-verified, remember to set the status field appropriately. 
+これは、[% terms.bug %] を解決するのに割り当てられた担当者です。
+このフィールドが変更されるたび、ステータスが <b>[% get_status("NEW") FILTER html %]</b> 
+に変更され、担当者のリストで新しい [% terms.bugs %] が簡単にわかるようになっています。</p>
+
+<p>
+クエリでの既定のステータスでは [% get_status("NEW") FILTER html %]、
+[%+ get_status("ASSIGNED") FILTER html %] と [% get_status("REOPENED") FILTER html %]
+が選択されています。
+解決済みや確認済みの [% terms.bugs %] を検索するためには、
+ステータスフィールドを設定する必要があることを覚えておいてください。
 </p>
 
 [% INCLUDE global/footer.html.tmpl %]
