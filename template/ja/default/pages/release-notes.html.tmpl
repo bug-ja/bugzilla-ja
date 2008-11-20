@@ -23,45 +23,43 @@
   style_urls = ['skins/standard/release-notes.css'] 
 %]
 
-<h2>Table of Contents</h2>
+<h2>目次</h2>
 
 <ul class="bz_toc">
-  <li><a href="#v32_introduction">Introduction</a></li>
-  <li><a href="#v32_req">Minimum Requirements</a></li>
-  <li><a href="#v32_feat">New Features and Improvements</a></li>
-  <li><a href="#v32_issues">Outstanding Issues</a></li>
-  <li><a href="#v32_upgrading">How to Upgrade From An Older Version</a></li>
-  <li><a href="#v32_code_changes">Code Changes Which May Affect 
-    Customizations</a></li>
-  <li><a href="#v32_previous">Release Notes for Previous Versions</a></li>
+  <li><a href="#v32_introduction">導入</a></li>
+  <li><a href="#v32_req">動作環境</a></li>
+  <li><a href="#v32_feat">新機能と改善点</a></li>
+  <li><a href="#v32_issues">既知の問題点</a></li>
+  <li><a href="#v32_upgrading">古いバージョンからのアップグレード方法</a></li>
+  <li><a href="#v32_code_changes">カスタマイズに影響するコードの変更</a></li>
+  <li><a href="#v32_previous">以前のバージョンのリリースノート</a></li>
 </ul>
 
-<h2><a name="v32_introduction"></a>Introduction</h2>
+<h2><a name="v32_introduction"></a>導入</h2>
 
-<p>Welcome to [% terms.Bugzilla %] 3.2! This is our first major feature
-  release since [% terms.Bugzilla %] 3.0, and it brings a lot of great
-  improvements and polish to the [% terms.Bugzilla %] experience.</p>
+<p>[% terms.Bugzilla %] 3.2 にようこそ! これは、[% terms.Bugzilla %] 3.0
+  以来はじめての機能追加のリリースで、さまざまな改善と、
+  [% terms.Bugzilla %] の利便性改善を含んでいます。</p>
 
-<p>If you're upgrading, make sure to read <a href="#v32_upgrading">How to
-  Upgrade From An Older Version</a>. If you are upgrading from a release
-  before 3.0, make sure to read the release notes for all the 
-  <a href="#v32_previous">previous versions</a> in between your version
-  and this one, <strong>particularly the "Notes For Upgraders" section of each
-  version's release notes</strong>.</p>
+<p>アップグレードを考えている場合、<a href="#v32_upgrading">古いバージョンからの
+  アップグレード方法</a> を読んでください。3.0 より前のリリースからアップグレードする場合、
+  <a href="#v32_previous">以前のバージョン</a> のリリースノートのうち、
+  あなたが利用しているバージョンとこのバージョンの間の全てのものを読んでください。
+  <strong>特に各バージョンのリリースノートでの "アップグレード利用者向け"
+  の章に目を通してください。</strong></p>
 
-<h2><a name="v32_req"></a>Minimum Requirements</h2>
+<h2><a name="v32_req"></a>動作環境</h2>
 
-<p>Any requirements that are new since 3.0.5 will look like
-  <span class="req_new">this</span>.</p>
+<p>3.0.5 以降の動作環境の更新は
+  <span class="req_new">このように</span> 表示されます。</p>
 
 <ul>
   <li><a href="#v32_req_perl">Perl</a></li>
-  <li><a href="#v32_req_mysql">For MySQL Users</a></li>
-  <li><a href="#v32_req_pg">For PostgreSQL Users</a></li>
-  <li><a href="#v32_req_oracle">For Oracle Users</a></li>
-  <li><a href="#v32_req_modules">Required Perl Modules</a></li>
-  <li><a href="#v32_req_optional_mod">Optional Perl
-    Modules</a></li>
+  <li><a href="#v32_req_mysql">MySQL ユーザ</a></li>
+  <li><a href="#v32_req_pg">PostgreSQL ユーザ</a></li>
+  <li><a href="#v32_req_oracle">Oracle ユーザ</a></li>
+  <li><a href="#v32_req_modules">必須 Perl モジュール</a></li>
+  <li><a href="#v32_req_optional_mod">追加の Perl モジュール</a></li>
 </ul>
 
 <h3><a name="v32_req_perl"></a>Perl</h3>
@@ -74,257 +72,246 @@
 
 [% INCLUDE db_req db='oracle' %]
 
-<h3><a name="v32_req_modules"></a>Required Perl Modules</h3>
+<h3><a name="v32_req_modules"></a>必須 Perl モジュール</h3>
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES 
                      new = []
                      updated = ['Template-Toolkit', 'Email-MIME',
                                 'Email-MIME-Modifier', 'CGI'] %]
 
-<h3><a name="v32_req_optional_mod"></a>Optional Perl Modules</h3>
+<h3><a name="v32_req_optional_mod"></a>追加の Perl モジュール</h3>
 
-<p>The following perl modules, if installed, enable various
-  features of [% terms.Bugzilla %]:</p>
+<p>以下の perl モジュールがインストールされていれば、[% terms.Bugzilla %] 
+のさまざまな機能が有効化されます:</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
                      new  = ['SASL-Authen', 'RadiusPerl']
                      updated = []
                      include_feature = 1 %]
 
-<h2><a name="v32_feat"></a>New Features and Improvements</h2>
+<h2><a name="v32_feat"></a>新機能と改善点</h2>
 
 <ul>
-  <li><a href="#v32_feat_ui">Major UI Improvements</a></li>
-  <li><a href="#v32_feat_skin">New Default Skin: Dusk</a></li>
-  <li><a href="#v32_feat_status">Custom Status Workflow</a></li>
-  <li><a href="#v32_feat_fields">New Custom Field Types</a></li>
-  <li><a href="#v32_feat_install">Easier Installation</a></li>
-  <li><a href="#v32_feat_oracle">Experimental Oracle Support</a></li>
-  <li><a href="#v32_feat_utf8">Improved UTF-8 Support</a></li>
-  <li><a href="#v32_feat_grcons">Group Icons</a></li>
-  <li><a href="#v32_feat_other">Other Enhancements and Changes</a></li>
+  <li><a href="#v32_feat_ui">主な UI の改善</a></li>
+  <li><a href="#v32_feat_skin">新しい既定のスキン: Dusk</a></li>
+  <li><a href="#v32_feat_status">カスタムステータスワークフロー</a></li>
+  <li><a href="#v32_feat_fields">新しいカスタムフィールド型</a></li>
+  <li><a href="#v32_feat_install">より簡単なインストール</a></li>
+  <li><a href="#v32_feat_oracle">実験的な Oracle サポート</a></li>
+  <li><a href="#v32_feat_utf8">UTF-8 サポートの改善</a></li>
+  <li><a href="#v32_feat_grcons">グループアイコン</a></li>
+  <li><a href="#v32_feat_other">他の機能追加と変更</a></li>
 </ul>
 
-<h3><a name="v32_feat_ui"></a>Major UI Improvements</h3>
+<h3><a name="v32_feat_ui"></a>主な UI の改善</h3>
 
-<p>[% terms.Bugzilla %] 3.2 has had some UI assistance from the NASA
-  Human-Computer Interaction department and the new 
+<p>[% terms.Bugzilla %] 3.2 では NASA HCI と新しい
   <a href="http://wiki.mozilla.org/Bugzilla:UE">[% terms.Bugzilla %]
-  User Interface Team</a>.</p>
+  UI チーム</a> による新しい UI が導入されました。</p>
 
-<p>In particular, you will notice a massively redesigned [% terms.bug %]
-  editing form, in addition to our <a href="#v32_feat_skin">new skin</a>.</p>
+<p>特に、<a href="#v32_feat_skin">新スキン</a> に加え、
+  [% terms.bug %] 編集フォームの内容が大幅に更新されています。</p>
 
-<h3><a name="v32_feat_skin"></a>New Default Skin: Dusk</h3>
+<h3><a name="v32_feat_skin"></a>新しい既定のスキン: Dusk</h3>
 
-<p>[% terms.Bugzilla %] 3.2 now ships with a skin called "Dusk" that is
-  a bit more colorful than old default "Classic" skin.</p>
+<p>[% terms.Bugzilla %] 3.2 では新しい "Dusk" と呼ばれるスキンを利用しています。
+  これは古い既定の "Classic" スキンに比べて少しカラフルになっています。</p>
 
-<p>Upgrading installations will still default to the "Classic" 
-  skin--administrators can change the default in the Default Preferences
-  control panel. Users can also choose to use the old skin in their
-  Preferences (or using the View :: Page Style menu in Firefox).</p>
+<p>アップグレードを行うと、既定は "Classic" スキンのままになりますが、
+  管理者はコントロールパネルの規定の設定から変更できます。
+  ユーザも自身の設定から古いスキンを選択することも可能です。
+  (もしくは、Firefox の表示 :: スタイルシートメニューから。)</p>
 
-<p>The changes that [% terms.Bugzilla %] required for Dusk made
-  [%+ terms.Bugzilla %] much easier to skin. See the
-  <a href="http://wiki.mozilla.org/Bugzilla:Addons#Skins">Addons page</a>
-  for additional skins, or try making your own!</p>
+<p>[% terms.Bugzilla %] に Dusk を適用するための変更により [% terms.Bugzilla %] 
+  のスキンがより作りやすくなりました。
+  <a href="http://wiki.mozilla.org/Bugzilla:Addons#Skins">アドオンページ</a>
+  にある追加のスキンや、自分のを作ってみてください !</p>
 
-<h3><a name="v32_feat_status"></a>Custom Status Workflow</h3>
+<h3><a name="v32_feat_status"></a>カスタムステータスワークフロー</h3>
 
-<p>You can now customize the list of statuses in [% terms.Bugzilla %],
-  and transitions between them.</p>
+<p>[% terms.Bugzilla %] でのステータスのリストやステータス間の遷移を、
+  カスタマイズ可能になりました。</p>
 
-<p>You can also specify that a comment must be made on certain transitions.</p>
+<p>特定の遷移を行う際にコメントを入力しなければならないように設定することも可能です。</p>
 
-<h3><a name="v32_feat_fields"></a>New Custom Field Types</h3>
+<h3><a name="v32_feat_fields"></a>新しいカスタムフィールド型</h3>
 
-<p>[% terms.Bugzilla %] 3.2 has support for three new types of
-  custom fields:</p>
+<p>[% terms.Bugzilla %] 3.2 から3つの新しいカスタムフィールドの型が利用可能です :</p>
 
 <ul>
-  <li>Large Text: Adds a multi-line textbox to your [% terms.bugs %].</li>
-  <li>Multiple Selection Box: Adds a box that allows you to choose
-    multiple items from a list.</li>
-  <li>Date/Time: Displays a date and time, along with a JavaScript
-    calendar popup to make picking a date easier.</li>
+  <li>長いテキスト: [% terms.bugs %] に複数行のテキストフィールドを追加可能です</li>
+  <li>複数選択ボックス: リストから複数の要素を選択可能なボックスを追加可能です</li>
+  <li>日時: 日時を表示可能です。日付を簡単に選択するのに JavaScript
+    によるカレンダーもあります</li>
 </ul>
 
-<h3><a name="v32_feat_install"></a>Easier Installation</h3>
+<h3><a name="v32_feat_install"></a>より簡単なインストール</h3>
 
-<p>[% terms.Bugzilla %] now comes with a script called 
-  <kbd>install-module.pl</kbd> that can automatically download
-  and install all of the required Perl modules for [% terms.Bugzilla %].
-  It stores them in a directory inside your [% terms.Bugzilla %]
-  installation, so you can use it even if you don't have administrator-level
-  access to your machine, and without modifying your main Perl install.</p>
+<p>[% terms.Bugzilla %] に、<kbd>install-module.pl</kbd> 
+  スクリプトが添付されるようになり、[% terms.Bugzilla %] に必要な Perl モジュールを、
+  自動的にダウンロードしてインストール可能です。
+  このスクリプトでは、[% terms.Bugzilla %] のディレクトリの下にインストールするので、
+  ホストの管理者レベルの権限が必要なく、システムの Perl に変更なしに利用可能になります。</p>
 
-<p><kbd>checksetup.pl</kbd> will print out instructions for using
-  <kbd>install-module.pl</kbd>, or you can read its
-  <a href="[% docs_urlbase FILTER html %]api/install-module.html">documentation</a>.</p>
+<p><kbd>checksetup.pl</kbd> で、<kbd>install-module.pl</kbd> の利用方法を出力しますし、
+  <a href="[% docs_urlbase FILTER html %]api/install-module.html">ドキュメント</a>
+  にも解説があります。</p>
 
-<h3><a name="v32_feat_oracle"></a>Experimental Oracle Support</h3>
+<h3><a name="v32_feat_oracle"></a>実験的な Oracle サポート</h3>
 
-<p>[% terms.Bugzilla %] 3.2 contains experimental support for using 
-  Oracle as its database. Some features of [% terms.Bugzilla %] are known 
-  to be broken on Oracle, but hopefully will be working by our next major
-  release.</p>
+<p>[% terms.Bugzilla %] 3.2 では Oracle をデータベースに利用するための、
+  実験的なサポートを含みます。[% terms.Bugzilla %] のいくつかの機能は、
+  Oracle では動かないことが確認されていますが、
+  次のリリースでは動作するようになるでしょう。</p>
 
-<p>The [% terms.Bugzilla %] Project, as an open-source project, of course
-  does not recommend the use of proprietary database solutions. However,
-  if your organization requires that you use Oracle, this will allow
-  you to use [% terms.Bugzilla %]!</p>
+<p>[% terms.Bugzilla %] プロジェクトは、オープンソースプロジェクトとして、
+  もちろんのことながらプロプラエタリなデータベース環境を強要するわけではありません。
+  しかしながら、あなたの組織が Oracle を利用することを指定しているなら、
+  この実装により [% terms.Bugzilla %] を利用することができるようになります !</p>
 
-<p>The [% terms.Bugzilla %] Project thanks Oracle Corp. for their extensive
-  development contributions to [% terms.Bugzilla %] which allowed this to 
-  happen!</p>
+<p>[% terms.Bugzilla %] プロジェクトは Oracle 社に対し、
+  Oracle が利用可能になった [% terms.Bugzilla %] 
+  への多大な開発での貢献について感謝します。</p>
 
-<h3><a name="v32_feat_utf8"></a>Improved UTF-8 Support</h3>
+<h3><a name="v32_feat_utf8"></a>UTF-8 サポートの改善</h3>
 
-<p>[% terms.Bugzilla %] 3.2 now has advanced UTF-8 support in its code,
-  including correct handling for truncating and wrapping multi-byte
-  languages. Major issues with multi-byte or unusual languages
-  are now resolved, and [% terms.Bugzilla %] should now be usable
-  by users in every country with little (or at least much less)
-  customization.</p>
+<p>[% terms.Bugzilla %] 3.2 ではコード自体の UTF-8 サポートが強化され、
+  多バイト言語での切り詰めやラッピングも改善されました。
+  多バイトなどの言語での主な問題は解決され、
+  [% terms.Bugzilla %] は最低限の (か少ない) カスタマイズで全ての国で
+  利用可能になっています。</p>
 
-<h3><a name="v32_feat_grcons"></a>Group Icons</a></h3>
+<h3><a name="v32_feat_grcons"></a>グループアイコン</a></h3>
 
-<p>Administrators can now specify that users who are in certain groups
-  should have an icon appear next to their name whenever they comment.
-  This is particularly useful for distinguishing developers from 
-  [%+ terms.bug %] reporters.</p>
+<p>管理者は特定のグループに所属するユーザに対して、
+  コメントに表示される名前の後ろにアイコンを表示するように指定可能です。
+  [% terms.bug %] 報告者の中から開発者を見分けるために便利なこともあります。</p>
 
-<h3><a name="v32_feat_other"></a>Other Enhancements and Changes</h3>
+<h3><a name="v32_feat_other"></a>他の機能追加と変更</h3>
 
-<p>These are either minor enhancements, or enhancements that have
-  very short descriptions. Some of these are very useful, though!</p>
+<p>これ以外にも細かい機能追加や、短い説明でわかる拡張があります。
+  ただ、これらの中にも有用なものもあります !</p>
 
-<h4>Enhancements For Users</h4>
+<h4>ユーザ向け</h4>
 
 <ul>
-  <li><strong>[% terms.Bugs %]</strong>: You can now reassign
-    [%+ terms.abug %] at the same time as you are changing its status.</li>
-  <li><strong>[% terms.Bugs %]</strong>: When entering [% terms.abug %], 
-    you will now see the description of a component when you select it.</li>
-  <li><strong>[% terms.Bugs %]</strong>: The [% terms.bug %] view now 
-    contains some <a href="http://microformats.org/about/">Microformats</a>,
-    most notably for users' names and email addresses.</li>
-  <li><strong>[% terms.Bugs %]</strong>: You can now remove a QA Contact
-    from [% terms.abug %] simply by clearing the QA Contact field.</li>
-  <li><strong>[% terms.Bugs %]</strong>: There is now a user preference 
-    that will allow you to exclude the quoted text when replying 
-    to comments.</li>
-  <li><strong>[% terms.Bugs %]</strong>: You can now expand or collapse
-    individual comments in the [% terms.bug %] view.</li>
+  <li><strong>[% terms.Bugs %]</strong>: ステータス変更と同時に
+    [%+ terms.abug %] を再割り当てすることが可能になりました。</li>
+  <li><strong>[% terms.Bugs %]</strong>: [% terms.abug %] の追加時に、
+    選択したコンポーネントの説明が表示されるようになりました。</li>
+  <li><strong>[% terms.Bugs %]</strong>: [% terms.bug %] 表示画面は、
+    ユーザ名やメールアドレスといった一番よく使われるいくつかの
+    <a href="http://microformats.org/about/">Microformats</a> を含むようになりました。</li>
+  <li><strong>[% terms.Bugs %]</strong>: QA コンタクトを [% terms.abug %]
+    から、フィールドを空白にすることで削除できるようになりました。</li>
+  <li><strong>[% terms.Bugs %]</strong>: コメントをつける際に引用されたテキストを
+    除外するように各ユーザが設定することができるようになりました。</li>
+  <li><strong>[% terms.Bugs %]</strong>: [% terms.bug %] 表示画面で、
+    各コメントを開いたり閉じたりできるようになりました。</li>
 
-  <li><strong>Attachments</strong>: There is now "mid-air collision" 
-      protection when editing attachments.</li>
-  <li><strong>Attachments</strong>: Patches in the Diff Viewer now show 
-    line numbers (<a href="https://bugzilla.mozilla.org/attachment.cgi?id=327546">Example</a>).</li>
-  <li><strong>Attachments</strong>: After creating or updating an attachment,
-    you will be immediately shown the [% terms.bug %] that the attachment
-    is on.</li>
+  <li><strong>添付</strong>: 添付の編集向けに、新しい
+    "編集衝突" の保護機能が追加されました。</li>
+  <li><strong>添付</strong>: Diff 表示でパッチを表示すると行番号が表示されます。
+    (<a href="https://bugzilla.mozilla.org/attachment.cgi?id=327546">サンプル</a>)</li>
+  <li><strong>添付</strong>: 添付の追加や更新後、
+    添付を行った [% terms.bug %] がすぐに表示されるようになりました。</li>
 
-  <li><strong>Search</strong>: You can now reverse the sort of 
-    [%+ terms.abug %] list by clicking on a column header again.</li>
-  <li><strong>Search</strong>: Atom feeds of [% terms.bug %] lists now
-    contain more fields.</li>
-  <li><strong>Search</strong>: QuickSearch now supports searching flags
-    and groups. It also now includes the OS field in the list of fields
-    it searches by default.</li>
-  <li><strong>Search</strong>: "Help" text can now appear on query.cgi 
-    for Internet Explorer and other non-Firefox browsers. (It always
-    could appear for Firefox.)</li>
+  <li><strong>検索</strong>: カラムヘッダを再度クリックすることにより、
+    [%+ terms.abug %] リストを逆順に表示できるようになりました。</li>
+  <li><strong>検索</strong>: [% terms.bug %] リストの Atom フィードがより多くの
+    フィールドを含むようになりました。</li>
+  <li><strong>検索</strong>: クイックサーチがフラグとグループの検索に対応しました。
+    OS フィールドも既定で検索されるフィールドのリストに入っています。</li>
+  <li><strong>検索</strong>: "ヘルプ" テキストが IE や他の Firefox 
+    でないブラウザでも query.cgi で表示されるようになりました。
+    (Firefox ではすでに表示可能です)</li>
 
-  <li>[% terms.Bugzilla %] now ships with an icon that will show
-    up next to the URL in most browsers. If you want to replace it,
-    it's in <kbd>images/favicon.ico</kbd>.</li>
+  <li>[% terms.Bugzilla %] にほとんどのブラウザで URL の横に表示されるアイコンが
+    添付されるようになりました。他のものに入れ替えたい場合は、
+    <kbd>images/favicon.ico</kbd> を入れ替えてください。</li>
 
-  <li>You can now set the Deadline when using "Change Several 
-    [%+ terms.Bugs %] At Once"</li>
-  <li><strong>Saved Searches</strong> now save their column list, so if 
-    you customize the list of columns and save your search, it will 
-    always contain those columns.</li>
-  <li><strong>Saved Searches</strong>: When you share a search, you can
-    now see how many users have subscribed to it, on 
-    <kbd>userprefs.cgi</kbd>.</li>
-  <li><strong>Saved Searches</strong>: You can now see what group a 
-    shared search was shared to, on the list of available shared searches
-    in <kbd>userprefs.cgi</kbd>.</li>
-  <li><strong>Flags</strong>: If your installation uses drop-down user 
-    lists, the flag requestee box will now contain only users who are 
-    actually allowed to take requests.</li>
-  <li><strong>Flags</strong>: If somebody makes a request to you, and you
-    change the requestee to somebody else, the requester is no longer set
-    to you. In other words, you can "redirect" requests and maintain the
-    original requester.</li>
-  <li><strong>Flags</strong>: Emails about flags now will thread properly
-    in email clients to be a part of [% terms.abug %]'s thread.</li>
-  <li>When using <kbd>email_in.pl</kbd>, you can now add users to the CC
-    list by just using <kbd>@cc</kbd> as the field name.</li>
-  <li>Many pages (particularly administrative pages) now contain links to
-    the relevant section of the [% terms.Bugzilla %] Guide, so you can read 
-    the documentation for that page.</li>
-  <li>Dependency Graphs should render more quickly, as they now (by default)
-    only include the same [% terms.bugs %] that you'd see in the dependency
-    tree.</li>
+  <li>"複数の [% terms.Bugs %] を一度に更新する" から締め切りを設定できるように
+    なりました。</li>
+  <li><strong>保存された検索</strong> にカラムリストを含められるようになり、
+    カラムを変更し保存すれば、常にそのカラムを含んで表示されるようになります。</li>
+  <li><strong>保存された検索</strong>: 検索を共有した場合、
+    利用しているユーザ数を <kbd>userprefs.cgi</kbd>
+    から見ることができるようになりました。</li>
+  <li><strong>保存された検索</strong>: <kbd>userprefs.cgi</kbd> 上で、
+    共有している検索がどのグループに対してかというのと、
+    利用可能な検索のリストを見ることができるようになりました。</li>
+  <li><strong>フラグ</strong>: ドロップダウンユーザリスト機能を利用している場合、
+    フラグ要請対象のボックスに、
+    要請を受けられるユーザのみが表示されるようになりました。</li>
+  <li><strong>フラグ</strong>: 誰かがあなたにリクエストを投げ、
+    あなたが要請を誰かに転送した場合、要請者があなたに設定されなくなりました。
+    言い換えれば、元の要請者のまま、要請を "転送" できるようになりました。</li>
+  <li><strong>フラグ</strong>: フラグのメールが完全にスレッド対応し、
+    メールクライアントで [% terms.abug %] のスレッド内に表示されるようになりました。</li>
+  <li><kbd>email_in.pl</kbd> を利用している場合、
+    フィールド名に <kbd>@cc</kbd> を利用することで CC 
+    リストにユーザを追加できるようになりました。</li>
+  <li>さまざまなページ (特に管理者ページ) で、
+    [% terms.Bugzilla %] ガイドの関連する部分へのリンクが付くようになり、
+    該当のドキュメントを読めるようになりました。</li>
+  <li>依存グラフがより早く生成されるようになり、
+    (既定では) 依存ツリーでと同じ [% terms.bugs %] のみが含まれるようになりました。</li>
 </ul>
 
-<h4>Enhancements For Administrators</h4>
+<h4>管理者向け</h4>
 
 <ul>
-  <li><strong>Admin UI</strong>: Instead of having the Administration 
+  <li><strong>管理 UI</strong>: Instead of having the Administration 
     Control Panel links in the footer, there is now just one link called 
    "Administration" that takes you to a page that links to all the
     administrative controls for [% terms.Bugzilla %].</li>
-  <li><strong>Admin UI</strong>: Administrative pages no longer display
+  <li><strong>管理 UI</strong>: Administrative pages no longer display
     confirmation pages, instead they redirect you to some useful page 
     and display a message about what changed.</li>
-  <li><strong>Admin UI</strong>: The interface for editing group 
+  <li><strong>管理 UI</strong>: The interface for editing group 
      inheritance in <kbd>editgroups.cgi</kbd> is much clearer now.</li>
-  <li><strong>Admin UI</strong>: When editing a user, you can now see 
+  <li><strong>管理 UI</strong>: When editing a user, you can now see 
     all the components where that user is the Default Assignee or Default
     QA Contact.</li>
 
-  <li><strong>Email</strong>: For installations that use SMTP to send 
+  <li><strong>メール</strong>: For installations that use SMTP to send 
     mail (as opposed to Sendmail), [%+ terms.Bugzilla %] now supports
     SMTP Authentication, so that it can log in to your mail server 
     before sending messages.</li>
-  <li><strong>Email</strong>: Using the "Test" mail delivery method now
+  <li><strong>メール</strong>: Using the "Test" mail delivery method now
      creates a valid mbox file to make testing easier.</li>
 
-  <li><strong>Authentication</strong>: [% terms.Bugzilla %] now correctly 
+  <li><strong>認証</strong>: [% terms.Bugzilla %] now correctly 
     handles LDAP records which contain multiple email addresses. (The first
     email address in the list that is a valid [% terms.Bugzilla %] account 
     will be used, or if this is a new user, the first email address in 
     the list will be used.)</li>
-  <li><strong>Authentication</strong>: [% terms.Bugzilla %] can now take 
+  <li><strong>認証</strong>: [% terms.Bugzilla %] can now take 
     a list of LDAP servers to try in order until it gets a successful
     connection.</li>
-  <li><strong>Authentication</strong>: [% terms.Bugzilla %] now supports 
+  <li><strong>認証</strong>: [% terms.Bugzilla %] now supports 
     RADIUS authentication.</li>
 
-  <li><strong>Security</strong>: The login cookies is now created as 
+  <li><strong>セキュリティー</strong>: The login cookies is now created as 
     "HTTPOnly" so that it can't be read by possibly malicious scripts. 
     Also, if SSL is enabled on your installation, the login cookie is
     now only sent over SSL connections.</li>
-  <li><strong>Security</strong>: The <code>ssl</code> parameter now protects
+  <li><strong>セキュリティー</strong>: The <code>ssl</code> parameter now protects
     every page a logged-in user accesses, when set to "authenticated sessions."
     Also, SSL is now enforced appropriately in the WebServices interface when
     the parameter is set.</li>
 
-  <li><strong>Database</strong>: [% terms.Bugzilla %] now uses transactions in 
+  <li><strong>データベース</strong>: [% terms.Bugzilla %] now uses transactions in 
     the database instead of table locks. This should generally improve
     performance with many concurrent users. It also means if there is
     an unexpected error in the middle of a page, all database changes made
     during that page will be rolled back.</li>
-  <li><strong>Database</strong>: You no longer have to set 
+  <li><strong>データベース</strong>: You no longer have to set 
     <code>max_packet_size</code> in MySQL to add large attachments. However,
     you may need to set it manually if you restore a mysqldump into your
     database.</li>
 
-  <li>New WebService functions:
+  <li>ウェブサービスの新機能:
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html">B<!-- -->ug.add_comment</a>
     and <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bugzilla.html">Bugzilla.extensions</a>.</li>
 
@@ -358,7 +345,7 @@
     [% terms.Bugzilla %]'s database server is down.</li>
 </ul>
 
-<h3>Enhancements for Localizers (or Localized Installations)</h3>
+<h3>ローカライゼーション向け (もしくはローカライズされたインストール)</h3>
 
 <ul>
   <li>The documentation can now be localized--in other words, you can have
@@ -372,7 +359,7 @@
     be localized. See <kbd>template/en/default/setup/strings.txt.pl</kbd>.
 </ul>
 
-<h2><a name="v32_issues"></a>Outstanding Issues</h2>
+<h2><a name="v32_issues"></a>既知の問題点</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=423439">
