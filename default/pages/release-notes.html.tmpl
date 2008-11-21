@@ -261,59 +261,55 @@
 <h4>管理者向け</h4>
 
 <ul>
-  <li><strong>管理 UI</strong>: Instead of having the Administration 
-    Control Panel links in the footer, there is now just one link called 
-   "Administration" that takes you to a page that links to all the
-    administrative controls for [% terms.Bugzilla %].</li>
-  <li><strong>管理 UI</strong>: Administrative pages no longer display
-    confirmation pages, instead they redirect you to some useful page 
-    and display a message about what changed.</li>
-  <li><strong>管理 UI</strong>: The interface for editing group 
-     inheritance in <kbd>editgroups.cgi</kbd> is much clearer now.</li>
-  <li><strong>管理 UI</strong>: When editing a user, you can now see 
-    all the components where that user is the Default Assignee or Default
-    QA Contact.</li>
+  <li><strong>管理 UI</strong>: 管理用コントロールパネルへのリンクをフッタに入れる代わりに、
+    すべての [% terms.Bugzilla %] 管理作業を行えるページへの "管理" 
+    という名前のリンクを配置するようになりました。</li>
+  <li><strong>管理 UI</strong>: 管理ページでは確認ページが表示されなくなりました。
+    その代わりに何が変更されたかのメッセージを表示するような、
+    有用なページへリダイレクトする用になりました。</li>
+  <li><strong>管理 UI</strong>: グループ管理を行う <kbd>editgroups.cgi</kbd>
+    の表示がよりわかりやすくなりました。</li>
+  <li><strong>管理 UI</strong>: ユーザの編集の際、そのユーザが既定の担当者か
+    QA コンタクトになっているすべてのコンポーネントが表示されるようになりました。</li>
 
-  <li><strong>メール</strong>: For installations that use SMTP to send 
-    mail (as opposed to Sendmail), [%+ terms.Bugzilla %] now supports
-    SMTP Authentication, so that it can log in to your mail server 
-    before sending messages.</li>
-  <li><strong>メール</strong>: Using the "Test" mail delivery method now
-     creates a valid mbox file to make testing easier.</li>
+  <li><strong>メール</strong>: (Sendmail の代わりに) SMTP 
+    をメール送信に利用するサイト向けに、[% terms.Bugzilla %] 
+    は SMTP 認証をサポートしましたので、
+    メール送信前にメールサーバにログインすることが可能になりました。</li>
+  <li><strong>メール</strong>: "Test" メール送信メソッドを利用することで、
+    メールの試験のために仮想的な mbox ファイルを生成できるようになりました。</li>
 
-  <li><strong>認証</strong>: [% terms.Bugzilla %] now correctly 
-    handles LDAP records which contain multiple email addresses. (The first
-    email address in the list that is a valid [% terms.Bugzilla %] account 
-    will be used, or if this is a new user, the first email address in 
-    the list will be used.)</li>
-  <li><strong>認証</strong>: [% terms.Bugzilla %] can now take 
-    a list of LDAP servers to try in order until it gets a successful
-    connection.</li>
-  <li><strong>認証</strong>: [% terms.Bugzilla %] now supports 
-    RADIUS authentication.</li>
+  <li><strong>認証</strong>: [% terms.Bugzilla %] は複数のメールアドレスを持つ
+    LDAP のレコードを正常に扱えるようになりました。(有効な [% terms.Bugzilla %]
+    アカウントである場合はメールアドレスのリストの先頭のが利用され、
+    新規ユーザの場合は先頭のメールアドレスが利用されます。)</li>
+  <li><strong>認証</strong>: [% terms.Bugzilla %] に複数の LDAP
+    サーバを設定することができるようになり、正常に接続できるまで順に試します。</li>
+  <li><strong>認証</strong>: [% terms.Bugzilla %] は RADIUS
+    認証をサポートしました。</li>
 
-  <li><strong>セキュリティー</strong>: The login cookies is now created as 
-    "HTTPOnly" so that it can't be read by possibly malicious scripts. 
-    Also, if SSL is enabled on your installation, the login cookie is
-    now only sent over SSL connections.</li>
-  <li><strong>セキュリティー</strong>: The <code>ssl</code> parameter now protects
-    every page a logged-in user accesses, when set to "authenticated sessions."
-    Also, SSL is now enforced appropriately in the WebServices interface when
-    the parameter is set.</li>
+  <li><strong>セキュリティー</strong>: ログインクッキーは "HTTPOnly"
+    で生成されるようになり、悪意のあるスクリプトから読めなくなりました。
+    また、SSL が有効であれば、ログインクッキーは SSL
+    接続でのみ送信されるようになりました。</li>
+  <li><strong>セキュリティー</strong>: <code>ssl</code> パラメータが
+    "authenticated sessions" である場合、
+    ログイン後のアクセスすべてを保護するようになりました。
+    また、これが設定されていれば、SSL
+    はウェブサービスインターフェースでも要求されます。</li>
 
-  <li><strong>データベース</strong>: [% terms.Bugzilla %] now uses transactions in 
-    the database instead of table locks. This should generally improve
-    performance with many concurrent users. It also means if there is
-    an unexpected error in the middle of a page, all database changes made
-    during that page will be rolled back.</li>
-  <li><strong>データベース</strong>: You no longer have to set 
-    <code>max_packet_size</code> in MySQL to add large attachments. However,
-    you may need to set it manually if you restore a mysqldump into your
-    database.</li>
+  <li><strong>データベース</strong>: [% terms.Bugzilla %] はテーブルロックの代わりに、
+    トランザクションを利用するようになりました。これにより、
+    一般的には同時接続ユーザが多い場合にパフォーマンス改善が見られるでしょう。
+    また、これは、処理の途中で道のエラーが発生したときに、
+    すべての変更がロールバックできることを意味します。</li>
+  <li><strong>データベース</strong>: 巨大な添付を追加する際に、MySQL に
+    <code>max_packet_size</code> を追加しなくてよくなりました。
+    しかしながら、mysqldump などでデータベースに手動でリストアする際には必要でしょう。</li>
 
   <li>ウェブサービスの新機能:
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html">B<!-- -->ug.add_comment</a>
-    and <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bugzilla.html">Bugzilla.extensions</a>.</li>
+    と <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bugzilla.html">Bugzilla.extensions</a></li>
 
   <li>You can now delete custom fields, but only if they have never been
     set on any [% terms.bug %].</li>
@@ -1509,15 +1505,15 @@ sub y { $var++ }</pre>
 
 [% BLOCK db_req %]
   [% SET m = DB_MODULE.$db %]
-  <h3><a name="v32_req_[% db FILTER html %]"></a>For [% m.name FILTER html %] 
-    Users</h3>
+  <h3><a name="v32_req_[% db FILTER html %]"></a>[% m.name FILTER html %] 
+    ユーザ</h3>
 
   <ul>
     <li>[% m.name FILTER html %]
        [%+ '<span class="req_new">' IF db_new %]v[% m.db_version FILTER html %]
        [% '</span>' IF db_new %]
        </li>
-    <li><strong>perl module:</strong>
+    <li><strong>perl モジュール:</strong>
       [%+ m.dbd.module FILTER html %] 
       [% '<span class="req_new">' IF dbd_new %]v[% m.dbd.version FILTER html %]
       [% '</span>' IF dbd_new %]</li>
@@ -1528,9 +1524,9 @@ sub y { $var++ }</pre>
 [% BLOCK req_table %]
   <table class="req_table" border="0" cellspacing="0" cellpadding="0">
     <tr>
-      <th>Module</th> <th>Version</th>
+      <th>モジュール</th> <th>バージョン</th>
       [% IF include_feature %]
-        <th>Enables Feature</th>
+        <th>有効になる機能</th>
       [% END %]
     </tr>
     [% FOREACH req = reqs %]
@@ -1540,7 +1536,7 @@ sub y { $var++ }</pre>
         <td [% 'class="req_new"' IF updated.contains(req.package) 
                                     OR new.contains(req.package) %]>
           [%- IF req.version == 0 %]
-            (Any)
+            (指定なし)
           [% ELSE %]
             [%- req.version FILTER html %]
           [% END %]
