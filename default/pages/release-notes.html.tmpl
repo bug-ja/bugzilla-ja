@@ -311,172 +311,167 @@
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html">B<!-- -->ug.add_comment</a>
     と <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bugzilla.html">Bugzilla.extensions</a></li>
 
-  <li>You can now delete custom fields, but only if they have never been
-    set on any [% terms.bug %].</li>
-  <li>There is now a <kbd>--reset-password</kbd> argument to 
-    <kbd>checksetup.pl</kbd> that allows you to reset a user's password
-    from the command line.</li>
-  <li>There is now a script called <kbd>sanitycheck.pl</kbd> that you can
-    run from the command line. It works just like <kbd>sanitycheck.cgi</kbd>.
-    By default, it only outputs anything if there's an error, so it's
-    ideal for administrators who want to run it nightly in a cron job.</li>
-  <li>The <kbd>strict_isolation</kbd> parameter now prevents you from setting
-    users who cannot see [% terms.abug %] as a CC, Assignee, or QA
-    Contact. Previously it only prevented you from adding users who
-    could not <em>edit</em> the [% terms.bug %].</li>
-  <li>Extensions can now add their own headers to the HTML &lt;head&gt;
-    for things like custom CSS and so on.</li>
-  <li><kbd>sanitycheck.cgi</kbd> has been templatized, meaning that the
-    entire [% terms.Bugzilla %] UI is now contained in templates.</li>
-  <li>When setting the <kbd>sslbase</kbd> parameter, you can now specify
-    a port number in the URL.</li>
-  <li>When importing [% terms.bugs %] using <kbd>importxml.pl</kbd>,
-    attachments will have their actual creator set as their creator,
-    instead of the person who exported the [% terms.bug %] from the other
-    system.</li>
-  <li>The voting system is off by default in new installs. This is to
-    prepare for the fact that it will be moved into an extension at
-    some point in the future.</li>
-  <li>The <code>shutdownhtml</code> parameter now works even when 
-    [% terms.Bugzilla %]'s database server is down.</li>
+  <li>[% terms.bug %] で一度も利用されていないものに限り、
+    カスタムフィールドを削除できるようになりました。</li>
+  <li><kbd>checksetup.pl</kbd> に <kbd>--reset-password</kbd> 引数が追加され、
+    コマンドラインからユーザパスワードの再設定が可能になりました。</li>
+  <li>コマンドラインから実行可能な <kbd>sanitycheck.pl</kbd> スクリプトが追加されました。
+    これは、<kbd>sanitycheck.cgi</kbd> のように動作します。既定では、
+    エラーが発生したときのみ出力しますので、cron job として毎晩実行したい管理者向けに、
+    理想的なものとなっているでしょう。</li>
+  <li><kbd>strict_isolation</kbd> パラメータにより、[% terms.abug %] の CC、担当者、
+    QA コンタクトになれないようなユーザを設定することが可能になりました。
+    過去のバージョンでは、[% terms.bug %] を<em>編集</em>
+    できないユーザを追加できるだけでした。</li>
+  <li>独自 CSS などのために、拡張機能が HTML &lt;head&gt;
+    に独自ヘッダを追加できるようになりました。</li>
+  <li><kbd>sanitycheck.cgi</kbd> がテンプレート化され、[% terms.Bugzilla %] UI 
+    が完全にテンプレートになりました。</li>
+  <li><kbd>sslbase</kbd> パラメータを設定した時に、URL 
+    にポート番号を指定できるようになりました。</li>
+  <li><kbd>importxml.pl</kbd> で [% terms.bugs %] をインポートした時に、
+    添付が他のシステムで [% terms.bug %] をエクスポートしたユーザでなく、
+    元の作成者がその作成者として設定されるようになりました。</li>
+  <li>投票システムは新規インストールでは既定で無効になりました。
+    これは将来的にこの機能を (本体にでなく)
+    拡張機能として提供するようにするための準備です。</li>
+  <li><code>shutdownhtml</code> パラメータが [% terms.Bugzilla %] 
+    のデータベースサーバが落ちているときにも動作するようになりました。</li>
 </ul>
 
 <h3>ローカライゼーション向け (もしくはローカライズされたインストール)</h3>
 
 <ul>
-  <li>The documentation can now be localized--in other words, you can have
-    documentation installed for multiple languages at once and
-    [%+ terms.Bugzilla %] will link to the correct language in its internal
-    documentation links.</li>
-  <li>[% terms.Bugzilla %] no longer uses the <kbd>languages</kbd> parameter.
-    Instead it reads the <kbd>template/</kbd> directory to see which
-    languages are available.</li>
-  <li>Some of the messages printed by <kbd>checksetup.pl</kbd> can now
-    be localized. See <kbd>template/en/default/setup/strings.txt.pl</kbd>.
+  <li>ドキュメントがローカライズ可能になりました。言い換えると、
+    複数言語のドキュメントをひとつのサイトに導入でき、[% terms.Bugzilla %]
+    のドキュメントへのリンクが正しい言語に向くようになりました。</li>
+  <li>[% terms.Bugzilla %] は <kbd>languages</kbd> パラメータを利用しなくなりました。
+    替わりに <kbd>template/</kbd> ディレクトリを読み、
+    どの言語が存在するかを確認します。</li>
+  <li><kbd>checksetup.pl</kbd> で出力されるいくつかのメッセージが、
+    ローカライズ可能になりました。<kbd>template/en/default/setup/strings.txt.pl</kbd>
+    を参照してください。</kbd>
 </ul>
 
 <h2><a name="v32_issues"></a>既知の問題点</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=423439">
-    [%- terms.Bug %] 423439</a>: Tabs in comments will be converted
-    to four spaces, due to a b<!-- -->ug in Perl as of Perl 5.8.8.</li>
+    [%- terms.Bug %] 423439</a>: コメントのタブが 4 空白文字に変換される。
+    これは、Perl 5.8.8 に存在する Perl のバグです。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=69621">
-    [%- terms.Bug %] 69621</a>: If you rename or remove a keyword that is
-    in use on [% terms.bugs %], you will need to rebuild the "keyword cache"
-    by running <a href="sanitycheck.cgi">sanitycheck.cgi</a> and choosing 
-    the option to rebuild the cache when it asks. Otherwise keywords may 
-    not show up properly in search results.</li>
+    [%- terms.Bug %] 69621</a>: [% terms.bugs %] で利用されているキーワードを、
+    名前変更か削除すると、<a href="sanitycheck.cgi">sanitycheck.cgi</a> を実行し、
+    必要であればそのキャッシュ再構築のオプションを選択することにで、
+    "キーワードキャッシュ" の再構築を行う操作が必要になります。そうしなければ、
+    検索結果にキーワードが正常に表示されません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=89822">
-    [%- terms.Bug %] 89822</a>: When changing multiple [% terms.bugs %] at 
-    the same time, there is no "mid-air collision" protection.</li>
+    [%- terms.Bug %] 89822</a>: 複数 [% terms.bugs %] を一度に更新すると、
+    "操作衝突" の保護が働きません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=276230">
-    [%- terms.Bug %] 276230</a>: The support for restricting access to 
-    particular Categories of New Charts is not complete. You should treat 
-    the 'chartgroup' Param as the only access mechanism available.<br>
-    However, charts migrated from Old Charts will be restricted to 
-    the groups that are marked MANDATORY for the corresponding Product.
-    There is currently no way to change this restriction, and the 
-    groupings will not be updated if the group configuration
-    for the Product changes.</li>
+    [%- terms.Bug %] 276230</a>: 新しいチャートの特定のカテゴリでのアクセス制限機能は、
+    完全ではありません。'chartgroup' パラメータは、
+    アクセス方法が存在するかの機能として考えるべきです。<br>
+    しかしながら、旧チャートから変換されたチャートは、
+    関連するプロダクトで委任されているグループに制限されます。
+    この制限を変更する方法は現状ではありませんし、プロダクトの変更により、
+    グループ設定が更新されない限りアップグレードされません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=370370">
-    [%- terms.Bug %] 370370</a>: mod_perl support is currently not
-    working on Windows machines.</li>
+    [%- terms.Bug %] 370370</a>: mod_perl はいまのところ Windows では動作しません。</li>
 </ul>
 
-<h2><a name="v32_upgrading"></a>How to Upgrade From An Older Version</h2>
+<h2><a name="v32_upgrading"></a>古いバージョンからのアップグレード方法</h2>
 
-<h3><a name="v32_upgrading_notes"></a>Notes For Upgraders</h3>
+<h3><a name="v32_upgrading_notes"></a>アップグレード用のメモ</h3>
 
 <ul>
-  <li>If you upgrade by CVS, the <kbd>extensions</kbd> and 
-    <kbd>skins/contrib</kbd> directories are now in CVS instead of
-    being created by <kbd>checksetup.pl</kbd> If you do a <kbd>cvs update</kbd>
-    from 3.0, you will be told that your directories are "in the way" and
-    you should delete (or move) them and then do <kbd>cvs update</kbd>
-    again. Also, the <kbd>docs</kbd> directory has been restructured
-    and after you <kbd>cvs update</kbd> you can delete the <kbd>docs/html</kbd>,
-    <kbd>docs/pdf</kbd>, <kbd>docs/txt</kbd>, and <kbd>docs/xml</li>
-    directories.</li>
-  <li>If you are using MySQL, you should know that [% terms.Bugzilla %]
-    now uses InnoDB for all tables. <kbd>checksetup.pl</kbd> will convert
-    your tables automatically, but if you have InnoDB disabled,
-    the upgrade will not be able to complete (and <kbd>checksetup.pl</kbd>
-    will tell you so).</li>
+  <li>CVS から取得している場合、<kbd>extensions</kbd> と <kbd>skins/contrib</kbd>
+    ディレクトリは <kbd>checksetup.pl</kbd> で作成されるのではなく CVS
+    野中に含まれるようになりました。<kbd>cvs update</kbd> を 3.0 から行った場合、
+    これらのディレクトリは "存在する" といわれ、削除 (か移動) してから <kbd>cvs update</kbd>
+    を再度実行するようにいわれるでしょう。また、<kbd>docs</kbd> 
+    ディレクトリが再構成され、<kbd>cvs update</kbd> 後に、<kbd>docs/html</kbd>、
+    <kbd>docs/pdf</kbd>、</kbd>docs/txt</kbd>、<kbd>docs/xml</kbd> 
+    ディレクトリを削除できるようになるでしょう。</li>
 
-  <li><strong>You should also read the 
-    <a href="#v30_upgrading_notes">[% terms.Bugzilla %] 3.0 Notes For Upgraders
-    section</a> of the 
-    <a href="#v32_previous">previous release notes</a> if you are upgrading
-    from a version before 3.0.</strong></li>
+  <li>MySQL を利用している場合、[% terms.Bugzilla %] が InnoDB 
+    を全てのテーブルに利用するようになったことを把握してください。
+    <kbd>checksetup.pl</kbd> はあなたのテーブルを自動更新しますが、
+    InnoDB が無効の場合、アップグレードは完了しません。
+    (そして、<kbd>checksetup.pl</kbd> はその旨あなたに伝えます。)</li>
+
+  <li>3.0 以前からアップグレードを考えている場合は、
+    <a href="#v32_previous">旧バージョンのリリースノート</a> にある
+    <strong><a href="#v30_upgrading_notes">アップグレードユーザ向けの 
+    [% terms.Bugzilla %] 3.0 のノートの章</a>を読んでください。</strong></li>
 </ul>
 
-<h3>Steps For Upgrading</h3>
+<h3>アップグレード方法</h3>
 
-<p>Once you have read the notes above, see the
-  <a href="[% docs_urlbase FILTER html %]upgrade.html">Upgrading 
-  documentation</a> for instructions on how to upgrade.</p>
+<p>上記の注意を読んだあとは、
+  <a href="[% docs_urlbase FILTER html %]upgrade.html">アップグレードに関するドキュメント
+  </a> を参照してアップグレードしてください。</p>
 
-<h2><a name="v32_code_changes"></a>Code Changes Which May Affect 
-  Customizations</h2>
+<h2><a name="v32_code_changes"></a>カスタマイズに影響するコードの変更</h2>
 
 <ul>
-  <li><a href="#v32_code_hooks">More Hooks!</a></li>
-  <li><a href="#v32_code_search">Search.pm Rearchitecture</a></li>
-  <li><a href="#v32_code_lib">lib Directory</a></li>
-  <li><a href="#v32_code_other">Other Changes</a></li>
+  <li><a href="#v32_code_hooks">よりよくなったフック機構!</a></li>
+  <li><a href="#v32_code_search">Search.pm 再構成</a></li>
+  <li><a href="#v32_code_lib">lib ディレクトリ</a></li>
+  <li><a href="#v32_code_other">その他の変更</a></li>
 </ul>
 
-<h3><a name="v32_code_hooks"></a>More Hooks!</h3>
+<h3><a name="v32_code_hooks"></a>よりよくなったフック機構!</h3>
 
-<p>There are more code hooks in 3.2 than there were in 3.0. See the
-  documentation of <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Hook.html">Bugzilla::Hook</a>
-  for more details.</p>
+<p>3.0 に比べて 3.2 ではよりフックできる場所が増えました。詳細に関しては、
+  <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Hook.html">Bugzilla::Hook</a>
+  のドキュメントを参照してください。</p>
 
-<h3><a name="v32_code_search"></a>Search.pm Rearchitecture</h3>
+<h3><a name="v32_code_search"></a>Search.pm 再構成</h3>
 
-<p><kbd>Bugzilla/Search.pm</kbd> has been heavily modified, to be much
-  easier to read and use. It contains mostly the same code as it did in
-  3.0, but it has been moved around and reorganized significantly.</p>
+<p><kbd>Bugzilla/Search.pm</kbd> は大幅に書き換えられ、より簡単に読め、
+  利用できるようになりました。3.0 と大部分は同じコードですが、
+  移動され、単純な形に再構築されました。</p>
 
-<h3><a name="v32_code_lib"></a>lib Directory</h3>
+<h3><a name="v32_code_lib"></a>lib ディレクトリ</h3>
 
-<p>As part of implementing <a href="#v32_feat_install">install-module.pl</a>,
-  [%+ terms.Bugzilla %] was given a local <kbd>lib</kbd> directory which
-  it searches for modules, in addition to the standard system path.</p>
+<p><a href="#v32_feat_install">install-module.pl</a> の実装上、
+  標準的なシステムパスに加えて、ローカルの <kbd>lib</kbd> ディレクトリを、
+  モジュール検索のパスに [% terms.Bugzilla %] が追加するようになりました。</p>
 
-<p>This means that all [% terms.Bugzilla %] scripts now start with
-  <code>use lib qw(. lib);</code> as one of the first lines.</p>
+<p>これは、全ての [% terms.Bugzilla %] スクリプトが、
+  <code>use lib qw(. lib);</code> を先頭の行として始まることを意味します。</p>
 
-<h3><a name="v32_code_other"></a>Other Changes</h3>
+<h3><a name="v32_code_other"></a>その他の変更</h3>
 
 <ul>
-  <li>You should now be using <code>get_status('NEW')</code> instead of
-    <code>status_descs.NEW</code> in templates.</li>
-  <li>The <code>[&#37;# version = 1.0 &#37;]</code> comment at the top of every
-    template file has been removed.</li>
+  <li><code>status_descs.NEW</code> の代わりに <code>get_status('NEW')</code>
+    をテンプレート中で利用すべきです。</li>
+  <li>全てのテンプレートの先頭に挿入されていた <code>[&#37;# version = 1.0 &#37;]</code>
+    コメントは削除されました。</li>
 </ul>
 
-<h2><a name="v32_previous"></a>Release Notes For Previous Versions</h2>
+<h2><a name="v32_previous"></a>旧バージョンのリリースノート</h2>
 
-<h1>[% terms.Bugzilla %] 3.0.x Release Notes</h1>
+<h1>[% terms.Bugzilla %] 3.0.x リリースノート</h1>
 
-<h2>Table of Contents</h2>
+(日本語注: この部分は将来的には翻訳される可能性はあります。)
+
+<h2>目次</h2>
 
 <ul class="bz_toc">
-  <li><a href="#v30_introduction">Introduction</a></li>
-  <li><a href="#v30_point">Updates In This 3.0.x Release</a></li>
-  <li><a href="#v30_req">Minimum Requirements</a></li>
-  <li><a href="#v30_feat">New Features and Improvements</a></li>
-  <li><a href="#v30_issues">Outstanding Issues</a></li>
-  <li><a href="#v30_security">Security Fixes In This Release</a></li>
-  <li><a href="#v30_upgrading">How to Upgrade From An Older Version</a></li>
-  <li><a href="#v30_code_changes">Code Changes Which May Affect 
-    Customizations</a></li>
-  <li><a href="#v30_previous">Release Notes for Previous Versions</a></li>
+  <li><a href="#v30_introduction">導入</a></li>
+  <li><a href="#v30_point">3.0.x リリースでの更新</a></li>
+  <li><a href="#v30_req">動作環境</a></li>
+  <li><a href="#v30_feat">新機能と改善点</a></li>
+  <li><a href="#v30_issues">既知の問題点</a></li>
+  <li><a href="#v30_security">セキュリティー更新</a></li>
+  <li><a href="#v30_upgrading">古いバージョンからのアップグレード方法</a></li>
+  <li><a href="#v30_code_changes">カスタマイズに影響するコードの変更</a></li>
+  <li><a href="#v30_previous">以前のバージョンのリリースノート</a></li>
 </ul>
 
-<h2><a name="v30_introduction"></a>Introduction</h2>
+<h2><a name="v30_introduction"></a>導入</h2>
 
 <p>Welcome to [% terms.Bugzilla %] 3.0! It's been over eight years since
   we released [% terms.Bugzilla %] 2.0, and everything has changed since
@@ -490,7 +485,7 @@
   <a href="#v30_previous">previous versions</a> in between your version 
   and this one.</p>
 
-<h2><a name="v30_point">Updates in this 3.0.x Release</a></h2>
+<h2><a name="v30_point">3.0.x リリースでの更新</a></h2>
 
 <p>This section describes what's changed in the most recent b<!-- -->ug-fix
   releases of [% terms.Bugzilla %] after 3.0. We only list the
@@ -708,48 +703,46 @@
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=335354">[% terms.Bug %] 335354</a>)</li>
 </ul>
 
-<h2><a name="v30_req"></a>Minimum Requirements</h2>
+<h2><a name="v30_req"></a>動作環境</h2>
 
-<p>Any requirements that are new since 2.22 will look like
-  <span class="req_new">this</span>.</p>
+<p>2.22 以降の動作環境の更新は
+  <span class="req_new">このように</span> 表示されます。</p>
 
 <ul>
   <li><a href="#v30_req_perl">Perl</a></li>
-  <li><a href="#v30_req_mysql">For MySQL Users</a></li>
-  <li><a href="#v30_req_pg">For PostgreSQL Users</a></li>
-  <li><a href="#v30_req_modules">Required Perl Modules</a></li>
-  <li><a href="#v30_req_optional_mod">Optional Perl
-    Modules</a></li>
+  <li><a href="#v30_req_mysql">MySQL ユーザ</a></li>
+  <li><a href="#v30_req_pg">PostgreSQL ユーザ</a></li>
+  <li><a href="#v30_req_modules">必須 Perl モジュール</a></li>
+  <li><a href="#v30_req_optional_mod">追加の Perl モジュール</a></li>
 </ul>
 
 
 <h3><a name="v30_req_perl"></a>Perl</h3>
 
 <ul>
-  <li>Perl <span class="req_new">v<strong>5.8.0</strong></span> (non-Windows 
-    platforms)</li>
-  <li>Perl v<strong>5.8.1</strong> (Windows platforms)</li>
+  <li>Perl <span class="req_new">v<strong>5.8.0</strong></span> (Windows 以外)</li>
+  <li>Perl v<strong>5.8.1</strong> (Windows)</li>
 </ul>
 
-<h3><a name="v30_req_mysql"></a>For MySQL Users</h3>
+<h3><a name="v30_req_mysql"></a>MySQL ユーザ</h3>
 
 <ul>
   <li>MySQL v4.1.2</li>
-  <li><strong>perl module:</strong> DBD::mysql v2.9003</li>
+  <li><strong>perl モジュール:</strong> DBD::mysql v2.9003</li>
 </ul>
 
-<h3><a name="v30_req_pg"></a>For PostgreSQL Users</h3>
+<h3><a name="v30_req_pg"></a>PostgreSQL ユーザ</h3>
 
 <ul>
   <li>PostgreSQL v8.00.0000</li>
-  <li><strong>perl module:</strong> DBD::Pg v1.45</li>
+  <li><strong>perl モジュール:</strong> DBD::Pg v1.45</li>
 </ul>
 
-<h3><a name="v30_req_modules"></a>Required Perl Modules</h3>
+<h3><a name="v30_req_modules"></a>必須 Perl モジュール</h3>
 
 <table class="req_table" border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <th>Module</th> <th>Version</th>
+    <th>モジュール</th> <th>バージョン</th>
   </tr>
     <tr><td>CGI</td> <td>2.93</td>
   </tr>
@@ -780,34 +773,34 @@
   </tr>
 </table>
 
-<h3><a name="v30_req_optional_mod"></a>Optional Perl Modules</h3>
+<h3><a name="v30_req_optional_mod"></a>追加の Perl モジュール</h3>
 
-<p>The following perl modules, if installed, enable various
-  features of [% terms.Bugzilla %]:</p>
+<p>以下の perl モジュールがインストールされていれば、[% terms.Bugzilla %] 
+のさまざまな機能が有効化されます:</p>
 
 <table class="req_table" border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <th>Module</th> <th>Version</th>
-    <th>Enables Feature</th>
+    <th>モジュール</th> <th>バージョン</th>
+    <th>有効化される機能</th>
   </tr>
    <tr>
      <td class="req_new">LWP::UserAgent</td> 
-     <td class="req_new">(Any)</td> 
+     <td class="req_new">(指定なし)</td> 
      <td>Automatic Update Notifications</td>
   </tr>
   <tr>
     <td>Template::Plugin::GD::Image</td> 
-    <td>(Any)</td> 
+    <td>(指定なし)</td> 
     <td>Graphical Reports</td>
   </tr>
   <tr>
     <td>GD::Graph</td> 
-    <td>(Any)</td> 
+    <td>(指定なし)</td> 
     <td>Graphical Reports</td>
   </tr>
   <tr>
     <td>GD::Text</td> 
-    <td>(Any)</td> 
+    <td>(指定なし)</td> 
     <td>Graphical Reports</td>
   </tr>
   <tr>
@@ -817,17 +810,17 @@
   </tr>
   <tr>
     <td class="req_new">Email::MIME::Attachment::Stripper</td> 
-    <td class="req_new">(Any)</td> 
+    <td class="req_new">(指定なし)</td> 
     <td>Inbound Email</td>
   </tr>
   <tr>
     <td class="req_new">Email::Reply</td> 
-    <td class="req_new">(Any)</td> 
+    <td class="req_new">(指定なし)</td> 
     <td>Inbound Email</td>
   </tr>
   <tr>
     <td>Net::LDAP</td> 
-    <td>(Any)</td> 
+    <td>(指定なし)</td> 
     <td>LDAP Authentication</td>
   </tr>
   <tr>
@@ -837,12 +830,12 @@
   </tr>
   <tr>
     <td>HTML::Scrubber</td> 
-    <td>(Any)</td> 
+    <td>(指定なし)</td> 
     <td>More HTML in Product/Group Descriptions</td>
   </tr>
   <tr>
     <td>XML::Twig</td> 
-    <td>(Any)</td> 
+    <td>(指定なし)</td> 
     <td>Move [% terms.Bugs %] Between Installations</td>
   </tr>
   <tr>
@@ -857,7 +850,7 @@
   </tr>
   <tr>
     <td>Image::Magick</td> 
-    <td>(Any)</td> 
+    <td>(指定なし)</td> 
     <td>Optionally Convert BMP Attachments to PNGs</td>
   </tr>
   <tr>
@@ -867,7 +860,7 @@
   </tr>
   <tr>
     <td class="req_new">SOAP::Lite</td> 
-    <td class="req_new">(Any)</td> 
+    <td class="req_new">(指定なし)</td> 
     <td>XML-RPC Interface</td>
   </tr>
   <tr>
@@ -882,7 +875,7 @@
   </tr>
 </table>
 
-<h2><a name="v30_feat"></a>New Features and Improvements</h2>
+<h2><a name="v30_feat"></a>新機能と改善点</h2>
 
 <ul>
   <li><a href="#v30_feat_cf">Custom Fields</a></li>
@@ -1221,33 +1214,31 @@
     installation.</li>
 </ul>
 
-<h2><a name="v30_issues"></a>Outstanding Issues</h2>
+<h2><a name="v30_issues"></a>既知の問題点</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=69621">
-    [%- terms.Bug %] 69621</a>: If you rename or remove a keyword that is
-    in use on [% terms.bugs %], you will need to rebuild the "keyword cache"
-    by running <a href="sanitycheck.cgi">sanitycheck.cgi</a> and choosing 
-    the option to rebuild the cache when it asks. Otherwise keywords may 
-    not show up properly in search results.</li>
+    [%- terms.Bug %] 69621</a>: [% terms.bugs %] で利用されているキーワードを、
+    名前変更か削除すると、<a href="sanitycheck.cgi">sanitycheck.cgi</a> を実行し、
+    必要であればそのキャッシュ再構築のオプションを選択することにで、
+    "キーワードキャッシュ" の再構築を行う操作が必要になります。そうしなければ、
+    検索結果にキーワードが正常に表示されません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=99215">
     [%- terms.Bug %] 99215</a>: Flags are not protected by "mid-air 
     collision" detection. Nor are any attachment changes.</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=89822">
-    [%- terms.Bug %] 89822</a>: When changing multiple [% terms.bugs %] at 
-    the same time, there is no "mid-air collision" protection.</li>
+    [%- terms.Bug %] 89822</a>: 複数 [% terms.bugs %] を一度に更新すると、
+    "操作衝突" の保護が働きません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=276230">
-    [%- terms.Bug %] 276230</a>: The support for restricting access to 
-    particular Categories of New Charts is not complete. You should treat 
-    the 'chartgroup' Param as the only access mechanism available.<br>
-    However, charts migrated from Old Charts will be restricted to 
-    the groups that are marked MANDATORY for the corresponding Product.
-    There is currently no way to change this restriction, and the 
-    groupings will not be updated if the group configuration
-    for the Product changes.</li>
+    [%- terms.Bug %] 276230</a>: 新しいチャートの特定のカテゴリでのアクセス制限機能は、
+    完全ではありません。'chartgroup' パラメータは、
+    アクセス方法が存在するかの機能として考えるべきです。<br>
+    しかしながら、旧チャートから変換されたチャートは、
+    関連するプロダクトで委任されているグループに制限されます。
+    この制限を変更する方法は現状ではありませんし、プロダクトの変更により、
+    グループ設定が更新されない限りアップグレードされません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=370370">
-    [%- terms.Bug %] 370370</a>: mod_perl support is currently not
-    working on Windows machines.</li>
+    [%- terms.Bug %] 370370</a>: mod_perl はいまのところ Windows では動作しません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=361149">
     [%- terms.Bug %] 361149</a>: If you are using Perl 5.8.0, you may
     get a lot of warnings in your Apache error_log about "deprecated
@@ -1261,49 +1252,54 @@
     Search yourself.</li>
 </ul>
 
-<h2><a name="v30_security"></a>Security Updates in This Release</h2>
+<h2><a name="v30_security"></a>セキュリティー更新</h2>
 
 <h3>3.0.6</h3>
 
-<p>[% terms.Bugzilla %] contains a minor security fix. For details, see the
-  <a href="http://www.bugzilla.org/security/2.20.6/">Security Advisory</a>.</p>
+<p>[% terms.Bugzilla %] contains a minor security fix. 詳細は
+  <a href="http://www.bugzilla.org/security/2.20.6/">セキュリティアドバイザリ</a>
+  を参照してください。</p>
 
 <h3>3.0.5</h3>
 
 <p>[% terms.Bugzilla %] contains one security fix for 
   <a href="[% docs_urlbase FILTER html %]api/importxml.html">importxml.pl</a>.
-  For details, see the 
-  <a href="http://www.bugzilla.org/security/2.22.4/">Security Advisory</a>.</p>
+  詳細は
+  <a href="http://www.bugzilla.org/security/2.22.4/">セキュリティアドバイザリ</a>
+  を参照してください。</p>
 
 <h3>3.0.4</h3>
 
 <p>[% terms.Bugzilla %] 3.0.4 contains three security fixes.
-  For details, see the
-  <a href="http://www.bugzilla.org/security/2.20.5/">Security Advisory</a>.</p>
+  詳細は
+  <a href="http://www.bugzilla.org/security/2.20.5/">セキュリティアドバイザリ</a>
+  を参照してください。</p>
 </p>
 
 <h3>3.0.3</h3>
 
-<p>No security fixes in this release.</p>
+<p>セキュリティー更新はありませんでした。</p>
 
 <h3>3.0.2</h3>
 
 <p>[% terms.Bugzilla %] 3.0.1 had an important security fix that is
   critical for public installations with "requirelogin" turned on.
-  For details, see the
-  <a href="http://www.bugzilla.org/security/3.0.1/">Security Advisory</a></p>
+  詳細は
+  <a href="http://www.bugzilla.org/security/3.0.1/">セキュリティアドバイザリ</a>
+  を参照してください。</p>
 
 <h3>3.0.1</h3>
 
 <p>[% terms.Bugzilla %] 3.0 had three security issues that have been
   fixed in this release: one minor information leak, one hole only
   exploitable by an admin or using <code>email_in.pl</code>, and one in an
-  uncommonly-used template. For details, see the 
-  <a href="http://www.bugzilla.org/security/2.20.4/">Security Advisory</a>.</p>
+  uncommonly-used template. 詳細は
+  <a href="http://www.bugzilla.org/security/2.20.4/">セキュリティアドバイザリ</a>
+  を参照してください。</p>
 
-<h2><a name="v30_upgrading"></a>How to Upgrade From An Older Version</h2>
+<h2><a name="v30_upgrading"></a>旧バージョンからのアップグレード</h2>
 
-<h3><a name="v30_upgrading_notes"></a>Notes For Upgraders</h3>
+<h3><a name="v30_upgrading_notes"></a>アップグレードユーザ用のメモ</h3>
 
 <ul>
   <li>If you upgrade by CVS, there are several .cvsignore files
