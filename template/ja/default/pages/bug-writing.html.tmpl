@@ -29,152 +29,139 @@
 
 [% INCLUDE global/header.html.tmpl title = "$terms.Bug 報告ガイドライン" %]
 
-  <p>Effective [% terms.bug %] reports are the most likely to be fixed. 
-  These guidelines explain how to write such reports.
+  <p>有用な [% terms.bug %] 報告は修正のための情報をほぼ含んでいます。
+    このガイドラインは有用なバグ報告を解説するためのものです。
 
-<h3>Principles</h3>
+<h3>基本</h3>
 
   <ul>
-    <li>Be precise</li>
-    <li>Be clear - explain it so others can reproduce the [% terms.bug %]</li>
-    <li>One [% terms.bug %] per report</li>
-    <li>No [% terms.bug %] is too trivial to report - 
-    small [% terms.bugs %] may hide big [% terms.bugs %]</li>
-    <li>Clearly separate fact from speculation</li>
+    <li>正確であれ</li>
+    <li>明快であれ - 他の人がこの [% terms.bug %] を再現できるように</li>
+    <li>報告ごとに [% terms.bug %] ひとつ</li>
+    <li>報告する価値がないほど些細な [% terms.bug %] はない - 
+    小さく見える [% terms.bugs %] にも大きな [% terms.bugs %] が隠れている</li>
+    <li>事実と推測を分離せよ</li>
   </ul>
 
-<h3>Preliminaries</h3>
+<h3>報告前に</h3>
 
 <ol>
-  <li>Reproduce your [% terms.bug %] using a recent build of the
-  software, to see whether it has already been fixed.
+  <li>あなたの [% terms.bug %] を最新のソフトウェアのビルドで試し、
+  修正されていないかどうかを確認する。
   </li>
 
-  <li><a href="query.cgi?format=specific">Search</a> 
-  [% terms.Bugzilla %], to see whether your [% terms.bug %] has
-  already been reported.</li>
+  <li>[% terms.Bugzilla %] を <a href="query.cgi?format=specific">検索</a>
+  し、あなたの [% terms.bug %] が報告済みでないかどうか確認する。</li>
 </ol>
 
-<h3>Reporting a New [% terms.Bug %]</h3>
+<h3>新しい [% terms.Bug %] を報告</h3>
 
-<p>If you have reproduced the [% terms.bug %] in a recent build and 
-no-one else appears to have reported it, then:</p>
+<p>[% terms.bug %] を最新のビルドで再現でき、誰も報告していないように見えたなら :</p>
 
 <ol>
- <li>Choose 
- "<a href="enter_bug.cgi">Enter a new [% terms.bug %]</a>"</li>
- <li>Select the product in which you've found the [% terms.bug %]</li>
- <li>Fill out the form. Here is some help understanding it:</li>
+ <li>"<a href="enter_bug.cgi">新規登録</a>" を選択</li>
+ <li>[% terms.bug %] を発見したプロダクトを選択</li>
+ <li>フォームを埋める。各フィールドについては以下を参照。</li>
 </ol>
 
   <blockquote>
-    <p><b>Component:</b> In which sub-part of the software does it 
-          exist?<br>
-    This field is required.
-    Click the word "Component" to see a description of each 
-    component. If none seems appropriate, look for a "General" component.</p>
+    <p><b>コンポーネント:</b> ソフトウェアのどの部分が問題であるか。<br>
+    この項目は必須です。
+    "コンポーネント" の単語をクリックするとそれぞれのコンポーネントの説明が表示されます。
+    もし合致するものが見つからなければ、"総合的な" コンポーネントを探してください。</p>
 
-    <p><b>OS:</b> On which operating system (OS) did you find 
-          it?
-    (e.g. Linux, Windows XP, Mac OS X.)<br>
-    If you know the [% terms.bug %] happens on more than one type of 
-    operating system, choose "All". 
-    If your OS isn't listed, choose Other.</p>
+    <p><b>OS:</b> どの OS で問題を発見しましたか？
+        (例 Linux, Windows XP, Mac OS X.)<br>
+        [% terms.bug %] がひとつ以上の OS で発生するなら、"All" を選択してください。
+        もしリストになければ、Other を選択してください。</p>
 
-    <p><b>Summary:</b> How would you describe the [% terms.bug %], in 
-    approximately 60 or fewer characters?<br>
-     A good summary should <b>quickly and uniquely identify [% terms.abug %]
-    report</b>. It should explain the problem, not your suggested solution.<br>
+    <p><b>要約:</b> [% terms.bug %] を 60 文字程度以下で説明できますか ?<br>
+     よい要約は、<b>簡単に混同することなく [% terms.abug %] 報告を判別できる</b>
+     べきです。問題を述べるべきで、解決方法を述べる場所ではありません。<br>
     <ul>
-     <li>Good: "<tt>Cancelling a File Copy dialog crashes 
-     File Manager</tt>"</li>
-     <li>Bad: "<tt>Software crashes</tt>"</li>
-     <li>Bad: "<tt>Browser should work with my web site</tt>"</li>
+     <li>好例: "<tt>ファイルコピーダイアログでキャンセルすると
+     ファイルマネージャーがクラッシュする</tt>"</li>
+     <li>悪例: "<tt>ソフトウェアがクラッシュ</tt>"</li>
+     <li>悪例: "<tt>わたしのウェブサイトで正常に動作すべき</tt>"</li>
     </ul>
     
-    <b>Description:</b>
-    The details of your problem report, including:</p>
+    <b>説明:</b>
+    以下のものを含む、報告しようとしている問題の詳細です。:</p>
 
     <blockquote>
-      <p><b>Overview:</b> More detailed restatement of
-      summary.</p>
+      <p><b>概要:</b> 要約よりも詳細な内容</p>
 
       <blockquote>
 <pre>
-Drag-selecting any page crashes Mac builds in the NSGetFactory function.
+ページでドラッグで選択すると NSGetFactory 関数で Mac ビルドがクラッシュします。
 </pre>
       </blockquote>
 
-      <p><b>Steps to Reproduce:</b> Minimized, easy-to-follow steps that
-      will trigger the [% terms.bug %]. Include any special setup steps.</p>
+      <p><b>再現方法:</b> 最低限の、実行しやすい [% terms.bug %] を引き起こすような手順。
+      特別な設定が必要ならそれも含んで。</p>
 
       <blockquote>
 <pre>
-1) View any web page. (I used the default sample page, 
+1) ウェブページを開く (既定のサンプルページを利用した
 resource:/res/samples/test0.html)
 
-2) Drag-select the page. (Specifically, while holding down 
-the mouse button, drag the mouse pointer downwards from any 
-point in the browser's content region to the bottom of the 
-browser's content region.)
+2) ページでドラッグで選択する (特に、マウスボタンを押したまま、
+ポインタをブラウザのコンテンツ領域から最下部にドラッグしたとき。)
 </pre>
       </blockquote>
 
-      <p><b>Actual Results:</b> What the application did after performing
-      the above steps.</p>
+      <p><b>実際の結果:</b> 上の操作を行った時にアプリケーションがどうなるか。</p>
 
       <blockquote>
 <pre>
-The application crashed.
+クラッシュします。
 </pre>
       </blockquote>
 
-      <p><b>Expected Results:</b> What the application should have done,
-      were the [% terms.bug %] not present.</p>
+      <p><b>望まれる動作:</b> アプリケーションは、[% terms.bug %] がなかったとすれば、
+      どういう動作をすべきなのか。</p>
 
       <blockquote>
 <pre>
-The window should scroll downwards. Scrolled content should be selected. 
-(Or, at least, the application should not crash.)
+ウィンドウは下にスクロールすべき。そしてスクロールしたコンテンツは選択されるべき。
+(もしくは、最低でもクラッシュすべきでない。)
 </pre>
       </blockquote>
 
-      <p><b>Build Date &amp; Platform:</b> Date and platform of the build
-      in which you first encountered the [% terms.bug %].</p>
+      <p><b>ビルド日時 &amp; プラットフォーム:</b> [% terms.bug %] に最初に遭遇した、
+      ビルド日時とプラットフォーム。</p>
 
       <blockquote>
 <pre>
-Build 2006-08-10 on Mac OS 10.4.3
+Build 2006-08-10、Mac OS 10.4.3
 </pre>
       </blockquote>
 
-      <p><b>Additional Builds and Platforms:</b> Whether or not 
-      the [% terms.bug %] takes place on other platforms (or browsers, 
-      if applicable).</p>
+      <p><b>ビルド日時・プラットフォームに関する追加情報:</b> 
+      [% terms.bug %] が他のプラットフォーム (もしあればブラウザなど)
+      で再現するかどうか。</p>
 
       <blockquote>
 <pre>
-Doesn't Occur On Build 2006-08-10 on Windows XP Home (Service Pack 2)
+Build 2006-08-10、Windows XP Home (Service Pack 2) 上では再現せず。
 </pre>
       </blockquote>
 
-      <p><b>Additional Information:</b> Any other useful information.
-      <br><br>For crashing [% terms.bugs %]:</p>
+      <p><b>追加情報:</b> 他に有益な情報があれば。
+      <br><br>クラッシュするような [% terms.bugs %] では:</p>
 
       <ul>
-        <li><b>Windows:</b> Note the type of the crash, and the module that the
-        application crashed in (e.g. access violation in apprunner.exe).</li>
+        <li><b>Windows:</b> どのようにクラッシュするか、
+        そしてどのモジュールでクラッシュしたか。(たとえば、apprunner.exe のアクセス違反)</li>
 
-        <li><b>Mac OS X:</b> Attach the "Crash Reporter" log that appears
-        upon crash.
-        Only include the section directly below the crashing thread, usually 
-        titled "Thread 0 Crashed". Please do not paste the entire log!</li>
+        <li><b>Mac OS X:</b> クラッシュのときの "クラッシュレポーター" のログを添付。
+        クラッシュしているスレッドに直接関係する部分のみにしてください。
+        通常、"スレッド 0 クラッシュ" などのタイトルです。絶対にログ全体を貼り付けないで !</li>
       </ul>
     </blockquote>
 
-  <p>Double-check your report for errors and omissions, then press "Commit".
-  Your [% terms.bug %] report will now be in 
-  the [% terms.Bugzilla %] database.<br>
+  <p>間違いや勘違いがないかあなたの報告を再度確認してから、"登録" を押してください。
+  あなたの [% terms.bug %] 報告は [% terms.Bugzilla %] データベースに登録されます。<br>
   </p>
 </blockquote>
 
