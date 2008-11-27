@@ -326,10 +326,10 @@ function doOnSelectProduct(selectmode) {
         <label for="deadlinefrom" accesskey="l">締め切り (<u>l</u>)</label>:
       </th>
       <td>
-        from <input name="deadlinefrom" id="deadlinefrom" size="10" maxlength="10"
-                    value="[% default.deadlinefrom.0 FILTER html %]">
-        to <input name="deadlineto" size="10" maxlength="10"
-                  value="[% default.deadlineto.0 FILTER html %]">
+        <input name="deadlinefrom" id="deadlinefrom" size="10" maxlength="10"
+                    value="[% default.deadlinefrom.0 FILTER html %]"> から
+        <input name="deadlineto" size="10" maxlength="10"
+                  value="[% default.deadlineto.0 FILTER html %]"> まで
       </td>
       <td>
         <small>(YYYY-MM-DD)</small>
@@ -452,7 +452,7 @@ function doOnSelectProduct(selectmode) {
 <table cellspacing="0" cellpadding="0">
   <tr>
     <td>
-      Any of:
+      以下のいずれかを:
     </td>
   </tr>
   <tr>
@@ -540,8 +540,8 @@ function doOnSelectProduct(selectmode) {
   <tr>
     <td>
       <select name="bugidtype">
-        <option value="include"[% " selected" IF default.bugidtype.0 == "include" %]>中から</option>
-        <option value="exclude"[% " selected" IF default.bugidtype.0 == "exclude" %]>以外から</option>
+        <option value="include"[% " selected" IF default.bugidtype.0 == "include" %]>次のバグの中から</option>
+        <option value="exclude"[% " selected" IF default.bugidtype.0 == "exclude" %]>次のバグ以外から</option>
       </select>
       <label for="bug_id">[% terms.bugs %] 番号</label>:
     </td>
@@ -585,7 +585,7 @@ function doOnSelectProduct(selectmode) {
   <dd>
     <input name="chfieldfrom" id="chfieldfrom"
            size="10" value="[% default.chfieldfrom.0 FILTER html %]">
-    and <input name="chfieldto" size="10" value="[% default.chfieldto.0 FILTER html %]">
+    から <input name="chfieldto" size="10" value="[% default.chfieldto.0 FILTER html %]">
     <br>(YYYY-MM-DD か相対日数)
   </dd>
   <dt>
@@ -606,7 +606,7 @@ function doOnSelectProduct(selectmode) {
     [% END %]
     </select>
   </dd>
-  <dt>and <label for="chfieldvalue">新しい値</label>:</dt>
+  <dt><label for="chfieldvalue">新しい値</label>:</dt>
   <dd>
     <input name="chfieldvalue" id="chfieldvalue"
            size="20" value="[% default.chfieldvalue.0 FILTER html %]">
