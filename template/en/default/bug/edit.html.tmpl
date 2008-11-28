@@ -231,7 +231,8 @@
   <br>
   <table cellpadding="1" cellspacing="1">
     <tr>
-      <td>
+      <td id="comment_status_commit">
+        <a name="add_comment"></a>
         [% IF user.id %]
           <label for="comment" accesskey="c"><b>Additional <u>C</u>omments</b></label>:
           [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
@@ -241,7 +242,6 @@
             <label for="newcommentprivacy">Private</label>
           [% END %]
           <br>
-          <a name="add_comment"></a>
           [% INCLUDE global/textarea.html.tmpl
                      name      = 'comment'
                      id        = 'comment'
@@ -250,14 +250,23 @@
                      cols      = constants.COMMENT_COLS
           %]
           <br>
-          <a name="bug_status_bottom"></a>
-          [% PROCESS bug/knob.html.tmpl %]
           <div id="knob-buttons">
             <input type="submit" value="Commit" id="commit">
             [% IF bug.user.canmove %]
               <input type="submit" name="action" id="action" value="[% Param("move-button-text") %]">
             [% END %]
           </div>
+          <table class="status">
+            <tr>
+              <td class="field_label">
+                <b><a href="page.cgi?id=fields.html#status">Status</a></b>:
+              </td>
+              <td>
+                <a name="bug_status_bottom"></a>
+                [% PROCESS bug/knob.html.tmpl %]
+              </td>
+            </tr>
+          </table>
         [% ELSE %]
           <fieldset>
             <legend>Note</legend>
@@ -420,13 +429,12 @@
         [% IF bug.resolution %]
           [%+ get_resolution(bug.resolution) FILTER html %]
           [% IF bug.dup_id %]
-            <span id="duplicate_display">of 
-            [% "${terms.bug} ${bug.dup_id}" FILTER bug_link(bug.dup_id) FILTER none %]</span>
+            of [% "${terms.bug} ${bug.dup_id}" FILTER bug_link(bug.dup_id) FILTER none %]
           [% END %]
         [% END %]
         [% IF bug.user.canedit || bug.user.isreporter %]
-          (<a href="#bug_status_bottom" 
-              onclick="document.getElementById('bug_status').focus();return false;">edit</a>)
+          (<a href="#add_comment" 
+              onclick="window.setTimeout(function() { document.getElementById('bug_status').focus(); }, 10)">edit</a>)
         [% END %]
       </span>
     </td>
