@@ -1,6 +1,5 @@
 /administration.xml/1.90.2.1/Wed Aug 27 05:44:18 2008//TBUGZILLA-3_2-BRANCH
 /.cvsignore/1.1/Tue Jul  8 17:49:50 2008//TBUGZILLA-3_2-BRANCH
-/about.xml/1.26/Tue Jul  8 17:49:49 2008//TBUGZILLA-3_2-BRANCH
 /conventions.xml/1.12/Tue Jul  8 17:49:49 2008//TBUGZILLA-3_2-BRANCH
 /customization.xml/1.44/Tue Jul  8 17:49:49 2008//TBUGZILLA-3_2-BRANCH
 /gfdl.xml/1.11/Tue Jul  8 17:49:50 2008//TBUGZILLA-3_2-BRANCH
@@ -14,6 +13,7 @@
 /security.xml/1.18/Tue Jul  8 17:49:49 2008//TBUGZILLA-3_2-BRANCH
 /troubleshooting.xml/1.13/Tue Jul  8 17:49:49 2008//TBUGZILLA-3_2-BRANCH
 /using.xml/1.79/Tue Jul  8 17:49:49 2008//TBUGZILLA-3_2-BRANCH
-/Bugzilla-Guide.xml/1.78.2.3/Fri Nov  7 15:55:41 2008//TBUGZILLA-3_2-BRANCH
 /installation.xml/1.157.2.4/Fri Nov  7 15:55:41 2008//TBUGZILLA-3_2-BRANCH
+/Bugzilla-Guide.xml/1.78.2.4/Sun Nov 30 01:38:43 2008//TBUGZILLA-3_2-BRANCH
+/about.xml/1.26.2.1/Sun Nov 30 01:38:43 2008//TBUGZILLA-3_2-BRANCH
 D
