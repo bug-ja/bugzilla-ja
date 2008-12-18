@@ -318,12 +318,12 @@
         [% IF quips %]
           <li>
             [% otheruser.login FILTER html %] は
-            [% IF quip == 1 %]
+            [% IF quips == 1 %]
               1個の警句
             [% ELSE %]
               [%+ quips %] 個の警句
             [% END %] を作成しています。
-            [% IF votes == 1 %]
+            [% IF quips == 1 %]
               この警句
             [% ELSE %]
               これらの警句
