@@ -243,6 +243,8 @@
 
 [% END %]
 
+[% Hook.process("confirmation") %]
+
 [% IF product.bug_count == 0 || Param('allowbugdeletion') %]
 
   <p>本当にこのプロダクトを削除してもよろしいですか?</p>
