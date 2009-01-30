@@ -19,7 +19,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 [% INCLUDE global/header.html.tmpl 
-  title = "$terms.Bugzilla 3.2 Release Notes" 
+  title = "$terms.Bugzilla 3.2.1 Release Notes" 
   style_urls = ['skins/standard/release-notes.css'] 
 %]
 
@@ -27,6 +27,8 @@
 
 <ul class="bz_toc">
   <li><a href="#v32_introduction">導入</a></li>
+  <li><a href="#v32_point">3.2.x リリースでの更新内容</a></li>
+  <li><a href="#v32_security">3.2.x リリースでのセキュリティー更新</a></li>
   <li><a href="#v32_req">動作環境</a></li>
   <li><a href="#v32_feat">新機能と改善点</a></li>
   <li><a href="#v32_issues">既知の問題点</a></li>
@@ -47,6 +49,57 @@
   あなたが利用しているバージョンとこのバージョンの間の全てのものを読んでください。
   <strong>特に各バージョンのリリースノートでの "アップグレード利用者向け"
   の章に目を通してください。</strong></p>
+
+<h2><a name="v32_point">3.2.x リリースでの更新内容</a></h2>
+
+<p>この節では 3.2 以降の最新の [% terms.Bugzilla %] 
+  修正版リリースでの変更点を説明しています。
+  それぞれのリリースでの最も重要な修正のみが掲載されています。
+  もし、各リリースでどのような変更が加えられたかの<em>すべての</em>詳細が必要なら、
+  <a href="http://www.bugzilla.org/status/changes.html">変更点一覧</a> (英語)
+  を参照してください。</p>
+
+<h3>3.2.1</h3>
+
+<ul>
+  <li>添付、チャート、グラフのデータが Windows サーバ環境で壊れることがあります。
+  (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=464992">[% terms.Bug %] 464992</a>)</li>
+
+  <li>パラメータへの変更が警告なしに失敗することがあります。
+    (特に Windows サーバ環境で <code>params</code> ファイルを更新するための権限が、
+    ウェブサーバにない場合) [% terms.Bugzilla %] はこのような場合にエラーを送出し、
+    管理者に何がおかしいかを知らせます。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=347707">[% terms.Bug %] 347707</a>)</li>
+
+  <li><code>usemenuforuser</code> パラメータを利用しており、[% terms.abug %] 
+    が無効化されたユーザを担当者としている (もしくは QA コンタクトにしている)
+    場合、フィーるは [% terms.abug %] を更新するときのリストの先頭のユーザに設定されます。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=465589">[% terms.Bug %] 465589</a>)</li>
+
+  <li><code>PROJECT</code> 環境変数を利用し、複数の [% terms.Bugzilla %] 
+    サーバを一つのコードで運用している場合、プロジェクト独自のテンプレートが無視されます。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=467324">[% terms.Bug %] 467324</a>)</li>
+
+  <li>Perl モジュール SOAP::Lite のバージョンによってはモジュール自体に問題があり、
+    [% terms.Bugzilla %] の XML-RPC サービスが壊れます。
+    <code>checksetup.pl</code> を更新し、
+    問題のあるバージョンを検出しエラーを出すようにしました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=468009">[% terms.Bug %] 468009</a>)</li>
+
+  <li>Classic スキンを利用している場合に、
+    いくつかの場所でのフォントサイズが非常に小さくなる問題がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=469136">[% terms.Bug %] 469136</a>)</li>
+</ul>
+
+<h2><a name="v32_security">3.2.x リリースでのセキュリティー更新</a></h2>
+
+<h3>3.2.1</h3>
+
+<p>このリリースでは複数のセキュリティー更新を含みます。中には、<kbd>process_bug.cgi</kbd>
+  を直接呼び出すような自動スクリプトすべてに影響する問題もあります。
+  これらの詳細について、このリリースの
+  <a href="http://www.bugzilla.org/security/2.22.7/">セキュリティーアドバイザリ</a>
+  を読むことを強く推奨します。</p>
 
 <h2><a name="v32_req"></a>動作環境</h2>
 
@@ -85,7 +138,7 @@
 のさまざまな機能が有効化されます:</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
-                     new  = ['SASL-Authen', 'RadiusPerl']
+                     new  = ['Authen-SASL', 'RadiusPerl']
                      updated = []
                      include_feature = 1 %]
 
