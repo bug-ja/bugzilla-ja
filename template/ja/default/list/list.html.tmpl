@@ -214,7 +214,8 @@
       <td valign="middle" nowrap="nowrap" class="bz_query_forget">
         |
         <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-                [% searchname FILTER url_quote %]">検索条件を削除する'
+                [% searchname FILTER url_quote %]&amp;token=
+                [% issue_hash_token([search_id, searchname]) FILTER url_quote %]">検索条件を削除する'
                 [% searchname FILTER html %]'</a>
       </td>
     [% ELSE %]

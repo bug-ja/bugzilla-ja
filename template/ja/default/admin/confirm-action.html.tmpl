@@ -20,6 +20,8 @@
   # token_action: the action the token was supposed to serve.
   # expected_action: the action the user was going to do.
   # script_name: the script generating this warning.
+  # alternate_script: the suggested script to redirect the user to
+  #                   if he declines submission.
   #%]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
@@ -90,8 +92,8 @@
                exclude="^(Bugzilla_login|Bugzilla_password)$" %]
     <input type="submit" id="confirm" value="変更を確認">
   </form>
-  <p>もしくは、この変更を破棄し、<a href="[% script_name FILTER html %]">
-    [%- script_name FILTER html %]</a> へ戻る。</p>
+  <p>もしくは、この変更を破棄し、<a href="[% alternate_script FILTER html %]">
+    [%- alternate_script FILTER html %]</a> へ戻る。</p>
 [% END %]
 
 [% PROCESS global/footer.html.tmpl %]

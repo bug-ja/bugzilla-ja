@@ -106,7 +106,8 @@
             先に <a href="editwhines.cgi">whine</a> からの削除が必要
           [% ELSE %]
             <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-                     [% q.name FILTER url_quote %]">削除</a>
+                     [% q.name FILTER url_quote %]&amp;token=
+                     [% issue_hash_token([q.id, q.name]) FILTER url_quote %]">削除</a>
           [% END %]
         </td>
         <td align="center">

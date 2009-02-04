@@ -134,9 +134,11 @@
       [% IF attachments.size %]
         <span class="bz_attach_view_hide">
           [% IF obsolete_attachments %]
-            <a href="#a0" onClick="return toggle_display(this);">用済みを隠す</a> ([% obsolete_attachments %]) |
+            <a href="#a0" onClick="return toggle_display(this);">用済みを隠す</a> ([% obsolete_attachments %])
           [% END %]
-          <a href="attachment.cgi?bugid=[% bugid %]&amp;action=viewall">全て見る</a>
+          [% IF Param("allow_attachment_display") %]
+            <a href="attachment.cgi?bugid=[% bugid %]&amp;action=viewall">全て見る</a>
+          [% END %]
         </span>
       [% END %]
       <a href="attachment.cgi?bugid=[% bugid %]&amp;action=enter">添付を追加</a>

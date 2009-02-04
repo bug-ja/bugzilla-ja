@@ -1590,7 +1590,8 @@
     この [% jawords.search_name FILTER html %] を利用したい場合、保存されている同名の
     [% jawords.search_saved_search FILTER html %] を
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- name FILTER url_quote %]">削除</a> してください。
+    [%- name FILTER url_quote %]&amp;token=
+    [% issue_hash_token([query_id, name]) FILTER url_quote %]">削除</a> してください。
 
   [% ELSIF error == "query_name_missing" %]
     [% title = BLOCK %] $jaword.search_name が入力されていません [% END %]

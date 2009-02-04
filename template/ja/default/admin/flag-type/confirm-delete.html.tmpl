@@ -28,12 +28,15 @@
 %]
 
 <p>
-   タイプ [% flag_type.name FILTER html %] のフラグが [% flag_type.flag_count %] 件あります。
+  [% IF flag_type.flag_count %]
+    タイプ [% flag_type.name FILTER html %] のフラグが [% flag_type.flag_count %] 件あります。
+  [% END %]
    もしこのタイプを削除すれば、これらのフラグも削除されます。
    この操作の代わりに
    <a href="editflagtypes.cgi?action=deactivate&amp;id=[% flag_type.id %]&amp;token=
            [%- token FILTER html %]">タイプを無効化する</a> こともできます。
-   これを利用すれば、フラグタイプと、フラグは共にデータベースに残りますが、
+   これを利用すれば、フラグタイプ[% IF flag_type.flag_count %]と、
+   フラグ[% END %]は共にデータベースに残りますが、
    [% terms.Bugzilla %] の UI では表示されなくなります。
 </p>
 
