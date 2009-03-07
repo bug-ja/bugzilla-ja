@@ -1,0 +1,61 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Frederic Buclin.
+  # Portions created by Frederic Buclin are Copyright (C) 2008
+  # Frederic Buclin. All Rights Reserved.
+  #
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # script_name: the script generating this warning.
+  # token: a valid token for the current action.
+  # reason: reason of the failure.
+  #%]
+
+[% PROCESS global/header.html.tmpl title = "不審なアクション"
+                                   style_urls = ['skins/standard/global.css'] %]
+
+<div class="throw_error">
+  [% IF reason == "expired_token" %]
+    あなたの [% script_name FILTER html %] で行おうとしている変更は、
+    有効期限の [% constants.MAX_TOKEN_AGE FILTER html %] 日を過ぎていますので、
+    却下されました。ページを長く表示しすぎたか、
+    過去の変更が何らかのアクシデントで再投稿された可能性があります。
+
+  [% ELSIF reason == "missing_token" %]
+    正しいページから遷移してきていないように見えます。
+    ブラウザに直接 URL を入力した可能性はありますが、この場合は安全です。
+    もしくは、<b>あなたの意図しない</b> リダイレクトによる可能性があります。
+
+  [% ELSIF reason == "invalid_token" %]
+    [% script_name FILTER html %] に無効なトークンを利用して更新しようとしました。
+    これは、誰かが <b>あなたの意図しない</b> リダイレクトをさせようとした URL
+    をクリックした可能性があります。
+  [% END %]
+  <p>
+    この変更を実行しますか ?
+  </p>
+</div>
+
+<form name="check" id="check" method="post" action="[% script_name FILTER html %]">
+  [% PROCESS "global/hidden-fields.html.tmpl"
+             exclude="^(Bugzilla_login|Bugzilla_password|token)$" %]
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+  <input type="submit" id="confirm" value="はい。更新します。">
+</form>
+
+<p><a href="index.cgi">いいえ。更新を取り消します。</a> 
+(ホームページにリダイレクトされます)</p>
+
+[% PROCESS global/footer.html.tmpl %]

@@ -51,6 +51,12 @@ EOT
 
 EOT
     install_module => '##module## バージョン ##version## をインストール中...',
+    max_allowed_packet => <<EOT,
+    警告: あなたの MySQL 設定ファイルの max_allowed_packet パラメータを、
+    最低でも ##needed## 煮設定する必要があります。現在この値は、##current## 
+    に設定されています。MySQL 設定ファイルの [mysqld] セクションで、
+    このパラメータを設定可能です。
+EOT
     module_found => "検出 v##ver##",
     module_not_found => "非検出",
     module_ok => 'ok',

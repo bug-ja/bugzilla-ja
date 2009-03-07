@@ -12,9 +12,9 @@ D/request////
 D/search////
 D/setup////
 D/whine////
-/config.js.tmpl/1.11/Tue Jul  8 17:51:41 2008//TBUGZILLA-3_2-BRANCH
-/index.html.tmpl/1.40/Tue Jul  8 17:51:41 2008//TBUGZILLA-3_2-BRANCH
-/sidebar.xul.tmpl/1.25/Tue Jul  8 17:51:41 2008//TBUGZILLA-3_2-BRANCH
-/config.rdf.tmpl/1.13.2.1/Fri Nov 28 05:49:09 2008//TBUGZILLA-3_2-BRANCH
-/welcome-admin.html.tmpl/1.4.2.1/Fri Jan 30 01:30:54 2009//TBUGZILLA-3_2-BRANCH
 /filterexceptions.pl/1.111.2.4/Wed Feb 11 03:29:44 2009//TBUGZILLA-3_2-BRANCH
+/config.js.tmpl/1.11/Tue Jan 27 10:55:28 2009//TBUGZILLA-3_2-BRANCH
+/config.rdf.tmpl/1.13.2.1/Tue Jan 27 10:55:28 2009//TBUGZILLA-3_2-BRANCH
+/index.html.tmpl/1.40/Tue Jan 27 10:55:28 2009//TBUGZILLA-3_2-BRANCH
+/sidebar.xul.tmpl/1.25/Tue Jan 27 10:55:30 2009//TBUGZILLA-3_2-BRANCH
+/welcome-admin.html.tmpl/1.4.2.1/Tue Feb  3 22:50:02 2009//TBUGZILLA-3_2-BRANCH
