@@ -1,0 +1,77 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "添付"
+   desc = "添付のオプション設定"
+%]
+
+[% param_descs = {
+  allow_attachment_display =>
+    "有効な場合、ブラウザが添付ファイルの MIME 型をサポートしていれば、"
+    _ "ユーザはブラウザから添付を見ることができるようになります。"
+    _ "無効の場合、ブラウザが表示可能な場合でもダウンロードが強制されます。"
+    _ "<p>信頼できないユーザが、直接ブラウザで開いた場合に損害を与える"
+    _ "可能性のあるファイルを添付できるようなサイトで利用可能な"
+    _ "セキュリティー制限です。</p>"
+    _ "<p>有効にする場合は、<tt>attachment_base</tt> パラメータを設定することが"
+    _ "強く推奨されます。",
+
+  attachment_base =>
+    "<tt>allow_attachment_display</tt> パラメータが有効である場合、"
+    _ "悪意のある添付によりクッキーを奪取されたり $terms.Bugzilla "
+    _ "にあなたのアカウントで攻撃を行われたりする可能性があります。"
+    _ "<p>これを防ぐために追加のセキュリティー対策を必要とする場合、"
+    _ "このパラメータを $terms.Bugzilla の <tt>urlbase</tt> や "
+    _ "<tt>sslbase</tt> でない別の URL に設定してください。"
+    _ "たとえば、異なるドメイン名でこの $terms.Bugzilla "
+    _ "サイトとまったく同じ場所を指すものなどです。</p>"
+    _ "<p>注: もし"
+    _ " <a href=\"editparams.cgi?section=core#cookiedomain\"><tt>cookiedomain</tt>"
+    _ "パラメータ</a> を設定している場合、<tt>attachment_base</tt> には、"
+    _ " <tt>cookiedomain</tt> と <em>まったく</em> "
+    _ "マッチしないドメイン名にすべきです。</p>"
+    _ "<p>この追加されたセキュリティー向けに、添付ファイルにアクセスしたときに"
+    _ "添付が追加された $terms.bug を示す ID に置換される <tt>%bugid%</tt> を URL "
+    _ "に挿入することができます。これにより、添付ファイルからのアクセスは"
+    _ "同じ $terms.bug への添付にのみに制限できます。なお、もちろん、"
+    _ "この機能を使ったときに利用される可能性のあるすべてのドメイン名"
+    _ " (たとえば <tt>1234.your.domain.com</tt>) はすべて同じ $terms.Bugzilla "
+    _ "のインスタンスを示さなければならないことに注意してください。",
+
+  allow_attachment_deletion => "有効なら、管理者が添付ファイルを削除できます。",
+
+  allow_attach_url => "有効なら、添付の作成時に URL を指定して作成し、URL そのものを添付" _
+                      "として取り扱うことが可能になります。",
+
+  maxattachmentsize => "添付ファイルの最大サイズ (kB) です。$terms.Bugzilla は" _
+                       "このサイズ以上のパッチを受け付けなくなります。どのようなサイズの" _
+                       "パッチでも受け付けるようにする (サーバソフトウェアの制限によりますが) " _
+                       "場合は、0 にしてください。",
+
+  maxlocalattachment => "ユーザが '巨大ファイル' と指定し、サーバのローカルに保存される" _
+                        "添付ファイルの最大サイズ (MB) です。" _
+                        "0 にすると、添付ファイルは一切ローカルに保存されません。",
+
+  convert_uncompressed_images => "有効にすると image/bmp の添付ファイルを、データベースに" _
+                                 "保存する前に image/png に変換して、ディスクスペースを節約します。",
+
+}
+%]

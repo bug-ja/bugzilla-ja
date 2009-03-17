@@ -1,0 +1,179 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gavin Shelley <bugzilla@chimpychompy.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # product : Bugzilla::Product Object; new product.
+  # classification: Bugzilla::Classification Object; The product classification (may be empty or missing)
+  # changes: hashref with all changes made to the product. Each key is an edited field,
+  #          and its value is an arrayref of the form [old values, new values].
+  #%]
+
+[% IF classification %]
+  [% classification_text = BLOCK %]
+    classification '[% classification.name FILTER html %]' の
+  [% END %]
+[% END %]
+
+[% title = BLOCK %][% classification_text FILTER none %] プロダクト '[% product.name FILTER html %]' 
+                   を変更しました[% END %]
+[% PROCESS global/header.html.tmpl
+  title = title
+  style_urls = ['skins/standard/admin.css']
+%]
+
+[% IF changes.name.defined %]
+  <p>
+  プロダクト名を '[% changes.name.0 FILTER html %]' から
+  <a href="editproducts.cgi?action=edit&amp;product=
+  [%- product.name FILTER url_quote %]">[% product.name FILTER html %]</a> に変更しました。
+  </p>
+[% END %]
+
+
+[% IF changes.description.defined %]
+  <p>
+    変更後の説明:
+  </p>
+  <p style="margin: 1em 3em 1em 3em">[% product.description FILTER html_light %]</p>
+[% END %]
+
+[% IF changes.disallownew.defined %]
+  <p>
+  [% terms.bugs %] の新規報告が
+  [% IF product.disallow_new %]
+    不可能
+  [% ELSE %]
+    可能
+  [% END %]
+  になりました。
+  </p>
+[% END %]
+
+[% IF changes.milestoneurl.defined %]
+  <p>
+  マイルストーンの URL が
+  [% IF changes.milestoneurl.0 != '' %]
+    <br> <a href="[%- changes.milestoneurl.0 FILTER html %]">
+    [%- changes.milestoneurl.0 FILTER html %]</a> から
+  [% END %]
+  [% IF product.milestone_url != '' %]
+     <br><a href="[%- product.milestone_url FILTER html %]">
+     [%- product.milestone_url FILTER html %]</a>
+  [% ELSE %]
+    空
+  [% END %]
+  に変更されました。
+  </p>
+[% END %]
+
+[% IF changes.defaultmilestone.defined %]
+  <p>
+  既定のマイルストーンが '[% changes.defaultmilestone.0 FILTER html %]' から
+  '[% product.default_milestone FILTER html %]' に変更されました。
+  </p>
+[% END %]
+  
+[% IF changes.votesperuser.defined %]
+  <p>
+  一人当たりの最大投票数 が
+  [%+ changes.votesperuser.0 FILTER html %] から
+  [%+ product.votes_per_user FILTER html %] に変更されました。
+  </p>
+  [% checkvotes = 1 %]
+[% END %]
+
+[% IF changes.maxvotesperbug.defined %]
+  <p>
+  一つの [% terms.Bug %] あたりの一人の最大投票数 が
+  [%+ changes.maxvotesperbug.0 FILTER html %] から
+  [%+ product.max_votes_per_bug FILTER html %] に変更されました。
+  </p>
+  [% checkvotes = 1 %]
+[% END %]
+
+[% IF changes.votestoconfirm.defined %]
+  <p>
+  確認されたとみなす票数 が
+  [%+ changes.votestoconfirm.0 FILTER html %] から
+  [%+ product.votes_to_confirm FILTER html %] に変更されました。
+  </p>
+  [% checkvotes = 1 %]
+[% END %]
+
+[% IF !changes.keys.size %]
+  <p>'[% product.name FILTER html %]' は変更されませんでした。</p>
+[% END %]
+
+[%# Note that this display of changed votes and/or confirmed bugs is
+    not very scalable. We could have a _lot_, and we just list them all.
+    One day we should limit this perhaps, or have a more scalable display %]
+
+
+[% IF checkvotes %]
+  <hr>
+
+  <p>一つの [% terms.Bug %] あたりの一人の最大投票数 に対して多すぎる投票が無いか確認しています...<br>
+  [% IF changes.too_many_votes.size %]
+    [% FOREACH detail = changes.too_many_votes %]
+      &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
+     [%- detail.id FILTER url_quote %]">
+     [%- detail.id FILTER html %]</a> への投票が [% detail.name FILTER html %] から削除されました。<br>
+    [% END %]
+  [% ELSE %]
+    &rarr;問題ありませんでした。
+  [% END %]
+  </p>
+
+  <p>一人当たりの最大投票数 が多すぎるアカウントが無いか確認しています...<br>
+  [% IF changes.too_many_total_votes.size %]
+    [% FOREACH detail = changes.too_many_total_votes %]
+      &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
+     [%- detail.id FILTER url_quote %]">
+     [%- detail.id FILTER html %]</a> への投票が [% detail.name FILTER html %] から削除されました。<br>
+    [% END %]
+  [% ELSE %]
+    &rarr;問題ありませんでした。
+  [% END %]
+  </p>
+
+  <p>投票により確認されたとみなすことができる [% terms.bugs %] が無いか確認しています...<br>
+  [% IF changes.confirmed_bugs.size %]
+    [% FOREACH id = changes.confirmed_bugs %]
+
+      [%# This is INCLUDED instead of PROCESSED to avoid variables getting
+          overwritten, which happens otherwise %]
+      [% INCLUDE bug/process/results.html.tmpl
+        type = 'votes'
+        mailrecipients = { 'changer' => user.login }
+        header_done = 1
+        id = id
+      %]
+    [% END %]
+  [% ELSE %]
+    &rarr;ありませんでした。
+  [% END %]
+  </p>
+
+[% END %]
+
+[% PROCESS admin/products/footer.html.tmpl %]
+
+[% PROCESS global/footer.html.tmpl %]

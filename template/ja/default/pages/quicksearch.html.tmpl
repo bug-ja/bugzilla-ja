@@ -1,0 +1,183 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): N.N.
+  #                 Marc Schumann <wurblzap@gmail.com>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% INCLUDE global/header.html.tmpl
+   title  = "$terms.Bugzilla 簡易検索",
+   style  = 'ul {margin-bottom: 2ex}
+             ul li {margin-top: 2ex}
+             ul li ul li {margin-top: 0}'
+   onload = 'document.forms[\'f\'].quicksearch.focus()'
+ %]
+
+<p style="font-size: 80%">
+  もし、元の
+  <a href="query.cgi">[% terms.Bugzilla %] 検索フォーム</a> に慣れているなら、
+  <a href="page.cgi?id=quicksearchhack.html">こちらのフォーム</a> の方がいいかもしれません。
+</p>
+
+<p>
+  検索対象のひとつ以上の単語 (もしくは単語の断片) を入力してください :
+</p>
+
+<form name="f" action="buglist.cgi" method="get"
+      onsubmit="if (this.quicksearch.value == '')
+                { alert('ひとつ以上の単語を入力してください。');
+                  return false; } return true;">
+  <input type="text" size="40" name="quicksearch">
+  <input type="submit" value="検索" id="find">
+</form>
+
+<h2>はじめに</h2>
+
+<ul>
+  <li>
+    これは <strong>大文字小文字を考慮しない</strong> 検索です:<br />
+    <ul>
+      <li><tt>table</tt>、 <tt>Table</tt> や <tt>TABLE</tt> は全て同じです。</li>
+    </ul>
+  </li>
+  <li>
+    <strong>全ての語が部分一致検索</strong>
+    される検索です。<br />
+    つまり、よりよい検索結果を得るためには、<strong>語頭</strong> のみを入力すべきかもしれません
+    <ul>
+      <li>
+        <tt>localiz</tt> を、<tt>localize</tt> や
+        <tt>localization</tt> の替わりに。
+      </li>
+     <li>
+       <tt>bookmark</tt> を、<tt>bookmarks</tt> や
+       <tt>bookmarking</tt> の替わりに。
+     </li>
+   </ul>
+  </li>
+</ul>
+
+<h2><a name="features">機能</a></h2>
+
+<ul>
+  <li>
+    論理演算子: &ldquo;<tt>-foo</tt>&rdquo;&nbsp;(NOT),
+    &ldquo;<tt>foo&nbsp;bar</tt>&rdquo;&nbsp;(AND),
+    &ldquo;<tt>foo|bar</tt>&rdquo;&nbsp;(OR).
+    <ul>
+      <li>
+        <strong>NOT</strong>:<br />
+        <tt><b>-</b><i>foo</i></tt> により
+        <tt><i>foo</i></tt> を要約に含まない [% terms.bugs %] を検索可能です。
+      </li>
+      <li>
+        <strong>AND</strong>:<br />
+        空白区切りの単語の並びは論理積になります。
+      </li>
+      <li>
+        <strong>OR</strong>:<br />
+        単語中で、"|" 区切りは並列を意味します。
+      </li>
+      <li>
+        "|" の代わりに、カンマ区切りも利用可能です。
+      </li>
+      <li>
+        OR は AND より先に評価されます。AND は最も最後に評価されます。
+      </li>
+    </ul>
+    <i>例:</i>
+    <tt>url,location bar,field -focus</tt> は
+    (<tt>url</tt> OR <tt>location</tt>) AND (<tt>bar</tt> OR <tt>field</tt>)
+    AND (NOT <tt>focus</tt>) です。
+  </li>
+  <li>
+    <tt>+foo</tt> を利用することで、
+    <strong>要約</strong> に <tt>foo</tt> が
+    <strong>部分文字列</strong> として含まれる [% terms.bugs %] を検索できます。<br/>
+    <tt>#foo</tt> を利用することで、
+    <strong>要約</strong> に <tt>foo</tt> が <strong>単語</strong> として含まれる [% terms.bugs %] 
+    が検索できます。
+    <ul>
+      <li>
+        <tt>+brow</tt> は [% terms.bugs %] 
+        <tt>Browser</tt> プロダクトのバグを全て抽出したりはしません。
+      </li>
+      <li>
+        <tt>#title</tt> は <tt>titlebar</tt> や <tt>titled</tt> を含む
+        [% terms.bugs %] は抽出しません。
+      </li>
+    </ul>
+    特殊文字 (space, comma, +, -, #, &hellip;) を含む文字列を
+    <strong>引用符にまとめる</strong> ことは可能です:
+    <ul>
+      <li>
+        <tt>"lock icon"</tt>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <strong>作業中 と 解決済 の [% terms.Bugs %]</strong>:<br />
+    初期状態では、(未解決など) 作業中の [% terms.bugs %] のみが表示されます。
+    <tt>+DUP</tt> を最初に付けることで、重複した [% terms.bugs %] を検索に含められます。
+    <tt>FIXED</tt> により解決済みの [% terms.bugs %] のみに、
+    もしくは <tt>ALL</tt> により、状態に関係なく全ての [% terms.bugs %] になります。
+    重複を検索することは、作業中の [% terms.bug %] を見つけられなかった時には推奨されます。
+    <ul>
+      <li>
+        <tt>+DUP,FIXED table border</tt>
+      </li>
+      <li>
+        <tt>ALL mouse wheel</tt>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <strong>プロダクト &amp; コンポーネントに特化した検索 :<br />
+    "Foo Bar" プロダクトの [% terms.bugs %] のみを検索する場合、
+    <tt>:foo</tt> や <tt>:bar</tt> もしくは両方を検索に付け加えてください。
+    <a href="describecomponents.cgi">プロダクトやコンポーネント</a> 
+    の部分文字列を利用可能です。
+  </li>
+</ul>
+
+<h2>それ以外の機能</h2>
+
+<ul>
+  <li>
+    この機能を [% terms.bug %] 番号から <strong>表示する</strong> ために利用可能です。<br />
+    <ul>
+      <li><tt>12345</tt></li>
+    </ul>
+  </li>
+  <li>
+    カンマ区切りの [% terms.bug %] 番号により、[% terms.bugs %] リストが返ります。<br />
+    <ul>
+      <li><tt>12345,23456,34567</tt></li>
+    </ul>
+  </li>
+</ul>
+
+<p>
+  初期状態では、要約、キーワード、プロダクト、コンポーネント、ステータスホワイトボード、
+  が検索対象です。URL の一部などを検索したい場合、そのフィールドを含めるよう、
+  指示して下さい。
+</p>
+<hr>
+
+<p>
+  より強力な <a href="query.cgi">[% terms.Bugzilla %] 検索フォーム</a>
+  を利用することも可能です。
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

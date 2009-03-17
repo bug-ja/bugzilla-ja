@@ -1,0 +1,68 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 2005 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): A. Karl Kornel <karl@kornel.name>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% INCLUDE global/header.html.tmpl title = "sudo: ユーザに扮する" %]
+
+<p>
+  [%+ terms.Bugzilla %] には他のユーザの権限で活動するための機能があり、
+<i>sudo セッション</i> と呼ばれています。これは、
+権限を持つユーザが他のユーザの権限で活動できるようにするものです。
+</p>
+
+<p>
+  セッション中は、[% terms.Bugzilla %] 
+  は対象となるユーザが操作を行っているかのように動作します。
+  これはテストのために特に有用で、対象のユーザがいない時に重要な作業を行うのに利用できます。
+  対象となるユーザは [% terms.Bugzilla %] 
+  からセッションが開始された時にメールを受け取りますが、それ以上は何もありません。
+</p>
+
+<p>
+  この機能を利用するには、特定のグループのメンバーである必要があります。
+  グループには全ての管理者が最初から登録されています。
+  他のユーザや他のグループのメンバーには、それぞれにこの機能を有効にできます。
+  権限が必要な場合は、このサイトの管理者
+  <a href="mailto:[% Param("maintainer") %]">
+  [%- Param("maintainer") %]</a> に連絡してください。
+</p>
+
+<p>
+  この操作から自分を保護したい場合、
+  そのようなことが可能かどうかをサイト管理者に問い合わせてください。
+  なお、この機能にアクセス可能なユーザは自動的に保護されています。
+</p>
+
+<p id="message">
+  [% IF user.in_group('bz_sudoers') %]
+    あなたは <b>bz_sudoers</b> グループのメンバーです。
+    この機能を利用して他のユーザ権限で活動できます。
+  [% ELSE %]
+    必要なグループのメンバーではありません。
+    あなたはこの機能を利用できません。
+  [% END %]
+  [% IF user.in_group('bz_sudo_protect') %]
+    <br>
+    <b>bz_sudo_protect</b> グループのメンバーです。
+    他のユーザはこの機能を利用してあなたの権限になることはできません。
+  [% END %]
+</p>
+
+[% INCLUDE global/footer.html.tmpl %]

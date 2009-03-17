@@ -1,0 +1,55 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Emmanuel Seyman <eseyman@linagora.com>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+From: [% Param('mailfrom') %]
+To: [% to %]
+Subject: [% terms.Bug %] [%+ bugid %] あなたの投票のいくつかもしくは全てが削除されました
+X-Bugzilla-Type: voteremoved
+
+あなたの [% terms.bug %] [%+ bugid %] への投票のいくつかもしくは全てが削除されました。
+
+あなたは、この [% terms.bug %] に [% votesold FILTER html %] 票投票していましたが、
+[% votesremoved FILTER html %] 票が削除されました。
+
+[% IF votesnew %]
+この [% terms.bug %] への残りは [% votesnew FILTER html %] 票です。
+[% ELSE %]
+この [% terms.bug %] には票が残っていません。
+[% END %]
+
+理由:
+[% IF reason == "votes_bug_moved" %]
+  [% terms.bug %] が異なるプロダクトへ移動されました。
+
+[% ELSIF reason == "votes_too_many_per_bug" %]
+  このプロダクトへの投票基準が変更になりました。
+  ひとつの [% terms.bug %] への最大票数を超えています。
+
+[% ELSIF reason == "votes_too_many_per_user" %]
+  このプロダクトへの投票基準が変更になりました。
+  総投票可能数を超える投票を行っているため、全ての票が削除されました。
+[% END %]
+
+
+
+[% urlbase %]show_bug.cgi?id=[% bugid %]
+

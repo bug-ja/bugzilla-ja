@@ -1,0 +1,37 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Frederic Buclin.
+  #
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS global/header.html.tmpl title = "整合性確認"
+                                   style_urls = ['skins/standard/admin.css'] %]
+
+<div>
+  <p>
+    [% terms.Bugzilla %] はあなたのデータベースの参照整合性を確認しています。
+    完了まで数分かかります。
+  </p>
+
+  <p>
+    もしエラーがあれば、<span class="alert">このように強調表示されます</span>。
+    発見されたエラーによっては、修復するためのリンクが表示されます。
+    修復後、このスクリプトが自動再実行されます。(そのため、最初の実行よりも時間がかかる
+    ことを認識しておいてください。)
+  </p>
+</div>
+
+<hr>

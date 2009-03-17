@@ -1,0 +1,805 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# This is a list of all the possible messages. Please keep them in
+  # alphabetical order by message tag, and leave a blank line between messages.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% message_tag = message %]
+
+[% message = BLOCK %]
+  [% IF    message_tag == "account_created" %]
+    [% title = "User $otheruser.login created" %]
+    新規アカウント [% otheruser.login FILTER html %] は正常に作成されました。
+    [% IF groups.size %]
+      もし、グループ設定を編集したい場合は、下のフォームから行ってください。
+    [% END %]
+    [% IF login_info %]
+      <a href="index.cgi">ログイン</a> ページからこの [% terms.Bugzilla %]
+      にログインできます。
+    [% END %]
+
+  [% ELSIF message_tag == "account_creation_canceled" %]
+    [% title = "ユーザアカウント作成が中止されました" %]
+    ユーザアカウント [% account FILTER html %] の作成は中止されました。
+
+  [% ELSIF message_tag == "account_updated" %]
+    [% IF changed_fields.size
+          + groups_added_to.size + groups_removed_from.size
+          + groups_granted_rights_to_bless.size + groups_denied_rights_to_bless.size %]
+      [% title = "ユーザ $loginold を更新しました" %]
+      次の変更をユーザ
+      [%+ loginold FILTER html %] に行いました:
+      <ul>
+        [% FOREACH field = changed_fields %]
+          <li>
+            [% IF    field == 'login_name' %]
+              ログイン名は [% otheruser.login FILTER html %] に変更されました。
+            [% ELSIF field == 'realname' %]
+              実名が更新されました。
+            [% ELSIF field == 'cryptpassword' %]
+              パスワードが更新されました。
+            [% ELSIF field == 'disabledtext' %]
+              無効化テキストが更新されました。
+            [% ELSIF field == 'disable_mail' %]
+              [% IF otheruser.email_disabled %]
+                [% terms.Bug %] メールが無効化されました。
+              [% ELSE %]
+                [% terms.Bug %] メールが有効化されました。
+              [% END %]
+            [% END %]
+          </li>
+        [% END %]
+        [% IF groups_added_to.size %]
+          <li>
+            アカウントは
+            [%+ groups_added_to.join(', ') FILTER html %]
+            グループに追加されました。
+          </li>
+        [% END %]
+        [% IF groups_removed_from.size %]
+          <li>
+            アカウントは
+            [%+ groups_removed_from.join(', ') FILTER html %]
+            グループから削除されました。
+          </li>
+        [% END %]
+        [% IF groups_granted_rights_to_bless.size %]
+          <li>
+            アカウントに
+            The account has been granted rights to bless the
+            [%+ groups_granted_rights_to_bless.join(', ') FILTER html %]
+            グループへの追加権限が与えられました。
+          </li>
+        [% END %]
+        [% IF groups_denied_rights_to_bless.size %]
+          <li>
+            アカウントから
+            [%+ groups_denied_rights_to_bless.join(', ') FILTER html %]
+            グループへの追加権限が剥奪されました。
+          </li>
+        [% END %]
+      </ul>
+    [% ELSE %]
+      [% title = "ユーザ $otheruser.login は変更されませんでした" %]
+      ユーザアカウントの更新は何もありません。
+      [%+ otheruser.login FILTER html %].
+    [% END %]
+
+  [% ELSIF message_tag == "account_deleted" %]
+    [% title = "ユーザ $otheruser.login は削除されました" %]
+    ユーザアカウント [% otheruser.login FILTER html %] は正常に削除されました。
+
+  [% ELSIF message_tag == "account_disabled" %]
+    ユーザアカウント [% account FILTER html %] は無効です。
+    パスワードを変更することはできません。
+
+  [% ELSIF message_tag == "attachment_creation_failed" %]
+    [% terms.bug %] は正常に作成されましたが、添付に失敗しました。
+    添付を、"添付を追加" リンクから追加してください。
+
+  [% ELSIF message_tag == "bug_confirmed_by_votes" %]
+    *** この [% terms.bug %] は規定の投票数によって承認されました ***
+
+  [% ELSIF message_tag == "bug_duplicate_of" %]
+    *** この [% terms.bug %] は [% terms.bug %] [%+ dupe_of FILTER html %] の重複とされました ***
+
+  [% ELSIF message_tag == "bug_has_duplicate" %]
+    *** [% terms.Bug %] [%+ dupe FILTER html %] はこの [% terms.bug %] の重複になりました ***
+
+  [% ELSIF message_tag == "bug_group_description" %]
+    プロダクト [% product.name FILTER html %] の [% terms.bugs %] へアクセス。
+
+  [% ELSIF message_tag == "bug_moved_to" %]
+    <p>[% terms.Bug %] は [% Param("move-to-url") FILTER html %] に移動しました。</p>
+    <p>移動が成功すれば、[% login FILTER html %] は他のデータベースでの新しい [% terms.bug %]
+    番号をメールで受け取るでしょう。全てうまくいけば、この [% terms.bug %] を確認済みとして、
+    新しい [% terms.bug %] へのリンクを貼り付けてください。
+    もし失敗していれば、[% terms.bug %] を再開してください。
+
+  [% ELSIF message_tag == "buglist_adding_field" %]
+    [% title = "研削ページにフィールドを追加中..." %]
+    [% link  = "自動的に更新されなければここをクリックしてください。" %]
+
+  [% ELSIF message_tag == "buglist_updated_named_query" %]
+    あなたの保存された検索 <code><a 
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+    >[% queryname FILTER html %]</a></code> を更新しました。
+
+  [% ELSIF message_tag == "buglist_new_default_query" %]
+    既定の検索を持つようになりました。
+    個々の検索結果をブックマークに保存することも可能です。
+
+  [% ELSIF message_tag == "buglist_new_named_query" %]
+    新しい保存された検索 <code><a
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+    >[% queryname FILTER html %]</a></code> を作成しました。
+
+  [% ELSIF message_tag == "buglist_query_gone" %]
+    [% title = "検索条件を破棄しました" %]
+    [% link  = "検索ページに戻る" %]
+    保存された検索 <b>[% namedcmd FILTER html %]</b> を破棄しました。
+
+  [% ELSIF message_tag == "buglist_sorted_by_relevance" %]
+    リストの [% terms.Bugs %] は関連性でソートされます。
+    最も関連する [% terms.bugs %] が最上部に表示されます。
+    [% IF bugs.size == constants.FULLTEXT_BUGLIST_LIMIT %]
+      最も関連する [% constants.FULLTEXT_BUGLIST_LIMIT FILTER html %]
+      個の [% terms.bugs %] のみが表示されます。
+    [% END %]
+
+  [% ELSIF message_tag == "change_columns" %]
+    [% title = "カラム変更" %]
+    新しいカラムで表示するために再検索中です。
+    自動的に再表示されなければ、
+    <a href="[% redirect_url FILTER html %]">ここをクリックしてください</a>。
+
+  [% ELSIF message_tag == "classification_created" %]
+    [% title = "新規 classification 作成完了" %]
+    classification <em>[% classification.name FILTER html %]</em> を作成しました。
+
+  [% ELSIF message_tag == "classification_deleted" %]
+    [% title = "classification 削除完了" %]
+    classification <em>[% classification.name FILTER html %]</em> を削除しました。
+
+  [% ELSIF message_tag == "classification_updated" %]
+    [% title = "Classification 更新" %]
+    [% IF changes.keys.size %]
+      classification <em>[% classification.name FILTER html %]</em> への更新を完了しました :
+      <ul>
+        [% IF changes.name.defined %]
+          <li>名前が '[% classification.name FILTER html %]' に更新されました</li>
+        [% END %]
+        [% IF changes.description.defined %]
+          [% IF classification.description %]
+            <li>説明が '[% classification.description FILTER html %]' に更新されました</li>
+          [% ELSE %]
+            <li>説明が削除されました</li>
+          [% END %]
+        [% END %]
+        [% IF changes.sortkey.defined %]
+          <li>ソートキーを '[% classification.sortkey FILTER html %]' に更新しました</li>
+        [% END %]
+      </ul>
+    [% ELSE %]
+      <em>[% classification.name FILTER html %]</em> は更新されませんでした。
+    [% END %]
+
+  [% ELSIF message_tag == "component_created" %]
+    [% title = "コンポーネント作成完了" %]
+    コンポーネント <em>[% comp.name FILTER html %]</em> が作成されました。
+
+  [% ELSIF message_tag == "component_deleted" %]
+    [% title = "コンポーネント削除完了" %]
+    コンポーネント <em>[% comp.name FILTER html %]</em> が削除されました。
+    [% IF comp.bug_count %]
+      全てのこのコンポーネントに属していた [% terms.bugs %] 
+      とそこへの参照は削除されました。
+    [% END %]
+
+  [% ELSIF message_tag == "component_updated" %]
+    [% title = "コンポーネント更新完了" %]
+    [% IF changes.keys.size %]
+      コンポーネント <em>[% comp.name FILTER html %]</em> への変更を行いました :
+      <ul>
+      [% IF changes.name.defined %]
+        <li>名前が '[% comp.name FILTER html %]' に更新されました</li>
+      [% END %]
+      [% IF changes.description.defined %]
+        <li>説明が '[% comp.description FILTER html_light %]' に更新されました</li>
+      [% END %]
+      [% IF changes.initialowner.defined %]
+        <li>既定の担当者が '[% comp.default_assignee.login FILTER html %]' に更新されました</li>
+      [% END %]
+      [% IF changes.initialqacontact.defined %]
+        [% IF comp.default_qa_contact.id %]
+          <li>既定の QA コンタクトが '[% comp.default_qa_contact.login FILTER html %]' に更新されました</li>
+        [% ELSE %]
+          <li>既定の QA コンタクトが削除されました</li>
+        [% END %]
+      [% END %]
+      [% IF changes.cc_list.defined %]
+        [% IF comp.initial_cc.size %]
+          [% cc_list = [] %]
+          [% FOREACH cc_user = comp.initial_cc %]
+            [% cc_list.push(cc_user.login) %]
+          [% END %]
+          <li>既定の CC リストが [% cc_list.join(", ") FILTER html %] に更新されました</li>
+        [% ELSE %]
+          <li>既定の CC リストが削除されました</li>
+        [% END %]
+      [% END %]
+    [% ELSE %]
+      <em>[% comp.name FILTER html %]</em> への更新はありません。
+    [% END %]
+
+  [% ELSIF message_tag == "custom_field_created" %]
+    [% title = "カスタムフィールドを作成しました" %]
+    新規カスタムフィールド '[% field.name FILTER html %]' が作成されました。
+
+  [% ELSIF message_tag == "custom_field_deleted" %]
+    [% title = "カスタムフィールドを削除しました" %]
+    カスタムフィールド '[% field.name FILTER html %]' が削除されました。
+
+  [% ELSIF message_tag == "custom_field_updated" %]
+    [% title = "カスタムフィールド更新" %]
+    '[% field.name FILTER html %]' のフィールドが更新されました。
+
+  [% ELSIF message_tag == "default_settings_updated" %]
+    [% IF changes_saved %]
+      既定の設定への変更が保存されました。
+    [% ELSE %]
+      変更はありません。
+    [% END %]
+
+  [% ELSIF message_tag == "emailold_change_canceled" %]
+    [% title = "メールアドレス変更の中止" %]
+    あなたのアカウントのメールアドレスを
+    [%+ new_email FILTER html %] に更新する要請が中止されました。
+
+  [% ELSIF message_tag == "email_change_canceled" %]
+    [% title = "メールアドレス変更中止の要請" %]
+    アカウントのメールアドレスを
+    [%+ old_email FILTER html %] から
+    [%+ new_email FILTER html %] へ変更する要請は中止されました。
+
+  [% ELSIF message_tag == "email_change_canceled_reinstated" %]
+    [% title = "メールアドレス変更中止の要請" %]
+    アカウントのメールアドレスを
+    [%+ old_email FILTER html %] から
+    [%+ new_email FILTER html %] へ変更する要請は中止されました。
+    古い設定を復活させました。
+
+  [% ELSIF message_tag == "field_value_created" %]
+    [% title = "新しいフィールド値の作成" %]
+    フィールド値 <em>[% value.name FILTER html %]</em> が
+    <em>[% field.description FILTER html %]</em> (<em>[% field.name FILTER html %]</em>)
+    フィールドの有効な選択肢として追加されました。
+    [% IF field.name == "bug_status" %]
+      <a href="editworkflow.cgi">ステータス変遷編集</a> から新しい [% terms.bug %]
+      ステータスを利用するよう設定してください。
+    [% END %]
+
+  [% ELSIF message_tag == "field_value_deleted" %]
+    [% title = "フィールド値の削除" %]
+    <em>[% field.description FILTER html %]</em>
+    (<em>[% field.name FILTER html %]</em>) フィールドの
+    フィールド値<em>[% value.name FILTER html %]</em> が削除されました。
+
+  [% ELSIF message_tag == "field_value_updated" %]
+    [% title = "フィールド値更新" %]
+    [% IF changes.keys.size %]
+      <em>[% field.description FILTER html %]</em>
+      (<em>[% field.name FILTER html %]</em>) フィールドの
+      フィールド値 <em>[% value_old FILTER html %]</em> が更新されました。
+      <ul>
+        [% IF changes.value %]
+          <li>フィールド値は
+            <em>[% changes.value.1 FILTER html %]</em> に更新されました。
+            [% IF value.is_default %]
+              (注 この値はこのフィールドの既定値です。全ての既定値への参照は、
+              この新しい値に置き換えられます。)
+            [% END %]
+          </li>
+        [% END %]
+        [% IF changes.sortkey %]
+          <li>ソートキーが
+            <em>[% changes.sortkey.1 FILTER html %]</em> に更新されました。</li>
+        [% END %]
+        [% IF changes.visibility_value_id %]
+          [% IF value.visibility_value.defined %]
+            <li>この値は [%+ value.field.value_field.description FILTER html %] が
+              '[%+ value.visibility_value.name FILTER html %]'
+              に設定されているときのみ表示されます。</li>
+          [% ELSE %]
+            <li>[%+ value.field.value_field.description FILTER html %]
+            が何に設定されていても表示されます。
+            </li>
+          [% END %]
+        [% END %]
+      </ul>
+    [% ELSE %]
+      フィールド値 <em>[% value_old FILTER html %]</em> への更新はありません。
+    [% END %]
+
+  [% ELSIF message_tag == "flag_cleared" %]
+    新しいプロダクト・コンポーネントにいくつかのフラグが適用されず、
+    抹消されませんでした。
+
+  [% ELSIF message_tag == "flag_creation_failed" %]
+    [% title = "フラグ作成失敗" %]
+    フラグの確認中にエラーが発生しました :
+    [%+ flag_creation_error FILTER none %]
+
+  [% ELSIF message_tag == "get_field_desc" %]
+    [% field_descs.$field_name FILTER html %]
+
+  [% ELSIF message_tag == "get_resolution" %]
+    [% get_resolution(resolution) FILTER html %]
+
+  [% ELSIF message_tag == "get_status" %]
+    [% get_status(status) FILTER html %]
+
+  [% ELSIF message_tag == "group_created" %]
+    [% title = "新規グループ追加" %]
+    グループ <em>[% group.name FILTER html %]</em> が作成されました。
+
+  [% ELSIF message_tag == "group_deleted" %]
+    [% title = "グループ削除" %]
+    グループ <em>[% name FILTER html %]</em> が削除されました。
+
+  [% ELSIF message_tag == "group_membership_removed" %]
+    [% title = "グループの資格の更新" %]
+    [% IF users.size %]
+      <em>[% group FILTER html %]</em> グループへの明示的な資格が更新されました。
+      [% IF regexp %]'[% regexp FILTER html %]' に該当するユーザ[% END %]:
+      [% FOREACH user = users %]
+        [%+ user.login FILTER html %]
+      [% END %]
+    [% ELSE %]
+      あなたの操作で影響を受けるユーザはいません。
+    [% END %]
+
+  [% ELSIF message_tag == "group_updated" %]
+    [% IF changes.keys.size %]
+      '[% group.name FILTER html %]' グループに次の変更が加わりました。
+      <ul>
+      [% FOREACH field = changes.keys.sort %]
+        [% SWITCH field %]
+          [% CASE 'name' %]
+            <li>名称が '[% changes.name.1 FILTER html %]' に変更されました。</li>
+          [% CASE 'description' %]
+            <li>説明が更新されました。</li>
+          [% CASE 'userregexp' %]
+            <li>明示的な所属資格の正規表現が更新されました。</li>
+          [% CASE 'isactive' %]
+            [% IF changes.isactive.1 %]
+              <li>グループは [% terms.bugs %] で利用されることになりました。</li>
+            [% ELSE %]
+              <li>グループが [% terms.bugs %] で利用されることはなくなりました。</li>
+            [% END %]
+          [% CASE 'icon_url' %]
+            <li>グループアイコンの URL が更新されました。</li>
+          [% CASE 'members_add' %]
+            <li>次のグループがこのグループのメンバーになりました:
+              [%+ changes.members_add.join(', ') FILTER html %]</li>
+          [% CASE 'members_remove' %]
+            <li>次のグループはこのグループのメンバーでなくなりました:
+              [%+ changes.members_remove.join(', ') FILTER html %]</li>
+          [% CASE 'member_of_add' %]
+            <li>このグループは次のグループのメンバーになりました:
+              [%+ changes.member_of_add.join(', ') FILTER html %]</li>
+          [% CASE 'member_of_remove' %]
+            <li>このグループは次のグループのメンバーでなくなりました:
+              [%+ changes.member_of_remove.join(', ') FILTER html %]</li>
+          [% CASE 'bless_from_add' %]
+            <li>次のグループがこのグループにユーザを追加できるようになりました:
+              [%+ changes.bless_from_add.join(', ') FILTER html %]</li>
+          [% CASE 'bless_from_remove' %]
+            <li>次のグループはこのグループにユーザを追加できなくなりました:
+              [%+ changes.bless_from_remove.join(', ') FILTER html %]</li>
+          [% CASE 'bless_to_add' %]
+            <li>このグループは次のグループにユーザを追加できるようになりました:
+              [%+ changes.bless_to_add.join(', ') FILTER html %]</li>
+          [% CASE 'bless_to_remove' %]
+            <li>このグループは次のグループにユーザを追加できなくなりました:
+              [%+ changes.bless_to_remove.join(', ') FILTER html %]</li>
+          [% CASE 'visible_from_add' %]
+            <li>次のグループはこのグループのユーザを見ることができるようになりました:
+              [%+ changes.visible_from_add.join(', ') FILTER html %]</li>
+          [% CASE 'visible_from_remove' %]
+            <li>次のグループはこのグループのユーザを見ることができなくなりました:
+              [%+ changes.visible_from_remove.join(', ') FILTER html %]</li>
+          [% CASE 'visible_to_me_add' %]
+            <li>このグループは次のグループのユーザを見ることができるようになりました:
+              [%+ changes.visible_to_me_add.join(', ') FILTER html %]</li>
+          [% CASE 'visible_to_me_remove' %]
+            <li>このグループは次のグループのユーザを見ることができなくなりました:
+              [%+ changes.visible_to_me_remove.join(', ') FILTER html %]</li>
+        [% END %]
+      [% END %]
+      </ul>
+    [% ELSE %]
+      '[% group.name FILTER html %]' グループに何も変更を加えていません。
+    [% END %]
+
+  [% ELSIF message_tag == "job_queue_depth" %]
+    [% count FILTER html %] 個のジョブがキューにあります。
+
+  [% ELSIF message_tag == "keyword_created" %]
+    [% title = "新規キーワード作成" %]
+    キーワード <em>[% name FILTER html %]</em> が作成されました。
+
+  [% ELSIF message_tag == "keyword_deleted" %]
+    [% title = "キーワード削除" %]
+    <em>[% keyword.name FILTER html %]</em> キーワードが削除されました。
+    <b>キーワード編集完了後、
+    <a href="sanitycheck.cgi?rebuildkeywordcache=1">キーワードキャッシュの再構築</a></b>
+    が必要になります。([% terms.Bugzilla %] の大規模サイトでは、
+    それなりの時間かかります。)
+
+  [% ELSIF message_tag == "keyword_updated" %]
+    [% title = "キーワード更新" %]
+    [% IF changes.keys.size %]
+      <em>[% keyword.name FILTER html %]</em> キーワードへの変更が保存されました
+      :
+      <ul>
+        [% IF changes.name.defined %]
+          <li>
+            キーワードは <em>[% keyword.name FILTER html %]</em> に改名されました。
+            <b>キーワード編集完了後、
+            <a href="sanitycheck.cgi?rebuildkeywordcache=1">キーワードキャッシュの再構築
+            </a></b> が必要となります。 ([% terms.Bugzilla %] の大規模サイトでは、
+            数分かかる場合があります。)
+          </li>
+        [% END %]
+        [% IF changes.description.defined %]
+          <li>説明が <em>[% keyword.description FILTER html %]</em> になりました。</li>
+        [% END %]
+      </ul>
+    [% ELSE %]
+      変更はありません。
+    [% END %]
+
+  [% ELSIF message_tag == "logged_out" %]
+    [% title = "ログアウト" %]
+    [% url = "index.cgi?GoAheadAndLogIn=1" %]
+    [% link = "再度ログインする" %]
+    <b>ログイン情報を破棄しました</b>。
+    ログイン名を記録してたクッキーを破棄しました。
+    次回ログインを要求されることになるでしょう。
+
+  [% ELSIF message_tag == "login_changed" %]
+    [% title = "$terms.Bugzilla ログイン情報変更" %]
+    あなたの [% terms.Bugzilla %] へのログイン情報が変更されました。
+
+  [% ELSIF message_tag == "milestone_created" %]
+    [% title = "マイルストーン作成完了" %]
+    マイルストーン <em>[% milestone.name FILTER html %]</em> を作成しました。
+
+  [% ELSIF message_tag == "milestone_deleted" %]
+    [% title = "マイルストーン削除完了" %]
+    マイルストーン <em>[% milestone.name FILTER html %]</em> が削除されました。
+    [% IF milestone.bug_count %]
+      このマイルストーンが目標とされていた [%+ terms.Bugs %] は全て既定のマイルストーン
+      <em>[% product.default_milestone FILTER html %]</em> に変更されました。
+    [% END %]
+
+  [% ELSIF message_tag == "milestone_updated" %]
+    [% title = "マイルストーン更新完了" %]
+    [% IF changes.size %]
+      マイルストーン <em>[% milestone.name FILTER html %]</em>
+      への変更が完了しました:
+      <ul>
+        [% IF changes.value.defined %]
+          <li>マイルストーン名が <em>[% milestone.name FILTER html %]</em> となりました</li>
+        [% END %]
+        [% IF changes.sortkey.defined %]
+          <li>ソートキーが <em>[% milestone.sortkey FILTER html %]</em> となりました
+        [% END %]
+      </ul>
+    [% ELSE %]
+      マイルストーン <em>[% milestone.name FILTER html %]</em> への更新はありません
+    [% END %]
+
+  [% ELSIF message_tag == "parameters_updated" %]
+    [% title = "パラメータ更新完了" %]
+    [% IF param_changed.size > 0 %]
+      [% FOREACH param = param_changed %]
+        <em>[% param FILTER html %]</em> パラメータ更新<br>
+        [% IF param == 'utf8' && Param('utf8') %]
+          <strong>checksetup.pl を再実行する必要があります</strong><br>
+        [% END %]
+      [% END %]
+    [% ELSE %]
+      変更はありませんでした
+    [% END %]
+
+    [% IF shutdown_is_active == 1 %]
+      <hr>
+      [% terms.Bugzilla %] は現在停止中です。再開するには、
+      <em>shutdownhtml</em> フィールドをクリアしてください。
+    [% END%]
+
+  [% ELSIF message_tag == "password_change_canceled" %]
+    [% title = "パスワード変更の中止要請" %]
+    変更は中止されました。
+
+  [% ELSIF message_tag == "password_change_request" %]
+    [% title = "パスワード変更要請" %]
+    パスワード変更のためのトークンがメールで送信されました。
+    メールに書かれている指示に従ってパスワードを変更してください。
+
+  [% ELSIF message_tag == "password_changed" %]
+    [% title = "パスワード変更完了" %]
+    パスワードは変更されました。
+
+  [% ELSIF message_tag == "flag_type_created" %]
+    [% title = BLOCK %]フラグタイプ '[% name FILTER html %]' 作成完了[% END %]
+    フラグタイプ <em>[% name FILTER html %]</em> が作成されました。
+
+  [% ELSIF message_tag == "flag_type_changes_saved" %]
+    [% title = BLOCK %]フラグタイプ '[% name FILTER html %]' 更新完了[% END %]
+    フラグタイプ <em>[% name FILTER html %]</em> への更新が保存されました。
+
+  [% ELSIF message_tag == "flag_type_deleted" %]
+    [% title = BLOCK %]フラグタイプ '[% name FILTER html %]' 削除完了[% END %]
+    フラグタイプ <em>[% name FILTER html %]</em> の削除が完了しました。
+
+  [% ELSIF message_tag == "flag_type_deactivated" %]
+    [% title = BLOCK %]フラグタイプ '[% flag_type.name FILTER html %]' 無効化[% END %]
+    フラグタイプ <em>[% flag_type.name FILTER html %]</em> が無効化されました。
+
+  [% ELSIF message_tag == "install_admin_get_email" %]
+    管理者のメールアドレスを入力 :
+
+  [% ELSIF message_tag == "install_admin_get_name" %]
+    管理者の実名を入力 :
+
+  [% ELSIF message_tag == "install_admin_get_password" %]
+    管理者アカウントのパスワードを入力 :
+
+  [% ELSIF message_tag == "install_admin_created" %]
+    [% user.login FILTER html %] が管理者として登録されました。
+
+  [% ELSIF message_tag == "install_admin_setup" %]
+    管理者がまだ設定されていないように見えます。
+    [% terms.Bugzilla %] の利用がはじめてであるか、
+    管理者権限が何らかの事故で削除されたかでしょう。
+
+  [% ELSIF message_tag == "install_column_add" %]
+    カラム '[% column FILTER html %]' を '[% table FILTER html %]' テーブルに追加中...
+
+  [% ELSIF message_tag == "install_column_drop" %]
+    からむ '[% column FILTER html %]' を '[% table FILTER html %]' テーブルから削除中...
+
+  [% ELSIF message_tag == "install_column_rename" %]
+    カラム名 '[% old FILTER html %]' を '[% new FILTER html %]' に変更中...
+
+  [% ELSIF message_tag == "install_confirm_password" %]
+    照合のためにパスワードをもう一度入力してください :
+
+  [% ELSIF message_tag == "install_default_classification" %]
+    既定の classification '[% name FILTER html %]' を作成中...
+
+  [% ELSIF message_tag == "install_default_product" %]
+    初期のダミープロダクト '[% name FILTER html %]' を作成中...
+
+  [% ELSIF message_tag == "install_file_perms_fix" %]
+    ファイル権限を修正中...
+
+  [% ELSIF message_tag == "install_fk_add" %]
+    外部キー: [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %] を追加中...
+
+  [% ELSIF message_tag == "install_fk_drop" %]
+    外部キー: [% table FILTER html %].[% column FILTER html %] -&gt; [% fk.TABLE FILTER html %].[% fk.COLUMN FILTER html %] を削除中...
+
+  [% ELSIF message_tag == "install_fk_invalid" %]
+    エラー: [% table FILTER html %] テーブルの [% column FILTER html %] 
+    カラムに無効な値があります。(これらの値は [% foreign_table FILTER html %] テーブルの
+    [% foreign_column FILTER html %] カラムには存在しません。)
+
+    checksetup を続行する前に、これらの値を修正する必要があります。
+    データベースからこれらの行を削除するか、[% table FILTER html %] の [% column FILTER html %]
+    の値を [% foreign_table FILTER html %].[% foreign_column FILTER html %] の有効値に変更するかです。
+
+    [% table FILTER html %].[% column FILTER html %] カラムの無効な値は以下のものです :
+    [%+ values.join(', ') FILTER html %]
+
+  [% ELSIF message_tag == "install_fk_invalid_fixed" %]
+    警告: [% table FILTER html %].[% column FILTER html %] に無効な値があります。
+    これらは、[% IF action == 'delete' %]削除[% ELSE %]NULL に設定[% END %] されました:
+    [%+ values.join(', ') FILTER html %]
+
+  [% ELSIF message_tag == "install_group_create" %]
+    グループ [% name FILTER html %] を作成中...
+
+  [% ELSIF message_tag == "install_setting_new" %]
+    新規ユーザの設定 '[% name FILTER html %]' を追加中。
+
+  [% ELSIF message_tag == "install_table_drop" %]
+    '[% name FILTER html %]' テーブルを削除中...
+
+  [% ELSIF message_tag == "install_table_rename" %]
+    '[% old FILTER html %]' テーブルを '[% new FILTER html %]' に改名中...
+
+  [% ELSIF message_tag == "install_urlbase_default" %]
+    [% terms.Bugzilla %] のインストールを行いましたが、
+    'パラメータ' ページ (管理者アカウントのフッタからリンク)
+    から設定を行ってください。これには、'urlbase' オプションを正しい 
+    URL に設定することを含みます。
+
+  [% ELSIF message_tag == "install_reset_password" %]
+    [% user.login FILTER html %] の新しいパスワードを入力:
+
+  [% ELSIF message_tag == "install_reset_password_done" %]
+    パスワードが設定されました。
+
+  [% ELSIF message_tag == "install_webservergroup_empty" %]
+    ****************************************************************************
+    警告! localconfig の "webservergroup" パラメータが未設定です。これは、あなた
+    とウェブサーバの両方から編集する必要がある特定のファイルやディレクトリが、誰
+    にでも書き込み可能となり、かつ他のファイル (データベースのパスワードが保存さ
+    れている localconfig を含む) が誰からでも読み込み可能になることを意味します。
+    これは、ローカルにアクセス可能な誰もがあなたの [% terms.Bugzilla %] サイトの
+    操作が可能となることを意味し、かつおそらくウェブサーバが動作する権限で Perl 
+    コードを実行可能になることを意味します。
+
+    本当に、本当に、本当にこの設定を変更する必要があります。
+    ****************************************************************************
+
+  [% ELSIF message_tag == "install_webservergroup_not_in" %]
+    警告: localconfig の "webservergroup" に値を設定しましたが、a) このスクリプトを
+    [% constants.ROOT_USER FILTER html %] で実行しているか、b) このグループに所属し
+    ているのどちらでもないようです。この状態では権限問題やセキュリティーの低下が発
+    生します。もし、[% terms.Bugzilla %] を実行する上で問題が発生すれば、
+    [% constants.ROOT_USER FILTER html %] としてログインし、このスクリプトを再実行
+    するか、このグループのメンバーになるか、"webservergroup" パラメータを削除して
+    ください。
+
+  [% ELSIF message_tag == "install_webservergroup_windows" %]
+    警告: webservergroup を [% constants.bz_locations.localconfig FILTER html %] 
+    に設定しています。この設定は Windows で動かす限りは何もセキュリティー上の
+    メリットをもたらさないことを把握してください。
+    あなたの [% terms.Bugzilla %] ディレクトリにあるファイルの権限が、あなたの
+    システムにとって望ましいことを確認してください。不要な書き込み権限は削除して
+    ください。
+
+  [% ELSIF message_tag == "product_created" %]
+    [% title = "プロダクト作成完了" %]
+    プロダクト <em>[% product.name FILTER html %]</em> の作成を完了しました。
+    このプロダクトに対して [% terms.bugs %] を登録できるようにするには、
+    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER url_quote %]">
+    最低ひとつのコンポーネントを追加</a> する必要があります。
+
+  [% ELSIF message_tag == "product_deleted" %]
+    [% title = "プロダクト削除完了" %]
+    プロダクト <em>[% product.name FILTER html %]</em> とその全てのバージョン、
+    コンポーネント、マイルストーン、グループ権限が削除されました。
+    [% IF product.bug_count %]
+      全てのこのプロダクトにあった [% terms.bugs %] 
+      と参照は全て削除されました。
+    [% END %]
+
+  [% ELSIF message_tag == "product_invalid" %]
+    [% title = "$terms.Bugzilla コンポーネント説明" %]
+    プロダクト <em>[% product FILTER html %]</em> は存在しないか、アクセスできません。
+    以下があなたが選択可能なプロダクトのリストです。
+
+
+  [% ELSIF message_tag == "remaining_time_zeroed" %]
+    この [% terms.bug %] を閉じるや閉じられた状態から他に移行するのに伴い、
+    [% field_descs.remaining_time FILTER html %] フィールドは、
+    自動的にゼロに設定されています。
+
+  [% ELSIF message_tag == "sanitycheck" %]
+    [%# We use this way to call sanitycheck-specific messages so that
+      # we can still use get_text(). %]
+    [% PROCESS "admin/sanitycheck/messages.html.tmpl" %]
+
+  [% ELSIF message_tag == "series_all_open" %]
+    活動中全て
+
+  [% ELSIF message_tag == "series_all_closed" %]
+    解決済み全て
+
+  [% ELSIF message_tag == "series_subcategory" %]
+    -All-
+
+  [% ELSIF message_tag == "sudo_started" %]
+    [% title = "sudo セッション開始" %]
+      sudo セッションが開始されました。いまから6時間、
+      もしくはセッションを終わるまで、全てのあなたの操作は
+      ([% target FILTER html %]) として実行されます。
+  
+  [% ELSIF message_tag == "sudo_ended" %]
+    [% title = "sudo セッション完了" %]
+      sudo セッションが完了しました。
+      この時点移行、全ての操作はあなた自身のものとなります。
+
+  [% ELSIF message_tag == "series_created" %]
+    [% title = "シリーズ作成完了" %]
+      シリーズ <em>[% series.category FILTER html %] /
+      [%+ series.subcategory FILTER html %] / 
+      [%+ series.name FILTER html %]</em>
+      の作成が完了しました。最大で
+      [%+ series.frequency * 2 %] 日間、
+      チャート作成に十分なデータが蓄積されるのを待つ必要があることに注意してください。
+      <br><br>
+      <a href="query.cgi?format=create-series">他のシリーズの作成</a> に戻る。
+
+  [% ELSIF message_tag == "shutdown" %]
+    [% title = "$terms.Bugzilla 停止中" %]
+    [% Param("shutdownhtml") %]
+    [% IF userid %]
+      <p>セキュリティー上の理由から、あなたは自動的にログアウトしています。
+      保存されているクッキーは削除しました。
+    [% END %]
+
+  [% ELSIF message_tag == "term" %]
+    [% terms.$term FILTER html %]
+
+  [% ELSIF message_tag == "unexpected_flag_types" %]
+    いくつかのフラグは設定不可能です。変更を確認してください。
+
+  [% ELSIF message_tag == "user_match_failed" %]
+    あなたの入力したユーザ名は、存在する [% terms.Bugzilla %] 
+    ユーザとマッチしませんでしたので、[% match_field FILTER html %]
+    フィールドを空白のままにしています。
+
+  [% ELSIF message_tag == "user_match_multiple" %]
+    入力されたユーザ名は一人より多いユーザにマッチしましたので、
+    [% match_field FILTER html %] フィールドを空白のままにしています。
+
+  [% ELSIF message_tag == "version_created" %]
+    [% title = "バージョン作成完了" %]
+    バージョン <em>[% version.name FILTER html %]</em> がプロダクト
+    <em>[% product.name FILTER html %]</em> に作成されました。
+
+  [% ELSIF message_tag == "version_deleted" %]
+    [% title = "バージョン削除完了" %]
+    バージョン <em>[% version.name FILTER html %]</em> がプロダクト
+    <em>[% product.name FILTER html %]</em> から削除されました。
+
+  [% ELSIF message_tag == "version_updated" %]
+    [% title = "バージョン更新完了" %]
+    バージョンが <em>[% version.name FILTER html %]</em> に変更されました。
+
+  [% ELSIF message_tag == "workflow_updated" %]
+    ワークフローが更新されました。
+
+  [% ELSE %]
+    [%# Give sensible error if error functions are used incorrectly.
+      #%]
+    [% terms.Bugzilla %] のメッセージ機能を間違って利用しています。
+    '[% message_tag %]' が渡されました。正しい利用方法は、
+    タグを渡すようにして、messages.html.tmpl にタグを定義する必要があります。<br>
+    <br>
+    もし、あなたが [% terms.Bugzilla %] のエンドユーザで、
+    このメッセージを見ているなら、ページを保存して 
+    [% Param('maintainer') %] に連絡してください。
+
+  [% END %]
+[% END %]

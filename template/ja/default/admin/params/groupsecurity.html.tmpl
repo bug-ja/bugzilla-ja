@@ -1,0 +1,57 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "グループ権限"
+   desc = "セキュリティーグループの利用方法の設定"
+%]
+
+[% param_descs = {
+  makeproductgroups => "有効の場合、$terms.Bugzilla は $terms.abug グループをデータベース中で" _
+                       "それぞれのプロダクトに関連付け、${terms.bugs} で利用します。",
+
+  useentrygroupdefault => "有効の場合、$terms.Bugzilla は プロダクトの $terms.bug グループ制限を" _
+                          " ${terms.bugs} 入力時に適用します。この場合、検索画面でユーザは権限を持つ" _
+                          "プロダクトのみを見られることになります。" _
+                          "無効の場合、ユーザは個々の制限で除外されていない限り全てのプロダクトを" _
+                          "見ることができます。",
+
+  chartgroup => "'新規チャート作成' 機能を利用可能なユーザグループです。" _
+                "管理者は、これを全体に有効にする前に、公開されたカテゴリやシリーズ定義に" _
+                "隠すべき情報が含まれていないことを確認してください。" _
+                "空白の場合、誰も新規チャート作成ができなくなります。",
+
+  insidergroup => "プライベートコメントや添付を参照・変更できるユーザグループ名です。",
+
+  timetrackinggroup => "所要時間情報を参照・変更できるユーザグループ名です。",
+
+  querysharegroup => "保存した検索をほかのユーザと共有できるユーザグループ名です。",
+
+  usevisibilitygroups => "ユーザの閲覧制限を特定のグループのみに限りますか ?",
+  
+  strict_isolation => "ユーザがバグに対する変更ができないプロダクトにおいて、" _
+                      "担当者にする、" _
+                      "qa コンタクト にする、" _
+                      "CC リストに追加する、" _
+                      "依存関係を追加したり削除したりする、" _
+                      "ことを禁止しますか ?", 
+
+ }
+%]

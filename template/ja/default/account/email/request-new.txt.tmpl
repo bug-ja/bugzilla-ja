@@ -1,0 +1,56 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # token: random string used to authenticate the transaction.
+  # expiration_ts: expiration date of the token.
+  # email: email address of the new account.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+From: [% Param('mailfrom') %]
+To: [% email %]
+Subject: [% terms.Bugzilla %]: アカウント作成の確認
+X-Bugzilla-Type: admin
+
+[%+ terms.Bugzilla %] はあなたのメールアドレス ([% email %]) を利用した
+新規アカウント作成の要請を受け取りました。
+
+このメールアドレスでのアカウント作成を続行するには、次の URL を
+[% expiration_ts FILTER time("%B %e, %Y at %H:%M %Z") %] までに訪問してください。
+
+[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=request_new_account
+
+もし、このメールを [% expiration_ts FILTER time("%B %e, %Y at %H:%M %Z") %] より前に
+受け取らなかったか、ほかのメールアドレスでアカウントを作成したい場合は、
+次の URL から再試行できます。
+
+[%+ urlbase %]createaccount.cgi
+
+[% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
+プライバシー保護のために: [% terms.Bugzilla %] は開かれた [% terms.bug %] 追跡システムです。
+メールアドレスを含むほとんど全ての [% terms.bugs %] への変更は、誰でも見られます。
+予備のメールアドレス、もしくは、Gmail, Yahoo, Hotmail などといったフリーメールアカ
+ウントを登録することを、spam の防止の観点からお勧めします。
+[% END %]
+
+アカウントを作成しないことを望むなら、もしくは要請が何らかの間違いであるなら、
+何もしないか次の URL を訪問してください。
+
+[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cancel_new_account
+
+上のリンクが動作しないなら、もしくはアカウントに関して何か問題があるなら、
+管理者 [% Param('maintainer') %] に問い合わせてみてください。

@@ -1,0 +1,50 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "依存グラフ"
+   desc = "依存グラフのオプション設定"
+%]
+
+[% param_descs = {
+  webdotbase => "${terms.bugs} の依存グラフを表示することが可能です。
+                 この機能を利用する場合、以下のいずれかを設定する必要があります。
+                 <ul>
+                   <li>
+                     'dot' コマンドへの完全なパス
+                     (<a href=\"http://www.graphviz.org\">GraphViz</a> の一部です)
+                     を入力するとローカルでグラフを生成します。
+                   </li>
+                   <li>
+                     URL
+                     <a href=\"http://www.research.att.com/~north/cgi-bin/webdot.cgi\">webdot
+                     パッケージ</a> がインストールされた URL の先頭部分を入力すると、
+                     グラフの生成をリモートサーバに依頼します。
+                   </li>
+                   <li>
+                     空白にすると依存グラフ機能を無効にします。
+                   </li>
+                 </ul>
+                 既定値は誰でも利用可能な webdot サーバになっています。この値を変更する場合、
+                 webdot サーバがあなたの webdot ディレクトリのファイルを読めるように設定する必要があります。
+                 Apache では .htaccess ファイルを編集することでできますが、
+                 その他のシステムでの方法はまちまちです。
+                 .htaccess ファイルがなくなった場合は、checksetu.pl で再生性できます。"}
+%]

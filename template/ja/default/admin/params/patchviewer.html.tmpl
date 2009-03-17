@@ -1,0 +1,58 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "パッチビューアー"
+   desc = "PatchViewer と一緒に走らせるサードパーティのアプリケーションの設定"
+%]
+
+[% param_descs = {
+  cvsroot => "あなたのシステムの大多数のユーザが 'cvs diff' の際に利用する " _
+             "<a href=\"http://www.cvshome.org\">CVS</a> root です。" _
+             "PatchViewer の中 ('Diff' オプション) でユーザが 'cvs diff' をディレクトリ" _
+             "構造外で行った場合にでも、パッチがどこのものかを判断するために利用されます。" _
+             "(注: CVS レポジトリがリモートでパスワードが必要な場合、$terms.Bugzilla " _
+             "ユーザが 'cvs login' を実行している状態であるか、パスワードを)" _
+             "<a href=\"http://www.cvshome.org/docs/manual/cvs_2.html#SEC26\">" _
+             "CVS root の一部として</a> 設定する必要があります。) " _
+             "もし、CVS レポジトリがない場合は空欄にしてください。",
+
+  cvsroot_get => "$terms.Bugzilla がパッチを取得する CVS root です。" _
+                 "場所によっては、CVS レポジトリを $terms.Bugzilla サーバにミラーしているか、" _
+                 "同じサーバにある場合があり、レポジトリにローカルファイルシステムとして" _
+                 "アクセスできるでしょう。(そしてたいてい早いです。)" _
+                 "これが何であるかわからない場合は cvsroot と同じに設定してください。" _
+                 "(cvsroot が空なら、これも空に)",
+
+  bonsai_url => "CVS レポジトリの情報をもつ <a href=\"http://www.mozilla.org/bonsai.html\">Bonsai</a> " _
+                "サーバの URL です。Patch Viewer はこの情報をパッチの各部分から、" _
+                "bonsai blame のリンクを生成するのに利用します。" _
+                "('/cvsblame.cgi?...' をこの url に追加します)" _
+                "これが何かわからなければ、空にしてください。",
+
+  lxr_url => "<a href=\"http://sourceforge.net/projects/lxr\">LXR</a> サーバの URL です。" _
+             "Patch Viewer はこの情報からパッチの各ファイルについての LXR リンクを生成" _
+             "します。これが何かわからなければ、空にしてください。",
+
+  lxr_root => "いくつかの LXR では、CVS レポジトリを URL の root としてインデックスしていません。" _
+              "たとえば、<a href=\"http://lxr.mozilla.org/mozilla\">Mozilla の</a>では、" _
+              "<code>mozilla/</code> の下です。これは、URL に余分なパスが付くことを意味します。" _
+              "これと同様なら、ここに情報を入力してください。わからなければ空白にしてください。" }
+%]

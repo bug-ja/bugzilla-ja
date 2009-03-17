@@ -1,0 +1,168 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Eli Goldberg <eli@prometheus-music.com>
+  #                 Gervase Markham <gerv@gerv.net>
+  #                 Vera Horiuchi
+  #                 Claudius Gayle
+  #                 Peter Mock
+  #                 Chris Pratt
+  #                 Tom Schutter
+  #                 Chris Yeh
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% INCLUDE global/header.html.tmpl title = "$terms.Bug 報告ガイドライン" %]
+
+  <p>有用な [% terms.bug %] 報告は修正のための情報をほぼ含んでいます。
+    このガイドラインは有用なバグ報告を解説するためのものです。
+
+<h3>基本</h3>
+
+  <ul>
+    <li>正確であれ</li>
+    <li>明快であれ - 他の人がこの [% terms.bug %] を再現できるように</li>
+    <li>報告ごとに [% terms.bug %] ひとつ</li>
+    <li>報告する価値がないほど些細な [% terms.bug %] はない - 
+    小さく見える [% terms.bugs %] にも大きな [% terms.bugs %] が隠れている</li>
+    <li>事実と推測を分離せよ</li>
+  </ul>
+
+<h3>報告前に</h3>
+
+<ol>
+  <li>あなたの [% terms.bug %] を最新のソフトウェアのビルドで試し、
+  修正されていないかどうかを確認する。
+  </li>
+
+  <li>[% terms.Bugzilla %] を <a href="query.cgi?format=specific">検索</a>
+  し、あなたの [% terms.bug %] が報告済みでないかどうか確認する。</li>
+</ol>
+
+<h3>新しい [% terms.Bug %] を報告</h3>
+
+<p>[% terms.bug %] を最新のビルドで再現でき、誰も報告していないように見えたなら :</p>
+
+<ol>
+ <li>"<a href="enter_bug.cgi">新規登録</a>" を選択</li>
+ <li>[% terms.bug %] を発見したプロダクトを選択</li>
+ <li>フォームを埋める。各フィールドについては以下を参照。</li>
+</ol>
+
+  <blockquote>
+    <p><b>コンポーネント:</b> ソフトウェアのどの部分が問題であるか。<br>
+    この項目は必須です。
+    "コンポーネント" の単語をクリックするとそれぞれのコンポーネントの説明が表示されます。
+    もし合致するものが見つからなければ、"総合的な" コンポーネントを探してください。</p>
+
+    <p><b>OS:</b> どの OS で問題を発見しましたか？
+        (例 Linux, Windows XP, Mac OS X.)<br>
+        [% terms.bug %] がひとつ以上の OS で発生するなら、"All" を選択してください。
+        もしリストになければ、Other を選択してください。</p>
+
+    <p><b>要約:</b> [% terms.bug %] を 60 文字程度以下で説明できますか ?<br>
+     よい要約は、<b>簡単に混同することなく [% terms.abug %] 報告を判別できる</b>
+     べきです。問題を述べるべきで、解決方法を述べる場所ではありません。<br>
+    <ul>
+     <li>好例: "<tt>ファイルコピーダイアログでキャンセルすると
+     ファイルマネージャーがクラッシュする</tt>"</li>
+     <li>悪例: "<tt>ソフトウェアがクラッシュ</tt>"</li>
+     <li>悪例: "<tt>わたしのウェブサイトで正常に動作すべき</tt>"</li>
+    </ul>
+    
+    <b>説明:</b>
+    以下のものを含む、報告しようとしている問題の詳細です。:</p>
+
+    <blockquote>
+      <p><b>概要:</b> 要約よりも詳細な内容</p>
+
+      <blockquote>
+<pre>
+ページでドラッグで選択すると NSGetFactory 関数で Mac ビルドがクラッシュします。
+</pre>
+      </blockquote>
+
+      <p><b>再現方法:</b> 最低限の、実行しやすい [% terms.bug %] を引き起こすような手順。
+      特別な設定が必要ならそれも含んで。</p>
+
+      <blockquote>
+<pre>
+1) ウェブページを開く (既定のサンプルページを利用した
+resource:/res/samples/test0.html)
+
+2) ページでドラッグで選択する (特に、マウスボタンを押したまま、
+ポインタをブラウザのコンテンツ領域から最下部にドラッグしたとき。)
+</pre>
+      </blockquote>
+
+      <p><b>実際の結果:</b> 上の操作を行った時にアプリケーションがどうなるか。</p>
+
+      <blockquote>
+<pre>
+クラッシュします。
+</pre>
+      </blockquote>
+
+      <p><b>望まれる動作:</b> アプリケーションは、[% terms.bug %] がなかったとすれば、
+      どういう動作をすべきなのか。</p>
+
+      <blockquote>
+<pre>
+ウィンドウは下にスクロールすべき。そしてスクロールしたコンテンツは選択されるべき。
+(もしくは、最低でもクラッシュすべきでない。)
+</pre>
+      </blockquote>
+
+      <p><b>ビルド日時 &amp; プラットフォーム:</b> [% terms.bug %] に最初に遭遇した、
+      ビルド日時とプラットフォーム。</p>
+
+      <blockquote>
+<pre>
+Build 2006-08-10、Mac OS 10.4.3
+</pre>
+      </blockquote>
+
+      <p><b>ビルド日時・プラットフォームに関する追加情報:</b> 
+      [% terms.bug %] が他のプラットフォーム (もしあればブラウザなど)
+      で再現するかどうか。</p>
+
+      <blockquote>
+<pre>
+Build 2006-08-10、Windows XP Home (Service Pack 2) 上では再現せず。
+</pre>
+      </blockquote>
+
+      <p><b>追加情報:</b> 他に有益な情報があれば。
+      <br><br>クラッシュするような [% terms.bugs %] では:</p>
+
+      <ul>
+        <li><b>Windows:</b> どのようにクラッシュするか、
+        そしてどのモジュールでクラッシュしたか。(たとえば、apprunner.exe のアクセス違反)</li>
+
+        <li><b>Mac OS X:</b> クラッシュのときの "クラッシュレポーター" のログを添付。
+        クラッシュしているスレッドに直接関係する部分のみにしてください。
+        通常、"スレッド 0 クラッシュ" などのタイトルです。絶対にログ全体を貼り付けないで !</li>
+      </ul>
+    </blockquote>
+
+  <p>間違いや勘違いがないかあなたの報告を再度確認してから、"登録" を押してください。
+  あなたの [% terms.bug %] 報告は [% terms.Bugzilla %] データベースに登録されます。<br>
+  </p>
+</blockquote>
+
+[% INCLUDE global/footer.html.tmpl %]

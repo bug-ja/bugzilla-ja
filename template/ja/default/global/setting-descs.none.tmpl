@@ -1,0 +1,49 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Shane H. W. Travis <travis@sedsystems.ca>
+  #
+  #%]
+
+[%# Remember to PROCESS rather than INCLUDE this template. %]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% setting_descs = { 
+   "comment_sort_order"               => "$terms.abug の表示時におけるコメントの表示順",
+   "csv_colsepchar"                   => "CSV ファイルの区切り文字",
+   "display_quips"                    => "警句を $terms.bug リストの先頭に表示するかどうか",
+   "zoom_textareas"                   => "フォーカス時にテキストエリアを広げるかどうか (要 JavaScript)",
+   "newest_to_oldest"                 => "新しい順",
+   "newest_to_oldest_desc_first"      => "新しい順、だが説明は先頭に",
+   "off"                              => "無効",
+   "oldest_to_newest"                 => "古い順",
+   "on"                               => "有効",
+   "per_bug_queries"                  => "$terms.bugs にタグ付けを有効にするかどうか",
+   "post_bug_submit_action"           => "$terms.abug の変更後の動作",
+   "next_bug"                         => "検索リスト中の次の $terms.bug を表示",
+   "same_bug"                         => "更新した $terms.bug を表示",
+   "standard"                         => "Classic",
+   "skin"                             => "$terms.Bugzilla の表示全般 (スキン)",
+   "nothing"                          => "何もしない",
+   "state_addselfcc"                  => "$terms.bugs に変更を加えたときに自動的に自分を CC に追加する",
+   "always"                           => "常に",
+   "never"                            => "行わない",
+   "cc_unless_role"                   => "なにも役割を持っていない場合のみ",
+   "lang"                             => "メールの言語",
+   "quote_replies"                    => "返信リンクをクリックした時にそのコメントを引用する",
+   "quoted_reply"                     => "すべてのコメントを引用する",
+   "simple_reply"                     => "コメント番号のみを入れる",
+   "timezone"                         => "日時を表示するときのタイムゾーン",
+   "local"                            => "同一サーバ上",
+                   } 
+%]

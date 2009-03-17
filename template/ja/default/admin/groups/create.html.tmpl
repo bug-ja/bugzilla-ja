@@ -1,0 +1,97 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@syndicomm.com>
+  #                 Joel Peshkin <bugreport@peshkin.net>
+  #                 Jacob Steenhagen <jake@bugzilla.org>
+  #                 Vlad Dascalu <jocuri@softhome.net>
+  #%]
+
+[%# INTERFACE:
+  # none
+  #%]
+
+[% PROCESS global/header.html.tmpl
+  title = "グループの追加"
+  subheader = "この画面で新規グループ追加を行えます。"
+  doc_section = "groups.html#create-groups"
+%]
+
+<form method="post" action="editgroups.cgi">
+  <table border="1" cellpadding="4" cellspacing="0"><tr>
+    <th>新しい名前</th>
+    <th>説明</th>
+    <th>含める正規表現</th>
+    <th>[% terms.Bugs %] で利用する</th>
+  </tr><tr>
+    <td><input size="20" name="name"></td>
+    <td><input size="40" name="desc"></td>
+    <td><input size="30" name="regexp"></td>
+    <td><input type="checkbox" name="isactive" value="1" checked></td>
+  </tr>
+  <tr>
+    <th>Icon URL:</th>
+    <td colspan="3"><input type="text" size="70" maxlength="255" id="icon_url" name="icon_url"></td>
+  </tr>
+  [% Hook.process('field') %]
+  </table>
+
+  <hr>
+
+  <input type="checkbox" id="insertnew" name="insertnew" value="1"
+    [% IF Param("makeproductgroups") %] checked[% END %]>
+  <label for="insertnew">すべての既存のプロダクトに新規グループを導入する。</label>
+  <p>
+  <input type="submit" id="create" value="追加">
+  <input type="hidden" name="action" value="new">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+</form>
+
+<p><b>名前</b> は B<!-- blah -->ugzilla->user->in_group() 関数で利用され、
+特定のグループに対する独自 cgi を書くときに利用できます。
+また、メールで登録した [% terms.bugs %] をある [% terms.abug %] グループに限る
+ときにも利用可能です。</p>
+
+<p><b>説明</b> は [% terms.bug %] 報告で、グループに該当するユーザに対して表示され、
+[% terms.bug %] を同じグループのみに制限するかどうかを指定できます。</p>
+
+<p><b>[% terms.Bugs %] で利用する</b> フラグは、グループを [% terms.bugs %] に
+アクセスできるユーザに制限するために利用するかどうかをしめします。
+これを設定しなければ、[% terms.bugs %] をこのグループに加えることはできなくなりますが、
+[% terms.bugs %] がすでにグループに制限されていればそのままです。
+グループを削除するよりこちらを利用する方が、グループの所属数を増やさなくて済む手軽な方法です。
+<b>注: グループを作成した場合、[% terms.bugs %] に利用できる
+ように設定したいでしょうから、これは有効なままにしてください。</b></p>
+
+<p><b>含める正規表現</b> はオプションです。もし設定されていれば、この正規表現に
+メールアドレスが合致するユーザは自動的に権限を取得します。</p>
+
+<p>
+  <b>アイコン URL</b> はオプションです。グループを特定するために利用されるアイコンの
+  URL を指定します。サイトのベース URL への相対 URL と絶対 URL の双方が利用できます。
+  アイコンは [% terms.bugs %] のコメントの表示でコメント投稿者の名前のあとに表示されます。
+</p>
+
+<p>既定では、新規グループは既存のプロダクトにのみ関連付けることができます。
+"すべての既存のプロダクトに新規グループを導入する。" のチェックをはずすと、
+これは行われず、プロダクトに追加したものについてのみグループが表示されるようになります。</p>
+
+<p><a href="./">メイン [% terms.bugs %] ページ</a>に戻る
+
+もしくは、<a href="editgroups.cgi">グループの一覧</a>を表示する。
+
+[% PROCESS global/footer.html.tmpl %] 

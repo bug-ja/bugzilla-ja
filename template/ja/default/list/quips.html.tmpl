@@ -1,0 +1,167 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  # added_quip: string. Defined if the CGI added a quip data before
+  #                displaying anything; if defined, its value is that quip.
+  # show_quips: boolean. True if we are showing the entire quip list.
+  # quips: list of strings. Defined if and only if show_quips is true.
+  #                List of all quips.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS global/header.html.tmpl
+           title = "$terms.Bugzilla Quip System"
+           header = "Add your own clever headline"
+ %]
+
+[% IF added_quip %]
+  <p>
+    <font color="red">
+      あなたの警句 '<tt>[% added_quip FILTER html %]</tt>' は追加されました。
+      [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('admin') %]
+        認証され次第利用されます。
+      [% END %]
+    </font>
+  </p>
+[% END %]
+
+[% IF deleted_quip %]
+  <p>
+    <font color="red">
+      警句 '<tt>[% deleted_quip FILTER html %]</tt>' は削除されました。
+    </font>
+  </p>
+[% END %]
+
+[% IF approved or unapproved %]
+  <p>[% approved.size %] 個が認証され、[% unapproved.size %] 個が未認証です。</p>
+[% END %]
+
+
+<p>
+  [% terms.Bugzilla %] はランダムな警句を選択し、[% terms.bug %] リストの先頭に表示します。
+</p>
+
+[% IF Param("quip_list_entry_control") != "closed" %]
+  <p>
+    警句のリストを拡張できます。何かいい、愉快、退屈なものを入力
+    (ただし、節度を欠いたものや攻撃的なものはやめてください) し、登録してください。
+    [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('admin') %]
+      あなたの警句は認証されるまで利用されません。
+    [% END %]
+  </p>
+
+  <form method="post" action="quips.cgi">
+    <input type="hidden" name="action" value="add">
+    <input size="80" name="quip">
+    <p>
+      <input type="submit" id="add" value="警句を追加">
+    </p>
+  </form>
+[% ELSE %]
+  <p>新しいエントリが送信されませんでした。
+  </p>
+[% END %]
+
+[% IF show_quips %]
+  [% IF !user.in_group('admin') %]
+    <h2>
+      既存の警句:
+    </h2>
+    <ul>
+      [% FOREACH quipid = quipids %]
+        [% NEXT IF NOT quips.$quipid.approved %]
+        <li>[% quips.$quipid.quip FILTER html %]</li>
+      [% END %]
+    </ul>
+  [% ELSE %]
+    <h2>既存の警句の編集:</h2>
+    <p>
+      <strong>注:</strong> 認証された警句のみが表示されます。
+      パラメータ 'quip_list_entry_control' が <q>open</q> なら、
+      入力された警句は自動的に認証されます。
+    </p>
+    <form name="editform" method="post" action="quips.cgi">
+      <input type="hidden" name="action" value="approve">
+      <table border="1">
+        <thead><tr>
+          <th>警句</th>
+          <th>作者</th>
+          <th>動作</th>
+          <th>状況</th>
+        </tr></thead><tbody>
+        [% FOREACH quipid = quipids %]
+          <tr>
+            <td>[% quips.$quipid.quip FILTER html %]</td>
+            <td>
+              [% userid = quips.$quipid.userid  %]
+              [% users.$userid FILTER html      %]
+              [% "未知" IF NOT users.$userid %]
+            </td>
+            <td>
+              <a href="quips.cgi?action=delete&amp;quipid=[% quipid FILTER url_quote %]">
+                削除
+              </a>
+            </td>
+            <td>
+              <input type="hidden" name="defined_quipid_[% quipid FILTER html %]"
+                     id="defined_quipid_[% quipid FILTER html %]"
+                     value="1">
+              <input type="checkbox" name="quipid_[% quipid FILTER html %]"
+                     id="quipid_[% quipid FILTER html %]"
+                     [%- ' checked="checked"' IF quips.$quipid.approved %]>
+            </td>
+          </tr>
+        [% END %]
+        </tbody>
+      </table>
+      <script type="text/javascript"><!--
+        var numelements = document.forms.editform.elements.length;
+        function SetCheckboxes(value) {
+          var item;
+          for (var i=0 ; i<numelements ; i++) {
+            item = document.forms.editform.elements[i];
+            item.checked = value;
+          }
+        }
+        document.write(' <input type="button" name="uncheck_all" '
+                      +'value="全て未選択" onclick="SetCheckboxes(false);">');
+        document.write(' <input type="button" name="check_all" '
+                      +'value="全て選択" onclick="SetCheckboxes(true);">');
+        //--></script>
+
+      <input type="submit" id="update" value="変更を保存">
+    </form>
+    <br>
+  [% END %]
+[% ELSE %]
+  <p>
+    ネタが理解できるのであれば、全ての警句のリストを
+    <a href="quips.cgi?action=show">見る
+    [% IF user.in_group('admin') %]
+        そして編集する
+    [% END %]
+    ことが可能です。</a>
+  </p>
+[% END %]
+
+[% PROCESS global/footer.html.tmpl %]

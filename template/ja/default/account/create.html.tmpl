@@ -1,0 +1,82 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE
+  # none
+  # 
+  # Param("maintainer") is used to display the maintainer's email.
+  # Param("emailsuffix") is used to pre-fill the email field.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = BLOCK %]
+  新規 [% terms.Bugzilla %] アカウントの作成
+[% END %]
+
+[% PROCESS global/header.html.tmpl
+           title = title
+           onload = "document.forms['account_creation_form'].login.focus();" %]
+
+<p>
+  [% terms.Bugzilla %] アカウントを作成するためには、
+  To create a [% terms.Bugzilla %] account, all you need to do is to enter
+[% IF Param('emailsuffix') == '' %]
+  正当なメールアドレスを入力する必要があります。
+[% ELSE %]
+  [% Param('emailsuffix') %] がつく、
+  あなたがメールを受信できるメールアドレスとなるアカウント名を入力する必要があります。
+[% END %]
+  このメールアドレスに、あなたのアカウントを生成するかどうかの確認メールが送信されます。
+  <b>メールを受信するまでログインはできません。</b>
+  もし、ある程度の時間がたってもメールを受信しなかった場合は、
+  この [% terms.Bugzilla %] サイトのメンテナ
+  <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
+  まで連絡を取ってください。
+</p>
+
+[% IF Param('createemailregexp') == '.*' && Param('emailsuffix') == '' %]
+<p>
+  <b>プライバシーのための重要なお知らせ:</b>
+  [% terms.Bugzilla %] は開かれた [% terms.bug %] 追跡システムです。
+  メールアドレスを含む、ほぼすべての [% terms.bugs %] の動きはどこからでも見る
+  ことができます。サブメールアカウントや、フリーウェブメールサービス (Gmail、
+  Yahoo、Hotmail、など) を利用することを、spam を増やさないためにも、
+  <b>推奨</b> します。
+</p>
+[% END %]
+
+<form id="account_creation_form" method="get" action="createaccount.cgi">
+  <table>
+    <tr>
+      <td align="right">
+        <b>メールアドレス:</b>
+      </td>
+      <td>
+        <input size="35" id="login" name="login">
+        [% Param('emailsuffix') FILTER html %]
+      </td>
+    </tr>
+  </table>
+  <br>
+  <input type="submit" id="send" value="送信">
+</form>
+
+[% PROCESS global/footer.html.tmpl %]

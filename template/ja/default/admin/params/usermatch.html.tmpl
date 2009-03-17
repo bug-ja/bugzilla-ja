@@ -1,0 +1,42 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "ユーザ検索"
+   desc = "ユーザ検索ポリシーの設定"
+%]
+
+[% param_descs = {
+  usemenuforusers => "有効なら、$terms.Bugzillaはユーザ選択リストをフォームで" _
+                     "(テキスト入力の替わりに) 提供します。" _
+                     "このオプションは多数のユーザがいる環境では有効にすべきではありません。",
+
+  usermatchmode => "${terms.bugs} 登録・編集時に入力された名前で検索をかけるかどうか。" _
+                   "'off' は無効<br> " _
+                   "'wildcard' はワイルドカードが有効<br> " _
+                   "'search' はワイルドカードと部分一致検索が有効",
+
+  maxusermatches => "これ以上の数の合致するユーザを表示しない。<br> " _
+                    "1 なら該当するほかのユーザは表示されません。" _
+                    "ユーザプライバシー保護のためにこの設定は有効です。<br> " _
+                    "0 で無制限です。",
+
+  confirmuniqueusermatch => "1ユーザしか合致しなかった時に確認画面を出すかどうか。" }
+%]

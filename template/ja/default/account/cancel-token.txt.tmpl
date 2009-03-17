@@ -1,0 +1,105 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s):     John Vandenberg <zeroj@null.net>
+  #                     Tobias Burnus <burnus@net-b.de>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+From: [% Param('mailfrom') %]
+To: [% emailaddress %]
+Subject: [% PROCESS subject %]
+X-Bugzilla-Type: admin
+
+　要求は [% remoteaddress %] からのアクセスによりキャンセルされました。
+
+　もし、この要求を行っていない場合、何らかの間違いか、もしくは誰かがあ
+なたの [% terms.Bugzilla %] アカウントを詐称しようとしたことが原因です。
+　以下の情報を確認し、問題であると思った場合は [% Param('maintainer') %] 
+に連絡してください。
+
+         トークン: [% token %]
+       トークン型: [% tokentype %]
+         ユーザ名: [% emailaddress %]
+         発行日時: [% issuedate FILTER time("%Y-%m-%d %H:%M:%S %Z", timezone) %]
+         発行内容: [% eventdata %]
+   キャンセル理由: [% PROCESS cancelactionmessage %]
+
+[% BLOCK subject %]
+  [% IF tokentype == 'new_account' %]
+    ユーザアカウントの作成要求がキャンセルされました。
+  [% ELSIF tokentype == 'password' %]
+    パスワード変更の要求がキャンセルされました。
+  [% ELSIF tokentype == 'emailnew' OR tokentype == 'emailold' %]
+    メールアドレス変更の要求がキャンセルされました。
+  [% ELSE %]
+    [% tokentype %] トークンがキャンセルされました。
+  [% END %]
+[% END %]
+
+[% BLOCK cancelactionmessage %]
+  [% IF    cancelaction == 'account_exists' %]
+    アカウント [% email %] はすでに存在しています。
+
+  [% ELSIF cancelaction == 'email_change_canceled' %]
+    メールアドレスの [% old_email %] から [% new_email %]
+    への変更要求はキャンセルされました。
+
+  [% ELSIF cancelaction == 'email_change_canceled_reinstated' %]
+    あなたのアカウントのメールアドレスを [% new_email %]
+    に変更する要求はキャンセルされました。
+    あなたの古いアカウントの設定が有効です。
+
+  [% ELSIF cancelaction == 'emailold_change_canceled' %]
+    あなたのアカウントのメールアドレスを [% new_email %]
+    に変更する要求はキャンセルされました。
+
+  [% ELSIF cancelaction == 'password_change_canceled' %]
+    あなたの要求にキャンセルを行いました。
+
+  [% ELSIF cancelaction == 'account_creation_canceled' %]
+    ユーザアカウント [% emailaddress %] の作成はキャンセル
+    されました。
+
+  [% ELSIF cancelaction == 'user_logged_in' %]
+    すでにログインしています。
+
+  [% ELSIF cancelaction == 'wrong_token_for_changing_passwd' %]
+    パスワード変更のためのトークンを利用しようとしました。
+
+  [% ELSIF cancelaction == 'wrong_token_for_cancelling_email_change' %]
+    メールアドレス変更のためのトークンを利用しようとしました。
+
+  [% ELSIF cancelaction == 'wrong_token_for_confirming_email_change' %]
+    メールアドレス変更の確認のためのトークンを利用しようとしました。
+
+  [% ELSIF cancelaction == 'wrong_token_for_creating_account' %]
+    新規アカウント作成のためのトークンを利用しようとしました。
+
+  [% ELSE %]
+    [%# Give sensible error if the cancel-token function is used incorrectly.
+      #%]
+    [% terms.Bugzilla %] のキャンセルトークンの機能を正常でない形で利用して
+    いるようです。トークンとして '[% cancelaction %]' を利用しました。
+    正式な利用方法は、タグとして登録し、タグを cancel-token.txt.tmpl のファイル
+    で定義する方法です。
+
+  [% terms.Bugzilla %] の一般利用者で、このメッセージを見た場合は、このメ
+ールを [% param('maintainer') %] に転送してください。
+  [% END %]
+[% END %]
