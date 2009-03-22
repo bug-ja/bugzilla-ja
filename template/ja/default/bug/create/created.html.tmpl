@@ -34,7 +34,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-+[% filtered_desc = bug.short_desc FILTER html %]
+[% filtered_desc = bug.short_desc FILTER html %]
 [% PROCESS global/header.html.tmpl
   title = "$terms.Bug $id が追加されました &ndash; $filtered_desc"
   header = "$terms.Bug&nbsp;$id が追加されました"
