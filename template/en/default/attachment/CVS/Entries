@@ -1,8 +1,6 @@
-/edit.html.tmpl/1.51.2.2/Tue Feb  3 23:04:10 2009//TBUGZILLA-3_2-BRANCH
 /list.html.tmpl/1.38.2.1/Tue Feb  3 23:04:12 2009//TBUGZILLA-3_2-BRANCH
 /cancel-create-dupe.html.tmpl/1.1.2.1/Tue Jan 27 10:48:58 2009//TBUGZILLA-3_2-BRANCH
 /choose.html.tmpl/1.6/Tue Jan 27 10:48:58 2009//TBUGZILLA-3_2-BRANCH
-/confirm-delete.html.tmpl/1.6/Tue Jan 27 10:49:00 2009//TBUGZILLA-3_2-BRANCH
 /content-types.html.tmpl/1.6/Tue Jan 27 10:48:58 2009//TBUGZILLA-3_2-BRANCH
 /create.html.tmpl/1.35.2.1/Tue Jan 27 10:48:54 2009//TBUGZILLA-3_2-BRANCH
 /created.html.tmpl/1.21.2.1/Tue Jan 27 10:48:56 2009//TBUGZILLA-3_2-BRANCH
@@ -14,4 +12,6 @@
 /midair.html.tmpl/1.2/Tue Jan 27 10:48:56 2009//TBUGZILLA-3_2-BRANCH
 /show-multiple.html.tmpl/1.25/Tue Jan 27 10:48:56 2009//TBUGZILLA-3_2-BRANCH
 /updated.html.tmpl/1.19.2.1/Tue Jan 27 10:49:00 2009//TBUGZILLA-3_2-BRANCH
+/confirm-delete.html.tmpl/1.6.2.1/Thu Apr  2 03:15:18 2009//TBUGZILLA-3_2-BRANCH
+/edit.html.tmpl/1.51.2.3/Thu Apr  2 03:15:18 2009//TBUGZILLA-3_2-BRANCH
 D
