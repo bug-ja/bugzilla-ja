@@ -415,7 +415,7 @@ sub enter {
                                               'component_id' => $bug->component_id});
   $vars->{'flag_types'} = $flag_types;
   $vars->{'any_flags_requesteeble'} = grep($_->is_requesteeble, @$flag_types);
-  $vars->{'token'} = issue_session_token('createattachment:');
+  $vars->{'token'} = issue_session_token('create_attachment:');
 
   print $cgi->header();
 
@@ -443,13 +443,13 @@ sub insert {
         my ($creator_id, $date, $old_attach_id) = Bugzilla::Token::GetTokenData($token);
         unless ($creator_id 
             && ($creator_id == $user->id) 
-                && ($old_attach_id =~ "^createattachment:")) 
+                && ($old_attach_id =~ "^create_attachment:")) 
         {
             # The token is invalid.
             ThrowUserError('token_does_not_exist');
         }
     
-        $old_attach_id =~ s/^createattachment://;
+        $old_attach_id =~ s/^create_attachment://;
    
         if ($old_attach_id) {
             $vars->{'bugid'} = $bugid;
@@ -493,7 +493,7 @@ sub insert {
   if ($token) {
       trick_taint($token);
       $dbh->do('UPDATE tokens SET eventdata = ? WHERE token = ?', undef,
-               ("createattachment:" . $attachment->id, $token));
+               ("create_attachment:" . $attachment->id, $token));
   }
 
   $dbh->bz_commit_transaction;
@@ -565,6 +565,9 @@ sub update {
         ($vars->{'operations'}) =
             Bugzilla::Bug::GetBugActivity($bug->id, $attachment->id, $cgi->param('delta_ts'));
 
+        # The token contains the old modification_time. We need a new one.
+        $cgi->param('token', issue_hash_token([$attachment->id, $attachment->modification_time]));
+
         # If the modification date changed but there is no entry in
         # the activity table, this means someone commented only.
         # In this case, there is no reason to midair.
@@ -579,6 +582,12 @@ sub update {
             exit;
         }
     }
+
+    # We couldn't do this check earlier as we first had to validate attachment ID
+    # and display the mid-air collision page if modification_time changed.
+    my $token = $cgi->param('token');
+    check_hash_token($token, [$attachment->id, $attachment->modification_time]);
+
     # If the submitter of the attachment is not in the insidergroup,
     # be sure that he cannot overwrite the private bit.
     # This check must be done before calling Bugzilla::Flag*::validate(),
@@ -743,7 +752,7 @@ sub delete_attachment {
         my ($creator_id, $date, $event) = Bugzilla::Token::GetTokenData($token);
         unless ($creator_id
                   && ($creator_id == $user->id)
-                  && ($event eq 'attachment' . $attachment->id))
+                  && ($event eq 'delete_attachment' . $attachment->id))
         {
             # The token is invalid.
             ThrowUserError('token_does_not_exist');
@@ -786,7 +795,7 @@ sub delete_attachment {
     }
     else {
         # Create a token.
-        $token = issue_session_token('attachment' . $attachment->id);
+        $token = issue_session_token('delete_attachment' . $attachment->id);
 
         $vars->{'a'} = $attachment;
         $vars->{'token'} = $token;

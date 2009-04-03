@@ -128,8 +128,7 @@
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
-                [% IF (query.key.length < 3) && !(Param('emailsuffix'))
-                    && (Param('usermatchmode') == 'search') %]
+                [% IF (query.key.length < 3) && !Param('emailsuffix') %]
                   <font color="#FF0000">は部分一致には短すぎます
                   (最低 3 文字必要)</font>
                 [% ELSE %]

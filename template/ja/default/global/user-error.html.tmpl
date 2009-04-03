@@ -1168,6 +1168,10 @@
     [% title = BLOCK %] [% jawords.account_login_name FILTER html %] 、もしくは [% jawords.account_password FILTER html %] が無効です [% END %]
     指定された [% jawords.account_login_name FILTER html %]、もしくは [% jawords.password FILTER html %] が無効です。
 
+  [% ELSIF error == "json_rpc_post_only" %]
+    セキュリティー上の問題から、POST HTTP メソッドを利用するには、
+    JSON-RPC を利用する必要があります。
+
   [% ELSIF error == "keyword_already_exists" %]
     [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は既に存在しています [% END %]
     [% name FILTER html %] という名前の [% jawords.keyword FILTER html %] は既に存在しています。

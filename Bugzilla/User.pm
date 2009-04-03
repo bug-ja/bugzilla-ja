@@ -658,13 +658,9 @@ sub get_selectable_products {
         my $query = "SELECT id " .
                     "  FROM products " .
                  "LEFT JOIN group_control_map " .
-                    "    ON group_control_map.product_id = products.id ";
-        if (Bugzilla->params->{'useentrygroupdefault'}) {
-            $query .= " AND group_control_map.entry != 0 ";
-        } else {
-            $query .= " AND group_control_map.membercontrol = " . CONTROLMAPMANDATORY;
-        }
-        $query .= "     AND group_id NOT IN(" . $self->groups_as_string . ") " .
+                        "ON group_control_map.product_id = products.id " .
+                      " AND group_control_map.membercontrol = " . CONTROLMAPMANDATORY .
+                      " AND group_id NOT IN(" . $self->groups_as_string . ") " .
                   "   WHERE group_id IS NULL " .
                   "ORDER BY name";
 
@@ -1016,14 +1012,10 @@ sub match {
     # first try wildcards
     my $wildstr = $str;
 
-    if ($wildstr =~ s/\*/\%/g # don't do wildcards if no '*' in the string
-        # or if we only want exact matches
-        && Bugzilla->params->{'usermatchmode'} ne 'off') 
-    {
-
+    if ($wildstr =~ s/\*/\%/g) { # don't do wildcards if no '*' in the string
         # Build the query.
         trick_taint($wildstr);
-        my $query  = "SELECT DISTINCT login_name FROM profiles ";
+        my $query  = "SELECT DISTINCT userid FROM profiles ";
         if (Bugzilla->params->{'usevisibilitygroups'}) {
             $query .= "INNER JOIN user_group_map
                                ON user_group_map.user_id = profiles.userid ";
@@ -1042,10 +1034,8 @@ sub match {
 
         # Execute the query, retrieve the results, and make them into
         # User objects.
-        my $user_logins = $dbh->selectcol_arrayref($query, undef, ($wildstr, $wildstr));
-        foreach my $login_name (@$user_logins) {
-            push(@users, new Bugzilla::User({ name => $login_name }));
-        }
+        my $user_ids = $dbh->selectcol_arrayref($query, undef, ($wildstr, $wildstr));
+        @users = @{Bugzilla::User->new_from_list($user_ids)};
     }
     else {    # try an exact match
         # Exact matches don't care if a user is disabled.
@@ -1058,13 +1048,10 @@ sub match {
     }
 
     # then try substring search
-    if ((scalar(@users) == 0)
-        && (Bugzilla->params->{'usermatchmode'} eq 'search')
-        && (length($str) >= 3))
-    {
+    if (!scalar(@users) && length($str) >= 3) {
         trick_taint($str);
 
-        my $query   = "SELECT DISTINCT login_name FROM profiles ";
+        my $query   = "SELECT DISTINCT userid FROM profiles ";
         if (Bugzilla->params->{'usevisibilitygroups'}) {
             $query .= "INNER JOIN user_group_map
                                ON user_group_map.user_id = profiles.userid ";
@@ -1081,10 +1068,8 @@ sub match {
         $query    .= " ORDER BY login_name ";
         $query     .= $dbh->sql_limit($limit) if $limit;
 
-        my $user_logins = $dbh->selectcol_arrayref($query, undef, ($str, $str));
-        foreach my $login_name (@$user_logins) {
-            push(@users, new Bugzilla::User({ name => $login_name }));
-        }
+        my $user_ids = $dbh->selectcol_arrayref($query, undef, ($str, $str));
+        @users = @{Bugzilla::User->new_from_list($user_ids)};
     }
     return \@users;
 }

@@ -285,6 +285,13 @@
     を処理するように設定されていません。ジョブタイプを <code>Bugzilla::JobQueue</code>
     の <code>JOB_MAP</code> 定数に追加する必要があります。
 
+  [% ELSIF error == "json_rpc_not_installed" %]
+   [% admindocslinks = { 'installation.html#install-perlmodules' 
+                         => 'Perl モジュールのインストール' } %]
+    JSON-RPC インターフェースは <code>JSON::RPC</code> Perl モジュールなしには、
+    動作しません。<code>checksetup.pl</code> を実行して、
+    表示される必要なモジュールをインストールインストールしてください。
+
   [% ELSIF error == "ldap_bind_failed" %]
     LDAP サーバへの接続に失敗しました。エラーメッセージは次のとおりです。
     <code>[% errstr FILTER html %]</code>
