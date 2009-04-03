@@ -19,7 +19,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 [% INCLUDE global/header.html.tmpl 
-  title = "$terms.Bugzilla 3.2.2 Release Notes" 
+  title = "$terms.Bugzilla 3.2.3 Release Notes" 
   style_urls = ['skins/standard/release-notes.css'] 
 %]
 
@@ -58,6 +58,33 @@
   もし、各リリースでどのような変更が加えられたかの<em>すべての</em>詳細が必要なら、
   <a href="http://www.bugzilla.org/status/changes.html">変更点一覧</a> (英語)
   を参照してください。</p>
+
+<h3>3.2.3</h3>
+
+<ul>
+  <li>[% terms.Bugzilla %] が MySQL 5.1.x 系列の 5.1.31 以上のバージョンと互換性を持ちました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=480001">[% terms.Bug %] 480001</a>)</li>
+  <li>Windows にて [% terms.Bugzilla %] から壊れたメールが送られることがありました。
+    (そしてそれなりの頻度で送信に失敗する)
+  (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=467920">[% terms.Bug %] 467920</a>)</li>
+  <li><code>recode.pl</code> が古い [% terms.Bugzilla %] のデータベースを変換する際に、
+    時折クラッシュする問題の修正。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=431201">[% terms.Bug %] 431201</a>)</li>
+  <li>保存された検索の名前が Unicode 文字列であるときに [% terms.Bugzilla %] 
+    がラッシュする問題の修正。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=477513">[% terms.Bug %] 477513</a>)</li>
+  <li>Mylyn といった [% terms.Bugzilla %] クライアントが [% terms.bugs %] を再び更新できるようになりました。
+    ([% terms.bugs %] XML フォーマットに、アップデートする際に必要な "token" 
+    エレメントを含むようになりました。)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=476678">[% terms.Bug %] 476678</a>)</li>
+  <li><code>shadowdb</code> パラメータを使っているサイトにて、[% terms.Bugzilla %] 
+    が、"複数 [% terms.Bugs %] を一度に更新する" ページからの更新時に、
+    "tokens" テーブルの内容を (master でなく) shadow データベースに書き込んでしまう問題がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=476943">[% terms.Bug  %] 476943</a>)</li>
+</ul>
+
+<p>このリリースではセキュリティー修正も含んでいます。
+  詳細に関しては <a href="#v32_security">セキュリティー修正の項</a> をご覧ください。</p>
 
 <h3>3.2.2</h3>
 
@@ -99,6 +126,12 @@
 </ul>
 
 <h2><a name="v32_security">3.2.x リリースでのセキュリティー更新</a></h2>
+
+<h3>3.2.3</h3>
+
+<p>このリリースでは添付ファイルに関するセキュリティー問題1件を修正しています。
+  詳細については、<a href="http://www.bugzilla.org/security/3.2.2/">セキュリティーアドバイザリ</a>
+  をご覧ください。</p>
 
 <h3>3.2.2</h3>
 
