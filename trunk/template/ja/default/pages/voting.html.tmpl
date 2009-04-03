@@ -1,0 +1,67 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Terry Weissman <terry@mozilla.org>
+  #                 Gervase Markham <gerv@gerv.net>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% INCLUDE global/header.html.tmpl title = "投票" %]
+
+<p>[% terms.Bugzilla %] には "投票" 機能があります。それぞれのプロダクトごとに、
+ユーザは設定された数の票を投じることができます。(いくつかのプロダクトでは、
+投票可能数が 0 で、プロダクトで投票がまったくできないかもしれません。)
+あなたの投票により、[% terms.Bugs %] が最も重要で修正されてほしいと考えている、
+と表明することができます。投票はあなた自身で修正を出すのに近い効果があります。</p>
+
+<p>管理者がそれぞれのプロダクトをどう設定しているかによりますが、
+あなたは同じ [% terms.bug %] に複数回投票することができるでしょう。
+ただし、総投票数に制限があることに注意してください。
+重み付けした投票が可能で、投票数に制限がある場合、
+あなたの票を多数ある [% terms.bugs %] に、
+少なくとも関心があることを示すのに利用するか、
+少数の [% terms.bugs %] に集中するかというように、
+どのように振り分けたいかを決断する必要があります。
+</p>
+
+<p>投票を見るには:</p>
+
+<ul>
+  <li>検索ページを表示。通常検索で "最低票数" に 1 を入力。
+  これで最低 1 票があるリストになります。</li>
+</ul>
+
+<p>[% terms.abug %] に投票するには:</p>
+
+<ul>
+  <li>投票したい [% terms.bug %] を表示する。</li>
+
+  <li>"重要度" の右側にある "(投票)" リンクをクリックします。
+  (そのようなリンクがない場合、この [% terms.bug %] 
+  のプロダクトでは投票が許可されていません。)</li>
+
+  <li>何票をこの [% terms.bug %] に投じるかを決めます。
+  このページでは他の [% terms.bugs %] にどのくらいの票を投じているかが評され、
+  必要であれば票数の調整が可能です。</li>
+</ul>
+
+<p>自動的に [% terms.bugs %] への投票に変更があればメールで通知されます。</p>
+
+<p>いつでも自分の投票について、ページフッタにある
+"<a href="votes.cgi?action=show_user">自分の投票</a>" リンクから見ることができます。</p>
+
+[% INCLUDE global/footer.html.tmpl %]

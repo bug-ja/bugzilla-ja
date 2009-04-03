@@ -1,0 +1,76 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # token: string. The token to be used in the user account creation.
+  # email: email address of the user account.
+  # expiration_ts: expiration date of the token.
+  #%]
+
+[% title = BLOCK %]'[% email FILTER html %]' のアカウント新規作成[% END %]
+[% PROCESS "global/header.html.tmpl"
+           title = title
+           onload = "document.forms['confirm_account_form'].realname.focus();" %]
+
+<div>
+  アカウントを作成するには、パスワードを指定する必要があります。
+  メールアドレスと実名 (設定されれば) はあなたの行った変更とともに表示されます。
+</div>
+
+<form id="confirm_account_form" method="post" action="token.cgi">
+  <input type="hidden" name="t" value="[% token FILTER html %]">
+  <input type="hidden" name="a" value="confirm_new_account">
+  <table>
+    <tr>
+      <th align="right">メールアドレス:</th>
+      <td>[% email FILTER html %]</td>
+    </tr>
+    <tr>
+      <th align="right"><small><i>(任意)</i></small> <label for="realname">実名</label>:</th>
+      <td><input type="text" id="realname" name="realname" value=""></td>
+    </tr>
+    <tr>
+      <th align="right"><label for="passwd1">パスワードの指定</label>:</th>
+      <td><input type="password" id="passwd1" name="passwd1" value=""></td>
+    </tr>
+    <tr>
+      <th align="right"><label for="passwd2">パスワードの確認</label>:</th>
+      <td><input type="password" id="passwd2" name="passwd2" value=""></td>
+    </tr>
+    <tr>
+      <th align="right">&nbsp;</th>
+      <td><input type="submit" id="confirm" value="登録"></td>
+    </tr>
+  </table>
+</form>
+
+<p>
+  アカウント作成はこれらの情報が
+  <u>[% expiration_ts FILTER time("%B %e, %Y at %H:%M %Z") %]</u>
+  までに送信されなければキャンセルされます。
+</p>
+
+<p>
+  このメールアドレスでのアカウント作成をキャンセルしたい場合、
+  下の取り消しボタンをクリックすれば、情報は破棄されます。
+</p>
+
+<form id="cancel_account_form" method="post" action="token.cgi">
+  <input type="hidden" name="t" value="[% token FILTER html %]">
+  <input type="hidden" name="a" value="cancel_new_account">
+  <input type="submit" id="confirm" value="作成取り消し">
+</form>
+
+[% PROCESS global/footer.html.tmpl %]

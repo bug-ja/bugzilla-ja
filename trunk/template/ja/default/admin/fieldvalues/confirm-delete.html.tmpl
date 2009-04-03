@@ -1,0 +1,155 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# INTERFACE:
+  # value: Bugzilla::Field::Choice; The field value being deleted.
+  # value_count: number; The number of values available for this field.
+  # field: object; the field the value is being deleted from.
+  #%]
+
+[% title = BLOCK %]
+  '[% field.description FILTER html %]' ([% field.name FILTER html %]) 
+  フィールドから値 '[% value.name FILTER html %]' の削除
+[% END %]
+
+[% PROCESS global/header.html.tmpl
+  title = title
+  style_urls = ['skins/standard/admin.css']
+%]
+
+<table border="1" cellpadding="4" cellspacing="0">
+<tr bgcolor="#6666FF">
+  <th valign="top" align="left">フィールド</th>
+  <th valign="top" align="left">値</th>
+</tr>
+<tr>
+  <td valign="top">フィールド名:</td>
+  <td valign="top">[% field.description FILTER html %]</td>
+</tr>
+<tr>
+  <td valign="top">フィールド値:</td>
+  <td valign="top">[% value.name FILTER html %]</td>
+</tr>
+<tr>
+  <td valign="top">[% terms.Bugs %]:</td>
+  <td valign="top">
+[% IF value.bug_count %]
+  <a title="[%- field.description FILTER html %]' が '
+            [%- value.name FILTER html %]' である [% terms.bugs %] のリスト"
+     href="buglist.cgi?[% field.name FILTER url_quote %]=
+           [%- value.name FILTER url_quote %]">
+   [%- value.bug_count FILTER html %]</a>
+[% ELSE %]
+  無し
+[% END %]
+  </td>
+</tr>
+</table>
+
+<h2>確認</h2>
+
+[% IF value.is_default || value.bug_count || (value_count == 1)
+      || value.controls_visibility_of_fields.size
+      || value.controlled_values.size 
+%]
+
+  <p>申し訳ありませんが、下記の理由により、
+    '[% value.name FILTER html %]' の値は
+    '[% field.description FILTER html %]' フィールドから削除できません:</p>
+
+  <ul class="warningmessages">
+    [% IF value.is_default %]
+      <li>'[% value.name FILTER html %]' は
+        '[% field.description FILTER html %]' フィールドの既定値です。
+        [% IF user.in_group('tweakparams') %]
+          先に<a href="editparams.cgi?section=bugfields">既定値を変更</a> 
+          してからこの値を削除する必要があります。
+        [% END %]
+      </li>
+    [% END %]
+
+    [% IF value.bug_count %]
+      <li>
+        [% IF value.bug_count > 1 %]
+          [% value.bug_count FILTER html %] 件の [%+ terms.bugs %] が
+        [% ELSE %]
+          [% terms.bug %] が 1 件
+        [% END %]
+        この値を使用しています。
+          <a title="[%- field.description FILTER html %]' が '
+                    [%- value.name FILTER html %]'
+                    である [% terms.bugs %] の一覧"
+             href="buglist.cgi?[% field.name FILTER url_quote %]=
+                   [%- value.name FILTER url_quote %]">
+            [% IF value.bug_count > 1 %]
+              これらの [% terms.bugs %] 
+            [% ELSE %]
+              この [% terms.bug %]
+            [% END %]
+          </a>
+          を先に別の値に変更しないと削除できません。
+        </li>
+    [% END %]
+
+    [% IF value_count == 1 %]
+      <li>'[% value.name FILTER html %]' は
+        '[%- field.description FILTER html %]' の最後の値ですので削除できません。
+      </li>
+    [% END %]
+
+    [% IF value.controls_visibility_of_fields.size %]
+      <li>この値は次のフィールドを表示するかを制御しています:<br>
+        [% FOREACH field = value.controls_visibility_of_fields %]
+          <a href="editfields.cgi?action=edit&name=
+                   [%- field.name FILTER url_quote %]">
+            [%- field.description FILTER html %] 
+            ([% field.name FILTER html %])</a><br>
+        [% END %]
+      </li>
+    [% END %]
+
+    [% IF value.controlled_values.size %]
+      <li>この値は次の他のフィールドの値を表示するかどうかを制御しています:<br>
+       [% FOREACH controlled = value.controlled_values %]
+         <a href="editvalues.cgi?action=edit&field=
+                  [%- controlled.field.name FILTER url_quote %]&value=
+                  [%- controlled.name FILTER url_quote %]">
+           [% controlled.field.description FILTER html %]
+           ([% controlled.field.name FILTER html %]):
+           [%+ controlled.name FILTER html %]</a><br>
+       [% END %]
+      </li>
+    [% END %]
+  </ul>
+
+[% ELSE %]
+
+  <p>本当にこの値を削除してもよろしいですか?</p>
+
+  <form method="post" action="editvalues.cgi">
+    <input type="submit" value="はい、削除します" id="delete">
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="field" value="[% field.name FILTER html %]">
+    <input type="hidden" name="value" value="[% value.name FILTER html %]">
+    <input type="hidden" name="token" value="[% token FILTER html %]">
+  </form>
+
+[% END %]
+
+[% PROCESS admin/fieldvalues/footer.html.tmpl
+  no_edit_link = 1
+ +%]
+
+[% PROCESS global/footer.html.tmpl %] 

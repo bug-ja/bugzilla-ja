@@ -1,0 +1,79 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Andre Batosti <batosti@async.com.br>
+  #%]
+
+[% PROCESS "global/variables.none.tmpl" %]
+From: [% Param('mailfrom') %]
+To: [% to %]
+Subject: [[% terms.Bug %] [%+ bugid %]] [% 'New: ' IF isnew %][%+ summary %]
+X-Bugzilla-Reason: [% reasonsheader %]
+X-Bugzilla-Type: [% isnew ? 'new' : 'changed' %]
+X-Bugzilla-Watch-Reason: [% reasonswatchheader %]
+[% IF Param('useclassification') %]
+X-Bugzilla-Classification: [% classification %]
+[% END %]
+X-Bugzilla-Product: [% product %]
+X-Bugzilla-Component: [% comp %]
+X-Bugzilla-Keywords: [% keywords %]
+X-Bugzilla-Severity: [% severity %]
+X-Bugzilla-Who: [% changer %]
+X-Bugzilla-Status: [% status %]
+X-Bugzilla-Priority: [% priority %]
+X-Bugzilla-Assigned-To: [% assignedto %]
+X-Bugzilla-Target-Milestone: [% targetmilestone %]
+X-Bugzilla-Changed-Fields: [% changedfields %]
+[%+ threadingmarker %]
+
+[%+ urlbase %]show_bug.cgi?id=[% bugid %]
+
+[%+ diffs %]
+
+-- 
+[% terms.bug %] メールの設定: [% urlbase %]userprefs.cgi?tab=email
+------- 次の理由でこのメールを受信しています -------
+[% FOREACH relationship = reasons %]
+  [% SWITCH relationship %]
+    [% CASE constants.REL_ASSIGNEE %]
+[%+ terms.bug %] の担当者です
+    [% CASE constants.REL_REPORTER %]
+[%+ terms.bug %] の報告者です
+    [% CASE constants.REL_QA %]
+[%+ terms.bug %] の QA コンタクトです
+    [% CASE constants.REL_CC %]
+[%+ terms.bug %] の CC リストに入っています
+    [% CASE constants.REL_VOTER %]
+[%+ terms.bug %] の投票者です
+    [% CASE constants.REL_GLOBAL_WATCHER %]
+全ての [% terms.bug %] の変更を監視しています
+  [% END %]
+[% END %]
+[% FOREACH relationship = reasons_watch %]
+  [% SWITCH relationship %]
+    [% CASE constants.REL_ASSIGNEE %]
+[%+ terms.bug %] の担当者を監視しています
+    [% CASE constants.REL_REPORTER %]
+[%+ terms.bug %] の報告者を監視しています
+    [% CASE constants.REL_QA %]
+[%+ terms.bug %] の QA コンタクトを監視しています。
+    [% CASE constants.REL_CC %]
+[%+ terms.bug %] の CC リストの誰かを監視しています
+    [% CASE constants.REL_VOTER %]
+[%+ terms.bug %] の投票者を監視しています
+  [% END %]
+[% END %]

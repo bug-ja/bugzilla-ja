@@ -1,0 +1,422 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Marc Schumann <wurblzap@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  #
+  # listselectionvalues:      selection values to recreate the current user
+  #                           list.
+  # editusers:                is viewing user member of editusers?
+  # otheruser:                Bugzilla::User object of the viewed user.
+  # reporter:                 number of bugs reported by the user
+  # assignee_or_qa:           number of bugs the user is either the assignee
+  #                           or the QA contact
+  # bugs_activity:            number of bugs the viewed user has activity
+  #                           entries on
+  # cc                        number of bugs the viewed user is cc list member
+  #                           of
+  # flags.requestee:          number of flags the viewed user is being asked for
+  # flags.setter:             number of flags the viewed user has set
+  # longdescs:                number of bug comments the viewed user has written
+  # namedqueries:             number of named queries the user has created
+  # namedquery_group_map:     number of named queries the user has shared
+  # profiles_activity:        number of changes made to other users' profiles
+  # series:                   number of series the viewed user has created
+  # votes:                    number of bugs the viewed user has voted on
+  # watch.watched:            number of users the viewed user is being watched
+  #                           by
+  # watch.watcher:            number of users the viewed user is watching
+  # whine_events:             number of whine events the viewed user has created
+  # whine_schedules:          number of whine schedules the viewed user has
+  #                           created
+  #%]
+
+[% title = BLOCK %]ユーザ [% otheruser.login FILTER html %] の削除[% END %]
+
+[% PROCESS global/header.html.tmpl
+  title = title
+  style_urls = ['skins/standard/admin.css',
+                'skins/standard/editusers.css']
+  doc_section = "useradmin.html#user-account-deletion"
+%]
+
+[% PROCESS admin/users/listselectvars.html.tmpl
+  listselectionvalues = listselectionvalues
+%]
+
+<table class="main">
+  <tr>
+    <th>ログイン名:</th>
+    <td>[% otheruser.login FILTER html %]</td>
+  </tr>
+  <tr>
+    <th>名前:</th>
+    <td>[% otheruser.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <th>所属しているグループ:</th>
+    <td>
+      [% IF otheruser.groups.size %]
+        <ul>
+          [% FOREACH group = otheruser.groups %]
+            <li>[% group.name FILTER html %]</li>
+          [% END %]
+        </ul>
+      [% ELSE %]
+        無し
+      [% END %]
+    </td>
+  </tr>
+  [% IF otheruser.product_responsibilities.size %]
+    <tr>
+      <th>プロダクトへの責任:</th>
+      <td>
+        [% PROCESS admin/users/responsibilities.html.tmpl otheruser = otheruser %]
+      </td>
+    </tr>
+  [% END %]
+</table>
+
+[% IF otheruser.product_responsibilities.size %]
+  <p>
+    [%+ otheruser.login FILTER html %] が責任を持っているプロダクトが存在しているため、
+    このユーザを削除することができません。
+  </p>
+  <p>
+    [% IF user.in_group("editcomponents", component.product_id) %]
+      Change this by clicking the product editing links above,
+      上のプロダクトの編集画面へのリンクをクリックして、変更するか、
+    [% ELSE %]
+      現在、可能な操作は、
+    [% END %]
+[% ELSE %]
+  [% accept_deletion = 1 %]
+
+  [% IF attachments || reporter || bugs_activity || flags.setter || longdescs || profiles_activity %]
+    <div class="criticalmessages">
+      <p>以下の情報の削除は<b>安全ではなく</b>、
+      これにより、完全に矛盾したデータが生成される可能性があります!</p>
+
+      <ul>
+        [% IF attachments %]
+          <li>
+            [% otheruser.login FILTER html %]
+            <a href="buglist.cgi?field0-0-0=attachments.submitter&type0-0-0=equals&value0-0-0=
+               [%- otheruser.login FILTER url_quote %]">は
+            [% IF attachments == 1 %]
+              1ファイル
+            [% ELSE %]
+              [%+ attachments %] ファイル
+            [% END %] を添付しました</a>。
+            もし、このユーザアカウントを削除すると、データベースのレコードに不整合が発生します。
+            その結果、
+            [% IF attachments == 1 %]
+              この添付
+            [% ELSE %]
+              これらの添付
+            [% END %]
+            は [% terms.bug %] に表示されなくなります。
+          </li>
+        [% END %]
+        [% IF reporter %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            <a href="buglist.cgi?emailreporter1=1&amp;emailtype1=exact&amp;email1=
+               [%- otheruser.login FILTER url_quote %]">[%+ reporter %] 件の [%+ terms.bugs %]</a>
+            を報告しています。
+            もし、このユーザアカウントを削除すると、データベースのレコードに不整合が発生します。
+            その結果、
+            [% IF reporter == 1 %]
+              この [% terms.bug %]
+            [% ELSE %]
+              これらの [% terms.bugs %]
+            [% END %]
+            は [% terms.bug %] リストに表示されなくなります。
+          </li>
+        [% END %]
+        [% IF bugs_activity %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            [% terms.bugs %] を変更したことがあります。
+            もし、このユーザのアカウントを削除すると、データベースの [% terms.bugs %] の履歴に不整合が発生します。
+            その結果、
+            [% IF bugs_activity == 1 %]
+              この変更
+            [% ELSE %]
+              これらの変更
+            [% END %]
+            は [% terms.bug %] の履歴に表示されなくなります。
+          </li>
+        [% END %]
+        [% IF flags.setter %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            <a href="buglist.cgi?field0-0-0=setters.login_name&amp;type0-0-0=equals&amp;value0-0-0=
+               [%- otheruser.login FILTER url_quote %]">[%+ flags.setter %]
+            件のフラグを変更、もしくは要求しています</a>。
+            もし、このユーザのアカウントを削除すると、データベースのフラグのテーブルに不整合が発生します。
+            その結果、
+            [% IF flags.setter == 1 %]
+              このフラグ
+            [% ELSE %]
+              これらのフラグ
+            [% END %]
+            は正しく表示されなくなります。
+          </li>
+        [% END %]
+        [% IF longdescs %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            <a href="buglist.cgi?emaillongdesc1=1&amp;emailtype1=exact&amp;email1=
+               [%- otheruser.login FILTER url_quote %]">[% terms.bugs %]
+            で、[%+ longdescs %] 件のコメントを追加しています</a>。
+            もし、このユーザのアカウントを削除すると、データベースのコメントのテーブルに不整合が発生します。
+            その結果、
+            [% IF longdescs == 1 %]
+              このコメント
+            [% ELSE %]
+              これらのコメント
+            [% END %]
+            は表示されなくなります。
+          </li>
+        [% END %]
+        [% IF profiles_activity %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            他のユーザのプロファイルを変更したことがあります。
+            もし、このユーザのアカウントを削除すると、
+            データベースのユーザプロファイルの履歴のテーブルに不整合が発生します。
+          </li>
+        [% END %]
+      </ul>
+    </div>
+    [% accept_deletion = 0 %]
+  [% END %]
+
+  [% IF assignee_or_qa || cc || component_cc || email_setting || flags.requestee ||
+        namedqueries || profile_setting || quips || series || votes || watch.watched ||
+        watch.watcher || whine_events || whine_schedules %]
+    <div class="warningmessages">
+      <p>以下の情報の削除は <b>安全</b> です。
+      これにより、データに不整合は発生しません。</p>
+
+      <ul>
+        [% IF assignee_or_qa %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            <a href="buglist.cgi?emailassigned_to1=1&amp;emailqa_contact1=1&amp;emailtype1=exact&amp;email1=
+               [%- otheruser.login FILTER url_quote %]">[%+ assignee_or_qa %] 件の [%+ terms.bugs %]
+            の担当者か、QA コンタクトです</a>。
+            もし、このユーザのアカウントを削除した場合、これらは、既定の担当者や既定の
+            QA コンタクトに再設定されます。
+          </li>
+        [% END %]
+        [% IF cc %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            <a href="buglist.cgi?emailcc1=1&amp;emailtype1=exact&amp;email1=
+               [%- otheruser.login FILTER url_quote %]">[%+ cc %] 件の [%+ terms.bugs %]
+            の CC リストに登録されています</a>。
+            もし、このユーザのアカウントを削除した場合、該当の CC リストから削除されます。
+          </li>
+        [% END %]
+        [% IF component_cc %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            [% IF component_cc == 1 %]
+              1 コンポーネント
+            [% ELSE %]
+              [%+ component_cc %] コンポーネント
+            [% END %]の既定の CC リストに入っています</a>。
+            もし、このユーザのアカウントを削除した場合、該当の CC リストから削除されます。
+          </li>
+        [% END %]
+        [% IF email_setting %]
+          <li>
+            ユーザのメールの設定はユーザのアカウントと共に削除されます。
+          </li>
+        [% END %]
+        [% IF flags.requestee %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            <a href="buglist.cgi?field0-0-0=requestees.login_name&amp;type0-0-0=equals&amp;value0-0-0=
+               [%- otheruser.login FILTER url_quote %]">[% flags.requestee %]
+            件のフラグの要求先に登録されています</a>。
+            もし、このユーザのアカウントを削除した場合、
+            [% IF flags.requestee == 1 %]
+              このフラグ
+            [% ELSE %]
+              これらのフラグ
+            [% END %]</a>
+            は要求先が指定されていない状態に変更されます。
+          </li>
+        [% END %]
+        [% IF namedqueries %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            [% IF namedqueries == 1 %]
+              [% '共有している' IF namedquery_group_map %] 保存した検索
+            [% ELSE %]
+              [%+ namedqueries FILTER html %] 件の保存した検索
+            [% END %]
+            を持っています。
+            [% IF namedqueries == 1 %]
+              この保存した検索
+            [% ELSE %]
+              これらの保存した検索
+            [% END %]
+            はユーザアカウントと共に削除されます。
+            [% IF namedquery_group_map %]
+              [% IF namedqueries > 1 %]
+                これらの
+                [% IF namedquery_group_map > 1 %]
+                  [%+ namedquery_group_map FILTER html %] は
+                [% ELSE %]
+                  検索は
+                [% END %]
+                共用されています。
+              [% END %]
+              他のユーザは
+              [% IF namedquery_group_map > 1 %]
+                これらの共用された保存した検索
+                these shared named searches
+              [% ELSE %]
+                この共有された保存した検索
+              [% END %]
+              を利用できなくなります。
+            [% END %]
+          </li>
+        [% END %]
+        [% IF profile_setting %]
+          <li>
+            ユーザの環境設定はユーザアカウントと共に削除されます。
+          </li>
+        [% END %]
+        [% IF series %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            [%+ series %] 件の series を作成しています。
+            [% IF series == 1 %]
+              この series
+            [% ELSE %]
+              これらの series
+            [% END %]
+            はユーザアカウントと共に削除されます。
+          </li>
+        [% END %]
+        [% IF quips %]
+          <li>
+            [% otheruser.login FILTER html %] は
+            [% IF quips == 1 %]
+              1個の警句
+            [% ELSE %]
+              [%+ quips %] 個の警句
+            [% END %] を作成しています。
+            [% IF quips == 1 %]
+              この警句
+            [% ELSE %]
+              これらの警句
+            [% END %]
+            には作成者はなくなりますが、存在し続けます。
+          </li>
+        [% END %]
+        [% IF votes %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            [%+ votes %] 件の [%+ terms.bugs %] に投票しています。
+            もし、このユーザのアカウントを削除した場合、
+            [% IF votes == 1 %]
+              この票
+            [% ELSE %]
+              これらの票
+            [% END %]
+            はユーザアカウントと共に削除されます。
+          </li>
+        [% END %]
+        [% IF watch.watched || watch.watcher %]
+          <li>
+            [% otheruser.login FILTER html %]
+            [% IF watch.watched %]
+              は [%+ watch.watched %] 人のユーザから監視されています。
+            [% END %]
+            [% IF watch.watcher %]
+              [%+ 'また、' IF watch.watched %]
+              [%+ watch.watcher %] 人のユーザを監視しています。
+            [% END %]
+            [% IF watch.watched + watch.watcher == 1 %]
+              この監視
+            [% ELSE %]
+              これらの監視
+            [% END %]
+            はユーザアカウントと共に終了します。
+          </li>
+        [% END %]
+        [% IF whine_events %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            [%+ whine_events %] 件の whine をスケジュールしています。
+            [% IF whine_events == 1 %]
+              この whine
+            [% ELSE %]
+              これらの whines
+            [% END %]
+            はユーザアカウントと共に削除されます。
+          </li>
+        [% END %]
+        [% IF whine_schedules %]
+          <li>
+            [% otheruser.login FILTER html %] は、
+            [%+ whine_schedules %] 件の whine の終了通知を受け取っています。
+            対応するスケジュールはユーザアカウントと共に削除されますが、
+            whine そのものはそのまま残ります。
+          </li>
+        [% END %]
+      </ul>
+    </div>
+    [% IF accept_deletion %]
+      <p class="areyoureallyreallysure">
+        実行する前にこれらの結果に注意してください。
+      </p>
+      <p>本当にこのユーザのアカウントを削除してもよろしいですか?</p>
+      <form method="post" action="editusers.cgi">
+        <p>
+          <input type="submit" id="delete" value="はい、削除します"/>
+          <input type="hidden" name="action" value="delete" />
+          <input type="hidden" name="userid" value="[% otheruser.id %]" />
+          <input type="hidden" name="token" value="[% token FILTER html %]">
+          [% INCLUDE listselectionhiddenfields %]
+        </p>
+      </form>
+      <p>もし、このユーザアカウントを削除しないのであれば、
+    [% ELSE %]
+      <p>上記で述べられているように危険なため、<b>このユーザアカウントの削除は不可能です</b>が、
+    [% END %]
+
+  [% END %]
+[% END %]
+
+  <a href="editusers.cgi?action=edit&amp;userid=[% otheruser.id %]
+           [% INCLUDE listselectionurlparams %]">ユーザを編集</a>
+  したり、
+ <a href="editusers.cgi?action=list[% INCLUDE listselectionurlparams %]">ユーザの一覧</a>
+ に戻ったり、
+  [% IF editusers %]
+    <a href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">ユーザを追加</a>
+    したり、
+  [% END %]
+  <a href="editusers.cgi">他のユーザを検索</a>
+  できます。
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

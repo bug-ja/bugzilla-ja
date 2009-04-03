@@ -1,0 +1,164 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #                 Elliotte Martin <elliotte_martin@yahoo.com>
+  #%]
+
+[%# Remember to PROCESS rather than INCLUDE this template. %]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% field_descs = { "[Bug creation]"          => "[$terms.Bug 作成]",
+                   "actual_time"             => "作業済時間"
+                   "alias"                   => "エイリアス",
+                   "assigned_to"             => "担当者",
+                   "attach_data.thedata"     => "添付データ",
+                   "attachments.description" => "添付の説明",
+                   "attachments.filename"    => "添付のファイル名",
+                   "attachments.mimetype"    => "添付のmime型",
+                   "attachments.ispatch"     => "添付はパッチ",
+                   "attachments.isobsolete"  => "添付は用済み",
+                   "attachments.isprivate"   => "添付はプライベート",
+                   "attachments.isurl"       => "添付 URL",
+                   "attachments.submitter"   => "添付作成者",
+                   "blocked"                 => "妨害",
+                   "bug_file_loc"            => "URL",
+                   "bug_group"               => "グループ",
+                   "bug_id"                  => "$terms.Bug ID",
+                   "bug_severity"            => "深刻度",
+                   "bug_status"              => "ステータス",
+                   "changeddate"             => "変更された",
+                   "cc"                      => "CC",
+                   "classification"          => "Classification",
+                   "cclist_accessible"       => "CC リストが存在",
+                   "commenter"               => "コメントした人",
+                   "component_id"            => "コンポーネント ID",
+                   "component"               => "コンポーネント",
+                   "content"                 => "中身",
+                   "creation_ts"             => "作成日",
+                   "deadline"                => "締め切り",
+                   "delta_ts"                => "変更された",
+                   "dependson"               => "依存",
+                   "dup_id"                  => "重複",
+                   "estimated_time"          => "初期想定時間",
+                   "everconfirmed"           => "confirm されたか",
+                   "flagtypes.name"          => "フラグ",
+                   "keywords"                => "キーワード",
+                   "longdesc"                => "コメント",
+                   "longdescs.isprivate"     => "コメントはプライベート",
+                   "newcc"                   => "CC",
+                   "op_sys"                  => "OS",
+                   "opendate"                => "作成日",
+                   "owner_idle_time"         => "担当者の変更からの時間",
+                   "percentage_complete"     => "%完了",
+                   "priority"                => "重要度",
+                   "product_id"              => "プロダクト ID",
+                   "product"                 => "プロダクト",
+                   "qa_contact"              => "QA コンタクト",
+                   "remaining_time"          => "時間残り",
+                   "rep_platform"            => "ハードウェア",
+                   "reporter"                => "報告者",
+                   "reporter_accessible"     => "報告者が閲覧可能",
+                   "requestees.login_name"   => "フラグ要請者",
+                   "resolution"              => "解決方法",
+                   "see_also"                => "参照",
+                   "setters.login_name"      => "フラグ適用者",
+                   "setting"                 => "設定",
+                   "settings"                => "設定",
+                   "short_desc"              => "要約",
+                   "status_whiteboard"       => "ホワイトボード",
+                   "target_milestone"        => "ターゲットマイルストーン",
+                   "version"                 => "バージョン",
+                   "votes"                   => "投票",
+                   "work_time"               => "作業時間"} %]
+
+[%# Also include any custom fields or fields which don't have a
+    Description here, by copying their Description from the
+    database. If you want to override this for your language
+    or your installation, just use a hook. %]
+
+[%# Also create the bug_fields hash. %]
+[% UNLESS Param('shutdownhtml') %]
+  [% USE Bugzilla %]
+  [% SET bug_fields = {} %]
+  [% FOREACH bz_field = Bugzilla.get_fields() %]
+    [% SET field_descs.${bz_field.name} = bz_field.description
+       IF !field_descs.${bz_field.name}.defined %]
+    [% SET bug_fields.${bz_field.name} = bz_field %]
+  [% END %]
+[% END %]
+
+[% SET search_descs = {
+  "noop"           => "---",
+  "equals"         => "と等しい",
+  "notequals"      => "と等しくない",
+  "anyexact"       => "の文字列のどれかと等しい",
+  "substring"      => "の文字列を含む",
+  "casesubstring"  => "の文字列を含む (大文字小文字一致)",
+  "notsubstring"   => "の文字列を含まない",
+  "anywordssubstr" => "の文字列のどれかを含む",
+  "allwordssubstr" => "の文字列の全てを含む",
+  "nowordssubstr"  => "の文字列の全てを含まない",
+  "regexp"         => "の正規表現を含む",
+  "notregexp"      => "の正規表現を含まない",
+  "lessthan"       => "より小さい",
+  "lessthaneq"     => "より小さいか等しい",
+  "greaterthan"    => "より大きい",
+  "greaterthaneq"  => "より大きいか等しい",
+  "anywords"       => "の単語のどれかを含む",
+  "allwords"       => "の単語の全てを含む",
+  "nowords"        => "の単語のどれも含まない",
+  "changedbefore"  => "より以前に更新",
+  "changedafter"   => "より以降に更新",
+  "changedfrom"    => "から更新",
+  "changedto"      => "へ更新",
+  "changedby"      => "により更新",
+  "matches"        => "一致",
+} %]
+
+[% field_types = { ${constants.FIELD_TYPE_UNKNOWN}       => "未知",
+                   ${constants.FIELD_TYPE_FREETEXT}      => "テキスト",
+                   ${constants.FIELD_TYPE_SINGLE_SELECT} => "ドロップダウン",
+                   ${constants.FIELD_TYPE_MULTI_SELECT}  => "複数選択ボックス",
+                   ${constants.FIELD_TYPE_TEXTAREA}      => "広い入力エリア",
+                   ${constants.FIELD_TYPE_DATETIME}      => "日時",
+                   ${constants.FIELD_TYPE_BUG_ID}        => "Bug ID",
+                } %]
+
+[% status_descs = { "UNCONFIRMED" => "UNCONFIRMED",
+                    "NEW"         => "NEW",
+                    "ASSIGNED"    => "ASSIGNED",
+                    "REOPENED"    => "REOPENED",
+                    "RESOLVED"    => "RESOLVED",
+                    "VERIFIED"    => "VERIFIED",
+                    "CLOSED"      => "CLOSED" } %]
+
+[% MACRO get_status(status) GET status_descs.$status || status %]
+
+[% resolution_descs = { "FIXED"      => "FIXED",
+                        "INVALID"    => "INVALID",
+                        "WONTFIX"    => "WONTFIX",
+                        "DUPLICATE"  => "DUPLICATE",
+                        "WORKSFORME" => "WORKSFORME",
+                        "MOVED"      => "MOVED",
+                        "---"        => "---",
+                        " "          => " " } %]
+
+[% MACRO get_resolution(res) GET resolution_descs.$res || res %]
+
+[% Hook.process("end") %]

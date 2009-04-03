@@ -1,0 +1,321 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Terry Weissman <terry@mozilla.org>
+  #                 Gervase Markham <gerv@gerv.net>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% PROCESS "global/field-descs.none.tmpl" %]
+[% INCLUDE global/header.html.tmpl title = "$terms.Bug のライフサイクル" %]
+
+<p>
+<b>ステータス</b> と <b>解決方法</b> のフィールドで [% terms.abug %]
+のライフサイクルを定義しており、これを利用して追跡できます。
+</p>
+
+<a name="status"></a>
+<a name="resolution"></a>
+
+<table border="1" cellpadding="4">
+  <tr align="center" valign="top">
+    <td width="50%">
+      <h1>ステータス</h1>
+    </td>
+
+    <td>
+      <h1>解決方法</h1>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td><b>ステータス</b> フィールドは一般的な [% terms.bug %] の状態を示します。
+        定められたステータス繊維のみが許可されます。</td>
+
+    <td><b>解決方法</b> フィールドはこの [% terms.bug %] がどうなったか、
+        を示します。</td>
+  </tr>
+
+  <tr valign="top">
+    <td>
+      <dl>
+        <dt>
+          <b>[% get_status("UNCONFIRMED") FILTER html %]</b>
+        </dt>
+        <dd>
+          この [% terms.bug %] は最近データベースに追加されました。
+          誰もまだ [% terms.bug %] が正しいものかを確認していません。
+          "canconfirm" 権限を持つユーザはこの [% terms.bug %] を承認でき、
+          ステータスを [% get_status("NEW") FILTER html %] に変更可能です。
+          もしくは、直接解決し、[% get_status("RESOLVED") FILTER html %] 
+          とすることも可能です。
+        </dd>
+
+        <dt>
+          <b>[% get_status("NEW") FILTER html %]</b>
+        </dt>
+        <dd>
+          この [% terms.bug %] は最近担当者の [% terms.bugs %] リストに追加され、
+          処理を魔っています。このステータスの [% terms.Bugs %] は承認される可能性があり、
+          <b>[% get_status("ASSIGNED") FILTER html %]</b> になるか、
+          他の誰かに渡されるか、<b>[% get_status("NEW") FILTER html %]</b> のままにされるか、
+          解決され <b>[% get_status("RESOLVED") FILTER html %]</b> となるかでしょう。
+        </dd>
+
+        <dt>
+          <b>[% get_status("ASSIGNED") FILTER html %]</b>
+        </dt>
+        <dd>
+          この [% terms.bug %] は未解決ですが、ある担当者に割り当てられています。
+          この段階からは、[% terms.bugs %] は他の担当者に再割り当てされ、
+          <b>[% get_status("NEW") FILTER html %]</b> となるか、
+          解決され <b>[% get_status("RESOLVED") FILTER html %]</b> となるでしょう。
+        </dd>
+
+        <dt>
+          <b>[% get_status("REOPENED") FILTER html %]</b>
+        </dt>
+        <dd>
+          この [% terms.bug %] は一度解決されましたが、解決方法が正しくありませんでした。
+          たとえば、<b>[% get_resolution("WORKSFORME") FILTER html %]</b> [% terms.bug %]
+          がより詳細な情報が得られ、再現するようになれば
+          <b>[% get_status("REOPENED") FILTER html %]</b> となるでしょう。
+          この段階からは、[% terms.bugs %] は <b>[% get_status("ASSIGNED") FILTER html %]</b> 
+          となるか、<b>[% get_status("RESOLVED") FILTER html %]</b> となるでしょう。
+        </dd>
+      </dl>
+    </td>
+
+    <td>
+      <dl>
+        <dd>
+          解決していません。全ての "未解決" 状態の [% terms.bugs %] は解決方法が空白です。
+          それ以外の [% terms.bugs %] は以下の解決方法のうちの一つになります。
+        </dd>
+      </dl>
+    </td>
+  </tr>
+
+  <tr valign="top">
+    <td>
+      <dl>
+        <dt>
+          <b>[% get_status("RESOLVED") FILTER html %]</b>
+        </dt>
+        <dd>
+          解決策がとられ、QA の確認待ちの状態です。
+          この段階からは、[% terms.bugs %] は再開され
+          <b>[% get_status("REOPENED") FILTER html %]</b> となるか、確認され
+          <b>[% get_status("VERIFIED") FILTER html %]</b> となるか、
+          問題がなくなり閉じられて <b>[% get_status("CLOSED") FILTER html %]</b>
+          となるかでしょう。
+        </dd>
+
+        <dt>
+          <b>[% get_status("VERIFIED") FILTER html %]</b>
+        </dt>
+        <dd>
+          QA が [% terms.bug %] の解決方法を確認し、とられた解決方法に同意しました。
+          [% terms.Bugs %] は、報告対象のプロダクトが提供されている間はこのステータスで、
+          それ以後は <b>[% get_status("CLOSED") FILTER html %]</b> となるでしょう。
+        </dd>
+
+        <dt>
+          <b>[% get_status("CLOSED") FILTER html %]</b>
+        </dt>
+        <dd>
+          [% terms.bug %] は無効と考えられていますが、解決方法は正しいです。
+          作業したい [% terms.bugs %] があれば、まず
+          <b>[% get_status("REOPENED") FILTER html %]</b> する必要があります。
+        </dd>
+      </dl>
+    </td>
+
+    <td>
+      <dl>
+        <dt>
+          <b>[% get_resolution("FIXED") FILTER html %]</b>
+        </dt>
+        <dd>
+          この [% terms.bug %] の解決策はツリーにチェックインされ試験されました。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("INVALID") FILTER html %]</b>
+        </dt>
+        <dd>
+          述べられている問題は [% terms.abug %] ではありません。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("WONTFIX") FILTER html %]</b>
+        </dt>
+        <dd>
+          述べられている問題は [% terms.abug %] ですが修正されることはありません。
+        </dd>
+
+        <dt>
+         <b>[% get_resolution("DUPLICATE") FILTER html %]</b>
+        </dt>
+        <dd>
+          報告された問題は既存の [% terms.bug %] の重複です。
+          [% terms.abug %] を重複とする際には、重複とする先の [% terms.bug %]# 
+          が必要で、説明のフィールドに [% terms.bug %] 番号が記入されます。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("WORKSFORME") FILTER html %]</b>
+        </dt>
+        <dd>
+          この [% terms.bug %] を再現しようとする試みは全て失敗し、
+          コードからも述べられた動作が起こる原因が判明しませんでした。
+          より情報が出てくれば、[% terms.bug %] が再開されることもあります。
+        </dd>
+
+        <dt>
+          <b>[% get_resolution("MOVED") FILTER html %]</b>
+        </dt>
+        <dd>
+          問題は他の [% terms.bugs %] データベースで扱われているプロダクトに関連する
+          [% terms.bugs %] です。
+          この [% terms.bug %] はそのデータベースに移動しました。
+        </dd>
+      </dl>
+    </td>
+  </tr>
+</table>
+
+<h2><a name="importance">重要性</h2>
+[% terms.abug %] の重要性は、以下で述べる
+<a href="#priority">重要度</a> と <a href="#bug_severity">深刻度</a>
+であらわされます。
+
+<h2><a name="priority">重要度</a></h2>
+このフィールドは重要度を示しており、どの [% terms.abug %] から修正されるべきかを示します。
+このフィールドは、プログラマやエンジニアが、
+どれから片付けるべきかを順序付けするために利用するものです。
+利用可能な重要度は <b>P1</b> (最重要) から <b>P5</b> (重要でない) です。
+
+<h2><a name="bug_severity">深刻度</a></h2>
+[% terms.abug %] の深刻度を示します。
+
+<table>
+  <tr>
+    <th>Blocker</th>
+
+    <td>開発や試験を妨害する</td>
+  </tr>
+
+  <tr>
+    <th>Critical</th>
+
+    <td>クラッシュ、データ喪失、深刻なメモリリーク</td>
+  </tr>
+
+  <tr>
+    <th>Major</th>
+
+    <td>主要機能が動作しなくなる</td>
+  </tr>
+
+  <tr>
+    <th>Normal</th>
+
+    <td>通常の問題で、ある環境下で機能が利用できなくなる</td>
+  </tr>
+
+
+  <tr>
+    <th>Minor</th>
+
+    <td>機能の一部が利用できなくなるや、
+    簡単なワークラウンドが存在する</td>
+  </tr>
+
+  <tr>
+    <th>Trivial</th>
+
+    <td>単語のスペルミスやそろっていないテキストなどの、
+        表示上の問題</td>
+  </tr>
+
+  <tr>
+    <th>Enhancement</th>
+
+    <td>機能要望</td>
+</table>
+
+<h2><a name="rep_platform">プラットフォーム</a></h2>
+[% terms.bug %] が報告されたハードウェアプラットフォームです。
+有効なプラットフォームには以下のものなどがあります
+
+<ul>
+  <li>All (全てのプラットフォームで再現する; クロスプラットフォーム [% terms.bug %])</li>
+
+  <li>Macintosh</li>
+
+  <li>PC</li>
+</ul>
+<b>注:</b> 検索の際は、"All" ではどのプラットフォームにもあたっていない
+[% terms.bugs %] は選択されません。
+全てのプラットフォームで発生するという条件では
+[% terms.bugs %] が該当することは少ないです。
+
+<h2><a name="op_sys">OS</a></h2>
+[% terms.bug %] が報告された OS です。
+有効な OS には以下のものなどがあります。
+
+<ul>
+  <li>All (全ての OS で再現する; クロスープラットフォーム
+  [% terms.bug %])</li>
+
+  <li>Windows</li>
+
+  <li>Mac OS</li>
+
+  <li>Linux</li>
+</ul>
+ものによっては、OS でプラットフォームも決まりますが、必ずではありません。
+たとえば、Linux は PC でも Mac でもその他でも動作します。
+
+<h2><a name="assigned_to">担当者</a></h2>
+
+<p>
+これは、[% terms.bug %] を解決するのに割り当てられた担当者です。
+このフィールドが変更されるたび、ステータスが <b>[% get_status("NEW") FILTER html %]</b> 
+に変更され、担当者のリストで新しい [% terms.bugs %] が簡単にわかるようになっています。</p>
+
+<p>
+クエリでの既定のステータスでは [% get_status("NEW") FILTER html %]、
+[%+ get_status("ASSIGNED") FILTER html %] と [% get_status("REOPENED") FILTER html %]
+が選択されています。
+解決済みや確認済みの [% terms.bugs %] を検索するためには、
+ステータスフィールドを設定する必要があることを覚えておいてください。
+</p>
+
+<h2><a name="see_also"></a>参照先</h2>
+
+<p>このシステムでは他のサイトの [% terms.bugs %] を参照とすることができます。
+  [% terms.bugs %] の URL を "[% terms.Bug %] URL を追加する" フィールドに入力することで、
+  その [% terms.bug %] が関連したものであると示すことができます。
+  カンマ区切りで複数の URL を入力することもできます。</p>
+
+<p>このフィールドは <em>他の</em> サイトの [% terms.bugs %] を示すために利用すべきです。
+  このサイトの [% terms.bugs %] に関しては、"依存する" "妨害する"
+  フィールドを利用するほうが望ましいです。</p>
+
+[% INCLUDE global/footer.html.tmpl %]

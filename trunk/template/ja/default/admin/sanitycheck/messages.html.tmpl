@@ -1,0 +1,335 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Frederic Buclin.
+  #
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% san_message = BLOCK %]
+  [% IF san_tag == "checks_start" %]
+    整合性確認を実行中です
+
+  [% ELSIF san_tag == "checks_completed" %]
+    整合性確認が完了しました
+
+  [% ELSIF san_tag == "attachment_reference_deletion_start" %]
+    OK, 削除された添付への参照を削除中です
+
+  [% ELSIF san_tag == "attachment_reference_deletion_end" %]
+    全ての削除された添付への参照が削除されました
+
+  [% ELSIF san_tag == "bug_check_alert" %]
+    [% errortext FILTER html %]: [% INCLUDE bug_list badbugs = badbugs %]
+
+  [% ELSIF san_tag == "bug_check_repair" %]
+    <a href="sanitycheck.cgi?[% param FILTER url_quote %]=1">[% text FILTER html %]</a>.
+
+  [% ELSIF san_tag == "bug_check_creation_date" %]
+    作成日の情報がない [% terms.bugs %] を確認しています。(見ることができなくなります)
+
+  [% ELSIF san_tag == "bug_check_creation_date_error_text" %]
+    作成日の情報がない [% terms.Bugs %] です
+
+  [% ELSIF san_tag == "bug_check_creation_date_repair_text" %]
+    これらの [% terms.bugs %] の発見できない作成日を修復します
+
+  [% ELSIF san_tag == "bug_check_bugs_fulltext" %]
+    全文検索用の情報がない [% terms.bugs %] を確認中です
+
+  [% ELSIF san_tag == "bug_check_bugs_fulltext_error_text" %]
+    全文検索用の情報がない [% terms.Bugs %] です
+
+  [% ELSIF san_tag == "bug_check_bugs_fulltext_repair_text" %]
+    これらの [% terms.bugs %] の存在しない全文検索用の情報を修復します
+
+  [% ELSIF san_tag == "bug_check_res_dupl" %]
+    解決方法や重複を確認します
+
+  [% ELSIF san_tag == "bug_check_res_dupl_error_text" %]
+    [% terms.Bugs %] は重複とされていないにもかかわらず重複テーブルにあります
+
+  [% ELSIF san_tag == "bug_check_res_dupl_error_text2" %]
+    [% terms.Bugs %] は重複とされていますが重複テーブルにありません
+
+  [% ELSIF san_tag == "bug_check_status_res" %]
+    ステータス・解決方法を確認中
+
+  [% ELSIF san_tag == "bug_check_status_res_error_text" %]
+    ステータスは開かれているが解決方法がある [% terms.Bugs %]
+
+  [% ELSIF san_tag == "bug_check_status_res_error_text2" %]
+    ステータスは閉じられているが解決方法がない [% terms.Bugs %]
+
+  [% ELSIF san_tag == "bug_check_status_everconfirmed" %]
+    ステータス・承認済みの確認
+
+  [% ELSIF san_tag == "bug_check_status_everconfirmed_error_text" %]
+    UNCONFIRMED だが承認済みの [% terms.Bugs %]
+
+  [% ELSIF san_tag == "bug_check_status_everconfirmed_error_text2" %]
+    承認済みのステータスだが承認済みのフラグがたっていない [% terms.Bugs %]
+
+  [% ELSIF san_tag == "bug_check_votes_everconfirmed" %]
+    投票数と承認済みの確認
+
+  [% ELSIF san_tag == "bug_check_votes_everconfirmed_error_text" %]
+    承認可能な票数があるが承認されていない [% terms.Bugs %]
+
+  [% ELSIF san_tag == "bug_check_control_values" %]
+    group_control_map の無効値の確認
+
+  [% ELSIF san_tag == "bug_check_control_values_alert" %]
+    [% entries FILTER html %] 個の無効な group_control_map を検出
+
+  [% ELSIF san_tag == "bug_check_control_values_violation" %]
+    プロダクトのグループ制限からはずれたグループを持つ [% terms.bugs %] の確認
+
+  [% ELSIF san_tag == "bug_check_control_values_error_text" %]
+    プロダクトで許可されていないグループを持つ
+
+  [% ELSIF san_tag == "bug_check_control_values_repair_text" %]
+    存在しないグループで制限されているプロダクトのバグを表示させる
+    (<code>SHOWN</code> に制限を設定する)
+
+  [% ELSIF san_tag == "bug_check_control_values_error_text2" %]
+    これらのプロダクトには存在しないグループへの参照があります
+
+  [% ELSIF san_tag == "bug_creation_date_start" %]
+    OK, 存在しない [% terms.bug %] 作成日付を修正しています。
+
+  [% ELSIF san_tag == "bug_creation_date_fixed" %]
+    [% bug_count FILTER html %] [%+ terms.bugs %] 個が修正されました。
+
+  [% ELSIF san_tag == "bugs_fulltext_start" %]
+    OK, 全文検索のために [% terms.bug %] エントリを修正しています。
+
+  [% ELSIF san_tag == "bugs_fulltext_fixed" %]
+    [% bug_count FILTER html %] [%+ terms.bugs %] 個が修正されました。
+
+  [% ELSIF san_tag == "bug_reference_deletion_start" %]
+    OK, 削除された [% terms.bugs %] への参照を削除しています。
+
+  [% ELSIF san_tag == "bug_reference_deletion_end" %]
+    削除された [% terms.bugs %] への参照を削除しました。
+
+  [% ELSIF san_tag == "cross_check_to" %]
+    [% table FILTER html %].[% field FILTER html %] への参照を確認中。
+
+  [% ELSIF san_tag == "cross_check_from" %]
+    [% table FILTER html %].[% field FILTER html %] から
+
+  [% ELSIF san_tag == "cross_check_alert" %]
+    無効な値 '[% value FILTER html %]' が
+    [%+ table FILTER html %].[% field FILTER html %] で発見されました。
+    [% IF keyname %]
+      [% IF keyname == "bug_id" %]
+        ([% PROCESS bug_link bug_id = key %])
+      [% ELSE %]
+        ([% keyname FILTER html %] == '[% key FILTER html %]')
+      [% END %]
+    [% END %]
+
+  [% ELSIF san_tag == "cross_check_attachment_has_references" %]
+    <a href="sanitycheck.cgi?remove_invalid_attach_references=1">
+    存在しない添付への無効な参照を削除する。</a>
+
+  [% ELSIF san_tag == "cross_check_bug_has_references" %]
+    <a href="sanitycheck.cgi?remove_invalid_bug_references=1">
+    存在しない [% terms.bugs %] への無効な参照を削除する。</a>
+
+  [% ELSIF san_tag == "double_cross_check_to" %]
+    [% table FILTER html %].[% field1 FILTER html %] /
+    [%+ table FILTER html %].[% field2 FILTER html %] への参照を確認中。
+
+  [% ELSIF san_tag == "double_cross_check_from" %]
+    [% table FILTER html %].[% field1 FILTER html %] /
+    [%+ table FILTER html %].[% field2 FILTER html %] から
+
+  [% ELSIF san_tag == "double_cross_check_alert" %]
+    無効な値 '[% value1 FILTER html %]', '[% value2 FILTER html %]' が
+     [% table FILTER html %].[% field1 FILTER html %] /
+    [%+ table FILTER html %].[% field2 FILTER html %] で発見されました。
+    [% IF keyname %]
+      [% IF keyname == "bug_id" %]
+        ([% PROCESS bug_link bug_id = key %])
+      [% ELSE %]
+        ([% keyname FILTER html %] == '[% key FILTER html %]')
+      [% END %]
+    [% END %]
+
+  [% ELSIF san_tag == "flag_check_start" %]
+    間違ったプロダクト・コンポーネントにあるフラグを確認中。
+
+  [% ELSIF san_tag == "flag_deletion_start" %]
+    OK, 無効なフラグを削除中。
+
+  [% ELSIF san_tag == "flag_deletion_end" %]
+    無効なフラグを削除完了。
+
+  [% ELSIF san_tag == "flag_alert" %]
+    [%+ PROCESS bug_link bug_id = bug_id %]
+    [% IF attach_id %]
+      の添付 [% attach_id FILTER html %]
+    [% END %]
+    への無効なフラグ [% flag_id FILTER html %]
+
+  [% ELSIF san_tag == "flag_fix" %]
+    <a href="sanitycheck.cgi?remove_invalid_flags=1">
+    無効なフラグを削除する。</a>
+
+  [% ELSIF san_tag == "group_control_map_entries_creation" %]
+    OK, <code>SHOWN</code> アクセス権限設定を設定が欠けているプロダクト・
+    グループのエントリに作成しています。
+
+  [% ELSIF san_tag == "group_control_map_entries_update" %]
+    <em>[% product_name FILTER html %]</em> への
+    グループ <em>[% group_name FILTER html %]</em> の
+    <code>NA/<em>xxx</em></code> アクセス権限設定を
+    <code>SHOWN/<em>xxx</em></code> に更新中。
+
+  [% ELSIF san_tag == "group_control_map_entries_generation" %]
+    プロダクト <em>[% product_name FILTER html %]</em> への
+    グループ <em>[% group_name FILTER html %]</em> の
+    <code>SHOWN/NA</code> アクセス権限設定を作成中。
+
+  [% ELSIF san_tag == "group_control_map_entries_repaired" %]
+    [% counter FILTER html %] このアクセス権限を修正しました。
+
+  [% ELSIF san_tag == "keyword_check_start" %]
+    キーワードテーブルを確認中。
+
+  [% ELSIF san_tag == "keyword_check_alert" %]
+    keyworddefs で id [% id FILTER html %] が重複しています。
+
+  [% ELSIF san_tag == "keyword_check_invalid_name" %]
+    keyworddefs で無効な id [% id FILTER html %] が存在します。
+
+  [% ELSIF san_tag == "keyword_check_invalid_id" %]
+    キーワードテーブルに無効な keywordids [% id FILTER html %] を発見しました。
+
+  [% ELSIF san_tag == "keyword_check_duplicated_ids" %]
+    重複したキーワード IDs が [% PROCESS bug_link bug_id = id %] で見つかりました。
+
+  [% ELSIF san_tag == "keyword_cache_start" %]
+    キーワードのキャッシュを確認中。
+
+  [% ELSIF san_tag == "keyword_cache_alert" %]
+    [% badbugs.size FILTER none %] [%+ terms.bugs %] 
+    が無効なキーワードキャッシュを持っています。
+    : [% INCLUDE bug_list badbugs = badbugs %]
+
+  [% ELSIF san_tag == "keyword_cache_fixing" %]
+    OK, キーワードキャッシュを修復しています。
+
+  [% ELSIF san_tag == "keyword_cache_fixed" %]
+    キーワードキャッシュが修復されました。
+
+  [% ELSIF san_tag == "keyword_cache_rebuild" %]
+    <a href="sanitycheck.cgi?rebuildkeywordcache=1">
+    キーワードキャッシュの再構築を行う。</a>.
+
+  [% ELSIF san_tag == "profile_login_start" %]
+    ログイン中のプロファイルの確認中。
+
+  [% ELSIF san_tag == "profile_login_alert" %]
+    無効なプロファイルのメールアドレス : id=[% id FILTER html %],
+    &lt;[% email FILTER html %]&gt;
+
+  [% ELSIF san_tag == "repair_bugs" %]
+    これらの [% terms.bugs %] を修復します。
+
+  [% ELSIF san_tag == "send_bugmail_start" %]
+    OK, 未送信のメールを送信中。
+
+  [% ELSIF san_tag == "send_bugmail_status" %]
+    [% bug_count FILTER html %] [%+ terms.bugs %] に未送信のメールがありました。
+
+  [% ELSIF san_tag == "send_bugmail_end" %]
+    未送信のメールを送信完了しました。
+
+  [% ELSIF san_tag == "unsent_bugmail_check" %]
+    未送信のメールを確認中。
+
+  [% ELSIF san_tag == "unsent_bugmail_alert" %]
+    直近 30 分間にメールが送信されていない変更のあった [% terms.Bugs %] 
+    : [% INCLUDE bug_list badbugs = badbugs %]
+
+  [% ELSIF san_tag == "unsent_bugmail_fix" %]
+    <a href="sanitycheck.cgi?rescanallBugMail=1">これらのメールを送信</a>
+
+  [% ELSIF san_tag == "vote_cache_rebuild_start" %]
+    OK, 投票のキャッシュを再構築中。
+
+  [% ELSIF san_tag == "vote_cache_rebuild_end" %]
+    投票のキャッシュを再構築しました。
+
+  [% ELSIF san_tag == "vote_cache_rebuild_fix" %]
+    <a href="sanitycheck.cgi?rebuildvotecache=1">
+    投票のキャッシュを再構築する</a>
+
+  [% ELSIF san_tag == "vote_cache_alert" %]
+    [% PROCESS bug_link bug_id = id %] に無効な投票のキャッシュがあります。
+
+  [% ELSIF san_tag == "vote_count_start" %]
+    キャッシュされた投票数を確認中。
+
+  [% ELSIF san_tag == "vote_count_alert" %]
+    [% terms.bug %] [%+ id FILTER html %] の投票数が無効です。
+
+  [% ELSIF san_tag == "whines_obsolete_target_deletion_start" %]
+    OK, whine から存在しないユーザ・グループを削除中。
+
+  [% ELSIF san_tag == "whines_obsolete_target_deletion_end" %]
+    whine から存在しないユーザ・グループを削除しました。
+
+  [% ELSIF san_tag == "whines_obsolete_target_start" %]
+    whine で存在しないユーザ・グループが利用されていないか確認中です。
+
+  [% ELSIF san_tag == "whines_obsolete_target_alert" %]
+    [% FOREACH schedule = schedules %]
+      存在しない [% (type == constants.MAILTO_USER) ? "ユーザ" : "グループ" FILTER html %]
+      [%+ schedule.1 FILTER html %] が whine [% schedule.0 FILTER html %] で利用されています。<br>
+    [% END %]
+
+  [% ELSIF san_tag == "whines_obsolete_target_fix" %]
+    <a href="sanitycheck.cgi?remove_old_whine_targets=1">
+    whine にある古いユーザ・グループを削除する</a>
+
+  [% END %]
+[% END %]
+
+[% USE Bugzilla %]
+[% IF Bugzilla.usage_mode == constants.USAGE_MODE_CMDLINE %]
+  [% san_message FILTER none %]
+[% ELSE %]
+  [%# Avoid the txt filter in message.txt.tmpl. %]
+  [% san_message FILTER html %]
+[% END %]
+
+[% BLOCK bug_list %]
+  [% FOREACH bug_id = badbugs %]
+    [%# Do not use FILTER bug_link() here, because bug_link() calls get_text()
+     # which itself calls this template again, generating a recursion error.
+     # I doubt having a tooltip with the bug status and summary is so
+     # important here anyway, as you can click the "(as buglist)" link. %]
+    <a href="show_bug.cgi?id=[% bug_id FILTER url_quote %]">[% bug_id FILTER html %]</a>
+    [% ", " IF !loop.last %]
+  [% END %]
+  (<a href="buglist.cgi?bug_id=[% badbugs.join(",") FILTER url_quote %]">[% terms.bug %] リストとしてみる</a>).
+[% END %]
+
+[% BLOCK bug_link %]
+  <a href="show_bug.cgi?id=[% bug_id FILTER url_quote %]">[% terms.bug %] [%+ bug_id FILTER html %]</a>
+[% END %]

@@ -1,0 +1,53 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "$terms.Bug 変更ポリシー"
+   desc = "$terms.bug 変更ポリシーの設定"
+%]
+
+[% param_descs = {
+  duplicate_or_move_bug_status => "$terms.abug を重複とするや、他のサイトへ移動するときに、" _
+                                  "ここで設定した $terms.bug ステータスを適用します。",
+
+  letsubmitterchoosepriority => "有効なら、$terms.bugs の登録者が ${terms.bug} " _
+                                "の初期重要度を選択できます。" _
+                                "無効なら、すべての $terms.bugs には下で設定する、" _
+                                "既定の重要度が設定されます。",
+
+  letsubmitterchoosemilestone => "有効なら、$terms.bugs の登録者が ${terms.bug} " _
+                                 "のターゲットマイルストーンを選択できます。" _
+                                 "無効なら、すべての $terms.bugs にはプロダクトの既定の" _
+                                 "マイルストーンが設定されます。",
+
+  musthavemilestoneonaccept => "ターゲットマイルストーンを利用している場合、" _
+                               "${terms.bug} を受け入れる時にマイルストーンを設定することを要求しますか ?",
+
+  commentonchange_resolution => "有効なら、$terms.bug の解決方法を変更するときに、" _
+                                "短いコメントを入力しなければならなくなります。",
+
+  commentonduplicate => "有効なら、$terms.bug を重複とするときに" _
+                        "短いコメントを入力しなければならなくなります。",
+
+  noresolveonopenblockers => "未解決の依存関係がある時に、$terms.bugs を解決済みと" _
+                             "することができなくなります。",
+}
+
+%]

@@ -1,0 +1,514 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #%]
+
+[%# INTERFACE:
+  # header_done: boolean. True if the header has already been printed.
+  # error: string. The tag of the error.
+  # variables: hash. Useful data about the problem. The keys are the variable
+  #  names, and the values the variable values.
+  #%]
+
+[%# This is a list of all the possible code errors. Please keep them in
+  # alphabetical order by error tag, and leave a blank line between errors.
+  #
+  # Note that you must explicitly filter every single template variable
+  # in this file; if you do not wish to change it, use the "none" filter.
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% DEFAULT title = "内部エラー" %]
+
+[% error_message = BLOCK %]
+  [% IF    error == "action_unrecognized" %]
+    [% docslinks = {'query.html' => "$terms.bugs の検索",
+                    'query.html#list' => "$terms.Bug リスト"} %]
+    <em>action</em> 変数に指定された (<em>[% action FILTER html %]</em>)
+    を認識できません。
+
+  [% ELSIF error == "attachment_already_obsolete" %]
+    添付 #[% attach_id FILTER html %] ([% description FILTER html %]) 
+    はすでに用済みにされています。
+
+  [% ELSIF error == "auth_invalid_email" %]
+    [% title = "無効なメールアドレス" %]
+    あなたのアカウントの作成もしくは更新の際に送信されたメールアドレス
+    (<b>[% addr FILTER html %]</b>)
+    は、設定されている有効なメールアドレスの書式にあいませんでした。
+    [% IF default %]
+      有効なメールアドレスは、ひとつの '@' を含み、そのあとに最低ひとつの
+      '.' があるものになります。
+    [% ELSE %]
+      [%+ Param('emailregexpdesc') %]
+    [% END %]
+    また、次の特殊文字や空白文字を含むものは無効です。
+    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
+
+  [% ELSIF error == "authres_unhandled" %]
+    ログイン処理中の結果 [% value FILTER html %] を処理できませんでした。.
+
+  [% ELSIF error == "bad_page_cgi_id" %]
+    [% title = "無効なページ ID" %]
+    ID <code>[% page_id FILTER html %]</code> は有効なページ識別子でありません。
+
+  [% ELSIF error == "bad_arg" %]
+    <code>[% function FILTER html %]</code> 関数が無効な引数
+    <code>[% argument FILTER html %]</code> により呼ばれました。
+
+  [% ELSIF error == "bug_error" %]
+    [% terms.bug %] [%+ bug.bug_id FILTER html %] を表示しようとしたところ、
+    [% bug.error FILTER html %] のエラーが発生しました。
+
+  [% ELSIF error == "chart_data_not_generated" %]
+    [% admindocslinks = {'extraconfig.html' => 'チャートの設定'} %]
+    [% IF product %]
+      <em>[% product FILTER html %]</em> プロダクトのチャートは、
+      チャートが作成されてからデータの収集がまだ行われていないため、
+      現在利用できません。
+    [% ELSE %]
+      チャート用データが収集されていません。
+    [% END %]
+    一日待って再度試してください。
+    同じメッセージを見た場合、
+    <a href="mailto:[% Param('maintainer') %]">[% Param('maintainer') %]</a>
+    にこのエラーが発生した時の詳細をつけて連絡してください。
+
+  [% ELSIF error == "chart_datafile_corrupt" %]
+    チャート用データファイル [% file FILTER html %] が破損しています。
+
+  [% ELSIF error == "chart_dir_nonexistent" %]
+    <tt>[% dir FILTER html %]</tt> もしくは <tt>[% graph_dir FILTER html %]</tt>
+    ディレクトリが存在しません。
+
+  [% ELSIF error == "chart_file_open_fail" %]
+    チャート用データファイル <tt>[% filename FILTER html %]</tt> が開けません。
+  
+  [% ELSIF error == "chart_lines_not_installed" %]
+    [% admindocslinks = {'installation.html#install-perlmodules' => 'チャートのために必要な Perl モジュールをインストールする'} %]
+    チャート機能は、Chart::Lines の Perl モジュールがなければ動きません。
+    checksetup.pl を実行して表示されるインストールのための指示に従ってください。
+
+  [% ELSIF error == "column_not_null_without_default" %]
+    カラム [% name FILTER html %] の追加に失敗しました:
+    <code>$init_value</code> 引数を指定しない限り、
+    NULL でないカラムを規定値なしに既存のテーブルに追加することはできません。
+
+  [% ELSIF error == "column_not_null_no_default_alter" %]
+    [% name FILTER html %] カラムを規定値もしくは $set_nulls_to を指定しないで
+    NOT NULL に変更しようとしましたが、現在 NULL 値を持つエントリがあります。
+
+  [% ELSIF error == "db_rename_conflict" %]
+    名前が衝突しました: [% old FILTER html %] を
+    [% new FILTER html %] に変更できません。[% new FILTER html %] はすでに存在します。
+
+  [% ELSIF error == "cookies_need_value" %]
+    すべてのクッキーは値を持つ必要があります。
+
+  [% ELSIF error == "env_no_email" %]
+    [% terms.Bugzilla %] は環境変数からメールアドレスを特定できませんでした。
+    [% IF Param("auth_env_email") %]
+      これは、'[% Param("auth_env_email") FILTER html %]' 環境変数が空もしくは、
+      存在しなかったことを意味します。
+    [% ELSE %]
+      "auth_env_email" パラメータに、
+      ユーザのメールアドレスを含むような環境変数の名前を設定する必要があります。
+    [% END %]
+
+  [% ELSIF error == "extension_invalid" %]
+    拡張機能 [% extension FILTER html %] の中で [% name FILTER html %]
+    のフックを処理する際にエラーが発生しました: [% errstr FILTER html %]
+
+  [% ELSIF error == "extern_id_conflict" %]
+    外部 ID '[% extern_id FILTER html %]' はすでにデータベースに '[% username FILTER html %]'
+    として存在しますが、あなたのアカウントの外部ソースでは '[% extern_user FILTER html %]' 
+    が同じ ID を持っています。
+
+  [% ELSIF error == "field_choice_must_use_type" %]
+    <code>Bugzilla::Field::Choice</code> のクラスメソッドの呼び出しでは、
+    正常にクラスを初期化するために <code>Bugzilla::Field::Choice-&gt;type('some_field')</code>
+    を呼ぶ必要があります。(Bugzilla::Field::Choice 
+    で直接クラスメソッドを呼ぶことはできません。)
+
+  [% ELSIF error == "field_type_mismatch" %]
+    <code>[% field FILTER html %]</code> と <code>[% type FILTER html %]</code> 
+    を同時に処理できません。
+
+  [% ELSIF error == "field_not_custom" %]
+    '[% field.description FILTER html %]' ([% field.name FILTER html %])
+    はカスタムフィールドではありません。
+
+  [% ELSIF error == "gd_not_installed" %]
+    [% admindocslinks = {'installation.html#install-perlmodules' => 'チャートに必要な perl モジュールをインストールする'} %]
+    GD Perl 用モジュールがインストールされていなければチャート機能は動作しません。
+    checksetup.pl を実行しインストール指示に従ってください。
+
+  [% ELSIF error == "illegal_content_type_method" %]
+    あなたの変更には間違いがあります。
+    コンテントタイプをどう評価するかを指定する <em>content method</em> フィールドは、
+    <em>autodetect</em>、<em>list</em>、もしくは <em>manual</em> でないといけませんが、
+    <em>[% contenttypemethod FILTER html %]</em> が指定されました。
+
+  [% ELSIF error == "illegal_field" %]
+    有効な [% field FILTER html %] が指定されていません。
+
+  [% ELSIF error == "inactive_group" %]
+    [% terms.bugs %] には利用されていない、
+    '[% name FILTER html %]' グループへの [% terms.bug %] の追加操作を行おうとしました。
+
+  [% ELSIF error == "invalid_attach_id_to_obsolete" %]
+    用済みにマークしようとした添付ファイルのひとつ [% attach_id FILTER html %] 
+    は無効です。
+          
+  [% ELSIF error == "invalid_column_name_cookie" %]
+    [% title = "無効なカラム名" %]
+    クッキーで指定された独自ソート順は無効なカラム名 <em>[% fragment FILTER html %]</em>
+    を指定しています。
+    クッキーを消去しました。
+
+  [% ELSIF error == "invalid_column_name_form" %]
+    [% title = "無効なカラム名" %]
+    あなたが要求した独自ソート順は無効なカラム名 <em>[% fragment FILTER html %]</em>
+    を指定しています。
+
+  [% ELSIF error == "invalid_customfield_type" %]
+    [% title = "無効なフィールドタイプ" %]
+    <em>[% type FILTER html %]</em> は有効なフィールドタイプではありません。
+
+  [% ELSIF error == "invalid_dimensions" %]
+    [% title = "無効な寸法です" %]
+    指定された幅もしくは高さが正の整数ではありません。
+
+  [% ELSIF error == "invalid_flag_association" %]
+    [% title = "無効なフラグ関係性です" %]
+    いくつかのフラグが
+    [% IF attach_id %]
+      添付 [% attach_id FILTER html %].
+    [% ELSE %]
+      [%+ terms.bug %] [%+ bug_id FILTER html %].
+    [% END %]
+    に属していません。
+
+  [% ELSIF error == "invalid_series_id" %]
+    [% title = "無効なシリーズです" %]
+    シリーズ ID [% series_id FILTER html %] は無効です。
+    このシリーズは削除された可能性があります。
+
+  [% ELSIF error == "invalid_webservergroup" %]
+    [% group FILTER html %] というグループは存在しません。
+    [% constants.bz_locations.localconfig FILTER html %] の $webservergroup 
+    設定を確認してください。
+
+  [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
+    添付 [% attach_id FILTER html %] ([% description FILTER html %]) は
+    [% terms.bug %] [%+ attach_bug_id FILTER html %] に添付されていますが、
+    あなたは [% terms.bug %] [%+ my_bug_id FILTER html %] へ新しい添付をつけるときに
+    無効化しようとしました。
+
+  [% ELSIF error == "flags_not_available" %]
+    [% title = "フラグ編集は許可されていません" %]
+    [% IF type == "b" %]
+      複数の [% terms.bugs %] のフラグは一度に設定や変更できません。
+    [% ELSE %]
+      新規に添付するときの既存のフラグの参照は無効です。
+    [% END %] 
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "特定の人からのフラグ要請はできません" %]
+    特定の人からの
+    <em>[% type.name FILTER html %]</em> の要請はできません。
+ 
+  [% ELSIF error == "flag_status_invalid" %]
+    [% IF id %]
+      フラグ ID #[% id FILTER html %] の
+    [% END %]
+    フラグステータス <em>[% status FILTER html %]</em>
+    は無効です。
+
+  [% ELSIF error == "flag_type_inactive" %]
+    [% title = "利用されていないフラグタイプ" %]
+    フラグタイプ [% type FILTER html %] は無効化されており、
+    新規フラグの作成で利用することはできません。
+
+  [% ELSIF error == "flag_type_nonexistent" %]
+    ID <em>[% id FILTER html %]</em> をもつフラグタイプは存在しません。
+
+  [% ELSIF error == "flag_type_target_type_invalid" %]
+    ターゲットタイプは <em>[% terms.bug %]</em> でも <em>attachment</em> でもなく、
+    <em>[% target_type FILTER html %]</em> になっています。
+ 
+  [% ELSIF error == "invalid_field_name" %]
+    [% field FILTER html %] をフィールド名に利用できません。
+
+  [% ELSIF error == "invalid_keyword_id" %]
+    キーワード ID <em>[% id FILTER html %]</em> が見つかりません。
+
+  [% ELSIF error == "invalid_user" %]
+    [% title = "無効なユーザ" %]
+    [% IF user_id %]
+      ID <em>[% user_id FILTER html %]</em>.
+    [% ELSIF user_login %]
+      ログイン名 <em>[% user_login FILTER html %]</em>
+    [% ELSE %]
+      与えられた
+    [% END %]
+    のユーザは存在しません。
+
+  [% ELSIF error == "jobqueue_insert_failed" %]
+   [% title = "ジョブのキューが失敗" %]
+    <code>[% job FILTER html %]</code> をジョブキューに追加する処理が、
+    以下の理由で失敗しました : [% errmsg FILTER html %]
+
+  [% ELSIF error == "jobqueue_not_configured" %]
+    ジョブキューシステムを利用するには必要な Perl 
+    モジュールがインストールされている必要があります。
+    <code>checksetup.pl</code> を実行すると不足しているモジュールが表示されます。
+
+  [% ELSIF error == "jobqueue_no_job_mapping" %]
+    <code>Bugzilla::JobQueue</code> はジョブ "[% job FILTER html %]" 
+    を処理するように設定されていません。ジョブタイプを <code>Bugzilla::JobQueue</code>
+    の <code>JOB_MAP</code> 定数に追加する必要があります。
+
+  [% ELSIF error == "ldap_bind_failed" %]
+    LDAP サーバへの接続に失敗しました。エラーメッセージは次のとおりです。
+    <code>[% errstr FILTER html %]</code>
+
+  [% ELSIF error == "ldap_cannot_retreive_attr" %]
+    指定された LDAP 属性値 [% attr FILTER html %] は見つかりませんでした。
+
+  [% ELSIF error == "ldap_connect_failed" %]
+    LDAP サーバ <code>[% server FILTER html %]</code> に接続できませんでした。
+
+  [% ELSIF error == "ldap_start_tls_failed" %]
+    LDAP サーバとの TLS 接続開始に失敗しました。<code>[% error FILTER html %]</code>.
+
+  [% ELSIF error == "ldap_search_error" %]
+    LDAP サーバで &quot;[% username FILTER html %]&quot;
+    を検索する時にエラーが発生しました。
+   <code>[% errstr FILTER html %]</code>
+
+  [% ELSIF error == "ldap_server_not_defined" %]
+    認証用 LDAP サーバが設定されていません。
+
+  [% ELSIF error == "mail_send_error" %]
+    メールを '[% mail.header('From') FILTER html %]' から
+    '[% mail.header('To') FILTER html %]' に送信する際に問題が発生しました。
+    [% msg FILTER html %]
+
+  [% ELSIF error == "missing_bug_id" %]
+    [% terms.bug %] ID が与えられませんでした。
+
+  [% ELSIF error == "missing_series_id" %]
+    シリーズをデータベースに登録しようとしましたが、シリーズ ID がありません。
+    シリーズ: [% series.category FILTER html %] / 
+    [%+ series.subcategory FILTER html %] / 
+    [%+ series.name FILTER html %]
+
+  [% ELSIF error == "need_quipid" %]
+    有効な quipid が必要です。
+
+  [% ELSIF error == "no_manual_moved" %]
+    [% terms.bug %] を移動させることなく、[% terms.abug %] を MOVED 
+    の解決方法にできません。
+
+  [% ELSIF error == "param_must_be_numeric" %]
+    [% title = "無効なパラメータ" %]
+    無効なパラメータが [% function FILTER html %] に渡されました。
+    数値であるべきです。
+
+  [% ELSIF error == "param_required" %]
+    [% title = "パラメータがありません" %]
+    関数 <code>[% function FILTER html %]</code> には引数として
+    <code>[% param FILTER html %]</code> が必要ですが、引数が渡されませんでした。
+
+  [% ELSIF error == "params_required" %]
+    [% title = "パラメータ不足" %]
+    関数 <code>[% function FILTER html %]</code> 
+    には次のパラメータのうちひとつを設定する必要があります :
+    <code>[% params.join(', ') FILTER html %]</code>
+
+  [% ELSIF error == "product_empty_group_controls" %]
+    [% title = "見つからないグループコントロール" %]
+    グループ [% group.name FILTER html %] のグループ設定を編集するための
+    設定が必要です。
+
+  [% ELSIF error == "product_illegal_group_control" %]
+    [% title = "無効なグループコントロール" %]
+    '[% value FILTER html %]' は '[% field FILTER html %]' フィールドでは、
+    有効ではありません。
+
+  [% ELSIF error == "protection_violation" %]
+    関数 <code>[% function FILTER html %]</code> は
+    [% IF argument %]
+        引数 <code>[% argument FILTER html %]</code> なしに
+    [% END %]
+    パッケージ外
+    [% IF caller %]
+        の <code>[%+ caller FILTER html %]</code>
+    [% END %]
+    から呼ばれました。この関数は、<code>[% superclass FILTER html %]</code>
+    のサブクラスからのみ呼ばれることが可能です。
+
+  [% ELSIF error == "radius_preparation_error" %]
+    RADIUS 認証リクエストを準備している途中でエラーが発生しました。
+    <code>[% errstr FILTER html %]</code>
+
+  [% ELSIF error == "unknown_comparison_type" %]
+    指定された比較はサポートされていません。
+
+  [% ELSIF error == "request_queue_group_invalid" %]
+    グループフィールド <em>[% group FILTER html %]</em> は無効です。
+
+  [% ELSIF error == "report_axis_invalid" %]
+    <em>[% val FILTER html %]</em> は
+    [%+ IF    fld == "x" %]横軸
+    [%+ ELSIF fld == "y" %]縦軸
+    [%+ ELSIF fld == "z" %]複数テーブル・イメージ
+    [%+ ELSE %]レポート軸[% END %] フィールドとして無効値です。
+
+  [% ELSIF error == "setting_info_invalid" %]
+    新しい設定を作成するには、名前、値とソート順のペア、既定の値が必要です。
+
+  [% ELSIF error == "setting_name_invalid" %]
+    設定名 <em>[% name FILTER html %]</em> は無効です。
+    文字で始まり、文字、数字、記号 '_' '-' '.' ':' のみを含めることができます。
+
+  [% ELSIF error == "setting_subclass_invalid" %]
+    設定のサブクラス <code>[% subclass FILTER html %]</code> は存在しません。
+
+  [% ELSIF error == "setting_value_invalid" %]
+    値 "<code>[% value FILTER html %]</code>" は有効な <em>[% name FILTER html %]</em> 
+    設定の値のリストにありません。
+
+  [% ELSIF error == "soap_not_installed" %]
+    [% admindocslinks = {'installation.html#install-perlmodules' => 'Perl モジュールのインストール'} %]
+    XMLRPC インターフェースは、SOAP::Lite Perl モジュールがインストールされていなければ
+    利用できません。checksetup.pl を実行し、インストール手順を見てください。
+
+  [% ELSIF error == "token_generation_error" %]
+    トークン生成システムで深刻な問題が発生しています。
+
+  [% ELSIF error == "template_error" %]
+    [% template_error_msg FILTER html %]
+
+  [% ELSIF error == "template_invalid" %]
+    フックコール [% name FILTER html %] の中で無効なファイル名のテンプレートが見つかりました。
+
+  [% ELSIF error == "unable_to_retrieve_password" %]
+    あなたの古いパスワードをデータベースから取得できませんでした。
+
+  [% ELSIF error == "undefined_field" %]
+    フォームフィールド [% field FILTER html %] は見つかりませんでした。
+ 
+  [% ELSIF error == "unknown_action" %]
+    [% IF action %]
+       不明なアクション [% action FILTER html %] です
+    [% ELSE %]
+       あなたが何をしたいかわかりません。
+    [% END %]
+
+  [% ELSIF error == "usage_mode_invalid" %]
+    '[% invalid_usage_mode FILTER html %]' は無効な利用方法です。
+
+  [% ELSIF error == "must_be_patch" %]
+    [% title = "添付はパッチでなければなりません" %]
+    添付 #[% attach_id FILTER html %] はパッチでなければなりません。
+
+  [% ELSIF error == "not_in_transaction" %]
+    始めていないトランザクションを終了させようとしました。
+
+  [% ELSIF error == "comma_operator_deprecated" %]
+    [% title = "SQL クエリ生成器の内部エラーです" %]
+    SQL クエリ生成コードで、
+    暗黙の JOIN を利用したクエリを生成する部分でエラーが発生しました。
+
+  [% ELSIF error == "invalid_post_bug_submit_action" %]
+    post_bug_submit_action の無効な設定です。
+
+  [% ELSE %]
+    [%# Try to find hooked error messages %]
+    [% error_message = Hook.process("errors") %]
+    [% IF NOT error_message %]
+      [% title = "内部エラー" %]
+      内部エラーが発生しましたが、[% terms.Bugzilla %] はエラーコード
+      <code>[% error FILTER html %]</code> が何を意味するのかわかりません。
+
+      もし、[% terms.Bugzilla %] の単なる利用者なら、メッセージを保存し、
+      [% Param('maintainer') %] までご連絡ください。
+    [% ELSE %]
+      [% error_message FILTER none %]
+    [% END %]
+  [% END %]
+[% END %]
+
+[%# We only want HTML error messages for ERROR_MODE_WEBPAGE %]
+[% USE Bugzilla %]
+[% IF Bugzilla.error_mode != constants.ERROR_MODE_WEBPAGE %]
+  [% IF Bugzilla.usage_mode == constants.USAGE_MODE_BROWSER %]
+    [% error_message FILTER none %]
+  [% ELSE %]
+    [% error_message FILTER txt %]
+  [% END %]
+  [% RETURN %]
+[% END %]
+
+[% UNLESS header_done %]
+  [% PROCESS global/header.html.tmpl %]
+[% END %]
+
+[% PROCESS global/docslinks.html.tmpl
+   docslinks      = docslinks
+   admindocslinks = admindocslinks
+%]
+
+<tt>
+  <p>
+    [% terms.Bugzilla %] に内部エラーが発生しました。このページを保存して、
+    [% Param("maintainer") %] まで、メッセージが表示される前にどういう操作を行ったか
+    とともに送信してください。
+  </p>
+  <script type="text/javascript"> <!--
+    document.write("<p>URL: " + 
+                    document.location.href.replace(/&/g,"&amp;")
+                                          .replace(/</g,"&lt;")
+                                          .replace(/>/g,"&gt;") + "</p>");
+  // -->
+  </script>
+</tt>
+
+<table cellpadding="20">
+  <tr>
+    <td bgcolor="#ff0000">
+      <font size="+2">
+        [% error_message FILTER none %]
+      </font>
+    </td>
+  </tr>
+</table>
+
+[% IF variables %]
+  <pre>
+変数値:
+  [% FOREACH key = variables.keys %]
+    [%+ key FILTER html %]: [%+ variables.$key FILTER html %]
+  [% END %]
+  </pre>
+[% END %]
+
+[% PROCESS global/footer.html.tmpl %]

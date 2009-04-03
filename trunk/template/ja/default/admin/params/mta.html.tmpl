@@ -1,0 +1,84 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "Email"
+   desc = "外部へのメールの配信方法をどうしますか ?"
+%]
+
+[% param_descs = {
+  mail_delivery_method => "メールをどのように送信するか、もしくはまったく送信しないかを設定してください。<br>
+                           <ul>
+                             <li>
+                               'Sendmail'、'SMTP'、'Qmail' は全て MTA です。
+                               Windows で sendmail の設定を利用したい場合は、
+                               何らかのサードパーティーの sendmail 互換ソフトをインストールする必要があります。
+                             </li>
+                             <li>
+                               'Test' はデバッグに有用です。全てのメールは
+                               'data/mailer.testfile' に送信されずに保存されます。
+                             </li>
+                             <li>
+                               'none' は完全にメールを無効にします。$terms.Bugzilla
+                               はメールを送信するかのように動作しますが、
+                               一切送信も保存も行われません。
+                             </li>
+                           </ul>",
+
+  mailfrom => "$terms.Bugzilla メールデーモンが利用するメールアドレスです。" _
+              "いくつかのメールシステムでは有効なメールアドレスである必要があります。",
+
+  use_mailer_queue => "大規模 $terms.Bugzilla サイトでは、$terms.bugs"
+    _ " の更新が非常に遅いことがありえます。これは、$terms.Bugzilla"
+    _ "がメールを一度に送ろうとすることによります。このパラメータを有効にすれば、"
+    _ "$terms.Bugzilla はメールをいったんキューに入れ、バックグラウンドで送信します。"
+    _ "この機能には、必要とされる Perl モジュール (<code>checksetup.pl</code>"
+    _ "を参照) をインストールする必要があり、また <code>jobqueue.pl</code>"
+    _ "デーモンを走らせる必要があります。(走らせない場合はメールが送信されません。)"
+    _ "この機能は、$terms.bug の更新に限らないすべての $terms.Bugzilla"
+    _ "のメール送信に影響します。",
+
+  sendmailnow => "'sendmail' 8.12 以前を利用しているサイトでは、無効にすることで UI " _
+                 "上でかなりのパフォーマンス改善が可能です。 -- メール送信での遅延。" _
+                 "'sendmail' 8.12 以降を利用しているサイトでは有効のままにしてください。" _
+                 "無効にしても効果はありません。'sendmail' 以外の MTA を利用している場合は、" _
+                 "<b>必ず</b> 有効のままである必要があり、そうでなければ $terms.bug " _
+                 "メールが一切送信されなくなります。",
+
+  smtpserver => "SMTP サーバアドレス (SMTP を選択した場合)",
+
+  smtp_username => "SMTP 認証に利用する SMTP サーバのユーザ名です。" _
+                   "SMTP サーバが認証を要求しない場合は空にしてください。",
+
+  smtp_password => "SMTP 認証に利用するパスワードです。" _
+                   "smtp_username が空の場合は無視されます。",
+
+  smtp_debug => "有効なら、ウェブサーバのエラーログに $terms.Bugzilla と SMTP サーバ間" _
+                "の詳細な通信ログが出力されます。メールに関する問題の解決のために" _
+                "この情報が有用でしょう。",
+
+  whinedays => "この日数の間 NEW 状態で放置されたままの $terms.bug について、cronjob が " _
+               "whine メールを担当者に送信します。<br>" _
+               "whine を無効にするなら 0 に設定してください。",
+
+  globalwatchers => "カンマ区切りのユーザリストで、システムが送信する全ての通知メールの" _
+                    "コピーが送信されるユーザ名です。" }
+
+%]

@@ -1,0 +1,322 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Joel Peshkin <bugreport@peshkin.net>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = BLOCK %]
+    [% product.name FILTER html %] のグループによる制限を編集
+[% END %]
+[% PROCESS global/header.html.tmpl 
+   title = title 
+%]
+
+<form method="post" action="editproducts.cgi">
+  <input type="hidden" name="action" value="updategroupcontrols">
+  <input type="hidden" name="product" value="[% product.name FILTER html %]">
+  <input type="hidden" name="token" value="[% token FILTER html %]">
+
+  <table id="form" cellspacing="0" cellpadding="4" border="1">
+    <tr bgcolor="#6666ff">
+      <th>グループ</th>
+      <th>新規追加</th>
+      <th>メンバーの操作</th>
+      <th>メンバー以外の操作</th>
+      <th>編集可能</th>
+      <th>コンポーネントを編集可能</th>
+      <th>承認可能</th>
+      <th>[% terms.Bugs %] を編集可能</th>
+      <th>[% terms.Bugs %]</th>
+    </tr>
+    [% FOREACH group = product.group_controls(1).values.sort("name") %]
+      [% IF !group.group.isactive AND group.bug_count %]
+        <tr bgcolor="#bbbbbb">
+          <td>
+            [% group.group.name FILTER html %]
+          </td>
+          <td align="center" colspan=7>
+            無効
+          </td>
+          <td>
+            [% group.bug_count %]
+          </td>
+        <tr>
+      [% ELSIF group.group.isactive != 0 %]
+        <tr>
+          <td>
+            [% group.group.name FILTER html %]
+          </td>
+          <td>
+            <input type=checkbox value=1 name=entry_[% group.id %]
+            [% " checked=\"checked\"" IF group.entry %]>
+          </td>
+          <td>
+            <select name="membercontrol_[% group.id %]">
+              <option value=[% constants.CONTROLMAPNA %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == constants.CONTROLMAPNA %]
+                >無関係
+              </option>
+              <option value=[% constants.CONTROLMAPSHOWN %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == constants.CONTROLMAPSHOWN %]
+                >選択可能
+              </option>
+              <option value=[% constants.CONTROLMAPDEFAULT %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == constants.CONTROLMAPDEFAULT %]
+                >標準で選択
+              </option>
+              <option value=[% constants.CONTROLMAPMANDATORY %]
+                [% " selected=\"selected\""
+                  IF group.membercontrol == constants.CONTROLMAPMANDATORY %]
+                >強制
+              </option>
+            </select>
+          </td>
+          <td>
+            <select name="othercontrol_[% group.id %]">
+              <option value=[% constants.CONTROLMAPNA %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == constants.CONTROLMAPNA %]
+                >無関係
+              </option>
+              <option value=[% constants.CONTROLMAPSHOWN %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == constants.CONTROLMAPSHOWN %]
+                >選択可能
+              </option>
+              <option value=[% constants.CONTROLMAPDEFAULT %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == constants.CONTROLMAPDEFAULT %]
+                >標準で選択
+              </option>
+              <option value=[% constants.CONTROLMAPMANDATORY %]
+                [% " selected=\"selected\""
+                  IF group.othercontrol == constants.CONTROLMAPMANDATORY %]
+                >強制
+              </option>
+            </select>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=canedit_[% group.id %]
+            [% " checked=\"checked\"" IF group.canedit %]>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=editcomponents_[% group.id %]
+            [% " checked=\"checked\"" IF group.editcomponents %]>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=canconfirm_[% group.id %]
+            [% " checked=\"checked\"" IF group.canconfirm %]>
+          </td>
+          <td>
+            <input type=checkbox value=1 name=editbugs_[% group.id %]
+            [% " checked=\"checked\"" IF group.editbugs %]>
+          </td>
+          <td>
+            [% group.bug_count %]
+          </td>
+        </tr>
+      [% END %]
+    [% END %]
+
+  </table>
+  <br>
+  <input type=submit name="submit" value="変更">
+  <br>
+</form>
+
+
+<p>
+これらの設定はグループとプロダクトの関係をコントロールできます。
+</p>
+<p>
+<b>新規追加</b> がいずれかのグループで選択されている場合、
+[% terms.bug %] の新規作成が、新規追加 を選択された全てのグループに所属しているユーザのみが可能なように制限されます。
+</p>
+<p>
+<b>編集可能</b> がいずれかのグループで選択されている場合、
+全てのグループに所属していないユーザにとっては閲覧専用となります。
+編集可能 なグループ全てに所属しているユーザのみが編集可能です。
+これはユーザが何を編集可能であるかを選択する追加の設定です。
+</p>
+<p>
+以下の設定は<b>プロダクト単位</b>で権限をコントロールすることができます。
+これは全ての製品に対しての、グローバルな権限を変更することなく、
+特定のプロダクトに対してのみ、特定のユーザに権限を与えるのに便利です。
+</p>
+<p>
+<b>コンポーネントを編集可能</b> が選択されたグループのユーザはこのプロダクトの全ての内容
+(コンポーネント、マイルストーン、バージョン)
+を編集することができます。
+</p>
+<p>
+<b>承認可能</b> が選択されたグループのユーザはこのプロダクトの [% terms.bugs %]
+を承認することができます。
+</p>
+<p>
+<b>[% terms.Bugs %] を編集可能</b> が選択されたグループのユーザはこのプロダクトの [% terms.bugs %]
+を編集することができます。
+</p>
+<p>
+<b>メンバーの操作</b> と <b>メンバー以外の操作</b> フィールドはそのグループが
+[% terms.bugs %] に対して以下の権限を持つことを示します
+</p>
+
+<table border=1>
+  <tr>
+    <th>
+      メンバーの操作
+    </th>
+    <th>
+      メンバー以外の操作
+    </th>
+    <th>
+      解説
+    </th>
+  </tr>
+  <tr>
+    <td>
+      無関係
+    </td>
+    <td>
+      無関係
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに関連づけられません。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      選択可能
+    </td>
+    <td>
+      無関係
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      このグループのメンバーのユーザはこのグループに [% terms.Bug %] を制限することができます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      選択可能
+    </td>
+    <td>
+      選択可能
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、[% terms.Bug %] を編集する権限を持っていれば、このグループのメンバーではないユーザでも、
+      このグループに制限することができます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      選択可能
+    </td>
+    <td>
+      標準で選択
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、[% terms.Bug %] を編集する権限を持っていれば、このグループのメンバーではないユーザでも、
+      このグループに制限することができます。
+      このグループのメンバーではないユーザは作成時に標準でこの [% terms.bugs %] をこのグループに制限します。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      選択可能
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      このグループのメンバーではないユーザが [% terms.Bug %] をこのプロダクトに登録する場合、
+      その [% terms.abug %] はこのグループに強制的に制限されます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      標準で選択
+    </td>
+    <td>
+      無関係
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、作成時には標準で制限されます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      標準で選択
+    </td>
+    <td>
+      標準で選択
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、作成時には標準で制限されます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      このグループのメンバー以外のユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      また、このグループのメンバー以外が作成時にも標準で制限されます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      標準で選択
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されることができます。
+      また、作成時には標準で制限されます。
+      このグループのメンバーのユーザは [% terms.Bugs %] をこのグループに制限することができます。
+      このグループのメンバーではないユーザが [% terms.Bug %] をこのプロダクトに登録する場合、
+      その [% terms.abug %] はこのグループに強制的に制限されます。
+    </td>
+  </tr>
+  <tr>
+    <td>
+      強制
+    </td>
+    <td>
+      強制
+    </td>
+    <td>
+      このプロダクトの [% terms.Bugs %] はこのグループに制限されます。
+      ユーザには選択できません。
+    </td>
+  </tr>
+</table>
+<p>
+上の表は <b>メンバーの操作</b> と <b>メンバー以外の操作</b>
+フィールドの可能な組み合わせの全てであることに注意してください。
+ここにリストされていない組み合わせ (例えば、強制/無関係 や 標準で選択/選択可能 等)
+で変更しようとしてもエラーとなります。
+</p>
+[% PROCESS global/footer.html.tmpl %]
+

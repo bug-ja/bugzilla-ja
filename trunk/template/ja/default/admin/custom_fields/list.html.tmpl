@@ -1,0 +1,104 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frédéric Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # custom_fields: a list of Bugzilla::Field objects, representing custom fields.
+  #%]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% PROCESS global/header.html.tmpl
+  title = "カスタムフィールドの一覧"
+  doc_section = "custom-fields.html"
+%]
+
+[% delete_contentlink = BLOCK %]editfields.cgi?action=del&amp;name=%%name%%[% END %]
+
+[% columns = [
+     {
+       name => "name"
+       heading => "カスタムフィールドを編集"
+       contentlink => "editfields.cgi?action=edit&amp;name=%%name%%"
+     },
+     {
+       name => "description"
+       heading => "説明"
+     },
+     {
+       name => "sortkey"
+       heading => "ソート順"
+     },
+     {
+       name => "type"
+       heading => "型"
+     },
+     {
+       name => "enter_bug"
+       heading => "$terms.bug 作成時に設定可能"
+     },
+     {
+       name => "mailhead"
+       heading => "$terms.bug 作成時に $terms.bug メールに表示"
+     },
+     {
+       name => "obsolete"
+       heading => "用済み"
+     },
+     {
+       name => "action"
+       heading => "操作"
+       content => ""
+     }
+   ]
+%]
+
+[% USE Bugzilla %]
+[% custom_fields = Bugzilla.get_fields({ custom => 1 }) %]
+
+[%# We want to display the type name of fields, not their type ID. %]
+[% overrides.type = [] %]
+
+[% FOREACH field_type = field_types.keys %]
+  [% overrides.type.push({
+       match_value => field_type
+       match_field => 'type'
+       override_content => 1
+       content => field_types.${field_type}
+    })
+  %]
+[% END %]
+
+
+[% overrides.action = [ {
+     match_value => 1
+     match_field => 'obsolete'
+     override_content => 1
+     content => "削除"
+     override_contentlink => 1
+     contentlink => delete_contentlink
+   } ]
+%] 
+
+[% PROCESS admin/table.html.tmpl
+     columns = columns
+     overrides = overrides
+     data = custom_fields
+%]
+
+<p>
+  <a href="editfields.cgi?action=add">カスタムフィールドを追加</a>
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

@@ -1,0 +1,118 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Marc Schumann <wurblzap@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  #
+  # listselectionvalues: selection values to recreate the current user list.
+  # editusers:           is viewing user member of editusers?
+  # users:               list of user information (id, login_name, realname,
+  #                      disabledtext).
+  #%]
+
+[% PROCESS global/header.html.tmpl
+  title = "ユーザを選択してください"
+  style_urls = ['skins/standard/editusers.css']
+  doc_section = "useradmin.html"
+%]
+
+[% PROCESS admin/users/listselectvars.html.tmpl
+  listselectionvalues = listselectionvalues
+%]
+
+[% listselectionurlparams = INCLUDE listselectionurlparams %]
+
+[% columns =
+  [{name               => 'login_name'
+    heading            => 'ユーザを編集'
+    contentlink        => 'editusers.cgi?action=edit&amp;userid=%%userid%%' _
+                          listselectionurlparams
+   }
+   {name               => 'realname'
+    heading            => '名前'
+   }
+   {heading            => 'アカウントの履歴'
+    content            => '表示'
+    contentlink        => 'editusers.cgi?action=activity' _
+                                  '&amp;userid=%%userid%%' _
+                                  listselectionurlparams
+   }
+  ]
+%]
+
+[% IF Param('allowuserdeletion') && editusers %]
+  [% columns.push({heading     => '操作'
+                   content     => '削除'
+                   contentlink => 'editusers.cgi?action=del' _
+                                  '&amp;userid=%%userid%%' _
+                                  listselectionurlparams
+                  }
+                 )
+  %]
+[% END %]
+
+[%# Disabled users are crossed out. Missing realnames are noticed in red. %]
+[% overrides.login_name = [] %]
+[% overrides.realname = [] %]
+
+[% FOREACH thisuser = users %]
+  [% IF !thisuser.realname %]
+    [%# We cannot pass one class now and one class later. %]
+    [% SET classes = (thisuser.disabledtext ? "bz_inactive missing" : "missing") %]
+    [% overrides.realname.push({
+        match_value      => "$thisuser.login_name"
+        match_field      => 'login_name'
+        content          => "missing"
+        override_content => 1
+        class            => "$classes"
+        override_class   => 1 })
+    %]
+  [% END %]
+
+  [% IF thisuser.disabledtext %]
+    [% overrides.login_name.push({
+        match_value    => "$thisuser.login_name"
+        match_field    => 'login_name'
+        class          => "bz_inactive"
+        override_class => 1 })
+    %]
+
+    [% overrides.realname.push({
+        match_value    => "$thisuser.login_name"
+        match_field    => 'login_name'
+        class          => "bz_inactive"
+        override_class => 1 })
+    %]
+  [% END %]
+[% END %]
+
+<p>[% users.size %] 人のユーザが見つかりました。</p>
+
+[% PROCESS admin/table.html.tmpl
+  columns = columns
+  data    = users
+  overrides = overrides
+%]
+
+<p>
+  ユーザを編集する以外に、
+  <a href="editusers.cgi">他のユーザを検索</a>
+  [% IF editusers %]
+    したり、
+    <a href="editusers.cgi?action=add[% INCLUDE listselectionurlparams %]">ユーザを追加</a>
+  [% END %]
+  することができます。
+</p>
+
+[% PROCESS global/footer.html.tmpl %]

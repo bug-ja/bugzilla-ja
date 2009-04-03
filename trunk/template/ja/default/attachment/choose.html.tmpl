@@ -1,0 +1,43 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gavin Shelley <bugzilla@chimpychompy.org>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% PROCESS global/header.html.tmpl
+   title = "添付の表示",
+   onload = "document.forms['choose-id'].id.focus()"
+ %]
+
+<form name="choose-id" method="get" action="attachment.cgi">
+  <p>以下に ID を入力して添付にアクセスします。</p>
+  <p>添付 ID: <input name="id" size="6">
+  <button name="action" value="edit" id="edit">詳細</button>
+  <button name="action" value="view" id="view">見る</button>
+  </p>
+</form>
+
+<form method="get" action="show_bug.cgi">
+  <p>もしくは、[% terms.bug %] 報告に関連した添付のリストを表示します。</p>
+  <p>[% terms.Bug %] ID: <input name="id" size="6">
+  <input type="submit" name="action" value="表示" id="action">
+  </p>
+</form>
+
+[% PROCESS global/footer.html.tmpl %]

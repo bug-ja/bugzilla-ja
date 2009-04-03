@@ -1,0 +1,88 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  # none
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+[% title = BLOCK %][% terms.Bugzilla %] へようこそ[% END %]
+
+[% PROCESS global/header.html.tmpl
+   title = title
+   header_addl_info = "バージョン $constants.BUGZILLA_VERSION"
+   style_urls = [ 'skins/standard/index.css' ]
+%]
+
+<div id="welcome-admin">
+  <p>ようこそ [% user.identity FILTER html %] さん</p>
+
+  <p>この画面は、コアとなるパラメータが設定されていないために表示されています。
+  この画面の目的は、あなたのインストールでを正常に完了するために必要とされる、
+  最後の手順についてお知らせすることです。</p>
+
+  <p>管理者アカウントでは、このページの最下部にある<a href="admin.cgi">管理</a>
+  リンクからすべての管理ページにアクセスできます。このリンクはいつも、
+  そしてすべてのページに表示されています。このページの中でも、少なくても
+  <a href="editparams.cgi">パラメータ</a> ページにアクセスし、
+  以下のようなこのサイトで重要なパラメータのすべてを設定する必要があります。</p>
+
+  <ul>
+    <li><a href="editparams.cgi?section=core#maintainer">maintainer</a>, 
+    異常動作の時にメンテナンスを行う担当者の連絡先です。</li>
+
+    <li><a href="editparams.cgi?section=core#urlbase">urlbase</a>, 
+    このサイトの URL で、メールの URL 表示などで利用されます。
+    (あなたがこの画面を見ている理由のひとつで、このパラメータが設定されなければ、
+    この画面を何度も見ることになります。)</li>
+
+    <li><a href="editparams.cgi?section=core#cookiepath">cookiepath</a> 
+    このサイトのクッキーを正しくブラウザに取り扱わせるために重要です。</li>
+
+    <li><a href="editparams.cgi?section=core#utf8">utf8</a> 
+    を設定すると、すべての文字列が UTF-8 として取り扱われます。
+    (このパラメータは有効にしておくことを強く推奨します。)</li>
+  </ul>
+
+  <p>次のパラメータも重要になりえます:</p>
+
+  <ul>
+    <li><a href="editparams.cgi?section=auth#requirelogin">requirelogin</a>, 
+    有効にすると、アカウントをもっていないユーザからサイトを保護できます。
+    言い換えると、有効なアカウントで認証されていないユーザは、
+    まったくデータを見ることができなくなります。
+    データを保護しておきたい場合にこの機能が有用です。</li>
+
+    <li><a href="editparams.cgi?section=auth#createemailregexp">createemailregexp</a>
+    は、このサイトでアカウントを作成可能なユーザを定義します。".*" (既定値) に設定すると、
+    どのメールアドレスでも利用可能になります。"@mycompany.com$" に設定すると、
+    @mycompany.com にアカウントのあるユーザのみが作成可能になります。空白にすると、
+    ユーザは自分でアカウントを作成できず、管理者のみが作成可能となります。
+    このサイトを保護したい場合、このパラメータを既定値以外に変更すべきです。</li>
+
+    <li><a href="editparams.cgi?section=mta#mail_delivery_method">mail_delivery_method</a>
+    は、sendmail や SMTP といった、メールを送信する方式を設定します。
+    メールを利用する場合、このパラメータを正しく設定する必要があります。</li>
+  </ul>
+
+  <p>
+    これらすべてを設定した後、[% terms.Bugzilla %] のほかのパラメータを同時にじっくり調べ、
+    パラメータが何を設定するものかと、
+    あなたのサイトで変更すべきパラメータがどれかを把握することを強く推奨します。
+  </p>
+</div>
+
+[% PROCESS global/footer.html.tmpl %]

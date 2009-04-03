@@ -1,0 +1,54 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Joel Peshkin <bugreport@peshkin.net>
+  #
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+[% title = BLOCK %]
+  プロダクト '[%- product.name FILTER html %]' のグループによる制限を確認してください
+[% END %]
+
+[% PROCESS global/header.html.tmpl title = title %]
+[% FOREACH group = mandatory_groups %]
+<P>
+グループ '[% group.name FILTER html %]' はグループが新たに制限を加えるため、[% group.count %] 件の [%+ terms.bugs %] が更新されます。
+[% END %]
+
+[% FOREACH group = na_groups %]
+<P>
+グループ '[% group.name FILTER html %]' はグループの制限が削除されるため、[% group.count %] 件の [% terms.bugs %] が更新されます。
+[% END %]
+<form action="editproducts.cgi" method="post" >
+
+  [% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
+
+  <br>
+     上記の内容を含む変更を行うのであれば "続行" をクリックしてください。
+     もし、この変更を行いたくないのであれば、"戻る" を使って前のページに戻ってください。
+  <p>
+    <input type="hidden" name="confirmed" value="confirmed">
+    <input type="submit" id="update" value="続行">
+  </p>
+
+</form>
+
+
+[% PROCESS global/footer.html.tmpl %]
+
+

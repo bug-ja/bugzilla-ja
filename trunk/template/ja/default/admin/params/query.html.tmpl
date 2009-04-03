@@ -1,0 +1,57 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "既定のクエリ"
+   desc = "クエリと $terms.bug リストの既定値"
+%]
+
+[% param_descs = {
+  quip_list_entry_control => "quip リストに追加するための権限の設定です。
+                              <ul>
+                                <li>
+                                  open - ユーザは自由に追加でき、すぐに表示されるようになります。
+                                </li>
+                                <li>
+                                  moderated - quip を追加できますが、管理者が有効にしなければなりません。
+                                </li>
+                                <li>
+                                  closed - quip への新規追加はできません。
+                                </li>
+                              </ul>",
+
+  mostfreqthreshold => "$terms.abug の重複がこの数以上であれば、" _
+                       "<a href=\"duplicates.cgi\">最近のよく報告される $terms.bugs ページ</a>" _
+                       "に表示されます。もし、巨大なデータベースでこのページを表示するのに時間が" _
+                       "かかるようならば、数を増やしてください。",
+
+  mybugstemplate => "'わたしの $terms.bug' リンクが指す URL に利用されます。" _
+                    "%userid% はユーザのログイン名に置換されます。",
+
+  defaultquery => "高度な検索ページを表示したときの初期表示の検索内容です。" _
+                  "URL パラメータ形式ですので読みにくいですがご了承を !",
+
+  quicksearch_comment_cutoff => "簡易検索で利用できる検索語の最大数です。" _
+                                "QuickSearch へのクエリがこれ以上の語を含む場合、" _
+                                "コメントは検索対象から外れます。",
+
+  specific_search_allow_empty_words => "空の単語リストで 'バグの表示' から検索を許可するか" _
+                                       "どうか。" }
+%]

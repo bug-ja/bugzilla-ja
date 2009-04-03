@@ -1,0 +1,55 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "LDAP"
+   desc = "LDAP を認証方法として選択する前にここを設定してください"
+%]
+
+[% param_descs = {
+  LDAPserver => "LDAP サーバ名 (とそのオプションの指定) " _
+                "(e.g. ldap.company.com, or ldap.company.com:portnum) です。" _
+                "以下のような URI 形式も利用可能です。"_
+                "ldaps://ldap.company.com (暗号化接続)、" _
+                "ldapi://%2fvar%2flib%2fldap_sock (socket でローカル接続)" _
+                "複数のホスト名や URI をカンマ区切りで指定できます。" _
+                "最初に接続できるまで順に試されます。",
+
+  LDAPstarttls => "サーバへの LDAP 接続が完了したあとに暗号化通信に移行するかどうか。",
+
+  LDAPbinddn => "LDAP サーバが匿名接続でなく binddn やパスワードを要求する場合、" _
+                "ここに入力してください。" _
+                "(例 cn=default,cn=user:password)" _
+                "通常の匿名接続の場合は空白のままにしてください。",
+
+  LDAPBaseDN => "ユーザを認証する際の BaseDN です。" _
+                "(例 ou=People,o=Company).",
+
+  LDAPuidattribute => "ユーザのログイン名が格納されている属性名です。",
+
+  LDAPmailattribute => "$terms.Bugzilla のユーザ名として利用される、" _
+                       "ユーザのメールアドレスが格納されている属性名です。" _
+                       "このパラメータが空の場合、$terms.Bugzilla は LDAP ユーザ名" _
+                       "を $terms.Bugzilla ユーザ名として利用します。" _
+                       "この場合、\"emailsuffix\" パラメータも設定する必要があるでしょう。",
+
+  LDAPfilter => "有効なユーザリストをフィルタリングするためのフィルタ指定子で、" _
+                "<tt>LDAPuidattribute</tt> と AND でフィルタが行われます。" }
+%]

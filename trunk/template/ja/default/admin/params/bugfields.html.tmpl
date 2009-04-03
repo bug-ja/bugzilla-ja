@@ -1,0 +1,57 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+[%
+   title = "$terms.Bug フィールド"
+   desc = "表示したいフィールドの選択"
+%]
+
+[% param_descs = {
+  useclassification => "有効なら、$terms.Bugzilla はプロダクトを特定の classification " _
+                       "と紐付けます。'editclassification' 権限がなければ、" _
+                       "classification を編集することはできません。",
+
+  usetargetmilestone => "ターゲットマイルストーンを利用しますか ?",
+
+  useqacontact => "QA コンタクトフィールドを利用しますか ?",
+
+  usestatuswhiteboard => "ステータスホワイトボードを利用しますか ?",
+
+  usevotes => "ユーザが ${terms.bugs} に投票できるようにしますか ?" _
+              "これが有効に働くには、<a href=\"editproducts.cgi\">プロダクトの設定で</a>" _
+              "プロダクトで許可される最大投票数を 0 でない値に変更する必要があります。",
+
+  usebugaliases => "$terms.bug エイリアスを利用しますか。参照可能な覚えやすい名前を" _
+                   "$terms.bugs につけることができるようになります。",
+
+  defaultpriority => "新規 $terms.bugs における既定の重要度",
+
+  defaultseverity => "新規 $terms.bugs における既定の深刻度",
+
+  defaultplatform => "$terms.bug 入力フォームで既定値となるプラットフォームの値です。" _
+                     "空白にすると、$terms.Bugzilla はブラウザの情報を元に既定の" _
+                     "プラットフォームの値を決定します。",
+
+  defaultopsys => "$terms.bug 入力フォームで既定値となる OS の値です。<br>" _
+                  "空白にすると、$terms.Bugzilla はブラウザの情報を元に既定の" _
+                  "OSの値を決定します。",
+}
+
+%]
