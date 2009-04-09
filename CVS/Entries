@@ -27,10 +27,7 @@
 /editusers.cgi/1.153/Sun Jan 25 18:49:30 2009//
 /editvalues.cgi/1.38/Fri Nov  7 11:34:40 2008//
 /editversions.cgi/1.58/Sun Jan 27 23:14:14 2008//
-/editwhines.cgi/1.23/Wed Aug 27 23:26:14 2008//
 /editworkflow.cgi/1.6/Wed Jul  2 19:10:18 2008//
-/email_in.pl/1.23/Thu Feb 26 02:06:14 2009//
-/enter_bug.cgi/1.169/Sun Feb  8 19:42:20 2009//
 /importxml.pl/1.90/Thu Feb 19 22:50:04 2009//
 /index.cgi/1.28/Sun Mar  1 23:42:52 2009//
 /install-module.pl/1.3/Mon Aug 18 23:27:50 2008//
@@ -58,11 +55,9 @@
 /sidebar.cgi/1.19/Fri Oct 19 06:46:12 2007//
 /summarize_time.cgi/1.24/Sun Jun 29 21:57:54 2008//
 /testagent.cgi/1.3/Sun Feb 11 00:12:24 2007//
-/testserver.pl/1.20/Thu Feb 12 00:46:34 2009//
 /token.cgi/1.60/Thu Jan  8 16:09:46 2009//
 /userprefs.cgi/1.126/Mon Feb  2 19:21:10 2009//
 /votes.cgi/1.57/Thu Jan 29 21:22:20 2009//
-/whine.pl/1.38/Sun Jan 25 18:49:30 2009//
 /whineatnews.pl/1.31/Wed Apr  2 17:42:26 2008//
 /xml.cgi/1.14/Fri Oct 19 06:46:12 2007//
 D/Bugzilla////
@@ -81,3 +76,8 @@ D/template////
 /jsonrpc.cgi/1.1/Tue Mar 31 06:37:53 2009//
 /sanitycheck.cgi/1.144/Thu Apr  2 03:10:06 2009//
 /xmlrpc.cgi/1.12/Thu Apr  2 03:10:07 2009//
+/editwhines.cgi/1.24/Mon Apr  6 23:42:04 2009//
+/email_in.pl/1.24/Mon Apr  6 23:42:05 2009//
+/enter_bug.cgi/1.170/Mon Apr  6 23:42:05 2009//
+/testserver.pl/1.21/Mon Apr  6 23:42:05 2009//
+/whine.pl/1.39/Mon Apr  6 23:42:06 2009//
