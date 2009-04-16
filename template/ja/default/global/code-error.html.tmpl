@@ -47,6 +47,14 @@
     添付 #[% attach_id FILTER html %] ([% description FILTER html %]) 
     はすでに用済みにされています。
 
+  [% ELSIF error == "attachment_local_storage_disabled" %]
+    [% title = "ローカルへの保存は無効です" %]
+    添付を (サーバ) ローカルに保存することはできません。この機能は無効化されています。
+
+  [% ELSIF error == "attachment_url_disabled" %]
+    [% title = "添付に URL は利用できません" %]
+    URL を添付することはできません。この機能は無効化されています。
+
   [% ELSIF error == "auth_invalid_email" %]
     [% title = "無効なメールアドレス" %]
     あなたのアカウントの作成もしくは更新の際に送信されたメールアドレス

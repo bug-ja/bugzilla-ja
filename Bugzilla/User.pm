@@ -50,8 +50,9 @@ use Bugzilla::Classification;
 use Bugzilla::Field;
 use Bugzilla::Group;
 
-use Scalar::Util qw(blessed);
 use DateTime::TimeZone;
+use Scalar::Util qw(blessed);
+use Storable qw(dclone);
 
 use base qw(Bugzilla::Object Exporter);
 @Bugzilla::User::EXPORT = qw(is_available_username
@@ -133,6 +134,18 @@ sub new {
     return $user unless $param;
 
     return $class->SUPER::new(@_);
+}
+
+sub super_user {
+    my $invocant = shift;
+    my $class = ref($invocant) || $invocant;
+    my ($param) = @_;
+
+    my $user = dclone(DEFAULT_USER);
+    $user->{groups} = [Bugzilla::Group->get_all];
+    $user->{bless_groups} = [Bugzilla::Group->get_all];
+    bless $user, $class;
+    return $user;
 }
 
 sub update {
@@ -1031,7 +1044,6 @@ sub match {
                       join(', ', (-1, @{$user->visible_groups_inherited})) . ") ";
         }
         $query    .= " AND disabledtext = '' " if $exclude_disabled;
-        $query    .= " ORDER BY login_name ";
         $query    .= $dbh->sql_limit($limit) if $limit;
 
         # Execute the query, retrieve the results, and make them into
@@ -1067,9 +1079,7 @@ sub match {
                 join(', ', (-1, @{$user->visible_groups_inherited})) . ") ";
         }
         $query     .= " AND disabledtext = '' " if $exclude_disabled;
-        $query    .= " ORDER BY login_name ";
         $query     .= $dbh->sql_limit($limit) if $limit;
-
         my $user_ids = $dbh->selectcol_arrayref($query, undef, ($str, $str));
         @users = @{Bugzilla::User->new_from_list($user_ids)};
     }
@@ -1764,6 +1774,18 @@ confirmation screen.
 =back
 
 =head1 METHODS
+
+=head2 Constructors
+
+=over
+
+=item C<super_user>
+
+Returns a user who is in all groups, but who does not really exist in the
+database. Used for non-web scripts like L<checksetup> that need to make 
+database changes and so on.
+
+=back
 
 =head2 Saved and Shared Queries
 

@@ -79,6 +79,7 @@ use File::Basename;
 
     DEFAULT_COLUMN_LIST
     DEFAULT_QUERY_NAME
+    DEFAULT_MILESTONE
 
     QUERY_LIST
     LIST_OF_BUGS
@@ -148,6 +149,7 @@ use File::Basename;
     MAX_LOGINCOOKIE_AGE
 
     SAFE_PROTOCOLS
+    LEGAL_CONTENT_TYPES
 
     MIN_SMALLINT
     MAX_SMALLINT
@@ -236,18 +238,6 @@ use constant LOGOUT_ALL => 0;
 use constant LOGOUT_CURRENT => 1;
 use constant LOGOUT_KEEP_CURRENT => 2;
 
-use constant contenttypes =>
-  {
-   "html"=> "text/html" , 
-   "rdf" => "application/rdf+xml" , 
-   "atom"=> "application/atom+xml" ,
-   "xml" => "application/xml" , 
-   "js"  => "application/x-javascript" , 
-   "csv" => "text/csv" ,
-   "png" => "image/png" ,
-   "ics" => "text/calendar" ,
-  };
-
 use constant GRANT_DIRECT => 0;
 use constant GRANT_REGEXP => 2;
 
@@ -267,6 +257,9 @@ use constant DEFAULT_COLUMN_LIST => (
 # Used by query.cgi and buglist.cgi as the named-query name
 # for the default settings.
 use constant DEFAULT_QUERY_NAME => '(Default query)';
+
+# The default "defaultmilestone" created for products.
+use constant DEFAULT_MILESTONE => '---';
 
 # The possible types for saved searches.
 use constant QUERY_LIST => 0;
@@ -376,6 +369,22 @@ use constant MAX_LOGINCOOKIE_AGE => 30;
 use constant SAFE_PROTOCOLS => ('afs', 'cid', 'ftp', 'gopher', 'http', 'https',
                                 'irc', 'mid', 'news', 'nntp', 'prospero', 'telnet',
                                 'view-source', 'wais');
+
+# Valid MIME types for attachments.
+use constant LEGAL_CONTENT_TYPES => ('application', 'audio', 'image', 'message',
+                                     'model', 'multipart', 'text', 'video');
+
+use constant contenttypes =>
+  {
+   "html"=> "text/html" ,
+   "rdf" => "application/rdf+xml" ,
+   "atom"=> "application/atom+xml" ,
+   "xml" => "application/xml" ,
+   "js"  => "application/x-javascript" ,
+   "csv" => "text/csv" ,
+   "png" => "image/png" ,
+   "ics" => "text/calendar" ,
+  };
 
 # Usage modes. Default USAGE_MODE_BROWSER. Use with Bugzilla->usage_mode.
 use constant USAGE_MODE_BROWSER    => 0;

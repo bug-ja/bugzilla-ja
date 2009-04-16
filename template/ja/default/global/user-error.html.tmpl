@@ -423,6 +423,11 @@
     [% title = BLOCK %] [% jawords.attachment FILTER html %] の削除はできません [% END %]
     この [% jawords.site FILTER html %] では [% jawords.attachment FILTER html %] は削除できません。
 
+  [% ELSIF error == "attachment_illegal_url" %]
+    [% title = "無効な添付 URL" %]
+    <em>[% url FILTER html %]</em> は有効な URL 形式ではありません。
+    http:// https:// ftp:// で始まる必要があります。
+
   [% ELSIF error == "attachment_removed" %]
     [% title = BLOCK %] [% jawords.attachment FILTER html %] は削除されました [% END %]
     削除しようとした [% jawords.attachment FILTER html %] は既に削除されています。
@@ -1096,7 +1101,7 @@
     [% title = BLOCK %] [% jawords.attachment_content_type FILTER html %] が無効です [% END %]
     [% jawords.attachment_content_type FILTER html %] <em>[% contenttype FILTER html %]</em> は無効です。
     [% jawords.attachment_content_type FILTER html %] は <em>foo/bar</em> の形式で、<em>foo</em> には
-    <em>application, audio, image, message, model, multipart, text, video</em>
+    <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>.
     のいずれかでなくてはいけません。
     
   [% ELSIF error == "invalid_context" %]
@@ -1777,10 +1782,6 @@
     [% nb FILTER html %] 件の [%+ terms.bugs %] がこの [% jawords.version FILTER html %] で登録されています。
     これらの [% terms.bugs %] を先に他の [% jawords.version FILTER html %] に変更してから削除してください。
 
-  [% ELSIF error == "version_not_specified" %]
-    [% title = BLOCK %] [% jawords.version FILTER html %] が指定されていません [% END %]
-    [% jawords.version FILTER html %] を編集しようとしましたが、対象の [% jawords.version FILTER html %] が指定されていません。
-
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = BLOCK %] アカウントを削除することはできません [% END %]
     [% admindocslinks = {'useradmin.html' => 'ユーザ管理'} %]
@@ -1816,6 +1817,10 @@
     [% title = BLOCK %] [% jawords.login_name FILTER html %] が一致しませんでした [% END %]
     <tt>[% name FILTER html %]</tt> は登録されていないか、
     あなたのアカウントにこの [% jawords.user FILTER html %] を閲覧する権限がありません。
+
+  [% ELSIF error == "user_not_insider" %]
+    [% title = "このユーザは Insidergroup にいません" %]
+    申し訳ありませんが、あなたはコメントや添付のプライベートフラグを変更できません。
 
   [% ELSIF error == "votes_must_be_nonnegative" %]
     [% title = BLOCK %] 指定された [% jawords.vote_count FILTER html %] が負の数値です [% END %]

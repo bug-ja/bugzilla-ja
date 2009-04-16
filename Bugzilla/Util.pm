@@ -426,6 +426,13 @@ sub format_time {
     # strptime($date) returns an empty array if $date has an invalid date format.
     my @time = strptime($date);
 
+    unless (scalar @time) {
+        # If an unknown timezone is passed (such as MSK, for Moskow), strptime() is
+        # unable to parse the date. We try again, but we first remove the timezone.
+        $date =~ s/\s+\S+$//;
+        @time = strptime($date);
+    }
+
     if (scalar @time) {
         # Fix a bug in strptime() where seconds can be undefined in some cases.
         $time[0] ||= 0;
@@ -438,8 +445,10 @@ sub format_time {
                                 hour   => $time[2],
                                 minute => $time[1],
                                 second => $time[0],
-                                # Use the timezone specified by the server.
-                                time_zone => Bugzilla->local_timezone});
+                                # If importing, use the specified timezone, otherwise 
+                                # use the timezone specified by the server.
+                                time_zone => Bugzilla->local_timezone->offset_as_string($time[6]) 
+                                          || Bugzilla->local_timezone});
 
         # Now display the date using the given timezone,
         # or the user's timezone if none is given.

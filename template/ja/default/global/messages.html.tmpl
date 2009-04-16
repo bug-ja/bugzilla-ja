@@ -785,7 +785,13 @@
 
   [% ELSIF message_tag == "version_updated" %]
     [% title = "バージョン更新完了" %]
-    バージョンが <em>[% version.name FILTER html %]</em> に変更されました。
+    [% IF changes.size %]
+      [% IF changes.value.defined %]
+        バージョン名が <em>[% version.name FILTER html %]</em> に更新されました。
+      [% END %]
+    [% ELSE %]
+      バージョン <em>[% version.name FILTER html %]</em> は更新されませんでした。
+    [% END %]
 
   [% ELSIF message_tag == "workflow_updated" %]
     ワークフローが更新されました。
