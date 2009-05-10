@@ -24,10 +24,9 @@ use warnings;
 
 # MTAs may call this script from any directory, but it should always
 # run from this one so that it can find its modules.
-BEGIN {
-    require File::Basename;
-    chdir(File::Basename::dirname($0)); 
-}
+use Cwd qw(abs_path);
+use File::Basename qw(dirname);
+BEGIN { chdir dirname(abs_path($0)); }
 
 use lib qw(. lib);
 
@@ -75,7 +74,7 @@ sub parse_mail {
     my ($reporter) = Email::Address->parse($input_email->header('From'));
     $fields{'reporter'} = $reporter->address;
     my $summary = $input_email->header('Subject');
-    if ($summary =~ /\[Bug (\d+)\](.*)/i) {
+    if ($summary =~ /\[\S+ (\d+)\](.*)/i) {
         $fields{'bug_id'} = $1;
         $summary = trim($2);
     }
