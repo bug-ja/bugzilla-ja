@@ -1525,7 +1525,7 @@
     </em> フィールドでは無効な値です。負の数を設定できません。
 
   [% ELSIF error == "product_name_already_in_use" %]
-    [% title = BLOCK %] 指定された [% jawords.product_name FILTER html %] は既に利用されています [% END %]
+    [% title = BLOCK %] 指定された [% jawords.product_name FILTER html %] は既に存在しています [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
     [% jawords.product_name FILTER html %] '[% product FILTER html %]' は既に存在しています。
 
