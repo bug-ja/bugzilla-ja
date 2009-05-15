@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" [
     <!ENTITY % myents SYSTEM "bugzilla.ent">
     %myents;
@@ -70,7 +70,7 @@
 
 -->
 
-<book id="index">
+<book id="index" lang="ja">
 
 <!-- Header -->
 
