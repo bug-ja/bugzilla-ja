@@ -3,13 +3,13 @@
 <!-- $Id: about.xml,v 1.26 2008/04/04 06:48:18 wurblzap%gmail.com Exp $ -->
 
 <chapter id="about">
-<title>About This Guide</title>
+<title>このガイドについて</title>
 
   <section id="copyright">
-    <title>Copyright Information</title>
+    <title>著作権表示</title>
 
-    <para>This document is copyright (c) 2000-&current-year; by the various
-    Bugzilla contributors who wrote it.</para>
+    <para>この文書の著作権は (c) 2000-&current-year; この文書に貢献した全ての
+    Bugzilla 貢献者にあります。</para>
     
     <blockquote>
       <para>

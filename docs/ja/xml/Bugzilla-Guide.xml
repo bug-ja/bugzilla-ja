@@ -75,43 +75,43 @@
 <!-- Header -->
 
   <bookinfo>
-    <title>The Bugzilla Guide - &bz-ver; 
-    <!-- BZ-DEVEL -->Development <!-- /BZ-DEVEL -->
-    Release</title>
+    <title>Bugzilla ガイド - &bz-ver; 
+    <!-- BZ-DEVEL -->開発版<!-- /BZ-DEVEL -->
+    リリース向け</title>
 
     <authorgroup>
-      <corpauthor>The Bugzilla Team</corpauthor>
+      <corpauthor>Bugzilla チーム</corpauthor>
     </authorgroup>
 
     <pubdate>&bz-date;</pubdate>
 
     <abstract>
       <para>
-	      This is the documentation for Bugzilla, a 
-	      bug-tracking system from mozilla.org.
-	      Bugzilla is an enterprise-class piece of software
-	      that tracks millions of bugs and issues for hundreds of
-	      organizations around the world.
+          これは、mozilla.org で開発されているバグトラッキングシステム
+          Bugzilla のドキュメントです。
+          Bugzilla は数百万以上のバグや問題を追跡するために、
+          世界中の数百もの組織で利用されている、
+          企業規模で利用可能なシステムです。
       </para>
 
       <para>
-        The most current version of this document can always be found on the
+        このドキュメントの最新版は、常に
         <ulink url="http://www.bugzilla.org/docs/">Bugzilla 
-        Documentation Page</ulink>.
+        ドキュメントページ</ulink> (英語版)で見ることができます。
       </para>
 
     </abstract>
 
     <keywordset>
       <keyword>Bugzilla</keyword>
-      <keyword>Guide</keyword>
-      <keyword>installation</keyword>
+      <keyword>ガイド</keyword>
+      <keyword>インストール</keyword>
       <keyword>FAQ</keyword>
-      <keyword>administration</keyword>
-      <keyword>integration</keyword>
+      <keyword>管理</keyword>
+      <keyword>統合</keyword>
       <keyword>MySQL</keyword>
       <keyword>Mozilla</keyword>
-      <keyword>webtools</keyword>
+      <keyword>ウェブソフトウェア</keyword>
     </keywordset>
   </bookinfo>
 

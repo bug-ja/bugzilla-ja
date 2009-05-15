@@ -1,31 +1,29 @@
 <!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
 <chapter id="administration">
-  <title>Administering Bugzilla</title>
+  <title>Bugzilla 管理</title>
 
   <section id="parameters">
-    <title>Bugzilla Configuration</title>
+    <title>Bugzilla の設定</title>
 
     <para>
-      Bugzilla is configured by changing various parameters, accessed
-      from the "Parameters" link in the Administration page (the 
-      Administration page can be found by clicking the "Administration"
-      link in the footer). The parameters are divided into several categories,
-      accessed via the menu on the left. Following is a description of the 
-      different categories and important parameters within those categories. 
+      Bugzilla は、管理者ページ (管理者ページはフッタの "管理" 
+      リンクをクリックすることで表示可能です。) にある "パラメータ" 
+      リンクからアクセスできる、さまざまなパラメータを変更することで設定可能です。
+      パラメータはいくつかのカテゴリに分割されており、左側のメニューから表示できます。
+      以下にそれぞれのカテゴリの説明とそれらの中で重要なパラメータについて解説します。
     </para>
 
       <section id="param-requiredsettings">
-        <title>Required Settings</title>
+        <title>必須の設定</title>
 
         <para>
-          The core required parameters for any Bugzilla installation are set
-          here. These parameters must be set before a new Bugzilla installation
-          can be used. Administrators should review this list before 
-          deploying a new Bugzilla installation.
+          全ての Bugzilla サイトで必須のパラメータをここで設定します。
+          新規 Bugzilla インストールを利用する前に設定する必要があります。
+          管理者はサイトを展開する前にこのリストを確認することをお勧めします。
         </para>
 
         <indexterm>
-          <primary>checklist</primary>
+          <primary>チェックリスト</primary>
         </indexterm>
 
         <variablelist>
@@ -35,10 +33,9 @@
               maintainer
             </term>
             <listitem>
-              <para> 
-              Email address of the person 
-              responsible for maintaining this Bugzilla installation.
-              The address need not be that of a valid Bugzilla account.
+              <para>
+              Bugzilla サイトをメンテナンスする責任者のメールアドレス。
+              このアドレスは有効な Bugzilla アカウントである必要はありません。
             </para>
             </listitem>
           </varlistentry>
@@ -49,6 +46,7 @@
             </term>
             <listitem>
               <para>
+                
                 Defines the fully qualified domain name and web 
                 server path to this Bugzilla installation.
               </para>

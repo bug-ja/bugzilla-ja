@@ -1,55 +1,55 @@
 <!-- <!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
 <appendix id="patches" xreflabel="Useful Patches and Utilities for Bugzilla">
-  <title>Contrib</title>
+  <title>寄贈</title>
 
   <para>
-    There are a number of unofficial Bugzilla add-ons in the 
     <filename class="directory">$BUGZILLA_ROOT/contrib/</filename>
-    directory. This section documents them.
+    ディレクトリにたくさんの非公式の Bugzilla アドオンがあります。
+    この章ではこれらに関して解説します。
   </para>
 
   <section id="cmdline">
-    <title>Command-line Search Interface</title>
+    <title>コマンドライン検索インターフェース</title>
 
     <para>
-      There are a suite of Unix utilities for searching Bugzilla from the 
-      command line. They live in the 
-      <filename class="directory">contrib/cmdline</filename> directory.
-      There are three files - <filename>query.conf</filename>,
-      <filename>buglist</filename> and <filename>bugs</filename>.
+      コマンドラインから Bugzilla を検索可能な Unix ユーティリティです。
+      これらは
+      <filename class="directory">contrib/cmdline</filename> ディレクトリにあります。
+      <filename>query.conf</filename>, <filename>buglist</filename> と 
+      <filename>bugs</filename> の3ファイルで構成されています。
     </para>
 
     <warning>
       <para>
-        These files pre-date the templatization work done as part of the
-        2.16 release, and have not been updated.
+        これらのファイルはテンプレート化が行われる 2.16 リリースより前のもので、
+        まだ更新されていません。
       </para>
     </warning>
     
     <para>
-      <filename>query.conf</filename> contains the mapping from
-      options to field names and comparison types. Quoted option names
-      are <quote>grepped</quote> for, so it should be easy to edit this
-      file. Comments (#) have no effect; you must make sure these lines
-      do not contain any quoted <quote>option</quote>.
+      <filename>query.conf</filename> はオプションをフィールド名や比較方法に
+      対応付けるための情報です。引用付付きの名前は <quote>検索</quote> 用ですので、
+      このファイルは簡単に編集できる必要があります。コメント (#) は無視されます。
+      コメント行には引用付付きの <quote>オプション</quote>
+      を含まないようにする必要があります。
     </para>
 
     <para>
-      <filename>buglist</filename> is a shell script that submits a
-      Bugzilla query and writes the resulting HTML page to stdout.
-      It supports both short options, (such as <quote>-Afoo</quote>
-      or <quote>-Rbar</quote>) and long options (such
-      as <quote>--assignedto=foo</quote> or <quote>--reporter=bar</quote>).
-      If the first character of an option is not <quote>-</quote>, it is
-      treated as if it were prefixed with <quote>--default=</quote>.
+      <filename>buglist</filename> は Bugzilla クエリを実行し、
+      stdout に結果の HTML ページを返すシェルスクリプトです。
+      短い形式のオプション (<quote>-Afoo</quote> や <quote>-Rbar</quote> など) 
+      と長い形式のオプション (<quote>--assignedto=foo</quote> や 
+      <quote>--reporter=bar</quote> など) の両方がサポートされています。
+      オプションの先頭文字が <quote>-</quote> でない場合、
+      <quote>--default=</quote> が先頭についているものと認識されます。
     </para>
 
     <para>
-      The column list is taken from the COLUMNLIST environment variable.
-      This is equivalent to the <quote>Change Columns</quote> option
-      that is available when you list bugs in buglist.cgi. If you have
-      already used Bugzilla, grep for COLUMNLIST in your cookies file
-      to see your current COLUMNLIST setting.
+      カラムリストは COLUMNLIST 環境変数から取得されます。
+      これは、buglist.cgi のバグリストで <quote>Change Columns</quote> 
+      オプションにて利用可能なものと同じです。すでに Bugzilla を利用している場合は、
+      あなたのクッキーを COLUMNLIST で検索して、現在の COLUMNLIST 
+      設定を見ることも可能です。
     </para>
 
     <para>

@@ -1,15 +1,14 @@
 <!-- <!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
 <appendix id="downloadlinks">
-  <title>Software Download Links</title>
+  <title>ソフトウェアダウンロードリンク一覧</title>
 
-  <para>All of these sites are current as of April, 2001. Hopefully they'll
-  stay current for a while.</para>
+  <para>これら全ては2001年4月時点のものです。現在も同じ場所に存在するかはわかりません。</para>
 
-  <para>Apache Web Server: 
+  <para>Apache ウェブサーバ: 
   <ulink url="http://www.apache.org/"/>
 
-  Optional web server for Bugzilla, but recommended because of broad user
-  base and support.</para>
+  Bugzilla で利用可能なウェブサーバの一つだが、
+  幅広く利用されておりサポートされているので推奨される。</para>
 
   <para>Bugzilla: 
   <ulink url="http://www.bugzilla.org/"/>
@@ -27,30 +26,30 @@
   <ulink url="http://www.cpan.org/"/>
   </para>
 
-  <para>DBI Perl module: 
+  <para>DBI Perl モジュール: 
   <ulink url="http://www.cpan.org/modules/by-module/DBI/"/>
   </para>
 
-  <para>MySQL related Perl modules: 
+  <para>MySQL 関係の Perl モジュール: 
   <ulink url="http://www.cpan.org/modules/by-module/Mysql/"/>
   </para>
 
-  <para>TimeDate Perl module collection: 
+  <para>TimeDate Perl モジュール集: 
   <ulink url="http://www.cpan.org/modules/by-module/Date/"/>
   </para>
 
-  <para>GD Perl module: 
+  <para>GD Perl モジュール: 
   <ulink url="http://www.cpan.org/modules/by-module/GD/"/>
 
-  Alternately, you should be able to find the latest version of GD at 
+  もしくは、GD の最新版が次のリンクから入手可能です。
   <ulink url="http://www.boutell.com/gd/"/>
   </para>
 
-  <para>Chart::Base module: 
+  <para>Chart::Base モジュール: 
   <ulink url="http://www.cpan.org/modules/by-module/Chart/"/>
   </para>
 
-  <para>(But remember, Bundle::Bugzilla will install all the modules for you.)
+  <para>(参考: Bundle::Bugzilla により必要なモジュールが全てインストール可能です。)
   </para>
 </appendix>
 

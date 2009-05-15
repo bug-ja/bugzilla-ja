@@ -1,66 +1,66 @@
 <!-- <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
 <section id="conventions">
-  <title>Document Conventions</title>
+  <title>文書中の表記</title>
 
   <indexterm zone="conventions">
-    <primary>conventions</primary>
+    <primary>凡例</primary>
   </indexterm>
 
-  <para>This document uses the following conventions:</para>
+  <para>この文書では以下の表記法が利用されています:</para>
 
   <informaltable frame="none">
     <tgroup cols="2">
       <thead>
         <row>
-          <entry>Descriptions</entry>
+          <entry>意味</entry>
 
-          <entry>Appearance</entry>
+          <entry>表示</entry>
         </row>
       </thead>
 
       <tbody>
         <row>
-          <entry>Caution</entry>
+          <entry>注意</entry>
 
           <entry>
             <caution>
-              <para>Don't run with scissors!</para>
+              <para>はさみを持って走らない!</para>
             </caution>
           </entry>
         </row>
 
         <row>
-          <entry>Hint or Tip</entry>
+          <entry>ヒントやチップス</entry>
 
           <entry>
             <tip>
-              <para>For best results... </para>
+              <para>最適な結果を得るには... </para>
             </tip>
           </entry>
         </row>
 
         <row>
-          <entry>Note</entry>
+          <entry>メモ</entry>
 
           <entry>
             <note>
-              <para>Dear John...</para>
+              <para>Johnへ...</para>
             </note>
           </entry>
         </row>
 
         <row>
-          <entry>Warning</entry>
+          <entry>警告</entry>
 
           <entry>
             <warning>
-              <para>Read this or the cat gets it.</para>
+              <para>これを読んでください。さもなくば猫が取ってしまいます。</para>
             </warning>
           </entry>
         </row>
 
         <row>
-          <entry>File or directory name</entry>
+          <entry>ファイルもしくはディレクトリ名</entry>
 
           <entry>
             <filename>filename</filename>
@@ -68,7 +68,7 @@
         </row>
 
         <row>
-          <entry>Command to be typed</entry>
+          <entry>入力すべきコマンド</entry>
 
           <entry>
             <command>command</command>
@@ -76,7 +76,7 @@
         </row>
 
         <row>
-          <entry>Application name</entry>
+          <entry>アプリケーション名</entry>
 
           <entry>
             <application>application</application>
@@ -85,27 +85,27 @@
 
         <row>
           <entry>
-          Normal user's prompt under bash shell</entry>
+          bash シェルでの一般ユーザのプロンプト</entry>
 
           <entry>bash$</entry>
         </row>
 
         <row>
           <entry>
-          Root user's prompt under bash shell</entry>
+          bash シェルでの管理者ユーザのプロンプト</entry>
 
           <entry>bash#</entry>
         </row>
 
         <row>
           <entry>
-          Normal user's prompt under tcsh shell</entry>
+          tcsh シェルでの一般ユーザのプロンプト</entry>
 
           <entry>tcsh$</entry>
         </row>
 
         <row>
-          <entry>Environment variables</entry>
+          <entry>環境変数</entry>
 
           <entry>
             <envar>VARIABLE</envar>
@@ -113,7 +113,7 @@
         </row>
 
         <row>
-          <entry>Term found in the glossary</entry>
+          <entry>用語集で見つけられる用語</entry>
 
           <entry>
             <glossterm linkend="gloss-bugzilla">Bugzilla</glossterm>
@@ -121,11 +121,11 @@
         </row>
 
         <row>
-          <entry>Code example</entry>
+          <entry>コードサンプル</entry>
 
           <entry>
             <programlisting><sgmltag class="starttag">para</sgmltag>
-Beginning and end of paragraph
+パラグラフの先頭と末尾
 <sgmltag class="endtag">para</sgmltag></programlisting>
           </entry>
         </row>
@@ -134,9 +134,9 @@ Beginning and end of paragraph
   </informaltable>
 
   <para>  
-	  This documentation is maintained in DocBook 4.1.2 XML format.
-    Changes are best submitted as plain text or XML diffs, attached
-    to a bug filed in the &bzg-bugs; component.
+このドキュメントは DocBook 4.1.2 XML 形式で作成されています。
+変更が必要と思われる場合はプレーンテキストか XML の diff 形式で、
+&bzg-bugs; コンポーネントにバグを登録してください。
   </para>
   
 </section>
