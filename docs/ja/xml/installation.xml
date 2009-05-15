@@ -1,10 +1,10 @@
 <!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"> -->
 <!-- $Id: installation.xml,v 1.165 2009/03/02 01:21:57 mkanat%bugzilla.org Exp $ -->
 <chapter id="installing-bugzilla">
-  <title>Installing Bugzilla</title>
+  <title>Bugzilla インストール</title>
 
   <section id="installation">
-    <title>Installation</title>
+    <title>インストール</title>
 
     <note>
       <para>If you just want to <emphasis>use</emphasis> Bugzilla, 

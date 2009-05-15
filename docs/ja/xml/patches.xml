@@ -53,45 +53,45 @@
     </para>
 
     <para>
-      <filename>bugs</filename> is a simple shell script which calls
-      <filename>buglist</filename> and extracts the
-      bug numbers from the output. Adding the prefix
+      <filename>bugs</filename> は単純なシェルスクリプトで、<filename>buglist</filename>
+      を実行し出力からバグ番号を切り出します。バグが見つかったとき、
+      プレフィックス
       <quote>http://bugzilla.mozilla.org/buglist.cgi?bug_id=</quote>
-      turns the bug list into a working link if any bugs are found.
-      Counting bugs is easy. Pipe the results through 
+      を追加するとバグリストに変換できます。
+      バグの数を数えるのも簡単で、
       <command>sed -e 's/,/ /g' | wc | awk '{printf $2 "\n"}'</command>
+      コマンドにパイプ経由で入力するだけです。
     </para>
 
     <para>
-      Akkana Peck says she has good results piping 
-      <filename>buglist</filename> output through 
+      Akkana Peck によると <filename>buglist</filename> の出力を
       <command>w3m -T text/html -dump</command>
+      にパイプすると便利とのことです。
     </para>
 
   </section>
 
   <section id="cmdline-bugmail">
-    <title>Command-line 'Send Unsent Bug-mail' tool</title>
+    <title>コマンドライン '未送信の Bug-mail を送信する' ツール</title>
 
     <para>
-      Within the <filename class="directory">contrib</filename> directory
-      exists a utility with the descriptive (if compact) name
-      of <filename>sendunsentbugmail.pl</filename>. The purpose of this
-      script is, simply, to send out any bug-related mail that should
-      have been sent by now, but for one reason or another has not.
+      <filename class="directory">contrib</filename> ディレクトリには、
+      (短い) 説明的な名前 <filename>sendunsentbugmail.pl</filename>
+      のスクリプトがあります。このスクリプトの目的は単純で、
+      何らかの理由でまだ送信されていないバグ関係のメールを送信するものです。
     </para>
 
     <para>
-      To accomplish this task, <filename>sendunsentbugmail.pl</filename> uses
-      the same mechanism as the <filename>sanitycheck.cgi</filename> script;
-      it scans through the entire database looking for bugs with changes that
-      were made more than 30 minutes ago, but where there is no record of
-      anyone related to that bug having been sent mail. Having compiled a list,
-      it then uses the standard rules to determine who gets mail, and sends it
-      out.
+      このタスクを理解するためには、<filename>sendunsentbugmail.pl</filename> が、
+      <filename>sanitycheck.cgi</filename> スクリプトと同じ機構を利用していることを把握してください。
+      これは、30 分以上前に変更が加えられたにもかかわらず、それに関連するメールが
+      送信された記録がないバグを全データベースから検索します。
+      リストを作成後、通常の誰にメールを送信するか判定するルールを適用し、
+      メールを送信します。
     </para>
 
     <para>
+      スクリプトが実行されると、
       As the script runs, it indicates the bug for which it is currently
       sending mail; when it has finished, it gives a numerical count of how
       many mails were sent and how many people were excluded. (Individual
