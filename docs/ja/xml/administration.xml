@@ -46,15 +46,13 @@
             </term>
             <listitem>
               <para>
-                
-                Defines the fully qualified domain name and web 
-                server path to this Bugzilla installation.
+                Bugzilla サイトの完全修飾ドメイン名とウェブサーバでのパスを指定します。
               </para>
               <para>
-                For example, if the Bugzilla query page is
-                <filename>http://www.foo.com/bugzilla/query.cgi</filename>, 
-                the <quote>urlbase</quote> should be set
-                to <filename>http://www.foo.com/bugzilla/</filename>.
+                たとえば、Bugzilla のクエリページのアドレスが
+                <filename>http://www.foo.com/bugzilla/query.cgi</filename> の場合、
+                <quote>urlbase</quote> は
+                <filename>http://www.foo.com/bugzilla/</filename> と設定すべきです。
               </para>
             </listitem>
           </varlistentry>
@@ -65,15 +63,14 @@
             </term>
             <listitem>
               <para>
-                Defines path to the Bugzilla documentation. This can be a fully
-                qualified domain name, or a path relative to "urlbase".
+                Bugzilla ドキュメントのパスを設定します。完全修飾ドメイン名からか、
+                もしくは "urlbase" からの相対パスが利用可能です。
               </para>
               <para>
-                For example, if the "Bugzilla Configuration" page 
-                of the documentation is
-                <filename>http://www.foo.com/bugzilla/docs/html/parameters.html</filename>, 
-                set the <quote>docs_urlbase</quote>
-                to <filename>http://www.foo.com/bugzilla/docs/html/</filename>.
+                たとえば、ドキュメントの "Bugzilla の設定" ページが
+                <filename>http://www.foo.com/bugzilla/docs/html/parameters.html</filename>
+                の場合、<quote>docs_urlbase</quote> を
+                <filename>http://www.foo.com/bugzilla/docs/html/</filename> に設定してください。
               </para>
             </listitem>
           </varlistentry>
@@ -84,6 +81,7 @@
             </term>
             <listitem>
               <para>
+                
                 Defines the fully qualified domain name and web 
                 server path for HTTPS (SSL) connections to this Bugzilla installation.
               </para>

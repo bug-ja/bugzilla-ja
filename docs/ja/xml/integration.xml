@@ -1,14 +1,14 @@
 <!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook V4.1//EN" > -->
 <!-- Keep these tools listings in alphabetical order please. -MPB -->
 <section id="integration">
-  <title>Integrating Bugzilla with Third-Party Tools</title>
+  <title>サードパーティーのツールを Bugzilla に統合する</title>
 
   <section id="bonsai"
-  xreflabel="Bonsai, the Mozilla automated CVS management system">
+  xreflabel="Bonsai - Mozilla の自動化 CVS 管理システム">
     <title>Bonsai</title>
 
-    <para>Bonsai is a web-based tool for managing 
-    <xref linkend="cvs" />
+    <para>Bonsai は
+    <xref linkend="cvs" /> を管理するためのウェブベースのツールです。
 
     . Using Bonsai, administrators can control open/closed status of trees,
     query a fast relational database back-end for change, branch, and comment

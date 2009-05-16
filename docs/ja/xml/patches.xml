@@ -91,18 +91,16 @@
     </para>
 
     <para>
-      スクリプトが実行されると、
-      As the script runs, it indicates the bug for which it is currently
-      sending mail; when it has finished, it gives a numerical count of how
-      many mails were sent and how many people were excluded. (Individual
-      user names are not recorded or displayed.) If the script produces
-      no output, that means no unsent mail was detected.
+      スクリプトが実行されると、現在メールを送信しているバグを表示します。
+      終了すると、何通メールが送信されて、何人が除外されたかが表示されます。
+      (個別のユーザ名は記録されませんし表示もされません。)
+      スクリプトがなにも表示しなければ、メールが送信されなかったことを示します。
     </para>
 
     <para>
-      <emphasis>Usage</emphasis>: move the sendunsentbugmail.pl script
-      up into the main directory, ensure it has execute permission, and run it
-      from the command line (or from a cron job) with no parameters.
+      <emphasis>利用法</emphasis>: メインのディレクトリに sendunsentbugmail.pl 
+      スクリプトを移動させ、実行許可が付いていることを確認し、
+      コマンドライン (もしくは cron job) からパラメータなしで実行します。
     </para>
   </section>
 
