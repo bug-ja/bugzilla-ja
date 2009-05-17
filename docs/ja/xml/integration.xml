@@ -1,14 +1,14 @@
 <!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook V4.1//EN" > -->
 <!-- Keep these tools listings in alphabetical order please. -MPB -->
 <section id="integration">
-  <title>ƒT[ƒhƒp[ƒeƒB[‚Ìƒc[ƒ‹‚ğ Bugzilla ‚É“‡‚·‚é</title>
+  <title>ã‚µãƒ¼ãƒ‰ãƒ‘ãƒ¼ãƒ†ã‚£ãƒ¼ã®ãƒ„ãƒ¼ãƒ«ã‚’ Bugzilla ã«çµ±åˆã™ã‚‹</title>
 
   <section id="bonsai"
-  xreflabel="Bonsai - Mozilla ‚Ì©“®‰» CVS ŠÇ—ƒVƒXƒeƒ€">
+  xreflabel="Bonsai - Mozilla ã®è‡ªå‹•åŒ– CVS ç®¡ç†ã‚·ã‚¹ãƒ†ãƒ ">
     <title>Bonsai</title>
 
-    <para>Bonsai ‚Í
-    <xref linkend="cvs" /> ‚ğŠÇ—‚·‚é‚½‚ß‚ÌƒEƒFƒuƒx[ƒX‚Ìƒc[ƒ‹‚Å‚·B
+    <para>Bonsai ã¯
+    <xref linkend="cvs" /> ã‚’ç®¡ç†ã™ã‚‹ãŸã‚ã®ã‚¦ã‚§ãƒ–ãƒ™ãƒ¼ã‚¹ã®ãƒ„ãƒ¼ãƒ«ã§ã™ã€‚
 
     . Using Bonsai, administrators can control open/closed status of trees,
     query a fast relational database back-end for change, branch, and comment

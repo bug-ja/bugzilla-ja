@@ -81,15 +81,15 @@
             </term>
             <listitem>
               <para>
-                
-                Defines the fully qualified domain name and web 
-                server path for HTTPS (SSL) connections to this Bugzilla installation.
+                この Bugzilla サイトの HTTPS (SSL) での完全修飾ドメイン名と、
+                ウェブサーバでのパスを指定します。
               </para>
               <para>
-                For example, if the Bugzilla main page is
-                <filename>https://www.foo.com/bugzilla/index.cgi</filename>, 
-                the <quote>sslbase</quote> should be set
-                to <filename>https://www.foo.com/bugzilla/</filename>.
+                たとえば、Bugzilla メインページが
+                <filename>https://www.foo.com/bugzilla/index.cgi</filename>
+                ならば、<quote>sslbase</quote> は
+                <filename>https://www.foo.com/bugzilla/</filename>
+                に設定すべきです。
               </para>
             </listitem>
           </varlistentry>
@@ -100,9 +100,9 @@
             </term>
             <listitem>
               <para>
-                Determines when Bugzilla will force HTTPS (SSL) connections, using
-                the URL defined in <command>sslbase</command>. 
-                Options include "always", "never", and "authenticated sessions". 
+                Bugzilla がいつ <command>sslbase</command> で定義した URL を利用した、
+                HTTPS (SSL) 接続を必須とするかを設定します。
+                選択可能な選択肢は、"always"、"never"、"authenticated sessions" (認証セッション中のみ) です。
               </para>
             </listitem>
           </varlistentry>
@@ -113,13 +113,13 @@
             </term>
             <listitem>
               <para>
-               Defines the domain for Bugzilla cookies. This is typically left blank.
-               If there are multiple hostnames that point to the same webserver, which
-               require the same cookie, then this parameter can be utilized. For
-               example, If your website is at 
-               <filename>https://www.foo.com/</filename>, setting this to 
-               <filename>.foo.com/</filename> will also allow 
-               <filename>bar.foo.com/</filename> to access Bugzilla cookies.
+                Bugzilla で利用するクッキーのドメインを定義します。通常は空にしてください。
+                同じクッキーを必要とする、同じウェブサーバをさす複数のホスト名がある場合、
+                このパラメータが役立つでしょう。たとえば、あなたのウェブサイトが
+                <filename>https://www.foo.com/</filename> にある場合、
+                <filename>.foo.com/</filename> に設定すると、
+                <filename>bar.foo.com/</filename> からも Bugzilla 
+                クッキーにアクセスできるようになります。
               </para>
             </listitem>
           </varlistentry>
@@ -130,13 +130,14 @@
             </term>
             <listitem>
               <para>
-                Defines a path, relative to the web server root, that Bugzilla
-                cookies will be restricted to. For example, if the 
-                <command>urlbase</command> is set to
-                <filename>http://www.foo.com/bugzilla/</filename>, the 
-                <command>cookiepath</command> should be set to 
-                <filename>/bugzilla/</filename>. Setting it to "/" will allow all sites 
-                served by this web server or virtual host to read Bugzilla cookies.
+                Bugzilla クッキーを利用可能な範囲の制限を、
+                ウェブサーバのルートからの相対パスで設定します。たとえば、
+                <command>urlbase</command> が
+                <filename>http://www.foo.com/bugzilla/</filename> の場合、
+                <command>cookiepath</command> は
+                <filename>/bugzilla/</filename> とすべきです。"/" に設定すれば、
+                同じウェブサーバか仮想ホストから提供されている全てのサイトから
+                Bugzilla クッキーが読めるようになります。
               </para>
             </listitem>
           </varlistentry>
