@@ -10,22 +10,23 @@
     <para>Bonsai は
     <xref linkend="cvs" /> を管理するためのウェブベースのツールです。
 
-    . Using Bonsai, administrators can control open/closed status of trees,
-    query a fast relational database back-end for change, branch, and comment
-    information, and view changes made since the last time the tree was
-    closed. Bonsai
-    also integrates with  
-    <xref linkend="tinderbox" />.
+    . Bonsai を利用すれば、管理者はツリーの open/closed 状態を制御でき、
+    変更、ブランチ、コメント情報、最後にツリーが閉じられたときからの変更内容などを、
+    バックエンドのリレーショナルデータベースから高速に検索することができます。
+    Bonsai は
+    <xref linkend="tinderbox" /> とも統合可能です。
     </para>
   </section>
 
   <section id="cvs" xreflabel="CVS, the Concurrent Versioning System">
     <title>CVS</title>
 
-    <para>CVS integration is best accomplished, at this point, using the
-    Bugzilla Email Gateway.</para>
+    <para>CVS 統合は Bugzilla メールゲートウェイを利用する中では、
+    現時点で最も成熟しています。</para>
 
-    <para>Follow the instructions in this Guide for enabling Bugzilla e-mail
+    <para>このガイドの Bugzilla メール統合を有効にするための解説に従ってください。
+    
+Follow the instructions in this Guide for enabling Bugzilla e-mail
     integration. Ensure that your check-in script sends an email to your
     Bugzilla e-mail gateway with the subject of 
     <quote>[Bug XXXX]</quote>, 

@@ -148,17 +148,17 @@
             </term>
             <listitem>
               <para>
-               Determines whether to use UTF-8 (Unicode) encoding for all text in 
-               Bugzilla. New installations should set this to true to avoid character 
-               encoding problems. Existing databases should set this to true only 
-               after the data has been converted from existing legacy character 
-               encoding to UTF-8, using the 
-               <filename>contrib/recode.pl</filename> script.
+                Bugzilla 内部のテキストに UTF-8 (Unicode) を利用するかどうかを決定します。
+                新規インストールでは文字コード問題を引き起こさないためにも、
+                このパラメータを有効にすることを推奨します。既存のデータベースでは、
+                <filename>contrib/recode.pl</filename> スクリプトなどを利用して、
+                データを古い文字コードから UTF-8 に変換した後に、
+                このパラメータを有効にしてください。
               </para>
               <note>
                 <para>
-                  If you turn this parameter from "off" to "on", you must re-run 
-                  <filename>checksetup.pl</filename> immediately afterward.
+                  このパラメータを "off" から "on" に変更した後、
+                  <filename>checksetup.pl</filename> を直ちに実行する必要があります。
                 </para>
               </note>
             </listitem>
@@ -170,21 +170,21 @@
             </term>
             <listitem>
               <para>
-                If there is any text in this field, this Bugzilla installation will
-                be completely disabled and this text will appear instead of all
-                Bugzilla pages for all users, including Admins. Used in the event 
-                of site maintenance or outage situations. 
+                このフィールドに何か文字列が設定されている場合、Bugzilla 
+                は完全に無効になり、管理者を含む全てのユーザに、Bugzilla 
+                のページではなくこのメッセージが表示されるようになります。
+                サイトのメンテナンスや、停止などの場合に利用するためにあります。
               </para>
               <note>
                 <para>
-                  Although regular log-in capability is disabled while 
-                  <command>shutdownhtml</command>
-                  is enabled, safeguards are in place to protect the unfortunate 
-                  admin who loses connection to Bugzilla. Should this happen to you,
-                  go directly to the <filename>editparams.cgi</filename> (by typing
-                  the URL in manually, if necessary). Doing this will prompt you to
-                  log in, and your name/password will be accepted here (but nowhere
-                  else). 
+                  <command>shutdownhtml</command> が有効の場合、
+                  通常のログインは完全に無効となりますが、Bugzilla 
+                  への接続を失った不運な管理者を救うための安全策があります。
+                  このような事態が発生した場合、<filename>editparams.cgi</filename>
+                  に直接アクセス (必要なら URL を自分で入力してください) してください。
+                  こうすればログイン画面が表示され、あなたのアカウント名、
+                  パスワードでログインできるようになります。
+                  (これ以外では、他のどの画面からでもできません)
                 </para>
               </note>
             </listitem>
@@ -196,12 +196,13 @@
             </term>
             <listitem>
               <para>
-                Any text in this field will be displayed at the top of every HTML
-                page in this Bugzilla installation. The text is not wrapped in any
-                tags. For best results, wrap the text in a <quote>&lt;div&gt;</quote>
-                tag. Any style attributes from the CSS can be applied. For example,
-                to make the text green inside of a red box, add <quote>id=message</quote>
-                to the <quote>&lt;div&gt;</quote> tag.
+                ここに入力した文章は、Bugzilla の全ての HTML ページの先頭に表示されます。
+                文章は、タグで囲まれたりは一切しません。
+                正しく表示されるために、文章を <quote>&lt;div&gt;</quote> 
+                タグで囲んでください。CSS に定義されているスタイル情報は利用できます。
+                たとえば、赤いボックスに入った緑のテキストで表示したい場合、
+                <quote>id=message</quote> を <quote>&lt;div&gt;</quote> 
+                タグに追加してください。
               </para>
             </listitem>
           </varlistentry>
@@ -212,12 +213,12 @@
             </term>
             <listitem>
               <para>
-                If this Bugzilla installation is behind a proxy, enter the proxy 
-                information here to enable Bugzilla to access the Internet. Bugzilla
-                requires Internet access to utilize the 
-                <command>upgrade_notification</command> parameter (below). If the 
-                proxy requires authentication, use the syntax:
-                <filename>http://user:pass@proxy_url/</filename>.
+                Bugzilla サイトが proxy の内側にいる場合、Bugzilla 
+                がインターネットにアクセス可能になるよう、プロキシ情報を設定してください。
+                Bugzilla は <command>upgrade_notification</command> パラメータ (下)
+                を実行するためにインターネットアクセスを必要とします。
+                もし、プロキシに認証が必要な場合は次の形式が利用できます。
+                <filename>http://user:pass@proxy_url/</filename>
               </para>
             </listitem>
           </varlistentry>
@@ -228,6 +229,7 @@
             </term>
             <listitem>
               <para>
+                
                 Enable or disable a notification on the homepage of this Bugzilla
                 installation when a newer version of Bugzilla is available. This
                 notification is only visible to administrators. Choose "disabled",
