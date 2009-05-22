@@ -10,7 +10,7 @@
     
   <section id="general-advice">
   <title>一般的な問題</title>
-    <para>もし、filename>checksetup.pl</filename> の実行を完了できない場合、
+    <para>もし、<filename>checksetup.pl</filename> の実行を完了できない場合、
     通常はどこがおかしくて、どのようにすれば修正可能かのメッセージが表示されます。
     それでも動かせない場合や、メッセージがわからない場合、
     <ulink url="news://news.mozilla.org/mozilla.support.bugzilla">mozilla.support.bugzilla</ulink>
