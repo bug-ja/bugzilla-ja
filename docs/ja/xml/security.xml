@@ -2,7 +2,7 @@
 <!-- $Id: security.xml,v 1.19 2008/05/21 00:01:04 lpsolit%gmail.com Exp $ -->
 
 <chapter id="security">
-<title>Bugzilla Security</title>
+<title>Bugzilla セキュリティー</title>
 
   <para>While some of the items in this chapter are related to the operating
   system Bugzilla is running on or some of the support software required to

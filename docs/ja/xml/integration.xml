@@ -10,7 +10,7 @@
     <para>Bonsai は
     <xref linkend="cvs" /> を管理するためのウェブベースのツールです。
 
-    . Bonsai を利用すれば、管理者はツリーの open/closed 状態を制御でき、
+    Bonsai を利用すれば、管理者はツリーの open/closed 状態を制御でき、
     変更、ブランチ、コメント情報、最後にツリーが閉じられたときからの変更内容などを、
     バックエンドのリレーショナルデータベースから高速に検索することができます。
     Bonsai は
@@ -25,76 +25,73 @@
     現時点で最も成熟しています。</para>
 
     <para>このガイドの Bugzilla メール統合を有効にするための解説に従ってください。
-    
-Follow the instructions in this Guide for enabling Bugzilla e-mail
-    integration. Ensure that your check-in script sends an email to your
-    Bugzilla e-mail gateway with the subject of 
-    <quote>[Bug XXXX]</quote>, 
-    and you can have CVS check-in comments append to your Bugzilla bug. If
-    you  want to have the bug be closed automatically, you'll have to modify
-    the <filename>contrib/bugzilla_email_append.pl</filename> script.
+    あなたのチェックインスクリプトが Bugzilla のメールゲートウェイに
+    <quote>[Bug XXXX]</quote> のタイトルでメールを送信するように設定すると、
+    CVS チェックイン時のコメントが Bugzilla のバグに追加されるようになります。
+    もし、自動的にバグを閉じたい場合、
+    <filename>contrib/bugzilla_email_append.pl</filename>
+    スクリプトを変更する必要があります。
     </para>
 
-    <para>There is also a CVSZilla project, based upon somewhat dated 
-    Bugzilla code, to integrate CVS and Bugzilla through CVS' ability to 
-    email. Check it out at: <ulink url="http://www.cvszilla.org/"/>.
+    <para>また、少し古い Bugzilla コードをベースとする CVSZilla プロジェクトもあります。
+    これは、CVS と Bugzilla を CVS のメール機能を元に統合しているものです。
+    詳細は: <ulink url="http://www.cvszilla.org/"/>
     </para>
 
-    <para>Another system capable of CVS integration with Bugzilla is
-    Scmbug. This system provides generic integration of Source code
-    Configuration Management with Bugtracking. Check it out at: <ulink
-    url="http://freshmeat.net/projects/scmbug/"/>.
+    <para>もう一つの Bugzilla に CVS を統合するシステムとして、Scmbug があります。
+    このシステムは汎用ソースコード構成管理とバグ追跡システムの統合を可能にします。
+    詳細は: <ulink
+    url="http://freshmeat.net/projects/scmbug/"/>
     </para>
 
   </section>
 
   <section id="scm"
-  xreflabel="Perforce SCM (Fast Software Configuration Management System, a powerful commercial alternative to CVS">
+  xreflabel="Perforce SCM (高速なソフトウェア構成管理システム、CVS の代替となる強力な商用ツール">
 
     <title>Perforce SCM</title>
 
-    <para>You can find the project page for Bugzilla and Teamtrack Perforce
-    integration (p4dti) at: 
-    <ulink url="http://www.ravenbrook.com/project/p4dti/"/>
+    <para>Bugzilla と Teamtrack Perforce (p4dti) のプロジェクトページは: 
+    <ulink url="http://www.ravenbrook.com/project/p4dti/"/> にあります。
 
-    . 
     <quote>p4dti</quote>
 
-    is now an officially supported product from Perforce, and you can find
-    the "Perforce Public Depot" p4dti page at 
+    は、現在 Perforce によりオフィシャルにサポートされており、
+    "Perforce Public Depot" p4dti のページは
     <ulink url="http://public.perforce.com/public/perforce/p4dti/index.html"/>
+    にあります。
 
-    .</para>
+    </para>
 
-    <para>Integration of Perforce with Bugzilla, once patches are applied, is
-    seamless. Perforce replication information will appear below the comments
-    of each bug. Be certain you have a matching set of patches for the
-    Bugzilla version you are installing. p4dti is designed to support
-    multiple defect trackers, and maintains its own documentation for it.
-    Please consult the pages linked above for further information.</para>
+    <para>Perforce の Bugzilla への統合は、パッチを一度当てさえすれば、
+    シームレスに統合されます。Perforce が複製した情報は、
+    各バグのコメントの下に表示されます。導入している Bugzilla 
+    のバージョンにあったパッチを導入しないといけないことに注意してください。
+    p4dti は複数のよく利用されるトラッカーをサポートするように設計されており、
+    独自のドキュメントも存在します。上のリンクのページから詳細情報を見てください。</para>
   </section>
 
   <section id="svn"
-  xreflabel="Subversion, a compelling replacement for CVS">
+  xreflabel="Subversion、有力な CVS の後継">
      <title>Subversion</title>
-     <para>Subversion is a free/open-source version control system,
-     designed to overcome various limitations of CVS. Integration of
-     Subversion with Bugzilla is possible using Scmbug, a system
-     providing generic integration of Source Code Configuration
-     Management with Bugtracking. Scmbug is available at <ulink
-     url="http://freshmeat.net/projects/scmbug/"/>.</para>
+     <para>Subversion はフリー・オープンソースのバージョンコントロールシステムで、
+     CVS のさまざまな制約を解消するように設計されています。
+     Subversion と Bugzilla の統合は、
+     バグトラッキングソフトへの汎用のソースコード構成管理システムである
+     Scmbug を利用することで可能です。Scmbug は <ulink
+     url="http://freshmeat.net/projects/scmbug/"/> から入手可能です。</para>
   </section>
 
   <section id="tinderbox"
-  xreflabel="Tinderbox, the Mozilla automated build management system">
+  xreflabel="Tinderbox、Mozilla の自動化ビルド管理システム">
     <title>Tinderbox/Tinderbox2</title>
 
-    <para>Tinderbox is a continuous-build system which can integrate with
-    Bugzilla - see
-    <ulink url="http://www.mozilla.org/projects/tinderbox"/> for details
-    of Tinderbox, and 
-    <ulink url="http://tinderbox.mozilla.org/showbuilds.cgi"/> to see it
-    in action.</para>
+    <para>Tinderbox は Bugzilla と統合可能な継続的ビルドシステムです。
+    Tinderbox に関しての詳細は
+    <ulink url="http://www.mozilla.org/projects/tinderbox"/> 
+    を、実際にどのように動作するかについては
+    <ulink url="http://tinderbox.mozilla.org/showbuilds.cgi"/> 
+    を参照してください。</para>
   </section>
 </section>
 

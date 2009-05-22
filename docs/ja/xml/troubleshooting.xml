@@ -2,54 +2,51 @@
 <!-- $Id: troubleshooting.xml,v 1.13 2008/04/04 06:48:25 timeless%mozdev.org Exp $ -->
 
 <appendix id="troubleshooting">
-<title>Troubleshooting</title>
+<title>トラブルシュート</title>
 
-  <para>This section gives solutions to common Bugzilla installation
-  problems. If none of the section headings seems to match your
-  problem, read the general advice.
+  <para>この章では、一般的な Bugzilla インストールにおける問題への解決策を示します。
+  もし、この章のどれにも当てはまらないような場合は、一般的な問題に関してチェックしてください。
   </para>
     
   <section id="general-advice">
-  <title>General Advice</title>
-    <para>If you can't get <filename>checksetup.pl</filename> to run to 
-    completion, it normally explains what's wrong and how to fix it.
-    If you can't work it out, or if it's being uncommunicative, post 
-    the errors in the 
+  <title>一般的な問題</title>
+    <para>もし、filename>checksetup.pl</filename> の実行を完了できない場合、
+    通常はどこがおかしくて、どのようにすれば修正可能かのメッセージが表示されます。
+    それでも動かせない場合や、メッセージがわからない場合、
     <ulink url="news://news.mozilla.org/mozilla.support.bugzilla">mozilla.support.bugzilla</ulink>
-    newsgroup.
+    ニュースグループまで、エラーメッセージを投げてください。
     </para>
 
-    <para>If you have made it all the way through
-    <xref linkend="installation"/> (Installation) and
-    <xref linkend="configuration"/> (Configuration) but accessing the Bugzilla
-    URL doesn't work, the first thing to do is to check your web server error
-    log. For Apache, this is often located at
-    <filename>/etc/logs/httpd/error_log</filename>. The error messages
-    you see may be self-explanatory enough to enable you to diagnose and
-    fix the problem. If not, see below for some commonly-encountered 
-    errors. If that doesn't help, post the errors to the newsgroup.
+    <para><xref linkend="installation"/> (インストール) と
+    <xref linkend="configuration"/> (設定) のすべてを見直しても、
+    Bugzilla URL にアクセスして動作しない場合、まず最初にすべきことは、
+    ウェブサーバのエラーログを確認することです。Apache の場合、よく
+    <filename>/etc/logs/httpd/error_log</filename> に置かれていることがあります。
+    あなたが見るエラーメッセージは、解決策の判断がつくように説明的に書かれているでしょう。
+    もしそうでなければ、以下のよくあるエラーの項目を参照してください。
+    もしその項目も助けにならなければ、エラーをニュースグループに投げてください。
     </para>
 
     <para>
-      Bugzilla can also log all user-based errors (and many code-based errors)
-      that occur, without polluting the web server's error log.  To enable
-      Bugzilla error logging, create a file that Bugzilla can write to, named
-      <filename>errorlog</filename>, in the Bugzilla <filename>data</filename>
-      directory.  Errors will be logged as they occur, and will include the type
-      of the error, the IP address and username (if available) of the user who
-      triggered the error, and the values of all environment variables; if a
-      form was being submitted, the data in the form will also be included.
-      To disable error logging, delete or rename the
-      <filename>errorlog</filename> file.
+      Bugzilla はすべてのユーザが引き起こしたエラー (およびコード由来のエラー) 
+      を、ウェブサーバのログを汚すことなくログに残すことができます。
+      このエラーログを有効にするには、Bugzilla が書き込めるファイルを
+      <filename>errorlog</filename> の名前で Bugzilla の <filename>data</filename>
+      ディレクトリ内に作成してください。エラーは発生時に書き込まれ、
+      どのようなエラーか、IP アドレスと (存在すれば) 操作を行っていたユーザ名、
+      すべての環境変数の値が記録されます。もし、フォームからのポストの場合、
+      そのすべてのデータも含まれます。
+      このエラーログ機能を無効にするには、<filename>errorlog</filename> 
+      ファイルを削除するか名前を変更してください。
     </para>
   </section>
         
   <section id="trbl-testserver">
-  <title>The Apache web server is not serving Bugzilla pages</title>
-    <para>After you have run <command>checksetup.pl</command> twice,
-    run <command>testserver.pl http://yoursite.yourdomain/yoururl</command>
-    to confirm that your web server is configured properly for
-    Bugzilla.
+  <title>Apache ウェブサーバが Bugzilla ページを提供しません</title>
+    <para><command>checksetup.pl</command> を 2 回実行したのち、
+    <command>testserver.pl http://yoursite.yourdomain/yoururl</command>
+    を実行してあなたのウェブサーバが Bugzilla 
+    のためにきちんと設定されているかを確認してください。
     </para>
     <programlisting>
 <prompt>bash$</prompt> ./testserver.pl http://landfill.bugzilla.org/bugzilla-tip
@@ -61,33 +58,33 @@ TEST-OK Webserver is preventing fetch of http://landfill.bugzilla.org/bugzilla-t
   </section>
 
   <section id="trbl-perlmodule">
-  <title>I installed a Perl module, but 
-      <filename>checksetup.pl</filename> claims it's not installed!</title>
+  <title>Perl モジュールをインストールしましたが、
+      <filename>checksetup.pl</filename> がインストールされていないと報告します。</title>
       
-    <para>This could be caused by one of two things:</para>
+    <para>この問題の可能性のある原因は二つあります:</para>
     <orderedlist>
       <listitem>
-        <para>You have two versions of Perl on your machine. You are installing
-        modules into one, and Bugzilla is using the other. Rerun the CPAN
-        commands (or manual compile) using the full path to Perl from the 
-        top of <filename>checksetup.pl</filename>. This will make sure you 
-        are installing the modules in the right place.
+        <para>異なるバージョンの Perl が二つインストールされています。
+        モジュールを片方に入れたものの、Bugzilla がもう片方を利用しています。
+        <filename>checksetup.pl</filename> にある Perl のフルパスを利用して、
+        CPAN コマンド (かマニュアルコンパイル) を再実行してください。
+        これで正しい場所にモジュールがインストールされるでしょう。
         </para>
       </listitem>
       <listitem>
-        <para>The permissions on your library directories are set incorrectly.
-        They must, at the very least, be readable by the web server user or
-        group. It is recommended that they be world readable.
+        <para>ライブラリディレクトリの権限が間違っています。このディレクトリは、
+        最低でもウェブサーバのユーザもしくはグループから読める必要があります。
+        このディレクトリを誰からも読めるようにしておくことをお勧めします。
         </para>
       </listitem>
     </orderedlist>
   </section>
 
   <section id="trbl-dbdSponge">
-  <title>DBD::Sponge::db prepare failed</title>
+  <title>DBD::Sponge::db が prepare に失敗する</title>
       
-    <para>The following error message may appear due to a bug in DBD::mysql
-    (over which the Bugzilla team have no control):
+    <para>以下のエラーメッセージが DBD::mysql のバグのために発生することがあります
+    (Bugzilla チームにはこのバグはどうしようもありません):
     </para>
       
 <programlisting><![CDATA[ DBD::Sponge::db prepare failed: Cannot determine NUM_OF_FIELDS at D:/Perl/site/lib/DBD/mysql.pm line 248.
@@ -96,9 +93,9 @@ TEST-OK Webserver is preventing fetch of http://landfill.bugzilla.org/bugzilla-t
   FLAGS = (PADBUSY,PADMY)
 ]]></programlisting>
 
-    <para>To fix this, go to 
+    <para>これを修正するには、あなたの Perl の中で
     <filename>&lt;path-to-perl&gt;/lib/DBD/sponge.pm</filename> 
-    in your Perl installation and replace
+    にいき、
     </para>
         
 <programlisting><![CDATA[ my $numFields;
@@ -108,7 +105,7 @@ TEST-OK Webserver is preventing fetch of http://landfill.bugzilla.org/bugzilla-t
      $numFields = @{$attribs->{NAME}};
 ]]></programlisting>
 
-    <para>with</para>
+    <para>を</para>
 
 <programlisting><![CDATA[ my $numFields;
  if ($attribs->{'NUM_OF_FIELDS'}) {
@@ -117,167 +114,160 @@ TEST-OK Webserver is preventing fetch of http://landfill.bugzilla.org/bugzilla-t
      $numFields = @{$attribs->{NAMES}};
 ]]></programlisting>
 
-     <para>(note the S added to NAME.)</para>
+     <para>に置き換えてください。(注: S が NAME に追加されています)</para>
   </section>
     
   <section id="paranoid-security">
-  <title>cannot chdir(/var/spool/mqueue)</title>
+  <title>chdir できません (/var/spool/mqueue)</title>
 
-    <para>If you are installing Bugzilla on SuSE Linux, or some other
-    distributions with <quote>paranoid</quote> security options, it is
-    possible that the checksetup.pl script may fail with the error: 
+    <para>SuSE Linux に Bugzilla をインストールした場合、かもしくは <quote>paranoid</quote>
+    セキュリティーオプションを有効にしたディストリビューションでは、
+    checksetup.pl スクリプトは次のようなエラーで失敗する可能性があります。
 <programlisting><![CDATA[cannot chdir(/var/spool/mqueue): Permission denied
 ]]></programlisting>
     </para>
       
-    <para>This is because your <filename>/var/spool/mqueue</filename>
-    directory has a mode of <computeroutput>drwx------</computeroutput>.
-    Type <command>chmod 755 <filename>/var/spool/mqueue</filename></command>
-    as root to fix this problem. This will allow any process running on your
-    machine the ability to <emphasis>read</emphasis> the
-    <filename>/var/spool/mqueue</filename> directory.
+    <para>これは、あなたの <filename>/var/spool/mqueue</filename>
+    ディレクトリのモードが <computeroutput>drwx------</computeroutput> であることによります。
+    <command>chmod 755 <filename>/var/spool/mqueue</filename></command> を root
+    権限で実行し問題を修正してください。
+    このコマンドによりあなたのマシンで走るすべてのプロセスから、
+    <filename>/var/spool/mqueue</filename> ディレクトリの中身が読めるようになります。
     </para>
   </section>    
 
   <section id="trbl-relogin-everyone">
-  <title>Everybody is constantly being forced to relogin</title>
+  <title>誰もが定期的に再ログインを要求されます</title>
   
-  <para>The most-likely cause is that the <quote>cookiepath</quote> parameter
-  is not set correctly in the Bugzilla configuration.  You can change this (if
-  you're a Bugzilla administrator) from the editparams.cgi page via the web interface.
+  <para>最も可能性が高いのは、Bugzilla 設定の中の <quote>cookiepath</quote> 
+  パラメータが正しく設定されていないことによります。(もし Bugzilla 管理者なら) 
+  このパラメータをウェブインターフェースの editparams.cgi から変更できます。
   </para>
 
-  <para>The value of the cookiepath parameter should be the actual directory
-  containing your Bugzilla installation, <emphasis>as seen by the end-user's
-  web browser</emphasis>. Leading and trailing slashes are mandatory. You can
-  also set the cookiepath to any directory which is a parent of the Bugzilla
-  directory (such as '/', the root directory). But you can't put something
-  that isn't at least a partial match or it won't work. What you're actually
-  doing is restricting the end-user's browser to sending the cookies back only
-  to that directory.
+  <para>cookiepath パラメータは実際の Bugzilla のサイトがある、
+  <emphasis>エンドユーザのウェブブラウザから見た</emphasis> ディレクトリであるべきです。
+  先頭や最後尾のスラッシュは不要です。また、cookiepath は Bugzilla 
+  ディレクトリの親ディレクトリであれば (たとえば、ルートディレクトリの '/') 
+  問題ありません。しかしながら、少なくとも、
+  部分一致もしていないようなものを設定してはいけません。動かなくなります。
+  これが実際に何をしているかというのは、エンドユーザのウェブブラウザが、
+  ここで設定したディレクトリにしかクッキーを送らないように設定しています。
   </para>
 
-  <para>How do you know if you want your specific Bugzilla directory or the
-  whole site?
+  <para>Bugzilla のみのディレクトリかサイト全体のどちらを設定するかをどう判断するか ?
   </para>
 
-  <para>If you have only one Bugzilla running on the server, and you don't
-  mind having other applications on the same server with it being able to see
-  the cookies (you might be doing this on purpose if you have other things on
-  your site that share authentication with Bugzilla), then you'll want to have
-  the cookiepath set to "/", or to a sufficiently-high enough directory that
-  all of the involved apps can see the cookies.
+  <para>Bugzilla を一つしか走らせていないサーバであれば、
+  同じサーバで動作している他のービスがクッキーを読めてしまうことが気にならないなら
+  (同じサイトに Bugzilla の認証情報を共有したいサービスがあるなどの場合)、
+  cookiepath を "/" に設定、もしくはすべてのアプリケーションがクッキーを読めるように、
+  十分に上位のディレクトリを設定することは可能です。
   </para>
 
   <example id="trbl-relogin-everyone-share">
-  <title>Examples of urlbase/cookiepath pairs for sharing login cookies</title>
+  <title>ログインクッキーを共有する場合の urlbase/cookiepath ペアの例</title>
 
     <blockquote>
       <literallayout>
-        urlbase is <ulink url="http://bugzilla.mozilla.org/"/>
-        cookiepath is /
+        urlbase は <ulink url="http://bugzilla.mozilla.org/"/>
+        cookiepath は /
 
-        urlbase is <ulink url="http://tools.mysite.tld/bugzilla/"/>
-                but you have http://tools.mysite.tld/someotherapp/ which shares
-                authentication with your Bugzilla
-        cookiepath is /
+        urlbase は <ulink url="http://tools.mysite.tld/bugzilla/"/>
+                だが http://tools.mysite.tld/someotherapp/ に Bugzilla
+                と認証を共有したいサービスがある場合
+        cookiepath は /
       </literallayout>
     </blockquote>
   </example>
           
-   <para>On the other hand, if you have more than one Bugzilla running on the
-   server (some people do - we do on landfill) then you need to have the
-   cookiepath restricted enough so that the different Bugzillas don't
-   confuse their cookies with one another.
+   <para>他方、一つより多いの Bugzilla がサーバで走っている場合 (landfill ではこの設定です)
+   他の Bugzilla が他の認証クッキーに混乱させられないように、
+   cookiepath を正しく設定する必要があります。
    </para>
 
 
    <example id="trbl-relogin-everyone-restrict">
-   <title>Examples of urlbase/cookiepath pairs to restrict the login cookie</title>
+   <title>ログインクッキーを制限する場合の urlbase/cookiepath ペアの例</title>
       <blockquote>
         <literallayout>
-        urlbase is <ulink url="http://landfill.bugzilla.org/bugzilla-tip/"/>
-        cookiepath is /bugzilla-tip/
+        urlbase が <ulink url="http://landfill.bugzilla.org/bugzilla-tip/"/>
+        cookiepath は /bugzilla-tip/
 
-        urlbase is <ulink url="http://landfill.bugzilla.org/bugzilla-2.16-branch/"/>
-        cookiepath is /bugzilla-2.16-branch/
+        urlbase が <ulink url="http://landfill.bugzilla.org/bugzilla-2.16-branch/"/>
+        cookiepath は /bugzilla-2.16-branch/
         </literallayout>
       </blockquote>
     </example>
 
-    <para>If you had cookiepath set to <quote>/</quote> at any point in the
-    past and need to set it to something more restrictive
-    (i.e. <quote>/bugzilla/</quote>), you can safely do this without
-    requiring users to delete their Bugzilla-related cookies in their
-    browser (this is true starting with Bugzilla 2.18 and Bugzilla 2.16.5).
+    <para>過去に cookiepath を <quote>/</quote> に設定していてより厳しく制限した
+    (たとえば <quote>/bugzilla/</quote> など) 場合、
+    ユーザに Bugzilla 関連のクッキーをブラウザから削除してもらう必要があります。
+    (Bugzilla 2.18 と 2.16.5 以降から)
     </para>
   </section>
 
   <section id="trbl-relogin-some">
-  <title>Some users are constantly being forced to relogin</title>
+  <title>何人かのユーザが定期的に再ログインを求められます</title>
 
-    <para>First, make sure cookies are enabled in the user's browser.
+    <para>最初に、クッキーが該当のユーザのブラウザで有効になっていることを確認してください。
     </para>
 
-    <para>If that doesn't fix the problem, it may be that the user's ISP
-     implements a rotating proxy server. This causes the user's effective IP
-     address (the address which the Bugzilla server perceives him coming from)
-     to change periodically. Since Bugzilla cookies are tied to a specific IP
-     address, each time the effective address changes, the user will have to
-     log in again.
+    <para>それでも問題が発生する場合、ユーザの ISP が複数プロキシサーバでの運用に
+    なっていることの影響の可能性があります。この運用はユーザの実効の IP アドレス
+    (Bugzilla サーバがどこからのアクセスかと認識しているアドレス)
+    が定期的に変わる可能性があります。Bugzilla クッキーは特定の IP 
+    アドレスに紐付けられていますので、実効のアドレスが変わるたびに、
+    ユーザは再ログインを求められることになります。
      </para>
 
-     <para>If you are using 2.18 (or later), there is a
-     parameter called <quote>loginnetmask</quote>, which you can use to set
-     the number of bits of the user's IP address to require to be matched when
-     authenticating the cookies. If you set this to something less than 32,
-     then the user will be given a checkbox for <quote>Restrict this login to
-     my IP address</quote> on the login screen, which defaults to checked. If
-     they leave the box checked, Bugzilla will behave the same as it did
-     before, requiring an exact match on their IP address to remain logged in.
-     If they uncheck the box, then only the left side of their IP address (up
-     to the number of bits you specified in the parameter) has to match to
-     remain logged in.
+     <para>もし、2.18 (かそれ以降) を利用している場合は、<quote>loginnetmask</quote>
+     パラメータがあり、このパラメータではユーザの IP アドレスが、
+     クッキーの認証の際にどこまで一致する必要があるかを設定できます。
+     このパラメータを 32 以下に設定すれば、ユーザには <quote>このログインをこの IP
+     アドレスに限りますか</quote> というチェックボックスがログイン画面で表示され、
+     既定はチェックが入った状態になります。
+     もしチェックしたままにすれば、Bugzilla は以前のように完全に IP
+     アドレスが合致しているのを要求するようになります。
+     チェックボックスをチェック無しにすると、IP アドレスの左側のみ 
+     (パラメータで設定したビット数まで) がログイン中かどうかの判定に利用されるようになります。
      </para>
 
    </section>
 
   <section id="trbl-index">
-  <title><filename>index.cgi</filename> doesn't show up unless specified in the URL</title>
+  <title><filename>index.cgi</filename> が URL を指定しないと表示されない</title>
     <para>
-      You probably need to set up your web server in such a way that it
-      will serve the index.cgi page as an index page.
+      ウェブサーバを、インデックスページとして index.cgi 
+      を提供するように設定する必要があるでしょう。
     </para>
     <para>
-      If you are using Apache, you can do this by adding 
-      <filename>index.cgi</filename> to the end of the 
-      <computeroutput>DirectoryIndex</computeroutput> line
-      as mentioned in <xref linkend="http-apache"/>.
+      Apache を利用している場合、<filename>index.cgi</filename> 
+      を <xref linkend="http-apache" /> でふれられているように、
+      <computeroutput>DirectoryIndex</computeroutput> 
+      行の最後に追加することで設定できます。
     </para>
 
   </section>
 
   <section id="trbl-passwd-encryption">
     <title>
-      checksetup.pl reports "Client does not support authentication protocol
-      requested by server..."
+      checksetup.pl が "クライアントがサーバで要求された認証プロトコルをサポートしません"
+      と表示する
     </title>
 
     <para>
-      This error is occurring because you are using the new password
-      encryption that comes with MySQL 4.1, while your
-      <filename>DBD::mysql</filename> module was compiled against an
-      older version of MySQL. If you recompile <filename>DBD::mysql</filename>
-      against the current MySQL libraries (or just obtain a newer version
-      of this module) then the error may go away.
+      このエラーは、MySQL 4.1 以降で採用された新しいパスワード暗号化形式を利用しているが、
+      <filename>DBD::mysql</filename> モジュールが古い MySQL 
+      に対してコンパイルされている時に発生します。
+      <filename>DBD::mysql</filename> を現在の MySQL ライブラリとコンパイルすることで、
+      (もしくは単にモジュールの新しいバージョンをインストールする) エラーは消えるでしょう。
     </para>
 
     <para>
-      If that does not fix the problem, or if you cannot recompile the
-      existing module (e.g. you're running Windows) and/or don't want to
-      replace it (e.g. you want to keep using a packaged version), then a
-      workaround is available from the MySQL docs:
-      <ulink url="http://dev.mysql.com/doc/mysql/en/Old_client.html"/>
+      この操作でも問題が再発する場合、もしくは既存のモジュールを再コンパイルできない場合
+      (たとえば Windows 環境下であるなど)、もしくはモジュールをリプレースしたくない場合、
+      MySQL ドキュメント <ulink url="http://dev.mysql.com/doc/mysql/en/Old_client.html"/>
+      のワークアラウンドを参照してください。
     </para>
 
   </section>

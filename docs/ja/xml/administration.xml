@@ -229,16 +229,12 @@
             </term>
             <listitem>
               <para>
-                
-                Enable or disable a notification on the homepage of this Bugzilla
-                installation when a newer version of Bugzilla is available. This
-                notification is only visible to administrators. Choose "disabled",
-                to turn off the notification. Otherwise, choose which version of
-                Bugzilla you want to be notified about: "development_snapshot" is the
-                latest release on the trunk; "latest_stable_release" is the most 
-                recent release available on the most recent stable branch; 
-                "stable_branch_release" the most recent release on the branch 
-                this installation is based on.
+                この Bugzilla のホームページで、新しいバージョンがリリースされた時に、
+                案内を表示するかどうかの設定です。この案内は管理者のみに表示されます。
+                "disabled" を選択すると表示しません。それ以外は、どのバージョンの
+                Bugzilla に関する情報を表示するかによります。"development_snapshot" 
+                は最新の開発版です。"latest_stable_release" は最新の安定版です。
+                "stable_branch_release" は現在利用しているバージョンの最新版です。
               </para>
             </listitem>
           </varlistentry>
@@ -248,24 +244,23 @@
         </section>
 
         <section id="param-admin-policies">
-          <title>Administrative Policies</title>
+          <title>管理ポリシー</title>
           <para>
-            This page contains parameters for basic administrative functions.
-            Options include whether to allow the deletion of bugs and users,
-            and whether to allow users to change their email address.
+            このページでは、基本的な管理機能に関して設定します。
+            バグやユーザの削除を許可するかや、
+            ユーザにメールアドレス変更を許可するかどうかなどの設定です。
           </para>
         </section>
 
         <section id="param-user-authentication">
-          <title>User Authentication</title>
+          <title>ユーザ認証</title>
           <para>
-            This page contains the settings that control how this Bugzilla
-            installation will do its authentication. Choose what authentication
-            mechanism to use (the Bugzilla database, or an external source such
-            as LDAP), and set basic behavioral parameters. For example, choose
-            whether to require users to login to browse bugs, the management
-            of authentication cookies, and the regular expression used to
-            validate email addresses. Some parameters are highlighted below.
+            このページは Bugzilla の認証形式に関しての設定です。
+            どの認証形式を利用するか (Bugzilla 内部データベース、もしくは LDAP
+            のような外部リソース) を選択し、基本的なパラメータを設定してください。
+            たとえば、バグを閲覧するのにユーザ認証を必要とするかどうかや、
+            認証クッキーの管理方法や、メールアドレスの妥当性判定のための正規表現などです。
+            いくつかのパラメータの解説は以下にあります。
           </para>
 
         <variablelist>
@@ -276,12 +271,12 @@
             </term>
             <listitem>
               <para>
-                Defines the regular expression used to validate email addresses
-                used for login names. The default attempts to match fully
-                qualified email addresses (i.e. 'user@example.com'). Some
-                Bugzilla installations allow only local user names (i.e 'user' 
-                instead of 'user@example.com'). In that case, the 
-                <command>emailsuffix</command> parameter should be used to define
+                ログイン名に利用されるメールアドレスの妥当性判定に利用する正規表現の設定です。
+                規定値は完全形式のメールアドレス (例 'user@example.com') です。
+                ある種の Bugzilla サイトではローカルユーザ名 (例 'user') 
+                のみを許可する必要があるかもしれませんが、そのような場合は、
+                <command>emailsuffix</command> パラメータに、
+                メールアドレスのドメイン部分を設定してください。
                 the email domain.    
               </para>
             </listitem>
@@ -293,12 +288,11 @@
             </term>
             <listitem>
               <para>
-                This string is appended to login names when actually sending 
-                email to a user. For example,
-                If <command>emailregexp</command> has been set to allow
-                local usernames,
-                then this parameter would contain the email domain for all users
-                (i.e. '@example.com').   
+                ユーザにメールを送信する際には、
+                ここに設定された文字列がログイン名につけられます。たとえば、
+                <command>emailregexp</command> がローカルユーザ名を許可している場合に、
+                このパラメータは全ユーザに共通するメールアドレスのドメイン名を設定してください。
+                (例 '@example.com')
               </para>
             </listitem>
           </varlistentry>
@@ -308,22 +302,22 @@
         </section>
 
         <section id="param-attachments">
-          <title>Attachments</title>
+          <title>添付</title>
           <para>
-            This page allows for setting restrictions and other parameters
-            regarding attachments to bugs. For example, control size limitations
-            and whether to allow pointing to external files via a URI.
+            このページはバグへの添付に関する制限や設定パラメータです。
+            たとえば、添付サイズの制限や、
+            URI により外部のファイルを添付として指定できるかなどを設定できます。
           </para>
         </section>
 
         <section id="param-bug-change-policies">
-          <title>Bug Change Policies</title>
+          <title>バグ変更ポリシー</title>
           <para>
-            Set policy on default behavior for bug change events. For example,
-            choose which status to set a bug to when it is marked as a duplicate,
-            and choose whether to allow bug reporters to set the priority or
-            target milestone. Also allows for configuration of what changes
-            should require the user to make a comment, described below.    
+            バグ変更イベントにおける規定の動作に関するポリシーを設定できます。
+            たとえば、重複と処理された場合にバグのステータスを何に設定するかや、
+            重要度やターゲットマイルストーンを報告者が設定可能にするかなどです。
+            また、以下に説明があるように、
+            バグへのどの変更の際にユーザにコメントを強制するかも設定可能です。
           </para>
 
         <variablelist>
@@ -334,28 +328,26 @@
             </term>
             <listitem>
               <para>
-                All these fields allow you to dictate what changes can pass
-                without comment, and which must have a comment from the
-                person who changed them.  Often, administrators will allow
-                users to add themselves to the CC list, accept bugs, or
-                change the Status Whiteboard without adding a comment as to
-                their reasons for the change, yet require that most other
-                changes come with an explanation.
+                これらすべてのフィールドでは、どの変更がコメント無しに可能で、
+                どの変更にはコメントが必須かを設定します。
+                たとえば、管理者はユーザ自身を CC リストに追加したり、
+                バグを受け入れたり、ステータスホワイトボードの変更を、
+                その理由に関するコメントを追加せずに行うことを許可しますが、
+                逆にそれ以外にはコメントを求めるようにしたりします。
               </para>
 
               <para>
-                Set the "commenton" options according to your site policy. It
-                is a wise idea to require comments when users resolve, reassign, or
-                reopen bugs at the very least. 
+                "commenton" オプションをサイトのポリシーに従って設定してください。
+                最低でも、ユーザが解決、再割り当て、バグを再開するときには、
+                コメントを要求するのがよいでしょう。
               </para>
 
               <note>
                 <para>
-                  It is generally far better to require a developer comment
-                  when resolving bugs than not. Few things are more annoying to bug
-                  database users than having a developer mark a bug "fixed" without
-                  any comment as to what the fix was (or even that it was truly
-                  fixed!)
+                  一般的に開発者がバグを解決するときにはコメントを要求する方がよいでしょう。
+                  開発者が、どのような修正を行ったのか (もしくは本当に解決したのか) 
+                  に関するコメント無しにバグを解決済みにするほど、
+                  ユーザをいらいらさせることはありません。
                 </para>
               </note>
             </listitem>
@@ -366,11 +358,9 @@
             </term>
             <listitem>
               <para>
-                This option will prevent users from resolving bugs as FIXED if
-                they have unresolved dependencies. Only the FIXED resolution
-                is affected. Users will be still able to resolve bugs to
-                resolutions other than FIXED if they have unresolved dependent
-                bugs.
+                このオプションは未解決の依存関係がある場合にバグを FIXED 
+                にできるかどうかを設定します。FIXED の解決方法のみが影響を受けます。
+                FIXED 以外の解決方法にするのは、未解決の依存関係があっても可能です。
               </para>
             </listitem>
           </varlistentry>
@@ -380,12 +370,12 @@
         </section>
 
         <section id="param-bugfields">
-          <title>Bug Fields</title>
+          <title>バグフィールド</title>
           <para>
-            The parameters in this section determine the default settings of
-            several Bugzilla fields for new bugs, and also control whether
-            certain fields are used. For example, choose whether to use the
-            "target milestone" field or the "status whiteboard" field.
+            新規バグでのいくつかの Bugzilla フィールドの既定値の設定や、
+            特定のフィールドを利用するかなどに関する設定です。
+            たとえば、ターゲットマイルストーンやステータスホワイトボードなどといった
+            フィールドを利用するかどうかを設定可能です。
           </para>
 
         <variablelist>
@@ -396,9 +386,8 @@
             </term>
             <listitem>
               <para>
-                This allows you to define an email address for each component, 
-                in addition to that of the default assignee, who will be sent
-                carbon copies of incoming bugs.
+                コンポーネントごとに、既定の担当者以外にメールアドレスを定義可能で、
+                登録されたバグのコピーが送信されます。
               </para>
             </listitem>
           </varlistentry>
@@ -409,11 +398,10 @@
             </term>
             <listitem>
               <para>
-                This defines whether you wish to have a free-form, overwritable field
-                associated with each bug. The advantage of the Status Whiteboard is
-                that it can be deleted or modified with ease, and provides an
-                easily-searchable field for indexing some bugs that have some trait
-                in common.         
+                それぞれのバグに関連した編集可能な自由形式の入力欄をつけるかどうかを設定可能です。
+                このステータスホワイトボードの利点は、気軽に削除・編集でき、
+                バグに同じ内容のコメントを入れることでインデックス化するなど、
+                検索しやすいフィールドを提供できるという点にあります。
               </para>
             </listitem>
           </varlistentry>
@@ -423,44 +411,42 @@
         </section>
 
         <section id="param-bugmoving">
-          <title>Bug Moving</title>
+          <title>バグの移動</title>
           <para>
-            This page controls whether this Bugzilla installation allows certain
-            users to move bugs to an external database. If bug moving is enabled,
-            there are a number of parameters that control bug moving behaviors. 
-            For example, choose which users are allowed to move bugs, the location
-            of the external database, and the default product and component that
-            bugs moved <emphasis>from</emphasis> other bug databases to this 
-            Bugzilla installation are assigned to. 
+            権限を持つユーザに外部のデータベースにバグを移動することを、
+            この Bugzilla において許可するかどうかに関して設定するページです。
+            バグの移動を有効にした場合、バグ移動に関するいくつかのパラメータを設定する必要があります。
+            たとえば、どのユーザにバグの移動を許可するかや、外部データベースの場所、
+            他のバグデータベースからこの Bugzilla に移動<emphasis>してきた</emphasis>
+            バグを振り分けるプロダクトとコンポーネントなどです。
           </para>
 
         </section>
 
         <section id="param-dependency-graphs">
-          <title>Dependency Graphs</title>
+          <title>依存グラフ</title>
           <para>
-            This page has one parameter that sets the location of a Web Dot
-            server, or of the Web Dot binary on the local system, that is used
-            to generate dependency graphs. Web Dot is a CGI program that creates
-            images from <filename>.dot</filename> graphic description files. If
-            no Web Dot server or binary is specified, then dependency graphs will
-            be disabled.
+            このページでは、依存グラフを生成するための Web Dot サーバの場所か、
+            ローカルの Web Dot バイナリの場所を設定する一つのパラメータがあります。
+            Web Dot は <filename>.dot</filename> グラフ定義ファイルから画像を生成する、
+            CGI プログラムです。もし、Web Dot さーばもしくはバイナリが指定されなければ、
+            依存グラフは表示されません。
           </para>
         </section>
 
         <section id="param-group-security">
-          <title>Group Security</title>
+          <title>グループセキュリティー</title>
             <para>
-              Bugzilla allows for the creation of different groups, with the
-              ability to restrict the visibility of bugs in a group to a set of 
-              specific users. Specific products can also be associated with
-              groups, and users restricted to only see products in their groups.
-              Several parameters are described in more detail below. Most of the
-              configuration of groups and their relationship to products is done
-              on the "Groups" and "Product" pages of the "Administration" area.
-              The options on this page control global default behavior. 
-              For more information on Groups and Group Security, see
-              <xref linkend="groups"/> 
+              Bugzilla ではグループを定義することができ、特定のユーザからなるグループに、
+              バグの閲覧許可を制限することも可能です。
+              特定のプロダクトにグループを関連付けることもでき、
+              そのグループに所属していないユーザはバグを見ることができなくなります。
+              関連するいくつかのパラメータの解説が以下にあります。
+              大半のグループに関する設定やプロダクトとの関連付けは、
+              "管理" ページの "グループ" と "プロダクト" ページで設定します。
+              このページでの設定項目は全体的な動作を指定するものです。
+              グループとグループセキュリティーの詳細に関しては、
+              <xref linkend="groups"/> を参照してください。
             </para>
 
         <variablelist>
@@ -471,9 +457,8 @@
             </term>
             <listitem>
               <para>
-                Determines whether or not to automatically create groups
-                when new products are created. If this is on, the groups will be
-                used for querying bugs.
+                新規プロダクトを作成したときに自動的にグループを生成するかどうか。
+                有効なら、バグの操作に生成されたグループが利用されます。
               </para>
             </listitem>
           </varlistentry>
@@ -484,12 +469,12 @@
             </term>
             <listitem>
               <para>
-                If selected, user visibility will be restricted to members of
-                groups, as selected in the group configuration settings. 
-                Each user-defined group can be allowed to see members of selected
-                other groups. 
-                For details on configuring groups (including the visibility 
-                restrictions) see <xref linkend="edit-groups"/>. 
+                グループが選択されている場合、グループ設定で選択されているように、
+                ユーザはこのグループのメンバーにしか見えなくなります。
+                どのユーザ定義グループからでも、
+                他のグループのメンバーを見られるように設定可能です。
+                (閲覧制限を含む) グループ設定の詳細に関しては、
+                <xref linkend="edit-groups"/> を参照してください。
               </para>
             </listitem>
           </varlistentry>
@@ -500,9 +485,9 @@
             </term>
             <listitem>
               <para>
-                The name of the group of users who are allowed to share saved
-                searches with one another. For more information on using 
-                saved searches, see <xref linkend="savedsearches"/>.
+                保存された検索を他のユーザと共有可能とするユーザグループ名です。
+                保存された検索の詳細に関しては、 <xref linkend="savedsearches"/>
+                をご覧ください。
               </para>
             </listitem>
           </varlistentry>
@@ -512,63 +497,63 @@
         </section>
 
         <section id="bzldap">
-          <title>LDAP Authentication</title>
+          <title>LDAP 認証</title>
 
-          <para>LDAP authentication is a module for Bugzilla's plugin 
-          authentication architecture. This page contains all the parameters
-          necessary to configure Bugzilla for use with LDAP authentication.
+          <para>LDAP 認証は Bugzilla の認証機構へのプラグインモジュールです。
+          このページでは、
+          Bugzilla で LDAP 認証を利用する際に必要なパラメータすべてを設定します。
           </para>
 
           <para>
-          The existing authentication
-          scheme for Bugzilla uses email addresses as the primary user ID, and a
-          password to authenticate that user. All places within Bugzilla that
-          require a user ID (e.g assigning a bug) use the email
-          address. The LDAP authentication builds on top of this scheme, rather
-          than replacing it. The initial log-in is done with a username and
-          password for the LDAP directory. Bugzilla tries to bind to LDAP using
-          those credentials and, if successful, tries to map this account to a
-          Bugzilla account. If an LDAP mail attribute is defined, the value of this
-          attribute is used, otherwise the "emailsuffix" parameter is appended to LDAP
-          username to form a full email address. If an account for this address
-          already exists in the Bugzilla installation, it will log in to that account.
-          If no account for that email address exists, one is created at the time
-          of login. (In this case, Bugzilla will attempt to use the "displayName"
-          or "cn" attribute to determine the user's full name.) After
-          authentication, all other user-related tasks are still handled by email
-          address, not LDAP username. For example, bugs are still assigned by
-          email address and users are still queried by email address.
+          Bugzilla の既存の認証方式は、主ユーザ ID としてメールアドレスを利用し、
+          パスワードをそれぞれのユーザの認証に利用しています。
+          Bugzilla 内のすべての場所 (バグを担当するなど) で、
+          このメールアドレスを利用しているユーザ ID を必要とします。
+          LDAP 認証も、完全に入れ替えるのではなく、この方式の上に構築されています。
+          最初のログインでは LDAP ディレクトリにあるユーザ名とパスワードで行います。
+          Bugzilla は LDAP に対してそれらの認証情報でバインドを試み、
+          成功すれば、アカウントを Bugzilla アカウントにマップします。
+          LDAP メール属性が定義されていれば、この属性が利用されますが、
+          完全なメールアドレスは "emailsuffix" パラメータをユーザ名に追加して作成されます。
+          このアドレスに対するアカウントがすでに Bugzilla 内にある場合は、
+          対応するアカウントでのログインとなります。
+          逆に無い場合は、ログイン時に作成されることになります。
+          (この場合、Bugzilla は "displayName" もしくは "cn" 属性をユーザの実名に利用します。)
+          認証成功後、他のすべてのユーザ関連の操作は、LDAP ユーザ名でなく、
+          メールアドレスにより取り扱われます。
+          たとえば、バグはメールアドレスに対して割り当てられますし、
+          ユーザはメールアドレスを基にして検索されます。
           </para>
 
           <caution>
-            <para>Because the Bugzilla account is not created until the first time
-            a user logs in, a user who has not yet logged is unknown to Bugzilla.
-            This means they cannot be used as an assignee or QA contact (default or
-            otherwise), added to any CC list, or any other such operation. One
-            possible workaround is the <filename>bugzilla_ldapsync.rb</filename>
-            script in the
+            <para>Bugzilla アカウントが最初にユーザがログインするまで作成されないので、
+            ログインしていないユーザは Bugzilla にとって存在しないものになります。
+            これは、そのようなアカウントを担当者や QA コンタクト 
+            (既定かそうでないかにかかわらず) にできませんし、CC リストにも追加できませんし、
+            そのほかのどのような操作も行えないことを意味します。
+            この使用に関する一つの解が 
             <glossterm linkend="gloss-contrib">
-            <filename class="directory">contrib</filename></glossterm> 
-            directory. Another possible solution is fixing
+            <filename class="directory">contrib</filename></glossterm> ディレクトリにある
+            <filename>bugzilla_ldapsync.rb</filename>
+            スクリプトです。
+            もしくは、
             <ulink url="https://bugzilla.mozilla.org/show_bug.cgi?id=201069">bug
-            201069</ulink>.
+            201069</ulink> を解決するという手段もあります。
             </para>
           </caution>
 
-          <para>Parameters required to use LDAP Authentication:</para>
+          <para>LDAP 認証に必須のパラメータ:</para>
 
           <variablelist>
             <varlistentry id="param-user_verify_class_for_ldap">
               <term>user_verify_class</term>
               <listitem>
-                <para>If you want to list <quote>LDAP</quote> here,
-                make sure to have set up the other parameters listed below.
-                Unless you have other (working) authentication methods listed as
-                well, you may otherwise not be able to log back in to Bugzilla once
-                you log out.
-                If this happens to you, you will need to manually edit
-                <filename>data/params</filename> and set user_verify_class to
-                <quote>DB</quote>.
+                <para><quote>LDAP</quote> をここでリストに追加したい場合、
+                以下のほかのパラメータも設定してください。
+                他の (動作可能な) 認証方式が有効で無い限り、
+                一旦 Bugzilla からログアウトすると、再ログインできなくなります。
+                その場合、<filename>data/params</filename> ファイルを直接変更し、
+                user_verify_class を <quote>DB</quote> に設定する必要があります。
                 </para>
               </listitem>
             </varlistentry>
@@ -576,75 +561,73 @@
             <varlistentry id="param-LDAPserver">
               <term>LDAPserver</term>
               <listitem>
-                <para>This parameter should be set to the name (and optionally the
-                port) of your LDAP server. If no port is specified, it assumes
-                the default LDAP port of 389.
+                <para>このパラメータには LDAP サーバの名前 (と必要ならポート番号)
+                を設定します。ポートが指定されなければ、既定の LDAP ポート 389 
+                が利用されます。
                 </para>
-                <para>For example: <quote>ldap.company.com</quote>
-                 or <quote>ldap.company.com:3268</quote>
+                <para>例: <quote>ldap.company.com</quote>
+                 や <quote>ldap.company.com:3268</quote>
                 </para>
-                <para>You can also specify a LDAP URI, so as to use other
-                protocols, such as LDAPS or LDAPI. If port was not specified in
-                the URI, the default is either 389 or 636 for 'LDAP' and 'LDAPS'
-                schemes respectively.
+                <para>LDAP URI 形式でも指定可能で、他の LDAPS や LDAPI 
+                プロトコルも利用できます。それらにおいてポート番号が指定されなければ、
+                'LDAP' や 'LDAPS' スキームには 389 と 636 がそれぞれ利用されます。
                 </para>
                 <tip>
                   <para>
-                    In order to use SSL with LDAP, specify a URI with "ldaps://".
-                    This will force the use of SSL over port 636.
+                    LDAP を SSL 経由で利用する場合、URI には "ldaps://"
+                    から始まる URI を指定してください。
+                    この場合、SSL 経由でポート 636 を利用します。
                   </para>
                 </tip>
-                <para>For example, normal LDAP: 
-                <quote>ldap://ldap.company.com</quote>, LDAP over SSL:
-                <quote>ldaps://ldap.company.com</quote> or LDAP over a UNIX 
-                domain socket <quote>ldapi://%2fvar%2flib%2fldap_sock</quote>.
+                <para>通常の LDAP の例: 
+                <quote>ldap://ldap.company.com</quote>、LDAP over SSL:
+                <quote>ldaps://ldap.company.com</quote>、UNIX ドメインソケット経由の
+                LDAP <quote>ldapi://%2fvar%2flib%2fldap_sock</quote> など。
                 </para>
                </listitem>
              </varlistentry>
     
              <varlistentry id="param-LDAPbinddn">
-               <term>LDAPbinddn [Optional]</term>
+               <term>LDAPbinddn [オプション]</term>
                <listitem>
-                 <para>Some LDAP servers will not allow an anonymous bind to search
-                 the directory. If this is the case with your configuration you
-                 should set the LDAPbinddn parameter to the user account Bugzilla
-                 should use instead of the anonymous bind.
+                 <para>LDAP サーバがディレクトリ検索で匿名認証を許可していない場合があります。
+                 このような場合は LDAPbinddn パラメータにユーザアカウントを設定し、
+                 Bugzilla が匿名認証でなく認証を行うように設定してください。
                  </para>
-                 <para>Ex. <quote>cn=default,cn=user:password</quote></para>
+                 <para>例 <quote>cn=default,cn=user:password</quote></para>
                </listitem>
              </varlistentry>
     
              <varlistentry id="param-LDAPBaseDN">
                <term>LDAPBaseDN</term>
                <listitem>
-                 <para>The LDAPBaseDN parameter should be set to the location in
-                 your LDAP tree that you would like to search for email addresses.
-                 Your uids should be unique under the DN specified here.
+                 <para>LDAPBaseDN パラメータは、メールアドレスの検索を LDAP 
+                 ツリーのどこから行うかを設定するのに利用します。
+                 定義されている uid は、ここで指定された DN 
+                 配下でユニークでなければなりません。
                  </para>
-                 <para>Ex. <quote>ou=People,o=Company</quote></para>
+                 <para>例 <quote>ou=People,o=Company</quote></para>
                </listitem>
              </varlistentry>
     
              <varlistentry id="param-LDAPuidattribute">
                <term>LDAPuidattribute</term>
                <listitem>
-                 <para>The LDAPuidattribute parameter should be set to the attribute
-                 which contains the unique UID of your users. The value retrieved
-                 from this attribute will be used when attempting to bind as the
-                 user to confirm their password.
+                 <para>LDAPuidattribute パラメータには、ユーザのユニーク ID 
+                 が設定されている属性名を設定してください。
+                 この属性から取得された値はユーザのパスワードを照合する際に利用されます。
                  </para>
-                 <para>Ex. <quote>uid</quote></para>
+                 <para>例 <quote>uid</quote></para>
                </listitem>
              </varlistentry>
 
              <varlistentry id="param-LDAPmailattribute">
                <term>LDAPmailattribute</term>
                <listitem>
-                 <para>The LDAPmailattribute parameter should be the name of the
-                 attribute which contains the email address your users will enter
-                 into the Bugzilla login boxes.
+                 <para>LDAPmailattribute パラメータには、Bugzilla のログイン画面に入力される、
+                 ユーザのメールアドレスが設定されている属性名を設定してください。
                  </para>
-                 <para>Ex. <quote>mail</quote></para>
+                 <para>例 <quote>mail</quote></para>
                </listitem>
               </varlistentry>
           </variablelist>
@@ -652,34 +635,32 @@
         </section>
 
         <section id="bzradius">
-          <title>RADIUS Authentication</title>
+          <title>RADIUS 認証</title>
 
           <para>
-          RADIUS authentication is a module for Bugzilla's plugin 
-          authentication architecture. This page contains all the parameters
-          necessary for configuring Bugzilla to use RADIUS authentication.
+          RADIUS 認証は Bugzilla の認証機構へのプラグインモジュールです。
+          このページには Bugzilla で RADIUS 
+          認証を利用するのに必須となるパラメータをすべて含みます。
           </para>
           <note>
             <para>
-              Most caveats that apply to LDAP authentication apply to RADIUS
-              authentication as well. See <xref linkend="bzldap"/> for details.
+              LDAP 認証に関するほとんどの解説は RADIUS 認証にも関係します。
+              認証機構の詳細は <xref linkend="bzldap"/> を参照してください。
             </para>
           </note>
 
-          <para>Parameters required to use RADIUS Authentication:</para>
+          <para>RADIUS 認証を行うのに必要なパラメータ:</para>
 
           <variablelist>
             <varlistentry id="param-user_verify_class_for_radius">
               <term>user_verify_class</term>
               <listitem>
-                <para>If you want to list <quote>RADIUS</quote> here,
-                make sure to have set up the other parameters listed below.
-                Unless you have other (working) authentication methods listed as
-                well, you may otherwise not be able to log back in to Bugzilla once
-                you log out.
-                If this happens to you, you will need to manually edit
-                <filename>data/params</filename> and set user_verify_class to
-                <quote>DB</quote>.
+                <para><quote>RADIUS</quote> をここでリストに追加したい場合、
+                以下のほかのパラメータも設定してください。
+                他の (動作可能な) 認証方式が有効で無い限り、
+                一旦 Bugzilla からログアウトすると、再ログインできなくなります。
+                その場合、<filename>data/params</filename> ファイルを直接変更し、
+                user_verify_class を <quote>DB</quote> に設定する必要があります。
                 </para>
               </listitem>
             </varlistentry>
@@ -687,8 +668,8 @@
             <varlistentry id="param-RADIUS_server">
               <term>RADIUS_server</term>
               <listitem>
-                <para>This parameter should be set to the name (and optionally the
-                port) of your RADIUS server.
+                <para>このパラメータは RADIUS サーバの名前 (と必要ならポート番号)
+                を指定します。
                 </para>
               </listitem>
             </varlistentry>
@@ -696,7 +677,7 @@
             <varlistentry id="param-RADIUS_secret">
               <term>RADIUS_secret</term>
               <listitem>
-                <para>This parameter should be set to the RADIUS server's secret.
+                <para>RADIUS サーバの secret を設定します。
                 </para>
               </listitem>
             </varlistentry>
@@ -704,18 +685,16 @@
             <varlistentry id="param-RADIUS_email_suffix">
               <term>RADIUS_email_suffix</term>
               <listitem>
-                <para>Bugzilla needs an e-mail address for each user account.
-                Therefore, it needs to determine the e-mail address corresponding
-                to a RADIUS user.
-                Bugzilla offers only a simple way to do this: it can concatenate
-                a suffix to the RADIUS user name to convert it into an e-mail
-                address.
-                You can specify this suffix in the RADIUS_email_suffix parameter.
+                <para>
+                Bugzilla はユーザアカウントごとにメールアドレスが必要です。
+                ですので、RADIUS ユーザに対応するメールアドレスを決定する必要があります。
+                Bugzilla はこれを行う方法として単純な一つのみをサポートしています。
+                RADIUS ユーザ名にサフィックスをつけてメールアドレスに変換する方法です。
+                このサフィックスを RADIUS_email_suffix パラメータに設定してください。
                 </para>
-                <para>If this simple solution does not work for you, you'll
-                probably need to modify
-                <filename>Bugzilla/Auth/Verify/RADIUS.pm</filename> to match your
-                requirements.
+                <para>この単純な方法があなたのサイトに不十分な場合、
+                <filename>Bugzilla/Auth/Verify/RADIUS.pm</filename> を編集して、
+                必要な変換を行うようにしてください。
                 </para>
               </listitem>
             </varlistentry>
@@ -724,11 +703,11 @@
         </section>
     
         <section id="param-email">
-          <title>Email</title>
+          <title>メール</title>
           <para>
-            This page contains all of the parameters for configuring how
-            Bugzilla deals with the email notifications it sends. See below
-            for a summary of important options. 
+            このページでは、Bugzilla 
+            がどのようにメール通知を送信するかについてのパラメータを設定します。
+            以下の重要なオプションの概要を参考にしてください。
           </para>
 
         <variablelist>
@@ -739,12 +718,12 @@
             </term>
             <listitem>
               <para>
-                This is used to specify how email is sent, or if it is sent at 
-                all.  There are several options included for different MTAs, 
-                along with two additional options that disable email sending.  
-                "Test" does not send mail, but instead saves it in 
-                <filename>data/mailer.testfile</filename> for later review.  
-                "None" disables email sending entirely.
+                どのようにメールを送信するか、もしくはまったく送信しないのかを設定します。
+                異なる MTA や、二つのメール送信無効化オプションを含む、
+                いくつかの選択肢があります。"Test" はメールを送信しませんが、
+                <filename>data/mailer.testfile</filename> にあとで参照できるように、
+                すべてのメールの内容を保存します。
+                "None" はメール送信機能を完全に無効化します。
               </para>
             </listitem>
           </varlistentry>
@@ -755,10 +734,11 @@
             </term>
             <listitem>
               <para>
-                This is the email address that will appear in the "From" field
-                of all emails sent by this Bugzilla installation. Some email
-                servers require mail to be from a valid email address, therefore
-                it is recommended to choose a valid email address here.
+                Bugzilla から送信されるすべてのメールの、"From" 
+                フィールドに挿入されるメールアドレスです。
+                メールサーバによっては、
+                メールが有効なメールアドレスから送信されていることが必要とされていますので、
+                有効なメールアドレスをここに設定することが推奨されます。
               </para>
             </listitem>
           </varlistentry>
@@ -769,12 +749,13 @@
             </term>
             <listitem>
               <para>
-                When Bugzilla is using Sendmail older than 8.12, turning this option
-                off will improve performance by not waiting for Sendmail to actually
-                send mail.  If Sendmail 8.12 or later is being used, there is 
-                nothing to gain by turning this off.  If another MTA is being used, 
-                such as Postfix, then this option *must* be turned on (even if you 
-                are using the fake sendmail executable that Postfix provides).
+                Bugzilla が 8.12 以前の Sendmail を利用している場合、
+                このオプションを無効にすることで Sendmail 
+                が実際にメールの送信を完了するのを待たなくなるのでパフォーマンスが改善します。
+                もし Sendmail 8.12 もしくはそれ以降を利用している場合は、
+                無効にしても効果はありません。Postfix など他の MTA を利用している場合は、
+                このオプションは必ず有効にしてください。
+                (Postfix が提供する sendmail 互換コマンドを利用するとしてもです。)
               </para>
             </listitem>
           </varlistentry>
@@ -785,11 +766,11 @@
             </term>
             <listitem>
               <para>
-                Set this to the number of days you want to let bugs go
-                in the NEW or REOPENED state before notifying people they have
-                untouched new bugs. If you do not plan to use this feature, simply 
-                do not set up the whining cron job described in the installation
-                instructions, or set this value to "0" (never whine).
+                このパラメータは新しいバグが、何日 NEW もしくは REOPENED 
+                状態のままになっている場合に通知を送るかの設定です。
+                もしこの機能を利用しない場合、インストールの開設の中にある
+                cron job の設定を行わないか、この値を "0" にしてください。
+                (whine しなくなります)
               </para>
             </listitem>
           </varlistentry>
@@ -800,11 +781,9 @@
             </term>
             <listitem>
               <para>
-                This allows you to define specific users who will
-                receive notification each time a new bug in entered, or when
-                an existing bug changes, according to the normal groupset
-                permissions. It may be useful for sending notifications to a
-                mailing-list, for instance.
+                特定のユーザにすべての新規バグ登録や既存バグの変更時に、
+                通常のグループ権限に基づいてメールを送信する設定を行うためのパラメータです。
+                たとえば、メーリングリストに通知を送るなどの場合に有用です。
               </para>
             </listitem>
           </varlistentry>
@@ -814,68 +793,64 @@
         </section>
 
         <section id="param-patchviewer">
-          <title>Patch Viewer</title>
+          <title>パッチビューア</title>
           <para>
-            This page contains configuration parameters for the CVS server, 
-            Bonsai server and LXR server that Bugzilla will use to enable the
-            features of the Patch Viewer. Bonsai is a tool that enables queries 
-            to a CVS tree. LXR is a tool that can cross reference and index source
+            Bugzilla のパッチビューアに存在する機能を有効にするために、
+            CVS サーバ、Bonsai サーバ、LXR サーバなどのパラメータを設定します。
+            Bonsai は CVS ツリーにクエリを投げられるようにするツールです。
+            LXR はクロスリファレンスやソースコードのインデックス機能を提供するツールです。
             code.
           </para>
         </section>
 
         <section id="param-querydefaults">
-          <title>Query Defaults</title>
+          <title>既定のクエリ</title>
           <para>
-            This page controls the default behavior of Bugzilla in regards to 
-            several aspects of querying bugs. Options include what the default
-            query options are, what the "My Bugs" page returns, whether users
-            can freely add bugs to the quip list, and how many duplicate bugs are 
-            needed to add a bug to the "most frequently reported" list.
+            Bugzilla のいくつかのバグ検索機能の既定の動作を設定します。
+            オプションには、"わたしのバグ" ページが返す既定のクエリの設定、
+            quip リストにユーザが自由にバグを追加できるか、
+            "最もよく報告されるバグ" リストに追加されるのに必要な重複バグの数、
+            などがあります。
           </para>
         </section>
 
         <section id="param-shadowdatabase">
-          <title>Shadow Database</title>
+          <title>シャドウデータベース</title>
           <para>
-            This page controls whether a shadow database is used, and all the
-            parameters associated with the shadow database. Versions of Bugzilla
-            prior to 3.2 used the MyISAM table type, which supports
-            only table-level write locking. With MyISAM, any time someone is making a change to 
-            a bug, the entire table is locked until the write operation is complete.
-            Locking for write also blocks reads until the write is complete.
+            シャドウデータベースを利用するかと、それに関連したすべてのパラメータを設定します。
+            Bugzilla 3.2 より前は、テーブルレベルの書き込みロックしかサポートしていない、
+            MyISAM テーブルを利用していました。MyISAM では誰かがバグに変更を行ったとき、
+            書き込みが完了するまで、全テーブルがロックされます。
+            この書き込み完了まで続く書き込みロックは、読み込みも妨害します。
           </para> 
           <para>
-            The <quote>shadowdb</quote> parameter was designed to get around
-            this limitation. While only a single user is allowed to write to
-            a table at a time, reads can continue unimpeded on a read-only
-            shadow copy of the database.
+            <quote>shadowdb</quote> パラメータはこの制限を回避するためのものです。
+            一人のユーザが書き込みを行っている間、読み込みは読み込みのみの
+            データベースのシャドウコピーの側から行います。
           </para>
 
           <note>
             <para>
-              As of version 3.2, Bugzilla no longer uses the MyISAM table type.
-              Instead, InnoDB is used, which can do transaction-based locking.
-              Therefore, the limitations the Shadow Database feature was designed
-              to workaround no longer exist.
+              3.2 以降、Bugzilla は MyISAM を利用しなくなりました。代わりに、
+              トランザクションベースのロックが可能な InnoDB を利用しています。
+              このため、ワークアラウンドとしてシャドウデータベース機能が必要だった制約は、
+              すでにありません。
             </para>
           </note>
 
         </section>
 
         <section id="admin-usermatching">
-          <title>User Matching</title>
+          <title>ユーザ検索</title>
           <para>
-            The settings on this page control how users are selected and queried
-            when adding a user to a bug. For example, users need to be selected
-            when choosing who the bug is assigned to, adding to the CC list or 
-            selecting a QA contact. With the "usemenuforusers" parameter, it is 
-            possible to configure Bugzilla to 
-            display a list of users in the fields instead of an empty text field.
-            This should only be used in Bugzilla installations with a small number
-            of users. If users are selected via a text box, this page also
-            contains parameters for how user names can be queried and matched
-            when entered.
+            バグにユーザを追加する際に、どのように選択もしくは検索するかに関する設定です。
+            たとえば、ユーザにバグを割り当てるときや、CC リストもしくは QA 
+            コンタクトにユーザを追加するときに、ユーザを選択する必要があります。
+            "usemenuforusers" パラメータによって、Bugzilla が空の入力フィールドの替わりに、
+            ユーザリストを表示するように設定することも可能です。
+            この機能は、ユーザ数が少ない Bugzilla サイトで利用すべきです。
+            ユーザ選択を可能にした場合、このページではユーザ名をどのように検索もしくは、
+            一致させるかについてのパラメータも設定できます。
           </para>
 
         </section>
@@ -883,110 +858,106 @@
   </section>
 
   <section id="useradmin">
-    <title>User Administration</title>
+    <title>ユーザ管理</title>
 
     <section id="defaultuser">
-      <title>Creating the Default User</title>
+      <title>既定のユーザの作成</title>
 
-      <para>When you first run checksetup.pl after installing Bugzilla, it
-      will prompt you for the administrative username (email address) and
-      password for this "super user". If for some reason you delete
-      the "super user" account, re-running checksetup.pl will again prompt
-      you for this username and password.</para>
+      <para>Bugzilla インストール後に最初に checksetup.pl を実行したとき、
+      管理者ユーザ名 (メールアドレス) とこの "スーパーユーザ" 
+      のパスワードを入力するよう表示します。もし、何らかの理由で、
+      この "スーパーユーザ" アカウントを消去してしまった場合、
+      checksetup.pl を実行し、再度指示に従ってユーザ名とパスワードを入力してください。</para>
 
       <tip>
-        <para>If you wish to add more administrative users, add them to 
-        the "admin" group and, optionally, edit the tweakparams, editusers,
-        creategroups, editcomponents, and editkeywords groups to add the
-        entire admin group to those groups (which is the case by default).
+        <para>もし管理者ユーザを増やしたいなら、"admin" グループに追加して、
+        必要なら tweakparams、editusers、creategroups、editcomponents、editkeywords、
+        グループといった管理者グループに追加してください。
+        (既定の操作と同じです。)
         </para>
       </tip>
     </section>
 
     <section id="manageusers">
-      <title>Managing Other Users</title>
+      <title>他のユーザの管理</title>
 
       <section id="user-account-search">
-        <title>Searching for existing users</title>
+        <title>既存のユーザの検索</title>
 
         <para>
-          If you have <quote>editusers</quote> privileges or if you are allowed
-          to grant privileges for some groups, the <quote>Users</quote> link
-          will appear in the Administration page.
+          <quote>editusers</quote> 権限を持っているか、
+          いくつかのグループで権限を与えることを許可されている場合、
+          <quote>ユーザ</quote> リンクが管理ページに表示されます。
         </para>
 
         <para>
-          The first screen is a search form to search for existing user
-          accounts. You can run searches based either on the user ID, real
-          name or login name (i.e. the email address, or just the first part
-          of the email address if the "emailsuffix" parameter is set).
-          The search can be conducted
-          in different ways using the listbox to the right of the text entry
-          box. You can match by case-insensitive substring (the default),
-          regular expression, a <emphasis>reverse</emphasis> regular expression
-          match (which finds every user name which does NOT match the regular
-          expression), or the exact string if you know exactly who you are
-          looking for. The search can be restricted to users who are in a
-          specific group. By default, the restriction is turned off.
+          最初に表示されるのは、既存のユーザアカウントを検索するための検索画面です。
+          ユーザ ID、実名、ログイン名 (たとえばメールアドレスや、"emailsuffix"
+          パラメータが設定されていればメールアドレスの先頭部分) で検索ができます。
+          この検索は、入力ボックスの次のリストボックスの選択によって、
+          異なる条件で検索が実行されます。
+          検索は、大文字小文字無しの部分一致 (既定)、正規表現、<emphasis>逆の</emphasis>
+          正規表現 (正規表現に合致しないユーザ名すべてを検索します)、
+          もしくは対象のユーザ名が完全に分かっている場合用に完全一致検索が可能です。
+          検索機能は特定のグループに所属するユーザのみに制限することも可能です。
+          既定では、制限はありません。
         </para>
 
         <para>
-          The search returns a list of
-          users matching your criteria. User properties can be edited by clicking
-          the login name. The Account History of a user can be viewed by clicking
-          the "View" link in the Account History column. The Account History
-          displays changes that have been made to the user account, the time of
-          the change and the user who made the change. For example, the Account
-          History page will display details of when a user was added or removed
-          from a group.
+          検索機能は条件に合致したユーザのリストを返します。
+          ログイン名をクリックするとユーザ情報が編集可能です。
+          アカウント履歴は、アカウント履歴のカラムにある "表示" 
+          リンクから見ることが可能です。
+          アカウント履歴はユーザアカウントに加えられた変更、変更が行われた日時、
+          変更を行ったユーザを表示します。たとえば、
+          アカウント履歴ページはユーザがグループに追加・削除された履歴も表示します。
         </para>
       </section>
 
       <section id="createnewusers">
-        <title>Creating new users</title>
+        <title>新規ユーザ作成</title>
 
         <section id="self-registration">
-          <title>Self-registration</title>
+          <title>自身での登録</title>
 
           <para>
-            By default, users can create their own user accounts by clicking the
-            <quote>New Account</quote> link at the bottom of each page (assuming
-            they aren't logged in as someone else already). If you want to disable
-            this self-registration, or if you want to restrict who can create his
-            own user account, you have to edit the <quote>createemailregexp</quote>
-            parameter in the <quote>Configuration</quote> page, see
-            <xref linkend="parameters" />.
+            既定では、ユーザは自分のアカウントを、各ページの下にある
+            <quote>新規アカウント登録</quote>リンクから作成可能となっています。
+            (何かのユーザアカウントですでにログインしていない限り)
+            この登録方法を無効にしたい場合、もしくはアカウント作成可能なユーザを制限したい場合、
+            <quote>設定</quote> ページの <quote>createemailregexp</quote> 
+            パラメータを編集してください。詳細については
+            <xref linkend="parameters" /> にあります。
           </para>
         </section>
 
         <section id="user-account-creation">
-          <title>Accounts created by an administrator</title>
+          <title>管理者によるアカウント作成</title>
 
           <para>
-            Users with <quote>editusers</quote> privileges, such as administrators,
-            can create user accounts for other users:
+            <quote>editusers</quote> 権限を持つユーザ、たとえば管理者は、
+            他のユーザのアカウントを作成することが可能です。
           </para>
 
           <orderedlist>
             <listitem>
-              <para>After logging in, click the "Users" link at the footer of
-              the query page, and then click "Add a new user".</para>
+              <para>ログイン後、検索画面のフッタにある "ユーザ"
+              リンクをクリックし、"新規ユーザ登録" をクリックしてください。</para>
             </listitem>
 
             <listitem>
-              <para>Fill out the form presented. This page is self-explanatory.
-              When done, click "Submit".</para>
+              <para>表示されるフォームを埋めてください。
+              このページ自体に説明があります。完了したら "登録" をクリックしてください。</para>
 
               <note>
-                <para>Adding a user this way will <emphasis>not</emphasis>
-                send an email informing them of their username and password.
-                While useful for creating dummy accounts (watchers which
-                shuttle mail to another system, for instance, or email
-                addresses which are a mailing list), in general it is
-                preferable to log out and use the <quote>New Account</quote>
-                button to create users, as it will pre-populate all the
-                required fields and also notify the user of her account name
-                and password.</para>
+                <para>この方法でのアカウント登録は、該当ユーザにユーザ名やパスワードを
+                通知するメールを<emphasis>送りません</emphasis>。
+                ダミーアカウント (他のシステムにメールを送るような監視者、
+                たとえば、メーリングリストのようなメールアドレス) を作成するには有用ですが、
+                一般的にはログアウト後に <quote>新規ユーザ登録</quote> 
+                ボタンから行うのが推奨されます。こちらの方法では、
+                すべての必須フィールドが要求され、
+                ユーザにアカウント名とパスワードが通知されます。</para>
               </note>
             </listitem>
           </orderedlist>
@@ -994,75 +965,73 @@
       </section>
 
       <section id="modifyusers">
-        <title>Modifying Users</title>
+        <title>ユーザの編集</title>
 
-        <para>Once you have found your user, you can change the following
-        fields:</para>
+        <para>ユーザを発見すれば、以下のフィールドを変更可能です:</para>
 
         <itemizedlist>
           <listitem>
             <para>
-            <emphasis>Login Name</emphasis>: 
-            This is generally the user's full email address. However, if you
-            have are using the <quote>emailsuffix</quote> parameter, this may
-            just be the user's login name. Note that users can now change their
-            login names themselves (to any valid email address).
+            <emphasis>ログイン名</emphasis>: 
+            これは通常ユーザの完全なメールアドレスです。しかしながら、
+            <quote>mailsuffix</quote> パラメータを利用している場合、
+            これは単なるユーザのログイン名となります。なお、
+            ユーザは自身のログイン名を自分で変更可能です。
+            (有効なすべてのメールアドレスに)
             </para>
           </listitem>
 
           <listitem>
             <para>
-            <emphasis>Real Name</emphasis>: The user's real name. Note that
-            Bugzilla does not require this to create an account.</para>
+            <emphasis>実名</emphasis>: ユーザの実名です。ただし、
+            Bugzilla ではアカウント作成には必須ではありません。</para>
           </listitem>
 
           <listitem>
             <para>
-            <emphasis>Password</emphasis>: 
-            You can change the user's password here. Users can automatically
-            request a new password, so you shouldn't need to do this often.
-            If you want to disable an account, see Disable Text below.
+            <emphasis>パスワード</emphasis>: 
+            ユーザのパスワードをここで変更可能です。ユーザには、
+            自動的に新規パスワードを要求可能となっていますので、
+            この機能を頻繁に使うことは無いでしょう。もし、アカウントを無効にしたい場合、
+            以下の無効化テキストの項目を参照してください。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Bugmail Disabled</emphasis>:
-              Mark this checkbox to disable bugmail and whinemail completely
-              for this account. This checkbox replaces the data/nomail file
-              which existed in older versions of Bugzilla.
+              <emphasis>バグメール無効化</emphasis>:
+              このチェックボックスでバグメール、whine メールを、
+              完全に該当アカウントに対して無効化できます。このチェックボックスは、
+              古いバージョンでの data/nomail ファイルを置き換えるものです。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Disable Text</emphasis>: 
-              If you type anything in this box, including just a space, the
-              user is prevented from logging in, or making any changes to 
-              bugs via the web interface. 
-              The HTML you type in this box is presented to the user when
-              they attempt to perform these actions, and should explain
-              why the account was disabled.
+              <emphasis>無効化テキスト</emphasis>: 
+              ここに何か入力すると、ただの空白でも、ユーザはログインできなくなり、
+              ウェブインターフェースからバグを変更できなくなります。
+              ここに入力した HTML がそれらの操作を行おうとしたユーザに表示されますので、
+              なぜ無効化されたかの説明を入力するのを推奨します。
             </para>
             <para>
-              Users with disabled accounts will continue to receive
-              mail from Bugzilla; furthermore, they will not be able
-              to log in themselves to change their own preferences and
-              stop it. If you want an account (disabled or active) to
-              stop receiving mail, simply check the
-              <quote>Bugmail Disabled</quote> checkbox above.
+              無効化されたユーザも Bugzilla からめーるを受け取り続けます。
+              また、ログインして自分自身でアカウントの設定を変更し、
+              メールをとめることもできなくなります。もし、(無効、有効に限らず)
+              アカウントにメールを送るのをとめたい場合、
+              上の <quote>バグメール無効化</quote> チェックボックスを利用してください。
             </para>
             <note>
               <para>
-                Even users whose accounts have been disabled can still
-                submit bugs via the e-mail gateway, if one exists.
-                The e-mail gateway should <emphasis>not</emphasis> be
-                enabled for secure installations of Bugzilla.
+                無効化されたユーザは、存在すれば、メールゲートウェイ経由では、
+                バグを登録可能となります。
+                メールゲートウェイは安全にしたい Bugzilla サイトでは、
+                有効にすべきでは<emphasis>ありません</emphasis>。
               </para>
             </note>
             <warning>
               <para>
-                Don't disable all the administrator accounts!
+                すべての管理者アカウントを無効化する操作はしないでください !
               </para>
             </warning>
           </listitem>

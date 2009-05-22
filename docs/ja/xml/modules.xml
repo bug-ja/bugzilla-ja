@@ -1,13 +1,13 @@
 <!-- <!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
 <appendix id="install-perlmodules-manual">
-  <title>Manual Installation of Perl Modules</title>
+  <title>Perl モジュールインストールに関するマニュアル</title>
   
   <section id="modules-manual-instructions">
-    <title>Instructions</title>
+    <title>導入</title>
     <para>
-      If you need to install Perl modules manually, here's how it's done.
-      Download the module using the link given in the next section, and then
-      apply this magic incantation, as root:
+      Perl モジュールを手動でインストールする必要がある場合、次の方法で可能です。
+      次の章にあるモジュールダウンロードリンクから入手し、
+      root で以下の呪文を実行してください。
     </para>
 
     <para>  
@@ -20,173 +20,172 @@
     </para>
     <note>
       <para>
-        In order to compile source code under Windows you will need to obtain
-        a 'make' utility.  The <command>nmake</command> utility provided with
-        Microsoft Visual C++ may be used.  As an alternative, there is a
-        utility called <command>dmake</command> available from CPAN which is
-        written entirely in Perl.
+        Windows でソースコードをコンパイルするには、'make' ユーティリティーが必要です。
+        <command>make</command> ユーティリティーは Microsoft Visual C++ が提供しています。
+        もしくは、CPAN から入手可能な、Perl でかかれた <command>dmake</command>
+        ユーティリティーが利用可能です。
       </para>
       <para>
-        As described in <xref linkend="modules-manual-download" />, however, most
-        packages already exist and are available from ActiveState or theory58S.
-        We highly recommend that you install them using the ppm GUI available with
-        ActiveState and to add the theory58S repository to your list of repositories.
+        しかしながら、<xref linkend="modules-manual-download" /> にあるように、
+        ほとんどのパッケージは ActiveState もしくは theory58S から入手できます。
+        ActiveState 殻提供されている ppm GUI を利用して、theory58S 
+        レポジトリをレポジトリリストに追加し、そこからインストールすることを強く推奨します。
       </para>
     </note>
   </section>
     
   <section id="modules-manual-download">
-    <title>Download Locations</title>
+    <title>ダウンロード場所</title>
     
     <note>
       <para>
-        Running Bugzilla on Windows requires the use of ActiveState
-        Perl 5.8.1 or higher. Many modules already exist in the core
-        distribution of ActiveState Perl. Additional modules can be downloaded
-        from <ulink url="http://theoryx5.uwinnipeg.ca/ppms/" /> if you use
-        Perl 5.8.x or from <ulink url="http://cpan.uwinnipeg.ca/PPMPackages/10xx/" />
-        if you use Perl 5.10.x.
+        Bugzilla を Windows で実行するには、ActiveState Perl 5.8.1 
+        かそれ以上のバージョンが必要です。かなりの数のモジュールは ActiveState Perl 
+        のコア配布物に収録されています。追加で必要なモジュールは
+        Perl 5.8.x を利用している場合は <ulink url="http://theoryx5.uwinnipeg.ca/ppms/" /> 
+        から、Perl 5.10.x を利用している場合は <ulink url="http://cpan.uwinnipeg.ca/PPMPackages/10xx/" />
+        からダウンロードできます。
       </para>
     </note>
 
     <para>
       CGI:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/CGI.pm/"/>
-        Documentation: <ulink url="http://perldoc.perl.org/CGI.html"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/CGI.pm/"/>
+        ドキュメント: <ulink url="http://perldoc.perl.org/CGI.html"/>
       </literallayout>
     </para>
 
     <para>
       Data-Dumper:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/Data-Dumper/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/Data-Dumper/Dumper.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/Data-Dumper/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/Data-Dumper/Dumper.pm"/>
       </literallayout>
     </para>
     
     <para>
-      Date::Format (part of TimeDate):
+      Date::Format (TimeDate の一部):
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/TimeDate/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/TimeDate/lib/Date/Format.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/TimeDate/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/TimeDate/lib/Date/Format.pm"/>
       </literallayout>
     </para>
 
     <para>
       DBI:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/DBI/"/>
-        Documentation: <ulink url="http://dbi.perl.org/docs/"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/DBI/"/>
+        ドキュメント: <ulink url="http://dbi.perl.org/docs/"/>
       </literallayout>
     </para>
 
     <para>
       DBD::mysql:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/DBD-mysql/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/DBD-mysql/lib/DBD/mysql.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/DBD-mysql/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/DBD-mysql/lib/DBD/mysql.pm"/>
       </literallayout>
     </para>
 
     <para>
       DBD::Pg:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/DBD-Pg/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/DBD-Pg/Pg.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/DBD-Pg/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/DBD-Pg/Pg.pm"/>
       </literallayout>
     </para>
 
     <para>
       File::Spec:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/File-Spec/"/>
-        Documentation: <ulink url="http://perldoc.perl.org/File/Spec.html"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/File-Spec/"/>
+        ドキュメント: <ulink url="http://perldoc.perl.org/File/Spec.html"/>
       </literallayout>
     </para>
 
     <para>
       Template-Toolkit:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/Template-Toolkit/"/>
-        Documentation: <ulink url="http://www.template-toolkit.org/docs.html"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/Template-Toolkit/"/>
+        ドキュメント: <ulink url="http://www.template-toolkit.org/docs.html"/>
       </literallayout>
     </para>
 
     <para>
       GD:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/GD/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/GD/GD.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/GD/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/GD/GD.pm"/>
       </literallayout>
     </para>
 
     <para>
       Template::Plugin::GD:
       <literallayout>
-       CPAN Download Page: <ulink url="http://search.cpan.org/dist/Template-GD/" />
-       Documentation: <ulink url="http://www.template-toolkit.org/docs/aqua/Modules/index.html" />
+       CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/Template-GD/" />
+       ドキュメント: <ulink url="http://www.template-toolkit.org/docs/aqua/Modules/index.html" />
       </literallayout>
     </para>
 
     <para>
-      MIME::Parser (part of MIME-tools):
+      MIME::Parser (MIME-tools の一部):
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/MIME-tools/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/MIME-tools/lib/MIME/Parser.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/MIME-tools/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/MIME-tools/lib/MIME/Parser.pm"/>
       </literallayout>
     </para>
 
   </section>
 
   <section id="modules-manual-optional">
-    <title>Optional Modules</title>
+    <title>追加のモジュール群</title>
 
     <para>
       Chart::Base:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/Chart/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/Chart/Chart.pod"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/Chart/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/Chart/Chart.pod"/>
       </literallayout>
     </para>
 
      <para>
       GD::Graph:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/GDGraph/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/GDGraph/Graph.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/GDGraph/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/GDGraph/Graph.pm"/>
       </literallayout>
     </para>
 
     <para>
-      GD::Text::Align (part of GD::Text::Util):
+      GD::Text::Align (GD::Text::Util の一部):
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/GDTextUtil/"/>
-        Documentation: <ulink url="http://search.cpan.org/dist/GDTextUtil/Text/Align.pm"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/GDTextUtil/"/>
+        ドキュメント: <ulink url="http://search.cpan.org/dist/GDTextUtil/Text/Align.pm"/>
       </literallayout>
     </para>
 
    <para>
       XML::Twig:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/XML-Twig/"/>
-        Documentation: <ulink url="http://standards.ieee.org/resources/spasystem/twig/twig_stable.html"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/XML-Twig/"/>
+        ドキュメント: <ulink url="http://standards.ieee.org/resources/spasystem/twig/twig_stable.html"/>
       </literallayout>
     </para>
 
     <para>
       PatchReader:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/author/JKEISER/PatchReader/"/>
-        Documentation: <ulink url="http://www.johnkeiser.com/mozilla/Patch_Viewer.html"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/author/JKEISER/PatchReader/"/>
+        ドキュメント: <ulink url="http://www.johnkeiser.com/mozilla/Patch_Viewer.html"/>
       </literallayout>
     </para>
 
    <para>
       Image::Magick:
       <literallayout>
-        CPAN Download Page: <ulink url="http://search.cpan.org/dist/PerlMagick/"/>
-        Documentation: <ulink url="http://www.imagemagick.org/script/resources.php"/>
+        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/PerlMagick/"/>
+        ドキュメント: <ulink url="http://www.imagemagick.org/script/resources.php"/>
       </literallayout>
     </para>
    </section>
