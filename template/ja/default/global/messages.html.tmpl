@@ -120,27 +120,11 @@
     [% terms.bug %] は正常に作成されましたが、添付に失敗しました。
     添付を、"添付を追加" リンクから追加してください。
 
-  [% ELSIF message_tag == "bug_confirmed_by_votes" %]
-    *** この [% terms.bug %] は規定の投票数によって承認されました ***
-
-  [% ELSIF message_tag == "bug_duplicate_of" %]
-    *** この [% terms.bug %] は [% terms.bug %] [%+ dupe_of FILTER html %] の重複とされました ***
-
-  [% ELSIF message_tag == "bug_has_duplicate" %]
-    *** [% terms.Bug %] [%+ dupe FILTER html %] はこの [% terms.bug %] の重複になりました ***
-
   [% ELSIF message_tag == "bug_group_description" %]
     プロダクト [% product.name FILTER html %] の [% terms.bugs %] へアクセス。
 
-  [% ELSIF message_tag == "bug_moved_to" %]
-    <p>[% terms.Bug %] は [% Param("move-to-url") FILTER html %] に移動しました。</p>
-    <p>移動が成功すれば、[% login FILTER html %] は他のデータベースでの新しい [% terms.bug %]
-    番号をメールで受け取るでしょう。全てうまくいけば、この [% terms.bug %] を確認済みとして、
-    新しい [% terms.bug %] へのリンクを貼り付けてください。
-    もし失敗していれば、[% terms.bug %] を再開してください。
-
   [% ELSIF message_tag == "buglist_adding_field" %]
-    [% title = "研削ページにフィールドを追加中..." %]
+    [% title = "検索ページにフィールドを追加中..." %]
     [% link  = "自動的に更新されなければここをクリックしてください。" %]
 
   [% ELSIF message_tag == "buglist_updated_named_query" %]

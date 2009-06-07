@@ -35,12 +35,15 @@
   [% target = Param("urlbase") _ target %]
 [% END %]
 
-<li>
-  <form action="[% target FILTER html %]" method="POST" class="mini_login"
+<li id="mini_login_container[% qs_suffix %]">
+  <span class="separator">| </span>
+  <a id="login_link[% qs_suffix %]" href="?GoAheadAndLogIn=1"
+     onclick="return show_mini_login_form('[% qs_suffix %]')">ログイン</a>
+  <form action="[% target FILTER html %]" method="POST" 
+        class="mini_login bz_default_hidden"
         id="mini_login[% qs_suffix FILTER html %]"
         onsubmit="return check_mini_login_fields( '[% qs_suffix FILTER html %]' );"
   >
-    <span class="separator">| </span>
     <input id="Bugzilla_login[% qs_suffix FILTER html %]" 
            class="bz_login"
            name="Bugzilla_login"
@@ -66,10 +69,6 @@
 
     <input type="submit" name="GoAheadAndLogIn" value="ログイン" 
             id="log_in[% qs_suffix %]">
-    <div class="bz_default_hidden">
-      [% PROCESS "global/hidden-fields.html.tmpl"
-                exclude="^Bugzilla_(login|password|restrictlogin|remember)$" %]
-    </div>
     <script type="text/javascript">
       mini_login_constants = {
           "login" : "ログイン",
@@ -104,6 +103,20 @@
               }, 200);
           });
     }
-    </script>    
+    </script>
+    <a href="#" onclick="return hide_mini_login_form('[% qs_suffix %]')">[x]</a>
+   </form>
+ </li>
+<li id="forgot_container[% qs_suffix %]">
+  <span class="separator">| </span>
+  <a id="forgot_link[% qs_suffix %]" href="?GoAheadAndLogIn=1#forgot"
+     onclick="return show_forgot_form('[% qs_suffix %]')">パスワードを忘れた場合 :</a>
+  <form action="token.cgi" method="post" id="forgot_form[% qs_suffix %]"
+        class="mini_forgot bz_default_hidden">
+    <label>ログイン: <input type="text" name="loginname" size="20"></label>
+    <input id="forgot_button[% qs_suffix %]" value="パスワードリセット" 
+           type="submit">
+    <input type="hidden" name="a" value="reqpw">
+    <a href="#" onclick="return hide_forgot_form('[% qs_suffix %]')">[x]</a>
   </form>
 </li>

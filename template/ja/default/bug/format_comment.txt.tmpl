@@ -1,0 +1,61 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Marc Schumann.
+  # Portions created by Marc Schumann are Copyright (c) 2008 Marc Schumann.
+  # All rights reserved.
+  #
+  # Contributor(s): Marc Schumann <wurblzap@gmail.com>
+  #%]
+
+[%# INTERFACE:
+  #   comment: A hash containing comment information.
+  #              count:           The comment number (on the bug it belongs to)
+  #              author:          The Bugzilla::User object of the comment's
+  #                               author
+  #              time:            The time at which the comment has been
+  #                               committed
+  #              body:            The comment text
+  #              type:            One of the CMT_* constants (not given if none
+  #                               applies)
+  #              extra_data:      Extra data (type specific)
+  #              already_wrapped: Determines whether the comment is pre-wrapped
+  #%]
+
+[% PROCESS 'global/field-descs.none.tmpl' %]
+
+[% IF comment.already_wrapped %]
+  [% wrapped_comment = comment.body %]
+[% ELSE %]
+  [% wrapped_comment = comment.body FILTER wrap_comment %]
+[% END %]
+
+[%- IF comment.type == constants.CMT_DUPE_OF -%]
+[% wrapped_comment %]
+
+*** この [% terms.bug %] は [% terms.bug %] [%+ comment.extra_data %] の重複として処理されました。 ***
+[% ELSIF comment.type == constants.CMT_HAS_DUPE %]
+*** [% terms.Bug %] [%+ comment.extra_data %] がこの [% terms.bug %] の重複と処理されました。 ***
+[% ELSIF comment.type == constants.CMT_POPULAR_VOTES %]
+*** この [% terms.bug %] は投票数によって承認されました。 ***
+[% ELSIF comment.type == constants.CMT_MOVED_TO %]
+[% wrapped_comment %]
+
+[%+ terms.Bug %] は [% Param("move-to-url") %] に移動しました。
+移動が成功した場合、[% comment.extra_data %] は、他のデータベースにおける
+新しい [% terms.bug %] 番号を含むメールを受け取るでしょう。
+全てうまくいけば、この [% terms.bug %] を [%+ get_status('VERIFIED') %] とし、
+新しい [% terms.bug %] へのリンクをここへ貼り付けてください。
+そうでなければ、この [% terms.bug %] を再開してください。
+[%- ELSE -%]
+[%- wrapped_comment %]
+[% END %]

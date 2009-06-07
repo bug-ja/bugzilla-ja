@@ -768,6 +768,12 @@ sub get_enterable_products {
     return $self->{enterable_products};
 }
 
+sub can_access_product {
+    my ($self, $product_name) = @_;
+
+    return scalar(grep {$_->name eq $product_name} @{$self->get_accessible_products});
+}
+
 sub get_accessible_products {
     my $self = shift;
     
@@ -1371,8 +1377,9 @@ our %names_to_events = (
 # Note: the "+" signs before the constants suppress bareword quoting.
 sub wants_bug_mail {
     my $self = shift;
-    my ($bug_id, $relationship, $fieldDiffs, $commentField, $dependencyText,
+    my ($bug_id, $relationship, $fieldDiffs, $comments, $dependencyText,
         $changer, $bug_is_new) = @_;
+    my $comments_concatenated = join("\n", map { $_->{body} } (@$comments));
 
     # Make a list of the events which have happened during this bug change,
     # from the point of view of this user.    
@@ -1421,10 +1428,10 @@ sub wants_bug_mail {
         }
     }
 
-    if ($commentField =~ /Created an attachment \(/) {
+    if ($comments_concatenated =~ /Created an attachment \(/) {
         $events{+EVT_ATTACHMENT} = 1;
     }
-    elsif ($commentField ne '') {
+    elsif (defined($$comments[0])) {
         $events{+EVT_COMMENT} = 1;
     }
     
@@ -1991,6 +1998,20 @@ method should be called in such a case to force reresolution of these groups.
 
  Description: Returns an array of product objects into which the user is
               allowed to enter bugs.
+
+ Params:      none
+
+ Returns:     an array of product objects.
+
+=item C<can_access_product(product_name)>
+
+Returns 1 if the user can search or enter bugs into the specified product,
+and 0 if the user should not be aware of the existence of the product.
+
+=item C<get_accessible_products>
+
+ Description: Returns an array of product objects the user can search
+              or enter bugs against.
 
  Params:      none
 
