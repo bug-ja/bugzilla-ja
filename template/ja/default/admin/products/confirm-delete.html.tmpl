@@ -93,10 +93,10 @@
   <tr>
     <td>[% terms.Bug %] が新規登録できるか:</td>
     <td>
-      [% IF product.disallownew %]
-        不可能
-      [% ELSE %]
+      [% IF product.is_active %]
         可能
+      [% ELSE %]
+        不可能
       [% END %]
     </td>
   </tr>

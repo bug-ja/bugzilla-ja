@@ -184,17 +184,6 @@
     用済みにマークしようとした添付ファイルのひとつ [% attach_id FILTER html %] 
     は無効です。
           
-  [% ELSIF error == "invalid_column_name_cookie" %]
-    [% title = "無効なカラム名" %]
-    クッキーで指定された独自ソート順は無効なカラム名 <em>[% fragment FILTER html %]</em>
-    を指定しています。
-    クッキーを消去しました。
-
-  [% ELSIF error == "invalid_column_name_form" %]
-    [% title = "無効なカラム名" %]
-    あなたが要求した独自ソート順は無効なカラム名 <em>[% fragment FILTER html %]</em>
-    を指定しています。
-
   [% ELSIF error == "invalid_customfield_type" %]
     [% title = "無効なフィールドタイプ" %]
     <em>[% type FILTER html %]</em> は有効なフィールドタイプではありません。

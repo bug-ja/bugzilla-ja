@@ -149,26 +149,22 @@ my $format = $template->get_format("list/list", scalar $cgi->param('format'),
 # to the URL.
 #
 # Server push is a Netscape 3+ hack incompatible with MSIE, Lynx, and others. 
-# Safari 2.0.2 (Webkit 416.11) and above support it.
+# Even Communicator 4.51 has bugs with it, especially during page reload.
+# http://www.browsercaps.org used as source of compatible browsers.
+# Safari (WebKit) does not support it, despite a UA that says otherwise (bug 188712)
 # MSIE 5+ supports it on Mac (but not on Windows) (bug 190370)
 #
-my $webkitversion = "";
-if ($ENV{'HTTP_USER_AGENT'} =~ /WebKit\/(\d+)/) {
-  $webkitversion = $1;
-}
-
 my $serverpush =
   $format->{'extension'} eq "html"
     && exists $ENV{'HTTP_USER_AGENT'} 
       && $ENV{'HTTP_USER_AGENT'} =~ /Mozilla.[3-9]/ 
         && (($ENV{'HTTP_USER_AGENT'} !~ /[Cc]ompatible/) || ($ENV{'HTTP_USER_AGENT'} =~ /MSIE 5.*Mac_PowerPC/))
-          && (!$webkitversion || $webkitversion >= 416)
+          && $ENV{'HTTP_USER_AGENT'} !~ /WebKit/
             && !$agent
               && !defined($cgi->param('serverpush'))
                 || $cgi->param('serverpush');
 
 my $order = $cgi->param('order') || "";
-my $order_from_cookie = 0;  # True if $order set using the LASTORDER cookie
 
 # The params object to use for the actual query itself
 my $params;
@@ -828,7 +824,9 @@ if (lsearch(\@displaycolumns, "percentage_complete") >= 0) {
 }
 
 # Display columns are selected because otherwise we could not display them.
-push (@selectcolumns, @displaycolumns);
+foreach my $col (@displaycolumns) {
+    push (@selectcolumns, $col) if !grep($_ eq $col, @selectcolumns);
+}
 
 # If the user is editing multiple bugs, we also make sure to select the product
 # and status because the values of those fields determine what options the user
@@ -893,8 +891,6 @@ if (!$order || $order =~ /^reuse/i) {
         # Cookies from early versions of Specific Search included this text,
         # which is now invalid.
         $order =~ s/ LIMIT 200//;
-        
-        $order_from_cookie = 1;
     }
     else {
         $order = '';  # Remove possible "reuse" identifier as unnecessary
@@ -923,7 +919,7 @@ if ($order) {
             last ORDER;
         };
         do {
-            my @order;
+            my (@order, @invalid_fragments);
             my @columnnames = map($columns->{lc($_)}->{'name'}, keys(%$columns));
             # A custom list of columns.  Make sure each column is valid.
             foreach my $fragment (split(/,/, $order)) {
@@ -936,16 +932,14 @@ if ($order) {
                     push(@order, $fragment);
                 }
                 else {
-                    my $vars = { fragment => $fragment };
-                    if ($order_from_cookie) {
-                        $cgi->remove_cookie('LASTORDER');
-                        ThrowCodeError("invalid_column_name_cookie", $vars);
-                    }
-                    else {
-                        ThrowCodeError("invalid_column_name_form", $vars);
-                    }
+                    push(@invalid_fragments, $fragment);
                 }
             }
+            if (scalar @invalid_fragments) {
+                $vars->{'message'} = 'invalid_column_name';
+                $vars->{'invalid_fragments'} = \@invalid_fragments;
+            }
+
             $order = join(",", @order);
             # Now that we have checked that all columns in the order are valid,
             # detaint the order string.
@@ -982,7 +976,7 @@ foreach my $fragment (split(/,/, $order)) {
             $fragment = $columns->{$fragment}->{'name'};
         }
 
-        push @selectnames, $fragment;
+        push(@selectnames, $fragment) unless (grep { $fragment eq $_ } @selectnames);
     }
 }
 
@@ -1203,6 +1197,17 @@ $vars->{'displaycolumns'} = \@displaycolumns;
 
 $vars->{'openstates'} = [BUG_STATE_OPEN];
 $vars->{'closedstates'} = [map {$_->name} closed_bug_statuses()];
+
+# The iCal file needs priorities ordered from 1 to 9 (highest to lowest)
+# If there are more than 9 values, just make all the lower ones 9
+if ($format->{'extension'} eq 'ics') {
+    my $n = 1;
+    $vars->{'ics_priorities'} = {};
+    my $priorities = get_legal_field_values('priority');
+    foreach my $p (@$priorities) {
+        $vars->{'ics_priorities'}->{$p} = ($n > 9) ? 9 : $n++;
+    }
+}
 
 # The list of query fields in URL query string format, used when creating
 # URLs to the same query results page with different parameters (such as

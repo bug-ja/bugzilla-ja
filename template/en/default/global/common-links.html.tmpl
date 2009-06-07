@@ -23,6 +23,7 @@
 <ul class="links">
   <li><a href="./">Home</a></li>
   <li><span class="separator">| </span><a href="enter_bug.cgi">New</a></li>
+  <li><span class="separator">| </span><a href="describecomponents.cgi">Browse</a></li>
   <li><span class="separator">| </span><a href="query.cgi">Search</a></li>
 
   <li class="form">
@@ -48,10 +49,6 @@
       [% END %]
     [% END %]
   [%-# Work around FF bug: keep this on one line %]</li>
-
-  [% IF user.id && Param('usevotes') %]
-    <li><span class="separator">| </span><a href="votes.cgi?action=show_user">My&nbsp;Votes</a></li>
-  [% END %]
 
   [% IF user.login %]
     <li><span class="separator">| </span><a href="userprefs.cgi">Preferences</a></li>
@@ -86,10 +83,20 @@
     
     [% IF Param('createemailregexp')
           && user.authorizer.user_can_create_account %]
-      <li><span class="separator">| </span><a href="createaccount.cgi">New&nbsp;Account</a></li>
+      <li id="new_account_container[% qs_suffix FILTER html %]">
+        <span class="separator">| </span>
+        <a href="createaccount.cgi">New&nbsp;Account</a>
+      </li>
     [% END %]
 
-    [% IF user.authorizer.can_login %]        
+    [%# Only display one login form when we're on a LOGIN_REQUIRED page. That
+      # way, we're guaranteed that the user will use the form that has 
+      # hidden_fields in it (the center form) instead of this one. Also, it's
+      # less confusing to have one form (as opposed to  three) when you're 
+      # required to log in.
+      #%]
+    [% USE Bugzilla %]
+    [% IF user.authorizer.can_login && !Bugzilla.page_requires_login %]
       [% PROCESS "account/auth/login-small.html.tmpl" %]
     [% END %]
   [% END %]

@@ -31,14 +31,16 @@
 
 [% IF target == "enter_bug.cgi" %]
   [% title = "$terms.Bug の登録" %]
-  [% subheader = BLOCK %]まず最初に、[% terms.abug %] を登録するプロダクトを選択してください。[% END %]
+  [% h2 = BLOCK %]まず最初に、[% terms.abug %] を登録するプロダクトを選択してください。[% END %]
 [% ELSIF target == "describecomponents.cgi" %]
-  [% title = "$terms.Bugzilla のコンポーネントの説明" %]
-  [% subheader = "コンポーネントの説明が見たいプロダクトを指定してください。" %]
+  [% title = "$terms.Bugzilla 一覧" %]
+  [% h2 = "説明が見たいプロダクトを指定してください。" %]
 [% END %]
 
 [% DEFAULT title = "Product の選択" %]
 [% PROCESS global/header.html.tmpl %]
+
+<h2>[% h2 FILTER html %]</h2>
 
 <table>
 

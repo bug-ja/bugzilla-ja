@@ -58,7 +58,6 @@
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
 
-<p><a href="./">メイン [% terms.bugs %] ページ</a> に戻る。
- 他の classification を <a href="editclassifications.cgi">編集する</a>。
+[% PROCESS admin/classifications/footer.html.tmpl %] 
 
 [% PROCESS global/footer.html.tmpl %] 

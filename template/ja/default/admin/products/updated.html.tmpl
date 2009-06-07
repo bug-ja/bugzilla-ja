@@ -55,13 +55,13 @@
   <p style="margin: 1em 3em 1em 3em">[% product.description FILTER html_light %]</p>
 [% END %]
 
-[% IF changes.disallownew.defined %]
+[% IF changes.isactive.defined %]
   <p>
   [% terms.bugs %] の新規報告が
-  [% IF product.disallow_new %]
-    不可能
-  [% ELSE %]
+  [% IF product.is_active %]
     可能
+  [% ELSE %]
+    不可能
   [% END %]
   になりました。
   </p>
