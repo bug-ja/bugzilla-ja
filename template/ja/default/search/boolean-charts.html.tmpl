@@ -75,15 +75,6 @@
     [% FOREACH col = row %]
       [% colnum = loop.count - 1 %]
       <td>
-        [% INCLUDE "search/type-select.html.tmpl"
-           name = "type${chartnum}-${rownum}-${colnum}",
-           types = types, selected = col.type %]
-
-        が
-
-        <input name="[% "value${chartnum}-${rownum}-${colnum}" %]" 
-               value="[% col.value FILTER html %]"> 
-
         <select name="[% "field${chartnum}-${rownum}-${colnum}" %]">
           [% FOREACH field = fields %]
             <option value="[% field.name %]" [% "selected" IF field.name == col.field %]>
@@ -91,6 +82,15 @@
             </option>
           [% END %]
         </select>
+
+        が
+
+        <input name="[% "value${chartnum}-${rownum}-${colnum}" %]" 
+               value="[% col.value FILTER html %]"> 
+
+        [% INCLUDE "search/type-select.html.tmpl"
+           name = "type${chartnum}-${rownum}-${colnum}",
+           types = types, selected = col.type %]
       </td>
       
       [% UNLESS loop.last %]
