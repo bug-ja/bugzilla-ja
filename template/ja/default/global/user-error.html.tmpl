@@ -703,9 +703,11 @@
     [% IF vals.size %]
       以下のフィールド値の表示・非表示を制御しています。
       <ul>
-        [% FOREACH val = vals %]
-          <li>[% val.field.name FILTER html %]:
-            '[% val.name FILTER html %]'</li>
+        [% FOREACH field_name = vals.keys %]
+          [% FOREACH val = vals.${field_name} %]
+            <li>[% val.field.name FILTER html %]:
+              '[% val.name FILTER html %]'</li>
+          [% END %]
         [% END %]
       </ul>
     [% END %]

@@ -1039,31 +1039,31 @@
           <listitem>
             <para>
             <emphasis>&lt;groupname&gt;</emphasis>: 
-            If you have created some groups, e.g. "securitysensitive", then
-            checkboxes will appear here to allow you to add users to, or
-            remove them from, these groups.
+            "securitysensitive" といったグループを作成している場合、
+            それらのグループにユーザを追加・削除するためのチェックボックスが
+            ここに表示されます。
             </para>
           </listitem>
 
           <listitem>
             <para>
             <emphasis>canconfirm</emphasis>: 
-            This field is only used if you have enabled the "unconfirmed"
-            status. If you enable this for a user,
-            that user can then move bugs from "Unconfirmed" to a "Confirmed"
-            status (e.g.: "New" status).</para>
+            "unconfirmed" ステータスを有効にしている場合のみこのフィールドが利用されます。
+            ユーザに対してこれを有効にすれば、そのユーザは "Unconfirmed" 状態から
+            "Confirmed" 状態 ("New" など) にバグを移動できるようになります。
           </listitem>
 
           <listitem>
             <para>
             <emphasis>creategroups</emphasis>: 
-            This option will allow a user to create and destroy groups in
-            Bugzilla.</para>
+            このオプションが有効なユーザは Bugzilla のグループを作成・
+            削除できるようになります。</para>
           </listitem>
 
           <listitem>
             <para>
             <emphasis>editbugs</emphasis>: 
+            
             Unless a user has this bit set, they can only edit those bugs
             for which they are the assignee or the reporter. Even if this
             option is unchecked, users can still add comments to bugs.

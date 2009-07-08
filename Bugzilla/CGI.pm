@@ -141,7 +141,7 @@ sub canonicalise_query {
 
 sub clean_search_url {
     my $self = shift;
-    # Delete any empty URL parameter
+    # Delete any empty URL parameter.
     my @cgi_params = $self->param;
 
     foreach my $param (@cgi_params) {
@@ -160,6 +160,9 @@ sub clean_search_url {
 
     # Delete certain parameters if the associated parameter is empty.
     $self->delete('bugidtype')  if !$self->param('bug_id');
+
+    # Delete leftovers from the login form
+    $self->delete('Bugzilla_remember', 'GoAheadAndLogIn');
 
     foreach my $num (1,2) {
         # If there's no value in the email field, delete the related fields.
@@ -276,17 +279,41 @@ sub header {
     return $self->SUPER::header(@_) || "";
 }
 
-# CGI.pm is not utf8-aware and passes data as bytes instead of UTF-8 strings.
 sub param {
     my $self = shift;
-    if (Bugzilla->params->{'utf8'} && scalar(@_) == 1) {
-        if (wantarray) {
-            return map { _fix_utf8($_) } $self->SUPER::param(@_);
+
+    # When we are just requesting the value of a parameter...
+    if (scalar(@_) == 1) {
+        my @result = $self->SUPER::param(@_); 
+
+        # Also look at the URL parameters, after we look at the POST 
+        # parameters. This is to allow things like login-form submissions
+        # with URL parameters in the form's "target" attribute.
+        if (!scalar(@result)
+            && $self->request_method && $self->request_method eq 'POST')
+        {
+            @result = $self->SUPER::url_param(@_);
         }
-        else {
-            return _fix_utf8(scalar $self->SUPER::param(@_));
+
+        # Fix UTF-8-ness of input parameters.
+        if (Bugzilla->params->{'utf8'}) {
+            @result = map { _fix_utf8($_) } @result;
         }
+
+        return wantarray ? @result : $result[0];
     }
+    # And for various other functions in CGI.pm, we need to correctly
+    # return the URL parameters in addition to the POST parameters when
+    # asked for the list of parameters.
+    elsif (!scalar(@_) && $self->request_method 
+           && $self->request_method eq 'POST') 
+    {
+        my @post_params = $self->SUPER::param;
+        my @url_params  = $self->url_param;
+        my %params = map { $_ => 1 } (@post_params, @url_params);
+        return keys %params;
+    }
+
     return $self->SUPER::param(@_);
 }
 
