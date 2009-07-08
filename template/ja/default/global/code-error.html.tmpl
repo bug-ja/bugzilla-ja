@@ -32,7 +32,7 @@
   # in this file; if you do not wish to change it, use the "none" filter.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
+[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% DEFAULT title = "内部エラー" %]
 
@@ -326,6 +326,11 @@
   [% ELSIF error == "no_manual_moved" %]
     [% terms.bug %] を移動させることなく、[% terms.abug %] を MOVED 
     の解決方法にできません。
+
+  [% ELSIF error == "no_open_bug_status" %]
+    [% title = "$terms.Bug を承認できません" %]
+    [%+ get_status("UNCONFIRMED") FILTER html %]
+    から活動中のステータスへの有効な遷移が定義されていません。
 
   [% ELSIF error == "param_must_be_numeric" %]
     [% title = "無効なパラメータ" %]

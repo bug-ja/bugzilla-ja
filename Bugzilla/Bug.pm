@@ -539,6 +539,10 @@ sub create {
     $dbh->do('INSERT INTO longdescs (' . join(',', @columns)  . ")
                    VALUES ($qmarks)", undef, @values);
 
+    Bugzilla::Hook::process('bug-end_of_create', { bug => $bug,
+                                                   timestamp => $timestamp,
+                                                 });
+
     $dbh->bz_commit_transaction();
 
     # Because MySQL doesn't support transactions on the fulltext table,
@@ -2139,7 +2143,7 @@ sub set_status {
     
     if ($new_status->is_open) {
         # Check for the everconfirmed transition
-        $self->_set_everconfirmed(1) if $new_status->name ne 'UNCONFIRMED';
+        $self->_set_everconfirmed($new_status->name eq 'UNCONFIRMED' ? 0 : 1);
         $self->clear_resolution();
     }
     else {
@@ -3043,9 +3047,13 @@ sub GetComments {
     my $sth = $dbh->prepare($query);
     $sth->execute(@args);
 
+    # Cache the users we look up
+    my %users;
+
     while (my $comment_ref = $sth->fetchrow_hashref()) {
         my %comment = %$comment_ref;
-        $comment{'author'} = new Bugzilla::User($comment{'userid'});
+        $users{$comment{'userid'}} ||= new Bugzilla::User($comment{'userid'});
+        $comment{'author'} = $users{$comment{'userid'}};
 
         # If raw data is requested, do not format 'special' comments.
         $comment{'body'} = format_comment(\%comment) unless $raw;
@@ -3347,45 +3355,37 @@ sub RemoveVotes {
 # If a user votes for a bug, or the number of votes required to
 # confirm a bug has been reduced, check if the bug is now confirmed.
 sub CheckIfVotedConfirmed {
-    my ($id, $who) = (@_);
-    my $dbh = Bugzilla->dbh;
-
-    # XXX - Use bug methods to update the bug status and everconfirmed.
+    my $id = shift;
     my $bug = new Bugzilla::Bug($id);
 
-    my ($votes, $status, $everconfirmed, $votestoconfirm, $timestamp) =
-        $dbh->selectrow_array("SELECT votes, bug_status, everconfirmed, " .
-                              "       votestoconfirm, NOW() " .
-                              "FROM bugs INNER JOIN products " .
-                              "                  ON products.id = bugs.product_id " .
-                              "WHERE bugs.bug_id = ?",
-                              undef, $id);
-
     my $ret = 0;
-    if ($votes >= $votestoconfirm && !$everconfirmed) {
+    if (!$bug->everconfirmed && $bug->votes >= $bug->product_obj->votes_to_confirm) {
         $bug->add_comment('', { type => CMT_POPULAR_VOTES });
-        $bug->update();
 
-        if ($status eq 'UNCONFIRMED') {
-            my $fieldid = get_field_id("bug_status");
-            $dbh->do("UPDATE bugs SET bug_status = 'NEW', everconfirmed = 1, " .
-                     "delta_ts = ? WHERE bug_id = ?",
-                     undef, ($timestamp, $id));
-            $dbh->do("INSERT INTO bugs_activity " .
-                     "(bug_id, who, bug_when, fieldid, removed, added) " .
-                     "VALUES (?, ?, ?, ?, ?, ?)",
-                     undef, ($id, $who, $timestamp, $fieldid, 'UNCONFIRMED', 'NEW'));
+        if ($bug->bug_status eq 'UNCONFIRMED') {
+            # Get a valid open state.
+            my $new_status;
+            foreach my $state (@{$bug->status->can_change_to}) {
+                if ($state->is_open && $state->name ne 'UNCONFIRMED') {
+                    $new_status = $state->name;
+                    last;
+                }
+            }
+            ThrowCodeError('no_open_bug_status') unless $new_status;
+
+            # We cannot call $bug->set_status() here, because a user without
+            # canconfirm privs should still be able to confirm a bug by
+            # popular vote. We already know the new status is valid, so it's safe.
+            $bug->{bug_status} = $new_status;
+            $bug->{everconfirmed} = 1;
+            delete $bug->{'status'}; # Contains the status object.
         }
         else {
-            $dbh->do("UPDATE bugs SET everconfirmed = 1, delta_ts = ? " .
-                     "WHERE bug_id = ?", undef, ($timestamp, $id));
+            # If the bug is in a closed state, only set everconfirmed to 1.
+            # Do not call $bug->_set_everconfirmed(), for the same reason as above.
+            $bug->{everconfirmed} = 1;
         }
-
-        my $fieldid = get_field_id("everconfirmed");
-        $dbh->do("INSERT INTO bugs_activity " .
-                 "(bug_id, who, bug_when, fieldid, removed, added) " .
-                 "VALUES (?, ?, ?, ?, ?, ?)",
-                 undef, ($id, $who, $timestamp, $fieldid, '0', '1'));
+        $bug->update();
 
         $ret = 1;
     }
