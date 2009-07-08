@@ -19,7 +19,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 [% INCLUDE global/header.html.tmpl 
-  title = "$terms.Bugzilla 3.2.3 Release Notes" 
+  title = "$terms.Bugzilla 3.2.4 Release Notes" 
   style_urls = ['skins/standard/release-notes.css'] 
 %]
 
@@ -58,6 +58,28 @@
   もし、各リリースでどのような変更が加えられたかの<em>すべての</em>詳細が必要なら、
   <a href="http://www.bugzilla.org/status/changes.html">変更点一覧</a> (英語)
   を参照してください。</p>
+
+<h3>3.2.4</h3>
+
+<ul>
+  <li>ある種のメールにおいて改行が多数入るという問題に対処するために、
+    Perl モジュール Email::MIME::Encodings の特定のバージョンを要求するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=486206">[% terms.Bug %] 486206</a>)</li>
+  <li>[% terms.Bugzilla %] の JavaScript と CSS が Internet Explorer 8 
+    でも完全に互換性をもつようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=483150">[% terms.Bug %] 483150</a>)</li>
+  <li>定義されたソート順を持つ保存された検索を実行する際に、
+    既定のソート順を上書きすることがなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=491679">[% terms.Bug %] 491679</a>)</li>
+  <li>"NEW" というステータスが [% terms.Bugzilla %] になくても、
+    [% terms.abug %] を投票数で承認できるようになりました。
+   (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=500900">[% terms.Bug %] 500900</a>)</li>
+  <li>多数のコメントを含む [% terms.abug %] を表示する速度が高速化しました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=498318">[% terms.Bug %] 498318</a>)</li>
+</ul>
+
+<p>このリリースではセキュリティー修正も含んでいます。
+  詳細に関しては <a href="#v32_security">セキュリティー修正の項</a> をご覧ください。</p>
 
 <h3>3.2.3</h3>
 
@@ -126,6 +148,12 @@
 </ul>
 
 <h2><a name="v32_security">3.2.x リリースでのセキュリティー更新</a></h2>
+
+<h3>3.2.4</h3>
+
+<p>このリリースでは [% terms.bug %] 編集に関するセキュリティー問題1件を修正しています。
+  詳細については、<a href="http://www.bugzilla.org/security/3.2.3/">セキュリティーアドバイザリ</a>
+  をご覧ください。</p>
 
 <h3>3.2.3</h3>
 
