@@ -1,330 +1,326 @@
 <!-- <!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
 <chapter id="customization">
-  <title>Customizing Bugzilla</title>
+  <title>Bugzilla のカスタマイズ</title>
 
   <section id="cust-skins">
-    <title>Custom Skins</title>
+    <title>カスタムスキン (外装)</title>
     
     <para>
-      Bugzilla allows you to have multiple skins. These are custom CSS and possibly
-      also custom images for Bugzilla. To create a new custom skin, you have two
-      choices:
+      Bugzilla では複数の外装を利用することができます。これらには独自の CSS、
+      そしておそらく独自の Bugzilla 用の画像が含まれるでしょう。
+      新しい独自の外装を作成するには、二つの方法があります。
       <itemizedlist>
         <listitem>
           <para>
-            Make a single CSS file, and put it in the 
-            <filename>skins/contrib</filename> directory.
+            単一の CSS ファイルを作り、
+            <filename>skins/contrib</filename> ディレクトリに置く。
           </para>
         </listitem>
         <listitem>
           <para>
-            Make a directory that contains all the same CSS file
-            names as <filename>skins/standard/</filename>, and put
-            your directory in <filename>skins/contrib/</filename>.
+            <filename>skins/standard/</filename> ディレクトリにある全てと同じ名前の
+            CSS ファイルを含むディレクトリを作成し、
+            <filename>skins/contrib/</filename> に置く。
           </para>
         </listitem>
       </itemizedlist>
     </para>
       
     <para>
-      After you put the file or the directory there, make sure to run checksetup.pl
-      so that it can reset the file permissions correctly.
+      ファイルを置くかディレクトリを作成したあと、ファイル権限を正しく設定するために
+      checksetup.pl を必ず実行してください。
     </para>
     <para>
-      After you have installed the new skin, it will show up as an option in the
-      user's General Preferences. If you would like to force a particular skin on all
-      users, just select it in the Default Preferences and then uncheck "Enabled" on
-      the preference.
+      新外装を導入すると、ユーザの一般的な設定の中に、
+      オプションとして表示されるようになります。全ユーザに特定の外装を強制したい場合、
+      既定の設定画面でそれを選択し、設定で変更を "有効にする" 
+      のチェックを外してください。
     </para>
   </section>
   
   <section id="cust-templates">
-    <title>Template Customization</title>
+    <title>テンプレートのカスタマイズ</title>
     
     <para>
-      Administrators can configure the look and feel of Bugzilla without
-      having to edit Perl files or face the nightmare of massive merge
-      conflicts when they upgrade to a newer version in the future.
+      管理者は Perl ファイルを編集することや、将来の新バージョンへアップグレードする際に、
+      マージでの衝突の悪夢に悩まされることなく、Bugzilla の表示を設定することが可能です。
     </para>
     
     <para>
-      Templatization also makes localized versions of Bugzilla possible, 
-      for the first time. It's possible to have Bugzilla's UI language 
-      determined by the user's browser. More information is available in
-      <xref linkend="template-http-accept"/>.
+      テンプレート化は Bugzilla のローカライズをも可能としました。
+      Bugzilla の UI 言語をユーザのブラウザの設定から決定することも可能になりました。
+      より詳細に関しては
+      <xref linkend="template-http-accept"/> を参考にしてください。
     </para>
     
     <section id="template-directory">
-      <title>Template Directory Structure</title>
+      <title>テンプレートディレクトリ構造</title>
       <para>
-        The template directory structure starts with top level directory 
-        named <filename>template</filename>, which contains a directory
-        for each installed localization. The next level defines the
-        language used in the templates. Bugzilla comes with English
-        templates, so the directory name is <filename>en</filename>,
-        and we will discuss <filename>template/en</filename> throughout
-        the documentation. Below <filename>template/en</filename> is the
-        <filename>default</filename> directory, which contains all the
-        standard templates shipped with Bugzilla.
+        テンプレートディレクトリ構造は <filename>template</filename> 
+        という名前の最上位ディレクトリの下に、インストールされている言語の
+        ディレクトリが作成されています。一つ目のレベルのディレクトリは、
+        テンプレートの言語が何かを示します。英語の Bugzilla テンプレートは、
+        ディレクトリ名 <filename>en</filename> となり、全体としては
+        <filename>template/en</filename> となります。この <filename>template/en</template>
+        には、<filename>default</filename> ディレクトリがあり、Bugzilla 
+        の標準的なテンプレートが入っています。
       </para>
 
       <warning>
         <para>
-          A directory <filename>data/templates</filename> also exists;
-          this is where Template Toolkit puts the compiled versions of
-          the templates from either the default or custom directories.
-          <emphasis>Do not</emphasis> directly edit the files in this
-          directory, or all your changes will be lost the next time
-          Template Toolkit recompiles the templates.
+          <filename>data/templates</filename> も存在しますが、このディレクトリは
+          Template Toolkit が既定のもしくはカスタムのディレクトリを、
+          それぞれコンパイルしたものを保存する場所ですので、<emphasis>絶対に</emphasis> 
+          このディレクトリのファイルは直接編集しないでください。
+          もし編集したとしても次に Template Toolkit がコンパイルした時に、
+          全てが失われます。
         </para>
       </warning>
     </section>
 
     <section id="template-method">
-      <title>Choosing a Customization Method</title>
+      <title>カスタマイズの方法の選択</title>
       <para>
-        If you want to edit Bugzilla's templates, the first decision
-        you must make is how you want to go about doing so. There are two
-        choices, and which you use depends mainly on the scope of your 
-        modifications, and the method you plan to use to upgrade Bugzilla.
+        Bugzilla のテンプレートを編集する場合、最初にすべき決断は、
+        実行するためにどうやるのか、ということです。二つの選択肢があり、
+        主に編集内容がどういうものであるかや、アップグレードプランによります。
       </para> 
 
       <para>
-        The first method of making customizations is to directly edit the
-        templates found in <filename>template/en/default</filename>.
-        This is probably the best way to go about it if you are going to
-        be upgrading Bugzilla through CVS, because if you then execute
-        a <command>cvs update</command>, any changes you have made will
-        be merged automagically with the updated versions.
+        一つ目は、直接 <filename>template/en/default</filename>
+        のディレクトリにあるテンプレートを編集するという方法です。
+        CVS 経由で Bugzilla をアップデートするのであれば、
+        この方法がもっとも望ましい方法でしょう。なぜなら、
+        <command>cvs update</command> を実行した時に、あなたの変更も、
+        更新されたバージョンに自動的にマージされるからです。
       </para>
 
       <note>
         <para>
-          If you use this method, and CVS conflicts occur during an
-          update, the conflicted templates (and possibly other parts
-          of your installation) will not work until they are resolved.
+          この方法をとった場合、CVS がアップデート中に衝突を検出すると、
+          衝突したテンプレート (とおそらくサイトのほかの部分も) 
+          は衝突を解消するまで動作しないでしょう。
         </para>
       </note>
 
       <para>
-        The second method is to copy the templates to be modified
-        into a mirrored directory structure under 
-        <filename>template/en/custom</filename>. Templates in this
-        directory structure automatically override any identically-named
-        and identically-located templates in the 
-        <filename>default</filename> directory. 
+        二つ目の方法は、テンプレートを <filename>template/en/custom</filename>
+        ディレクトリの中に同じディレクトリ構造でコピーし、それを変更するものです。
+        このディレクトリ内のテンプレートは、自動的に同一の名前の 
+        <filename>default</filename> ディレクトリにあるテンプレートを、
+        上書きするものとして取り扱われます。
       </para>
 
       <note>
         <para>
-          The <filename>custom</filename> directory does not exist
-          at first and must be created if you want to use it.
+          <filename>custom</filename> ディレクトリは最初から存在するものではなく、
+          必要であればまず作成する必要があります。
         </para>
       </note>
 
       <para>
-        The second method of customization should be used if you 
-        use the overwriting method of upgrade, because otherwise 
-        your changes will be lost.  This method may also be better if
-        you are using the CVS method of upgrading and are going to make major
-        changes, because it is guaranteed that the contents of this directory
-        will not be touched during an upgrade, and you can then decide whether
-        to continue using your own templates, or make the effort to merge your
-        changes into the new versions by hand.
+        二つ目の方法では、アップグレード時に上書きを行う場合に利用すべきで、
+        そうでなければあなたの変更はなくなってしまいます。
+        アップグレードに CVS を利用している場合でも、
+        主要バージョン変更を行おうとしている場合にはこちらの方が適しています。
+        このアップグレードにおいても、
+        このディレクトリの中のファイルは影響を受けないことが保障されており、
+        あなたのテンプレートを利用し続けるか、もしくは、
+        新しいバージョンに手作業で変更を統合するかの選択が可能になります。
       </para>
 
       <para>
-        Using this method, your installation may break if incompatible
-        changes are made to the template interface.  Such changes should
-        be documented in the release notes, provided you are using a
-        stable release of Bugzilla.  If you use using unstable code, you will
-        need to deal with this one yourself, although if possible the changes
-        will be mentioned before they occur in the deprecations section of the
-        previous stable release's release notes.
+        この方法を利用する場合でも、あなたのサイトは、
+        テンプレートに非互換の更新が行われた場合に動作しなくなる可能性があります。
+        そういった変更は、Bugzilla の安定版を利用している場合は、
+        リリースノートなどに記載されています。もし、開発版を利用している場合は、
+        変更について前の安定版のリリースノートにある同様の部分に記載されるまでは、
+        この更新については自分自身で十分に把握しておく必要があります。
       </para>
 
       <note>
         <para>
-          Regardless of which method you choose, it is recommended that
-          you run <command>./checksetup.pl</command> after creating or
-          editing any templates in the <filename>template/en/default</filename>
-          directory, and after editing any templates in the 
-          <filename>custom</filename> directory.
+          どの方式を利用したとしても、
+          <filename>template/en/default</filename> ディレクトリの中にある
+          テンプレートを作成・更新した後や、<filename>custom</filename>
+          ディレクトリ中のテンプレートを更新した際に、
+          <command>./checksetup.pl</command> を実行する必要があります。 
         </para>
       </note>
 
       <warning>
         <para>
-          It is <emphasis>required</emphasis> that you run 
-          <command>./checksetup.pl</command> after creating a new
-          template in the <filename>custom</filename> directory. Failure
-          to do so will raise an incomprehensible error message.
+          <filename>custom</filename> ディレクトリに新しいテンプレートを作成したあと、
+          <emphasis>必ず</emphasis> <command>./checksetup.pl</command>
+          を実行してください。この時にエラーが発生していると、
+          不完全なエラーメッセージが表示されることになります。
         </para>
       </warning>
     </section>
     
     <section id="template-edit">
-      <title>How To Edit Templates</title>
+      <title>テンプレートの編集方法</title>
       
       <note>
         <para>
-          If you are making template changes that you intend on submitting back
-          for inclusion in standard Bugzilla, you should read the relevant
-          sections of the 
-          <ulink url="http://www.bugzilla.org/docs/developer.html">Developers'
-          Guide</ulink>.
+          もし、テンプレートへの編集内容を Bugzilla そのものに反映させようとする場合、
+          <ulink url="http://www.bugzilla.org/docs/developer.html">開発者ガイド
+          </ulink> の関連する部分を読んでください。
         </para>
       </note>
       
       <para>
-        The syntax of the Template Toolkit language is beyond the scope of
-        this guide. It's reasonably easy to pick up by looking at the current 
-        templates; or, you can read the manual, available on the
-        <ulink url="http://www.template-toolkit.org">Template Toolkit home
-        page</ulink>.
+        Template Toolkit の言語そのものの仕様に関しては、このガイドの範囲ではありません。
+        現在のテンプレートを参照することで、簡単な部分を把握することは可能でしょう。
+        もしくは、
+        <ulink url="http://www.template-toolkit.org">Template Toolkit ホームページ
+        </ulink> にあるマニュアルを参照してください。
       </para>
       
       <para>
-        One thing you should take particular care about is the need
-        to properly HTML filter data that has been passed into the template.
-        This means that if the data can possibly contain special HTML characters
-        such as &lt;, and the data was not intended to be HTML, they need to be
-        converted to entity form, i.e. &amp;lt;.  You use the 'html' filter in the
-        Template Toolkit to do this.  If you forget, you may open up
-        your installation to cross-site scripting attacks.
+        特別の注意を払う必要がある部分は、テンプレートに渡されたデータに対する
+        HTML フィルターを適切に行うところです。これは、
+        データが特別な HTML 文字列を含む可能性がある場合、
+        たとえば &lt; など、このデータは HTML に導入できないので、
+        &amp;lt; といったエンティティー形式に変換する必要があります。
+        このためには Template Toolkit の 'html' フィルターを利用できます。
+        処理を忘れた場合、あなたのサイトが、
+        クロスサイトスクリプティング攻撃の影響を受ける可能性があります。
       </para>
 
       <para>
-        Also note that Bugzilla adds a few filters of its own, that are not
-        in standard Template Toolkit.  In particular, the 'url_quote' filter
-        can convert characters that are illegal or have special meaning in URLs,
-        such as &amp;, to the encoded form, i.e. %26.  This actually encodes most
-        characters (but not the common ones such as letters and numbers and so
-        on), including the HTML-special characters, so there's never a need to
-        HTML filter afterwards.
+        Bugzilla 自身もまたいくつかの Template Tookit 
+        標準にないフィルターを定義しています。たとえば、'url_quote' 
+        フィルターは URL として無効もしくは特別な意味を持つ文字、
+        たとえば &amp; を %26 などのエンコードされた形式へを変換します。
+        この処理は HTML 特殊文字を含む、ほとんどの文字 (ただし、
+        文字や数字などの普通の文字を除く) を変換しますので、
+        HTML フィルターに再度通す必要はありません。
       </para>
  
       <para>
-        Editing templates is a good way of doing a <quote>poor man's custom
-        fields</quote>.
-        For example, if you don't use the Status Whiteboard, but want to have
-        a free-form text entry box for <quote>Build Identifier</quote>,
-        then you can just
-        edit the templates to change the field labels. It's still be called
-        status_whiteboard internally, but your users don't need to know that.
+        テンプレートの編集は <quote>簡単なカスタムフィールド</quote> 
+        としても有用です。
+        たとえば、ステータスホワイトボードが不要で、<quote>ビルド文字列</quote>
+        のために自由入力フォームが必要な場合、
+        テンプレートのフィールドラベルを編集することで実現できます。
+        内部的には status_whiteboard を呼び出してはいますが、
+        ユーザがそれを知ることはありません。
       </para>
       
     </section>
             
     
     <section id="template-formats">
-      <title>Template Formats and Types</title>
+      <title>テンプレート形式と型</title>
       
       <para>
-        Some CGI's have the ability to use more than one template. For example,
-        <filename>buglist.cgi</filename> can output itself as RDF, or as two 
-        formats of HTML (complex and simple). The mechanism that provides this 
-        feature is extensible.
+        いくつかの CGI ではひとつ以上のテンプレートを利用しています。
+        たとえば、<filename>buglist.cgi</filename> はそれ自身だけで RDF 
+        や二つの形式の HTML (複雑なものと単純なもの) を出力できます。
+        これを提供しているメカニズムは拡張して利用することが可能です。
       </para>
 
       <para>
-        Bugzilla can support different types of output, which again can have 
-        multiple formats. In order to request a certain type, you can append 
-        the &amp;ctype=&lt;contenttype&gt; (such as rdf or html) to the 
-        <filename>&lt;cginame&gt;.cgi</filename> URL. If you would like to 
-        retrieve a certain format, you can use the &amp;format=&lt;format&gt; 
-        (such as simple or complex) in the URL.
+        Bugzilla は異なる型の出力を行うことができ、
+        前述のように複数の形式を提供できます。特定の型の要求は、
+        <filename>&lt;cginame&gt;.cgi</filename> URL に、
+        &amp;ctype=&lt;contenttype&gt; (rdf や html など) を付け加えることで行えます。
+        特定の形式の要求は、URL に &amp;format=&lt;format&gt; 
+        (simple や complex など) を付け加えることで行えます。
       </para>
       
       <para>
-        To see if a CGI supports multiple output formats and types, grep the
-        CGI for <quote>get_format</quote>. If it's not present, adding
-        multiple format/type support isn't too hard - see how it's done in
-        other CGIs, e.g. config.cgi.
+        CGI が複数の形式や型の出力をサポートしているかを判断するには、
+        CGI を <quote>get_format</quote> で検索してください。存在していなくても、
+        複数の形式や型のサポートは難しくはありません。config.cgi 
+        などの既に行われている CGI を参照してください。
       </para>
       
       <para>
-        To make a new format template for a CGI which supports this, 
-        open a current template for
-        that CGI and take note of the INTERFACE comment (if present.) This 
-        comment defines what variables are passed into this template. If 
-        there isn't one, I'm afraid you'll have to read the template and
-        the code to find out what information you get. 
+        これらをサポートしている CGI に新しい形式のテンプレートを付け加える場合、
+        CGI が利用する既存のテンプレートを開き、(存在していれば)
+        INTERFACE コメントを参照してください。
+        このコメントはどのような変数がテンプレートに渡されるかを記述しています。
+        もし記述がなければ、テンプレートやソースコードを読んで、
+        取得したい情報がどのように渡されているかを見つける必要があります。
       </para>     
   
       <para>
-        Write your template in whatever markup or text style is appropriate.
+        マークアップやテキストなどの必要な形式でテンプレートを記述してください。
       </para>
       
       <para>
-        You now need to decide what content type you want your template
-        served as. The content types are defined in the
-        <filename>Bugzilla/Constants.pm</filename> file in the 
-        <filename>contenttypes</filename>
-        constant. If your content type is not there, add it. Remember
-        the three- or four-letter tag assigned to your content type. 
-        This tag will be part of the template filename.
+        あなたのテンプレートでどのような型 (Content-Type) 
+        を提供したいかを決定する必要があります。
+        これらの型は、<filename>Bugzilla/Constants.pm</filename> 
+        の <filename>contenttypes</filename> 定数で定義されています。
+        もし、利用したい型がここに存在しなければ、追加してください。
+        あなたが必要な型につけられている3文字もしくは4文字のタグを覚えてください。
+        このタグがテンプレートのファイル名の一部となります。
       </para>
 
       <note>
         <para>
-          After adding or changing a content type, it's suitable to edit
-          <filename>Bugzilla/Constants.pm</filename> in order to reflect
-          the changes. Also, the file should be kept up to date after an
-          upgrade if content types have been customized in the past. 
+          型を追加・変更した後、変更を反映させるために、
+          <filename>Bugzilla/Constants.pm</filename> を変更するのがいいでしょう。
+          また、このファイルはアップグレード時にも、
+          過去に型をカスタマイズしていた場合はそれらを反映させる必要があります。
         </para>
       </note>
       
       <para>
-        Save the template as <filename>&lt;stubname&gt;-&lt;formatname&gt;.&lt;contenttypetag&gt;.tmpl</filename>. 
-        Try out the template by calling the CGI as 
-        <filename>&lt;cginame&gt;.cgi?format=&lt;formatname&gt;&amp;ctype=&lt;type&gt;</filename> .
-      </para>       
+        テンプレートを
+        <filename>&lt;stubname&gt;-&lt;formatname&gt;.&lt;contenttypetag&gt;.tmpl</filename>
+        として保存してください。そして、テンプレートの試験のために CGI を
+        <filename>&lt;cginame&gt;.cgi?format=&lt;formatname&gt;&amp;ctype=&lt;type&gt;</filename>
+        として呼んでください。
+      </para>
     </section>
     
     
     <section id="template-specific">
-      <title>Particular Templates</title>
+      <title>特別なテンプレート</title>
       
       <para>
-        There are a few templates you may be particularly interested in
-        customizing for your installation.
+        サイトでのカスタマイズの際に特別に興味を持つことになる、
+        いくつかのテンプレートがあります。
       </para>
       
       <para>
         <command>index.html.tmpl</command>:
-        This is the Bugzilla front page.
+        Bugzilla のフロントページです。
       </para>      
 
       <para>
         <command>global/header.html.tmpl</command>:
-        This defines the header that goes on all Bugzilla pages.
-        The header includes the banner, which is what appears to users
-        and is probably what you want to edit instead.  However the
-        header also includes the HTML HEAD section, so you could for
-        example add a stylesheet or META tag by editing the header.
+        全ての Bugzilla のページで利用されるヘッダを定義しています。
+        ヘッダは、ユーザの目を引き、おそらく編集したくなる、
+        バナーの部分を含みます。しかしながら、このヘッダには
+        HTML HEAD セクションも含まれており、
+        これを参考にしてスタイルシートや META タグを追加することも可能です。
       </para>
 
       <para>
         <command>global/banner.html.tmpl</command>:
-        This contains the <quote>banner</quote>, the part of the header
-        that appears
-        at the top of all Bugzilla pages.  The default banner is reasonably
-        barren, so you'll probably want to customize this to give your
-        installation a distinctive look and feel.  It is recommended you
-        preserve the Bugzilla version number in some form so the version 
-        you are running can be determined, and users know what docs to read.
+        <quote>バナー</quote> 本体を含んでおり、全ての Bugzilla 
+        ページの先頭部分に表示されます。デフォルトのバナーは単純なものですので、
+        サイトの特色のある表示に差し替えることとなるでしょう。
+        いくつかのページに含まれる、Bugzilla バージョン番号は、
+        どれを実行しているかを示すもので、ユーザにとって、
+        どのドキュメントを読むべきかを知るのに利用できますので、残しておくべきです。
       </para>
 
       <para>
         <command>global/footer.html.tmpl</command>:
-        This defines the footer that goes on all Bugzilla pages.  Editing
-        this is another way to quickly get a distinctive look and feel for
-        your Bugzilla installation.
+        全ての Bugzilla のページで利用されるフッタを定義しています。
+        Bugzilla のサイトを特色のある表示に簡単に変更するために必要な、
+        もう一つのファイルです。
       </para>
 
       <para>
         <command>global/variables.none.tmpl</command>:
+        Bugzilla 
         This defines a list of terms that may be changed in order to
         <quote>brand</quote> the Bugzilla instance In this way, terms
         like <quote>bugs</quote> can be replaced with <quote>issues</quote>
