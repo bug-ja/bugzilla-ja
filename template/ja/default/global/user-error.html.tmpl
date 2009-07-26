@@ -1167,8 +1167,8 @@
     アカウントを作成していない可能性があります。
 
   [% ELSIF error == "invalid_username_or_password" %]
-    [% title = BLOCK %] [% jawords.account_login_name FILTER html %] 、もしくは [% jawords.account_password FILTER html %] が無効です [% END %]
-    指定された [% jawords.account_login_name FILTER html %]、もしくは [% jawords.password FILTER html %] が無効です。
+    [% title = BLOCK %] ログイン名、もしくはパスワードが無効です [% END %]
+    指定されたログイン名、もしくはパスワードが無効です。
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は既に存在しています [% END %]
