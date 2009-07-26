@@ -72,15 +72,15 @@ BEGIN {
 ###########
 
 sub comments {
-    my ($self, $params) = validate(@_, 'bug_ids', 'comment_ids');
+    my ($self, $params) = validate(@_, 'ids', 'comment_ids');
 
-    if (!(defined $params->{bug_ids} || defined $params->{comment_ids})) {
+    if (!(defined $params->{ids} || defined $params->{comment_ids})) {
         ThrowCodeError('params_required',
                        { function => 'Bug.comments',
-                         params   => ['bug_ids', 'comment_ids'] });
+                         params   => ['ids', 'comment_ids'] });
     }
 
-    my $bug_ids = $params->{bug_ids} || [];
+    my $bug_ids = $params->{ids} || [];
     my $comment_ids = $params->{comment_ids} || [];
 
     my $dbh  = Bugzilla->dbh;
@@ -191,14 +191,16 @@ sub history {
     defined $ids || ThrowCodeError('param_required', { param => 'ids' });
 
     my @return;
+
     foreach my $bug_id (@$ids) {
         my %item;
         my $bug = Bugzilla::Bug->check($bug_id);
         $bug_id = $bug->id;
+        $item{id} = $self->type('int', $bug_id);
 
         my ($activity) = Bugzilla::Bug::GetBugActivity($bug_id);
-        $item{$bug_id} = [];
 
+        my @history;
         foreach my $changeset (@$activity) {
             my %bug_history;
             $bug_history{when} = $self->type('dateTime',
@@ -220,8 +222,10 @@ sub history {
                 push (@{$bug_history{changes}}, $change);
             }
             
-            push (@{$item{$bug_id}}, \%bug_history);
-        }   
+            push (@history, \%bug_history);
+        }
+
+        $item{history} = \@history;
 
         # alias is returned in case users passes a mixture of ids and aliases
         # then they get to know which bug activity relates to which value  
@@ -584,7 +588,7 @@ and/or comment ids.
 
 =item B<Params>
 
-B<Note>: At least one of C<bug_ids> or C<comment_ids> is required.
+B<Note>: At least one of C<ids> or C<comment_ids> is required.
 
 In addition to the parameters below, this method also accepts the
 standard L<include_fields|Bugzilla::WebService/include_fields> and
@@ -592,7 +596,7 @@ L<exclude_fields|Bugzilla::WebService/exclude_fields> arguments.
 
 =over
 
-=item C<bug_ids> 
+=item C<ids>
 
 C<array> An array that can contain both bug IDs and bug aliases.
 All of the comments (that are visible to you) will be returned for the
@@ -607,7 +611,7 @@ respective bugs.
 =item C<new_since>
 
 C<dateTime> If specified, the method will only return comments I<newer>
-than this time. This only affects comments returned from the C<bug_ids>
+than this time. This only affects comments returned from the C<ids>
 argument. You will always be returned all comments you request in the
 C<comment_ids> argument, even if they are older than this date.
 
@@ -621,13 +625,13 @@ Two items are returned:
 
 =item C<bugs>
 
-This is used for bugs specified in C<bug_ids>. This is a hash,
+This is used for bugs specified in C<ids>. This is a hash,
 where the keys are the numeric ids of the bugs, and the value is
 a hash with a single key, C<comments>, which is an array of comments.
 (The format of comments is described below.)
 
 Note that any individual bug will only be returned once, so if you
-specify an id multiple times in C<bug_ids>, it will still only be
+specify an id multiple times in C<ids>, it will still only be
 returned once.
 
 =item C<comments>
@@ -933,16 +937,23 @@ try to specify an alias. (It will be error 100.)
 
 =item B<Returns>
 
-A hash containing a single element, C<bugs>. This is a hash of hashes. 
-Each hash has the numeric bug id as a key, and contains the following
-items:
+A hash containing a single element, C<bugs>. This is an array of hashes,
+containing the following keys:
 
 =over
+
+=item id
+
+C<int> The numeric id of the bug.
 
 =item alias
 
 C<string> The alias of this bug. If there is no alias or aliases are 
 disabled in this Bugzilla, this will be undef.
+
+=item history
+
+C<array> An array of hashes, each hash having the following keys:
 
 =over
 
@@ -1390,6 +1401,10 @@ The id you specified doesn't exist in the database.
 
 You did not have the necessary rights to edit the bug.
 
+=item 113 (Can't Make Private Comments)
+
+You tried to add a private comment, but don't have the necessary rights.
+
 =back
 
 =item B<History>
@@ -1399,6 +1414,9 @@ You did not have the necessary rights to edit the bug.
 =item Added in Bugzilla B<3.2>.
 
 =item Modified to return the new comment's id in Bugzilla B<3.4>
+
+=item Modified to throw an error if you try to add a private comment
+but can't, in Bugzilla B<3.4>.
 
 =back
 

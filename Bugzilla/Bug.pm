@@ -1192,9 +1192,10 @@ sub _check_comment {
 
 sub _check_commentprivacy {
     my ($invocant, $comment_privacy) = @_;
-    my $insider_group = Bugzilla->params->{"insidergroup"};
-    return ($insider_group && Bugzilla->user->in_group($insider_group) 
-            && $comment_privacy) ? 1 : 0;
+    if ($comment_privacy && !Bugzilla->user->is_insider) {
+        ThrowUserError('user_not_insider');
+    }
+    return $comment_privacy ? 1 : 0;
 }
 
 sub _check_comment_type {
@@ -2425,6 +2426,14 @@ sub add_see_also {
     # case-sensitive, but most of our DBs are case-insensitive, so we do
     # this check case-insensitively.
     if (!grep { lc($_) eq lc($result) } @{ $self->see_also }) {
+        my $privs;
+        my $can = $self->check_can_change_field('see_also', '', $result, \$privs);
+        if (!$can) {
+            ThrowUserError('illegal_change', { field    => 'see_also',
+                                               newvalue => $result,
+                                               privs    => $privs });
+        }
+
         push(@{ $self->see_also }, $result);
     }
 }
@@ -2432,7 +2441,15 @@ sub add_see_also {
 sub remove_see_also {
     my ($self, $url) = @_;
     my $see_also = $self->see_also;
-    @$see_also = grep { lc($_) ne lc($url) } @$see_also;
+    my @new_see_also = grep { lc($_) ne lc($url) } @$see_also;
+    my $privs;
+    my $can = $self->check_can_change_field('see_also', $see_also, \@new_see_also, \$privs);
+    if (!$can) {
+        ThrowUserError('illegal_change', { field    => 'see_also',
+                                           oldvalue => $url,
+                                           privs    => $privs });
+        }
+    $self->{see_also} = \@new_see_also;
 }
 
 #####################################################################

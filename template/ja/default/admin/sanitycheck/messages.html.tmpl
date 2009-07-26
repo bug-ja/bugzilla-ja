@@ -169,6 +169,12 @@
       [% END %]
     [% END %]
 
+  [% ELSIF san_tag == "everconfirmed_start" %]
+    OK, everconfirmed を修復中です。
+
+  [% ELSIF san_tag == "everconfirmed_end" %]
+    everconfirmed の修復完了。
+
   [% ELSIF san_tag == "flag_check_start" %]
     間違ったプロダクト・コンポーネントにあるフラグを確認中。
 

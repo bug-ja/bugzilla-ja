@@ -1364,11 +1364,13 @@
 
   [% ELSIF error == "no_bugs_in_list" %]
     [% title = BLOCK %] [% jawords.tag FILTER html %] を削除して良いですか? [% END %]
-    [% jawords.tag FILTER html %] [% tag FILTER html %] から全ての [% terms.bugs %] を削除します。
+    [% jawords.tag FILTER html %] <em>[% name FILTER html %]</em> から全ての [% terms.bugs %] を削除します。
     この操作を実行すると、完全に [% jawords.tag FILTER html %] を削除します(やり直すことはできません)。
     本当に実行するかを確認してから
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- tag FILTER url_quote %]">削除を実行</a>してください。
+    [%- name FILTER url_quote %]&amp;token=
+    [%- issue_hash_token([query_id, name]) FILTER url_quote %]">削除を実行</a>
+    してください。
 
   [% ELSIF error == "no_bugs_to_remove" %]
     [% title = BLOCK %] [% jawords.tag FILTER html %] が選択されていません [% END %]
@@ -1814,6 +1816,11 @@
     [% title = BLOCK %] [% jawords.login_name FILTER html %] が一致しませんでした [% END %]
     <tt>[% name FILTER html %]</tt> は登録されていないか、
     あなたのアカウントにこの [% jawords.user FILTER html %] を閲覧する権限がありません。
+
+  [% ELSIF error == "user_not_insider" %]
+    [% title = "このユーザはグループに含まれていません" %]
+    申し訳ありませんが、あなたにはコメントや添付をプライベートに設定、
+    もしくは解除する権限がありません。
 
   [% ELSIF error == "votes_must_be_nonnegative" %]
     [% title = BLOCK %] 指定された [% jawords.vote_count FILTER html %] が負の数値です [% END %]
