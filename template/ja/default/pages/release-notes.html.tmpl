@@ -83,7 +83,7 @@
 [% INCLUDE req_table reqs = REQUIRED_MODULES
                      new = ['URI', 'DateTime', 'DateTime-TimeZone', 
                             'Digest-SHA']
-                     updated = [] %]
+                     updated = ['Template-Toolkit'] %]
 
 <h3><a name="v34_req_optional_mod"></a>追加の Perl モジュール</h3>
 
@@ -323,12 +323,13 @@
 
 <ul>
   <li>ウェブサービスに複数の機能が追加されました。
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#history">B[% %]ug.history</a>,
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#search">B[% %]ug.search</a>,
-    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/User.html#get">User.get</a>,
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#comments">B[% %]ug.comments</a>,
-    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bugzilla.html#time">B[% %]ugzilla.time</a>
-    (<kbd>B[% %]ugzilla.timezone</kbd> は削除されました)、そして
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#update_see_also">B[% %]ug.update_see_also</a> です。
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/User.html#get">User.get</a>,
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bugzilla.html#time">B[% %]ugzilla.time</a>
+    (<kbd>B[% %]ugzilla.timezone</kbd> は削除されました)
   </li>
   <li>ネットワークの効率化のため、<kbd>User.get</kbd> 
     といったウェブサービスの各機能から返される件数を制限できるようになりました。</li>
@@ -338,6 +339,10 @@
   <li><kbd>B[% %]ug.get</kbd> メソッドはより多くのフィールドを返します。</li>
   <li><kbd>B[% %]ug.add_comment</kbd> メソッドは追加したコメントの ID
     を返すようになりました。</li>
+  <li><kbd>B[% %]ug.add_comment</kbd> メソッドは、権限を持っていないにもかかわらず、
+    プライベートコメントを追加しようとした場合にエラーを返すようになりました。
+    (過去のバージョンでは、<kbd>private</kbd> 引数は、権限がない場合は単純に無視されました。)
+    </li>
   <li>複数のウェブサービス関数のパラメータが、配列に加えて、
     単独値を取れるようになりました。</li>
   <li>ウェブサービスは、日時が正確であるかや、整数が整数であるか、
