@@ -320,127 +320,121 @@
 
       <para>
         <command>global/variables.none.tmpl</command>:
-        Bugzilla 
-        This defines a list of terms that may be changed in order to
-        <quote>brand</quote> the Bugzilla instance In this way, terms
-        like <quote>bugs</quote> can be replaced with <quote>issues</quote>
-        across the whole Bugzilla installation. The name
-        <quote>Bugzilla</quote> and other words can be customized as well.
+        Bugzilla ではサイトごとに <quote>ブランド</quote> 付けをするために利用できる、
+        用語のリストを定義しています。この方法により、<quote>bugs</quote> 
+        のような用語を Bugzilla 全体で <quote>issues</quote> 
+        に変換することが可能になります。
+        <quote>Bugzilla</quote> の名前や他の単語を変更することができます。
       </para>
 
       <para>
         <command>list/table.html.tmpl</command>:
-        This template controls the appearance of the bug lists created
-        by Bugzilla. Editing this template allows per-column control of 
-        the width and title of a column, the maximum display length of
-        each entry, and the wrap behaviour of long entries.
-        For long bug lists, Bugzilla inserts a 'break' every 100 bugs by
-        default; this behaviour is also controlled by this template, and
-        that value can be modified here.
+        このテンプレートは、Bugzilla によるバグリストの表示方法を定義しています。
+        このテンプレートを利用することで、カラム毎の幅や、タイトル、
+        各内容の最大表示長さ、長い文の折りたたみ方法を変更することが可能です。
+        長いバグリストでは、Bugzilla は既定では 100 行ごとに '区切り'
+        を挿入しますが、この動作もこのテンプレートで制御でき、
+        この値も変更することができます。
        </para>
 
       <para>
         <command>bug/create/user-message.html.tmpl</command>:
-        This is a message that appears near the top of the bug reporting page.
-        By modifying this, you can tell your users how they should report
-        bugs.
+        バグ報告ページの先頭部分に表示されるメッセージです。
+        これを編集することで、ユーザにどのようにバグ報告を行うべきかを伝えられます。
       </para>
 
       <para>
         <command>bug/process/midair.html.tmpl</command>:
-        This is the page used if two people submit simultaneous changes to the
-        same bug.  The second person to submit their changes will get this page
-        to tell them what the first person did, and ask if they wish to
-        overwrite those changes or go back and revisit the bug.  The default
-        title and header on this page read "Mid-air collision detected!"  If
-        you work in the aviation industry, or other environment where this
-        might be found offensive (yes, we have true stories of this happening)
-        you'll want to change this to something more appropriate for your
-        environment.
+        同じバグに複数のユーザが似たような変更を加えようとした時に利用されるページです。
+        二人目のユーザが変更した時、一人目がどのような変更を加えたかを表示し、
+        その変更を上書きするか、もしくはバグに戻ってやり直すかを、
+        ユーザが選択できるようになります。ページの既定のタイトルとヘッダは、
+        "衝突が検出されました !" です。もし、航空業界や、
+        その他のこのメッセージが攻撃的と思える環境 (注: 英語版の直訳は、
+        "空中衝突検出 !" です) であれば (もちろんそういうことは十分にありえます)
+        このメッセージをより環境にあった他のものに変更することになるでしょう。
       </para>
 
       <para>
-        <command>bug/create/create.html.tmpl</command> and
+        <command>bug/create/create.html.tmpl</command> と
         <command>bug/create/comment.txt.tmpl</command>:
-        You may not wish to go to the effort of creating custom fields in
-        Bugzilla, yet you want to make sure that each bug report contains
-        a number of pieces of important information for which there is not
-        a special field. The bug entry system has been designed in an
-        extensible fashion to enable you to add arbitrary HTML widgets,
-        such as drop-down lists or textboxes, to the bug entry page
-        and have their values appear formatted in the initial comment.
-        A hidden field that indicates the format should be added inside
-        the form in order to make the template functional. Its value should
-        be the suffix of the template filename. For example, if the file
-        is called <filename>create-cust.html.tmpl</filename>, then
+        Bugzilla でのカスタムフィールドの恩恵を受けたくないと考えている場合でも、
+        特別なフィールドを利用するのではなく、いくつかの重要な情報を、
+        バグ報告に含むようにしたいと考えることがあるかもしれません。
+        バグ登録システムは、ドロップダウンリスト、テキストボックスなど、
+        自由に HTML ウイジェットを追加できるような拡張性のある設計になっており、
+        それらに初期コメントとして値を入れることも可能です。
+        隠しフィールド "format" は、
+        テンプレートを正常に動作させるためにフォームの中に入れておく必要があります。
+        この値はテンプレートのファイル名を接頭辞とします。
+        たとえば、ファイルが <filename>create-cust.html.tmpl</filename>
+        の場合、
         <programlisting>&lt;input type="hidden" name="format" value="cust"&gt;</programlisting>
-        should be used inside the form.
+        をフォームに含む必要があります。
       </para>
 
       <para>  
-        An example of this is the mozilla.org 
-        <ulink url="http://landfill.bugzilla.org/bugzilla-tip/enter_bug.cgi?product=WorldControl&amp;format=guided">guided 
-        bug submission form</ulink>. The code for this comes with the Bugzilla
-        distribution as an example for you to copy. It can be found in the
-        files 
-        <filename>create-guided.html.tmpl</filename> and
-        <filename>comment-guided.html.tmpl</filename>.
+        このサンプルには mozilla.org の
+        <ulink url="http://landfill.bugzilla.org/bugzilla-tip/enter_bug.cgi?product=WorldControl&amp;format=guided">
+        ガイドつきバグ登録フォーム</ulink> があります。このコードは、
+        Bugzilla 配布物の中にサンプルとして含まれています。
+        <filename>create-guided.html.tmpl</filename> と
+        <filename>comment-guided.html.tmpl</filename> です。
       </para>  
 
       <para>
-        So to use this feature, create a custom template for 
-        <filename>enter_bug.cgi</filename>. The default template, on which you
-        could base it, is 
-        <filename>custom/bug/create/create.html.tmpl</filename>.
-        Call it <filename>create-&lt;formatname&gt;.html.tmpl</filename>, and
-        in it, add widgets for each piece of information you'd like
-        collected - such as a build number, or set of steps to reproduce.
+        この機能を利用するには、<filename>enter_bug.cgi</filename>
+        向けのカスタムテンプレートも必要です。ベースとして利用できる、
+        既定のテンプレートは、
+        <filename>custom/bug/create/create.html.tmpl</filename>
+        となります。これを
+        <filename>create-&lt;formatname&gt;.html.tmpl</filename> とし、
+        ビルド番号や再現手順など、
+        収集したい情報それぞれのためのウィジェットを追加してください。
       </para>
 
       <para>
-        Then, create a template like 
-        <filename>custom/bug/create/comment.txt.tmpl</filename>, and call it 
-        <filename>comment-&lt;formatname&gt;.txt.tmpl</filename>. This 
-        template should reference the form fields you have created using
-        the syntax <filename>[% form.&lt;fieldname&gt; %]</filename>. When a 
-        bug report is
-        submitted, the initial comment attached to the bug report will be
-        formatted according to the layout of this template.
+        そして、テンプレートを
+        <filename>custom/bug/create/comment.txt.tmpl</filename> の場所に、
+        <filename>comment-&lt;formatname&gt;.txt.tmpl</filename> として置いてください。
+        このテンプレートでは <filename>[% form.&lt;fieldname&gt; %]</filename>
+        の形式で、作成したフォームフィールドの値を参照できるようになります。
+        バグ報告の登録があると、バグ報告につけられる最初のコメントは、
+        このテンプレートに従ってフォーマットされたものとなります。
       </para> 
 
       <para>
-        For example, if your custom enter_bug template had a field
+        たとえば、あなたの enter_bug テンプレートが
         <programlisting>&lt;input type="text" name="buildid" size="30"&gt;</programlisting>
-        and then your comment.txt.tmpl had
+        フィールドを持つ場合、comment.txt.tmpl に
         <programlisting>BuildID: [% form.buildid %]</programlisting>
-        then something like
+        があれば、
         <programlisting>BuildID: 20020303</programlisting>
-        would appear in the initial comment.
+        などと最初のコメントに記録されます。
       </para>            
     </section>          
 
 
     <section id="template-http-accept">
-      <title>Configuring Bugzilla to Detect the User's Language</title>
+      <title>Bugzilla をユーザの利用言語を考慮するよう設定する</title>
 
-      <para>Bugzilla honours the user's Accept: HTTP header. You can install
-      templates in other languages, and Bugzilla will pick the most appropriate
-      according to a priority order defined by you. Many
-      language templates can be obtained from <ulink 
-      url="http://www.bugzilla.org/download.html#localizations"/>. Instructions
-      for submitting new languages are also available from that location.
+      <para>Bugzilla は Accept: HTTP ヘッダを参照します。
+      他の言語のテンプレートも導入でき、Bugzilla はあなたが指定した順序に従い、
+      最適な言語を選択します。さまざまな言語のテンプレートを <ulink 
+      url="http://www.bugzilla.org/download.html#localizations"/> から入手できます。
+      新しい言語の登録方法に関しても上記ページにあります。
       </para>
     </section>
       
   </section>
 
   <section id="cust-hooks">
-    <title>The Bugzilla Extension Mechanism</title>
+    <title>Bugzilla 拡張メカニズム</title>
     
     <warning>
       <para>
-        Note that the below paths are inconsistent and confusing. They will
-        likely be changed in Bugzilla 4.0.
+        注: 以下の内容は整合性がなく混乱の元かもしれません。
+        この内容は Bugzilla 4.0 までに変更される可能性があります。
       </para>
     </warning>
        
