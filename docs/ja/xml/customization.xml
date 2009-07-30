@@ -61,7 +61,7 @@
         ディレクトリが作成されています。一つ目のレベルのディレクトリは、
         テンプレートの言語が何かを示します。英語の Bugzilla テンプレートは、
         ディレクトリ名 <filename>en</filename> となり、全体としては
-        <filename>template/en</filename> となります。この <filename>template/en</template>
+        <filename>template/en</filename> となります。この <filename>template/en</filename>
         には、<filename>default</filename> ディレクトリがあり、Bugzilla 
         の標準的なテンプレートが入っています。
       </para>

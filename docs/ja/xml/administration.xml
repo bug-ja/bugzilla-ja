@@ -1051,6 +1051,7 @@
             "unconfirmed" ステータスを有効にしている場合のみこのフィールドが利用されます。
             ユーザに対してこれを有効にすれば、そのユーザは "Unconfirmed" 状態から
             "Confirmed" 状態 ("New" など) にバグを移動できるようになります。
+            </para>
           </listitem>
 
           <listitem>
@@ -1063,120 +1064,116 @@
           <listitem>
             <para>
             <emphasis>editbugs</emphasis>: 
-            
-            Unless a user has this bit set, they can only edit those bugs
-            for which they are the assignee or the reporter. Even if this
-            option is unchecked, users can still add comments to bugs.
+            ユーザにこのグループが設定されていなければ、担当者もしくは報告者の場合にのみ、
+            バグを編集することが可能になります。このグループに入っていなくても、
+            ユーザはバグにコメントをつけることは可能です。
             </para>
           </listitem>
 
           <listitem>
             <para>
             <emphasis>editcomponents</emphasis>: 
-            This flag allows a user to create new products and components,
-            as well as modify and destroy those that have no bugs associated
-            with them. If a product or component has bugs associated with it,
-            those bugs must be moved to a different product or component
-            before Bugzilla will allow them to be destroyed.
+            新規プロダクト・コンポーネントを作成でき、また、
+            それらに対するバグが登録されていなければ更新・削除が可能になります。
+            プロダクト・コンポーネントにすでにバグが登録されている場合、
+            Bugzilla ではそれらを削除する前に、
+            それらのバグは他のプロダクトやコンポーネントに移動する必要があります。
             </para>
           </listitem>
 
           <listitem>
             <para>
             <emphasis>editkeywords</emphasis>: 
-            If you use Bugzilla's keyword functionality, enabling this
-            feature allows a user to create and destroy keywords. As always,
-            the keywords for existing bugs containing the keyword the user
-            wishes to destroy must be changed before Bugzilla will allow it
-            to die.</para>
+            Bugzilla のキーワード機能を利用している場合、
+            これが有効なユーザはキーワードを作成・削除できるようになります。
+            他と同様に、バグが登録されているキーワードは、
+            Bugzilla で削除しようとする前に先にキーワードを変更しておく必要があります。
+            </para>
           </listitem>
 
           <listitem>
             <para>
             <emphasis>editusers</emphasis>: 
-            This flag allows a user to do what you're doing right now: edit
-            other users. This will allow those with the right to do so to
-            remove administrator privileges from other users or grant them to
-            themselves. Enable with care.</para>
+            あなたが今行おうとしていること、つまり他のユーザを編集する、
+            と同じことをユーザができるようになるグループです。
+            この権限では、他のユーザから管理者権限を剥奪したり付与したりすることも可能です。
+            ですので、注意して扱ってください。</para>
           </listitem>
 
 
           <listitem>
             <para>
             <emphasis>tweakparams</emphasis>: 
-            This flag allows a user to change Bugzilla's Params 
-            (using <filename>editparams.cgi</filename>.)</para>
+            この権限を持つユーザは、Bugzilla のパラメータを 
+            (<filename>editparams.cgi</filename> から) 編集できるようになります。</para>
           </listitem>
 
           <listitem>
             <para> 
             <emphasis>&lt;productname&gt;</emphasis>:
-            This allows an administrator to specify the products 
-            in which a user can see bugs. If you turn on the 
-            <quote>makeproductgroups</quote> parameter in
-            the Group Security Panel in the Parameters page, 
-            then Bugzilla creates one group per product (at the time you create 
-            the product), and this group has exactly the same name as the 
-            product itself. Note that for products that already exist when
-            the parameter is turned on, the corresponding group will not be
-            created. The user must still have the <quote>editbugs</quote> 
-            privilege to edit bugs in these products.</para>
+            ユーザがバグを見ることが可能なプロダクトを、
+            管理者が指定することができるようになります。もし、
+            <quote>makeproductgroups</quote> パラメータを、
+            パラメータページのグループセキュリティー画面から有効にすると、
+            Bugzilla はプロダクトごとにプロダクトと同じ名前を持つ、
+            ひとつのグループを (プロダクトの作成と同時に) 作成します。
+            パラメータを有効にしたときにすでに存在しているプロダクトについては、
+            対応するグループは作成されません。ユーザは <quote>editbugs</quote>
+            を持っていなければそれらのプロダクトのバグを編集できなくなります。</para>
           </listitem>
         </itemizedlist>
       </section>
 
       <section id="user-account-deletion">
-        <title>Deleting Users</title>
+        <title>ユーザの削除</title>
         <para>
-          If the <quote>allowuserdeletion</quote> parameter is turned on, see
-          <xref linkend="parameters" />, then you can also delete user accounts.
-          Note that this is most of the time not the best thing to do. If only
-          a warning in a yellow box is displayed, then the deletion is safe.
-          If a warning is also displayed in a red box, then you should NOT try
-          to delete the user account, else you will get referential integrity
-          problems in your database, which can lead to unexpected behavior,
-          such as bugs not appearing in bug lists anymore, or data displaying
-          incorrectly. You have been warned!
+          <quote>allowuserdeletion</quote> パラメータ (<xref linkend="parameters">) 
+          が有効なら、ユーザアカウントの削除が可能です。
+          ただし、ほとんどの場合においてこれは勧められません。
+          黄色の警告ボックスのみが表示された場合は、安全に削除できます。
+          赤い警告ボックスが表示された場合は、ユーザの削除を試してはなりません。
+          実行してしまうと、データベースに重大な不整合を引き起こし、
+          どこにも表示されないようなバグができてしまったり、
+          データが正しく表示されなくなるなど、望ましくない動作が起こるでしょう。
+          警告はしましたからね！
         </para>
       </section>
 
       <section id="impersonatingusers">
-        <title>Impersonating Users</title>
+        <title>ユーザになりすまし</title>
         
         <para>
-        There may be times when an administrator would like to do something as
-        another user.  The <command>sudo</command> feature may be used to do 
-        this.
+        管理者には、時々他のユーザの権限の元で何らかの操作が要求されることがあります。
+        <command>sudo</command> 機能がこのために利用可能です。
         </para>
         
         <note>
           <para>
-          To use the sudo feature, you must be in the
-          <emphasis>bz_sudoers</emphasis> group.  By default, all
-          administrators are in this group.</para>
+          sudo 機能を利用するには、最初に <emphasis>bz_sudoers</emphasis> 
+          グループに所属する必要があります。既定では、
+          すべての管理者はこのグループに所属しています。</para>
         </note>
         
         <para>
-        If you have access to this feature, you may start a session by
-        going to the Edit Users page, Searching for a user and clicking on 
-        their login.  You should see a link below their login name titled 
-        "Impersonate this user".  Click on the link.  This will take you 
-        to a page where you will see a description of the feature and 
-        instructions for using it.  After reading the text, simply 
-        enter the login of the user you would like to impersonate, provide 
-        a short message explaining why you are doing this, and press the 
-        button.</para>
+        この機能を利用しようとするとき、ユーザの編集画面からセッションを開始できます。
+        ユーザを検索し、ログイン名をクリックしてください。
+        ログイン名の下に "このユーザになりすます" リンクがあります。
+        これをクリックしてください。すると、この機能の解説ページと、
+        どのように利用するかが表示されます。文章を読んだ後、
+        なりすます対象ユーザのログイン名を入力し、
+        なぜこの操作が必要なのかの短い理由を入力してから、
+        ボタンをクリックしてください。</para>
         
         <para>
-        As long as you are using this feature, everything you do will be done 
-        as if you were logged in as the user you are impersonating.</para>
+        この機能を利用している間、すべての操作はあなたが成りすましているユーザで
+        ログインしたかのように実行されます。</para>
         
         <warning>
           <para>
-          The user you are impersonating will not be told about what you are 
-          doing.  If you do anything that results in mail being sent, that 
-          mail will appear to be from the user you are impersonating.  You 
-          should be extremely careful while using this feature.</para>
+          成りすまし対象のユーザはあなたが何を行ったかについては通知されません。
+          メール送信が行われるような変更をした場合は、
+          成りすまし対象のユーザが送信したかのようになります。
+          この機能を利用する際は、非常に注意して行ってください。</para>
         </warning>
       </section>
     </section>
@@ -1185,165 +1182,158 @@
   <section id="classifications" xreflabel="Classifications">
     <title>Classifications</title>
 
-    <para>Classifications tend to be used in order to group several related
-    products into one distinct entity.</para>
+    <para>classifications はひとつのまとまった分類に分けられるプロダクトグループが、
+    複数あるようなときに利用されることがあります。</para>
 
-    <para>The classifications layer is disabled by default; it can be turned
-    on or off using the useclassification parameter,
-    in the <emphasis>Bug Fields</emphasis> section of the edit parameters screen.</para>
+    <para>classifications のレイヤは既定では無効となっています。
+    パラメータ編集画面の <emphasis>バグフィールド</emphasis> セクションにある、
+    classification  に関するパラメータにより有効・無効を切り替えることができます。</para>
 
-    <para>Access to the administration of classifications is controlled using
-    the <emphasis>editclassifications</emphasis> system group, which defines
-    a privilege for creating, destroying, and editing classifications.</para>
+    <para>classification の管理へのアクセス権限は <emphasis>editclassifications</emphasis>
+    システムグループによって制御されており、
+    classification の作成、削除、編集のための権限となっています。</para>
 
-    <para>When activated, classifications will introduce an additional
-    step when filling bugs (dedicated to classification selection), and they
-    will also appear in the advanced search form.</para>
+    <para>この機能を有効にした場合、classification はバグ登録時に、
+    追加の選択項目として登場 (classification 選択画面) し、
+    高度な検索画面にも表示されるようになります</para>
   </section>
 
   <section id="products" xreflabel="Products">
-    <title>Products</title>
+    <title>プロダクト</title>
 
     <para>
     <glossterm linkend="gloss-product" baseform="product">
-    Products</glossterm> typically represent real-world
-    shipping products. Products can be given 
-    <xref linkend="classifications"/>. 
-    For example, if a company makes computer games, 
-    they could have a classification of "Games", and a separate
-    product for each game. This company might also have a 
-    <quote>Common</quote> product for units of technology used 
-    in multiple games, and perhaps a few special products that
-    represent items that are not actually shipping products 
-    (for example, "Website", or "Administration").
+    プロダクト</glossterm> は通常、実世界での出荷プロダクトに対応します。
+    プロダクトには <xref linkend="classifications"/> を割り当て可能です。
+    たとえば、会社がコンピュータゲームを作っており、"ゲーム" という classification 
+    があり、ゲームそれぞれをプロダクトで分けていたとします。
+    この会社では、さらに <quote>Common</quote> プロダクトを複数のゲームで利用する、
+    技術のユニットのために作るかもしれません。また、(たとえばウェブサイトや管理など) 
+    いくつかの特別な実際には出荷しないプロダクトを作るかもしれません。
     </para>
 
     <para>
-    Many of Bugzilla's settings are configurable on a per-product
-    basis. The number of <quote>votes</quote> available to 
-    users is set per-product, as is the number of votes
-    required to move a bug automatically from the UNCONFIRMED 
-    status to the NEW status.
+    Buzilla のさまざまな設定はプロダクトごとに行えるようになっています。
+    ユーザが行使できる <quote>投票</quote> 数もプロダクトごとに設定可能ですし、
+    UNCONFIRMED ステータスから NEW 
+    ステータスに自動的に移動するのに必要な投票数も同様です。
     </para>
 
     <para>
-    When creating or editing products the following options are
-    available: 
+    プロダクトを作成・編集するときには以下のオプションが設定できます: 
     </para> 
 
     <variablelist>
 
       <varlistentry>
         <term>
-          Product
+          プロダクト
         </term>
         <listitem>
           <para> 
-            The name of the product
+            プロダクト名
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Description
+          説明
         </term>
         <listitem>
           <para> 
-            A brief description of the product
+            プロダクトの簡単な説明
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          URL describing milestones for this product
+          このプロダクトのマイルストーンについて説明している URL
         </term>
         <listitem>
           <para> 
-            If there is reference URL, provide it here
+            もし参照 URL があれば、ここに設定してください
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Default milestone
+          既定のマイルストーン
         </term>
         <listitem>
           <para> 
-            Select the default milestone for this product.
+            このプロダクトでの既定のマイルストーンを選択してください
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Closed for bug entry
+          バグの新規作成可能
         </term>
         <listitem>
           <para> 
-            Select this box to prevent new bugs from being
-            entered against this product.
+            新規バグをこのプロダクトに登録できないようにするには、
+            このボックスにチェックしてください
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Maximum votes per person
+          一人当たりの最大投票数
         </term>
         <listitem>
           <para> 
-            Maximum votes a user is allowed to give for this 
-            product
+            このプロダクトで各ユーザが行使可能な最大投票数
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Maximum votes a person can put on a single bug
+          一つのバグあたりの一人の最大投票数
         </term>
         <listitem>
           <para> 
-            Maximum votes a user is allowed to give for this 
-            product in a single bug
+            このプロダクト内で、
+            ひとつのバグに一人のユーザが投じることのできる最大票数
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Confirmation threshold
+          確認されたとみなす票数
         </term>
         <listitem>
           <para> 
-            Number of votes needed to automatically remove any
-            bug against this product from the UNCONFIRMED state
+            このプロダクトのバグを自動的に UNCONFIRMED 
+            ステータスから移動させるのに必要な投票数
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Version
+          バージョン
         </term>
         <listitem>
           <para> 
-            Specify which version of the product bugs will be
-            entered against.
+            プロダクトのどのバージョンについてのバグを登録してもらうかの設定
           </para>
         </listitem>
       </varlistentry>
 
       <varlistentry>
         <term>
-          Create chart datasets for this product
+          このプロダクトでチャートを有効にする
         </term>
         <listitem>
           <para> 
-            Select to make chart datasets available for this product.
+            このプロダクトでチャート用のデータセットを作成可能にするときは選択
           </para>
         </listitem>
       </varlistentry>
@@ -1351,45 +1341,44 @@
     </variablelist>
 
     <para>
-    When editing a product there is also a link to edit Group Access Controls,
-    see <xref linkend="product-group-controls"/>.
+    プロダクトを編集するときには、グループによる制限を編集するためのリンクが表示されます。
+    詳細は <xref linkend="product-group-controls"/> を参考にしてください。
     </para>
 
     <section id="create-product">
-      <title>Creating New Products</title>
+      <title>新規プロダクトの作成</title>
 
     <para>
-    To create a new product:
+    プロダクトを新規作成するには:
     </para>
 
     <orderedlist>
       <listitem>
         <para> 
-        Select <quote>Administration</quote> from the footer and then
-        choose <quote>Products</quote> from the main administration page.
+        フッタの <quote>管理</quote> を選択し、<quote>プロダクト</quote>
+        を管理メニューから選択してください。
         </para>
       </listitem>
 
       <listitem>
         <para>
-        Select the <quote>Add</quote> link in the bottom right.
+        右下の <quote>追加</quote> リンクを選択してください。
         </para>
       </listitem>
 
       <listitem>
         <para>
-        Enter the name of the product and a description. The
-        Description field may contain HTML.
+        プロダクトの名前と説明を入力してください。
+        説明には HTML も利用可能です。
         </para>
       </listitem>
 
       <listitem>
         <para>
-        When the product is created, Bugzilla will give a message
-        stating that a component must be created before any bugs can
-        be entered against the new product. Follow the link to create
-        a new component. See <xref linkend="components"/> for more
-        information.
+        プロダクトを作成後、Bugzilla は、登録したプロダクトにバグを追加する前に、
+        コンポーネントを作成する必要があるというメッセージを表示します。
+        新規コンポーネント作成のリンクから作成してください。
+        詳細に関しては、<xref linkend="components"/> を参照してください。
         </para>
       </listitem>
     </orderedlist>
@@ -1397,70 +1386,75 @@
     </section>
 
     <section id="edit-products">
-      <title>Editing Products</title>
+      <title>プロダクトの編集</title>
 
       <para>
-      To edit an existing product, click the "Products" link from the 
-      "Administration" page. If the 'useclassification' parameter is
-      turned on, a table of existing classifications is displayed,
-      including an "Unclassified" category. The table indicates how many products
-      are in each classification. Click on the classification name to see its
-      products. If the 'useclassification' parameter is not in use, the table 
-      lists all products directly. The product table summarizes the information 
-      about the product defined
-      when the product was created. Click on the product name to edit these
-      properties, and to access links to other product attributes such as the
-      product's components, versions, milestones, and group access controls.
+      既存のプロダクトを編集するには、"管理" ページの "プロダクト"
+      リンクをクリックしてください。もし、'useclassification' パラメータが有効な場合、
+      "Unclassified" カテゴリを含む、定義されている classification が表示されます。
+      この表はそれぞれの classification にどれだけのプロダクトがあるかを示します。
+      プロダクトを見るには classificatino 名をクリックしてください。
+      'useclassification' パラメータが無効の場合、
+      表にはプロダクトが直接リストされます。プロダクトの表は、
+      定義されているプロダクトの情報の概要を表示します。
+      設定を編集するには、プロダクト名をクリックしてください。
+      また、プロダクトのほかの属性、たとえば、プロダクトに定義されているコンポーネント、
+      バージョン、マイルストーン、グループによる制限などについては、
+      それぞれのリンクを選択してください。
       </para>
 
       </section>
 
       <section id="comps-vers-miles-products">
-        <title>Adding or Editing Components, Versions and Target Milestones</title>
+        <title>コンポーネント、バージョン、ターゲットマイルストーンの追加・編集</title>
         <para>
-          To edit existing, or add new, Components, Versions or Target Milestones 
-          to a Product, select the "Edit Components", "Edit Versions" or "Edit
-          Milestones" links from the "Edit Product" page. A table of existing 
-          Components, Versions or Milestones is displayed. Click on a item name 
-          to edit the properties of that item. Below the table is a link to add 
-          a new Component, Version or Milestone. 
+          プロダクトの、既存のコンポーネント、バージョン、ターゲットマイルストーンの編集、
+          もしくは新規追加を行うには、それぞれ "プロダクトの編集" 画面の 
+          "コンポーネントの編集"、"バージョンの編集"、"マイルストーンの編集" 
+          リンクをクリックしてください。既存のコンポーネント、バージョン、
+          マイルストーンが表示されます。それぞれの属性を編集するには、
+          それぞれの名前をクリックしてください。また、表の下側に、
+          新規コンポーネント、バージョン、マイルストーンを追加するためのリンクがあります。
         </para>
         <para>
-          For more information on components, see <xref linkend="components"/>.
+          コンポーネントに関しての詳細は <xref linkend="components"/> を。
         </para>
         <para>
-          For more information on versions, see <xref linkend="versions"/>.
+          バージョンに関しての詳細は <xref linkend="versions"/> を。
         </para>
         <para>
-          For more information on milestones, see <xref linkend="milestones"/>.
+          マイルストーンに関しての詳細は <xref linkend="milestones"/> を。
         </para>
       </section>
 
       <section id="product-group-controls">
-        <title>Assigning Group Controls to Products</title>
+        <title>プロダクトにグループ制限を定義する</title>
 
         <para> 
-        On the <quote>Edit Product</quote> page, there is a link called 
-        <quote>Edit Group Access Controls</quote>. The settings on this page 
-        control the relationship of the groups to the product being edited.
+        <quote>プロダクトの編集</quote> ページには、
+        <quote>プロダクトのグループによる制限を編集</quote> リンクがあります。
+        このページでの設定は、編集中のプロダクトで、
+        どのようにグループと関連した制限を行うかについてです。
         </para> 
 
         <para>
-        Group Access Controls are an important aspect of using groups for 
-        isolating products and restricting access to bugs filed against those
-        products. For more information on groups, including how to create, edit
-        add users to, and alter permission of, see <xref linkend="groups"/>.
+        グループによる制限は、対象となるプロダクトについて、
+        プロダクトを他から分離したり、バグへのアクセスを制限したりするために、
+        グループをどう利用するかの重要な概念です。
+        作成方法、編集やユーザの追加、そして制限の変更などを含む、
+        グループのより詳細情報に関しては、<xref linkend="groups"/> を参照してください。
         </para>
 
         <para>
-        After selecting the "Edit Group Access Controls" link from the "Edit
-        Product" page, a table containing all user-defined groups for this 
-        Bugzilla installation is displayed. The system groups that are created
-        when Bugzilla is installed are not applicable to Group Access Controls.
-        Below is description of what each of these fields means.
+        "プロダクトのグループによる制限を編集" リンクを "プロダクトの編集"
+        画面で選択すると、Bugzilla サイトでのすべてのユーザ定義グループを含む表が表示されます。
+        Bugzilla インストール時に作成されたシステムグループは、
+        このグループによる制限には利用できません。以下の説明は、
+        それぞれのフィールドがどういう意味であるかを解説します。
         </para>
 
         <para>
+        
         Groups may be applicable (e.g bugs in this product can be associated
         with this group) , default (e.g. bugs in this product are in this group
         by default), and mandatory (e.g. bugs in this product must be associated
