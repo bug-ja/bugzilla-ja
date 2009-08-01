@@ -79,15 +79,18 @@ sub REQUIRED_MODULES {
         module  => 'DBI',
         version => '1.41'
     },
+    # 2.22 fixes various problems related to UTF8 strings in hash keys,
+    # as well as line endings on Windows.
     {
         package => 'Template-Toolkit',
         module  => 'Template',
-        version => '2.15'
+        version => ON_WINDOWS ? '2.22' : '2.15'
     },
     {
         package => 'Email-Send',
         module  => 'Email::Send',
-        version => ON_WINDOWS ? '2.16' : '2.00'
+        version => ON_WINDOWS ? '2.16' : '2.00',
+        blacklist => ['^2\.196$']
     },
     {
         package => 'Email-MIME',

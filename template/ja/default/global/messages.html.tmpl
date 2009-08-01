@@ -137,6 +137,7 @@
     [% link  = "自動的に更新されなければここをクリックしてください。" %]
 
   [% ELSIF message_tag == "buglist_updated_named_query" %]
+    [% title = "保存された検索の更新完了" %]
     あなたの保存された検索 <code><a 
      href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
     >[% queryname FILTER html %]</a></code> を更新しました。
@@ -146,6 +147,7 @@
     個々の検索結果をブックマークに保存することも可能です。
 
   [% ELSIF message_tag == "buglist_new_named_query" %]
+    [% title = "保存された検索の作成完了" %]
     新しい保存された検索 <code><a
      href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
     >[% queryname FILTER html %]</a></code> を作成しました。

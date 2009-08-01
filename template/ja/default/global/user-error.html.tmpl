@@ -1345,12 +1345,12 @@
     する [% terms.Bugs %] が選択されていません。
 
   [% ELSIF error == "no_bugs_in_list" %]
-    [% title = BLOCK %] [% jawords.tag FILTER html %] を削除して良いですか? [% END %]
-    [% jawords.tag FILTER html %] [% tag FILTER html %] から全ての [% terms.bugs %] を削除します。
-    この操作を実行すると、完全に [% jawords.tag FILTER html %] を削除します(やり直すことはできません)。
-    本当に実行するかを確認してから
+    [% title = BLOCK %] タグを削除して良いですか? [% END %]
+    <em>[% name FILTER html %]</em> タグから全ての [% terms.bugs %] を削除します。
+    この操作を実行すると、完全にタグを削除します。本当に削除するか確認してから
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- tag FILTER url_quote %]">削除を実行</a>してください。
+    [%- name FILTER url_quote %]&amp;token=
+    [%- issue_hash_token([query_id, name]) FILTER url_quote %]">削除を実行</a> してください。
 
   [% ELSIF error == "no_bugs_to_remove" %]
     [% title = BLOCK %] [% jawords.tag FILTER html %] が選択されていません [% END %]
