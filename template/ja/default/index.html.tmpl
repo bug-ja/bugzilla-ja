@@ -40,7 +40,7 @@
 <script type="text/javascript">
 <!--
 function onLoadActions() {
-  quicksearchHelpText('quicksearch', 'show');
+  quicksearchHelpText('quicksearch_main', 'show');
   if( window.external.AddSearchProvider ){
     YAHOO.util.Dom.removeClass('quicksearch_plugin', 'bz_default_hidden');
   }
@@ -139,7 +139,7 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
         <a id="query" class="bz_common_actions" 
            href="query.cgi"><span>検索</span></a>
       
-        <a id="account" class="bz_common_actions quicksearch_help_text"
+        <a id="account" class="bz_common_actions"
           [% IF user.id %]
             href="userprefs.cgi"><span>ユーザ設定</span></a>
           [% ELSIF Param('createemailregexp')
@@ -149,10 +149,11 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
           [% ELSE %]
             href="?GoAheadAndLogIn=1"><span>ログイン</span></a>
           [% END %]
+
         <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi"
               onsubmit="return checkQuicksearch(this);">
           <div>
-            <input id="quicksearch" type="text" name="quicksearch"
+            <input id="quicksearch_main" type="text" name="quicksearch"
               onfocus="quicksearchHelpText(this.id, 'hide');"
               onblur="quicksearchHelpText(this.id, 'show');"
             >

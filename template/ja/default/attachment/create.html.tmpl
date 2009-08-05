@@ -112,10 +112,12 @@
       <tr>
         <th>プライベート化:</th>
         <td>
-          <em>添付をプライベートにする場合、以下を有効にしてください。</em><br>
           <input type="checkbox" name="isprivate" id="isprivate"
           value="1" onClick="updateCommentPrivacy(this)">
-        <label for="isprivate">プライベート</label>
+          <label for="isprivate">
+            添付やコメントをプライベートにします (<strong>
+            [% Param('insidergroup') FILTER html %]</strong> のメンバーのみに表示)
+          </label>
         </td>
       </tr>
     [% END %]

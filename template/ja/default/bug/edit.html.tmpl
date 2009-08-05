@@ -240,11 +240,15 @@
         [% IF user.id %]
         <table><tr><td>
           <label for="comment" accesskey="c"><b>追加コメント (<u>C</u>)</b></label>:
-          [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
+          [% IF user.is_insider %]
             <input type="checkbox" name="commentprivacy" value="1"
                    id="newcommentprivacy"
                    onClick="updateCommentTagControl(this, form)">
-            <label for="newcommentprivacy">プライベート</label>
+            <label for="newcommentprivacy"> 
+              コメントをプライベートにします
+              (<strong>[% Param('insidergroup') FILTER html %]</strong>
+              グループのメンバーにしか見えなくなります)
+            </label>
           [% END %]
           <br>
           [% INCLUDE global/textarea.html.tmpl
@@ -308,7 +312,7 @@
           (<span id="alias_nonedit_display">[% bug.alias FILTER html %]</span>) 
         [% END %]
       [% END %]
-      <span id="short_desc_nonedit_display">[% bug.short_desc FILTER html %]</span>
+      <span id="short_desc_nonedit_display">[% bug.short_desc FILTER quoteUrls(bug.bug_id) %]</span>
       [% IF bug.check_can_change_field('short_desc', 0, 1) || 
             bug.check_can_change_field('alias', 0, 1)  %]
         <small class="editme">(<a href="#" id="editme_action">編集</a>)</small>
@@ -370,8 +374,16 @@
     [%#############%]
 
     <tr>
+       [% IF bug.check_can_change_field('product', 0, 1) %]
+         [% prod_list = user.get_enterable_products %]
+         [% IF NOT user.can_enter_product(bug.product) %]
+           [% prod_list.unshift(bug.product_obj) %]
+         [% END %]
+       [% END %]
+
        [% INCLUDE bug/field.html.tmpl
             bug = bug, field = select_fields.product,
+            override_legal_values = prod_list
             desc_url = 'describecomponents.cgi', value = bug.product
             editable = bug.check_can_change_field('product', 0, 1) %]
     </tr>
@@ -1154,7 +1166,8 @@
 [% BLOCK commit_button %]
   [% IF user.id %]
     <div class="knob-buttons">
-      <input type="submit" value="Commit" id="commit[% id FILTER css_class_quote %]">
+      <input type="submit" value="変更を保存" 
+             id="commit[% id FILTER css_class_quote %]">
       [% IF bug.user.canmove %]
         <input type="submit" name="action" id="action[% id FILTER css_class_quote %]" value="[% Param("move-button-text") %]">
       [% END %]

@@ -81,8 +81,19 @@
         </td>
       </tr>
     [% END %]
+    <tr>
+      <th align="right"><label for="is_active">[% terms.bugs %] で利用可能にする:</label></th>
+      <td><input id="is_active" name="is_active" type="checkbox" value="1"
+           [%+ 'checked="checked"' IF value.is_active %]
+           [%+ 'disabled="disabled"' IF value.is_default OR value.is_static %]>
+           [% IF value.is_default %]
+             この値はこのフィールドの既定の値に設定されています。無効にできません。
+           [% ELSIF value.is_static %]
+             この値は削除できない値で、無効にできません。
+           [% END %]
+           </td>
+    </tr>
   </table>
-
   <input type="hidden" name="value" value="[% value.name FILTER html %]">
   <input type="hidden" name="action" value="update">
   <input type="hidden" name="field" value="[% field.name FILTER html %]">

@@ -517,7 +517,7 @@ TUI_hide_default('expert_fields');
     </td>
   </tr>
 
-  [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
+  [% IF user.is_insider %]
     <tr class="expert_fields">
       <th>&nbsp;</th>
       <td colspan="3">
@@ -525,7 +525,9 @@ TUI_hide_default('expert_fields');
         <input type="checkbox" id="commentprivacy" name="commentprivacy"
           [% " checked=\"checked\"" IF commentprivacy %]>
         <label for="commentprivacy">
-          最初の説明はプライベートに設定されています
+          説明をプライベートにします
+          (<strong>[% Param('insidergroup') FILTER html %]</strong> 
+          グループのメンバーにしか見えなくなります)
         </label>
       </td>
     </tr>
@@ -629,7 +631,7 @@ TUI_hide_default('expert_fields');
   <tr>
     <th>&nbsp;</th>
     <td colspan="3">
-      <input type="submit" id="commit" value="追加"
+      <input type="submit" id="commit" value="[% terms.Bug %] 登録"
              onclick="if (this.form.short_desc.value == '')
              { alert('この [% terms.bug %] の要約を入力してください');
                return false; } return true;">

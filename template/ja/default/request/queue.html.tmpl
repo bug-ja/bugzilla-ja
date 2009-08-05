@@ -31,7 +31,7 @@
     table.requests th { text-align: left; }
     table#filtering th { text-align: right; }
   "
-  onload="var f = document.forms[0]; selectProduct(f.product, f.component, null, null, 'どれでも');"
+  onload="var f = document.request_form; selectProduct(f.product, f.component, null, null, 'どれでも');"
   javascript_urls=["js/productform.js"]
 %]
 
@@ -41,7 +41,7 @@
 ログアウトしている場合、特定のグループに制限されていない要求中のフラグのみが既定で表示されています。
 </p>
 
-<form action="request.cgi" method="get">
+<form id="request_form" name="request_form" action="request.cgi" method="get">
   <input type="hidden" name="action" value="queue">
 
   <table id="filtering">
