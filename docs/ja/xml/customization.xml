@@ -142,8 +142,8 @@
         <para>
           どの方式を利用したとしても、
           <filename>template/en/default</filename> ディレクトリの中にある
-          テンプレートを作成・更新した後や、<filename>custom</filename>
-          ディレクトリ中のテンプレートを更新した際に、
+          テンプレートを更新した後や、<filename>custom</filename>
+          ディレクトリ中のテンプレートを作成・更新した際に、
           <command>./checksetup.pl</command> を実行する必要があります。 
         </para>
       </note>

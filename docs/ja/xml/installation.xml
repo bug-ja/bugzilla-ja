@@ -321,12 +321,6 @@
 
         <listitem>
           <para>
-            File::Spec (&min-file-spec-ver;)
-          </para>
-        </listitem>
-
-        <listitem>
-          <para>
             <link linkend="install-modules-template">Template</link>
             (&min-template-ver;)
           </para>
@@ -406,12 +400,6 @@
           <para>
             <link linkend="install-modules-patchreader">PatchReader</link>
             (&min-patchreader-ver;) for pretty HTML view of patches
-          </para>
-        </listitem>
-
-        <listitem>
-          <para>
-            Image::Magick (&min-image-magick-ver;) for converting BMP image attachments to PNG
           </para>
         </listitem>
 

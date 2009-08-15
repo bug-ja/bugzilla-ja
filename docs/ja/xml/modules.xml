@@ -97,14 +97,6 @@
     </para>
 
     <para>
-      File::Spec:
-      <literallayout>
-        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/File-Spec/"/>
-        ドキュメント: <ulink url="http://perldoc.perl.org/File/Spec.html"/>
-      </literallayout>
-    </para>
-
-    <para>
       Template-Toolkit:
       <literallayout>
         CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/Template-Toolkit/"/>
@@ -178,14 +170,6 @@
       <literallayout>
         CPAN ダウンロードページ: <ulink url="http://search.cpan.org/author/JKEISER/PatchReader/"/>
         ドキュメント: <ulink url="http://www.johnkeiser.com/mozilla/Patch_Viewer.html"/>
-      </literallayout>
-    </para>
-
-   <para>
-      Image::Magick:
-      <literallayout>
-        CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/PerlMagick/"/>
-        ドキュメント: <ulink url="http://www.imagemagick.org/script/resources.php"/>
       </literallayout>
     </para>
    </section>
