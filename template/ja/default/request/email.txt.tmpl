@@ -17,35 +17,38 @@
   #
   # Contributor(s):     Myk Melez <myk@mozilla.org>
   #                     Jeff Hedlund <jeff.hedlund@matrixsi.com>
-  #                     Frédéric Buclin <LpSolit@gmail.com>
+  #                     Frederic Buclin <LpSolit@gmail.com>
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
 
 [% bugidsummary = bug.bug_id _ ': ' _ bug.short_desc %]
 [% attidsummary = attachment.id _ ': ' _ attachment.description %]
+[% flagtype_name = flag ? flag.type.name : old_flag.type.name %]
 [% statuses = { '+' => "承認" , '-' => '拒否' , 'X' => "キャンセル" ,
                 '?' => "要求" } %]
 
 [% to_identity = "" %]
 [% on_behalf_of = 0 %]
-[% IF flag.status == '?' %]
+[% action = flag.status || 'X' %]
+
+[% IF flag && flag.status == '?' %]
   [% subject_status = "が要求されました" %]
-  [% IF flag.setter.id == user.id %]
+  [% IF flag.setter_id == user.id %]
     [% to_identity = flag.requestee.identity _ " へ" %]
   [% ELSE %]
     [% on_behalf_of = 1 %]
     [% IF flag.requestee %][% to_identity = flag.requestee.identity %][% END %]
   [% END %]
 [% ELSE %]
-  [% IF flag.requester %]
-    [% to_identity = flag.requester.identity _ " が要求していた" %]
+  [% IF old_flag && old_flag.status == '?' %]
+    [% to_identity = old_flag.setter.identity _ " が要求していた" %]
   [% END %]
-  [% subject_status = "が" _ statuses.${flag.status} _ "されました" %]
+  [% subject_status = "が" _ statuses.$action _ "されました" %]
 [% END %]
 From: [% Param('mailfrom') %]
 To: [% to %]
-Subject: [% flag.type.name %] [%+ subject_status %]: [[% terms.Bug %] [%+ bug.bug_id %]] [% bug.short_desc %]
+Subject: [% flagtype_name %] [%+ subject_status %]: [[% terms.Bug %] [%+ bug.bug_id %]] [% bug.short_desc %]
 [%- IF attachment %] :
   [添付 [% attachment.id %]] [% attachment.description %][% END %]
 X-Bugzilla-Type: request
@@ -57,10 +60,10 @@ X-Bugzilla-Type: request
 [% IF on_behalf_of %]
 [% user.identity %] は
 [% flag.setter.identity %] が要求していた
- [% flag.type.name %] の要求先を [% to_identity %] へ変更しました:
+ [% flagtype_name %] の要求先を [% to_identity %] へ変更しました:
 [% ELSE %]
 [% user.identity %] は [%+ to_identity %]
-[%+ flag.type.name %] を [% statuses.${flag.status} %] しました:
+[%+ flagtype_name %] を [% statuses.$action %] しました:
 [% END %]
 
 [% terms.Bug %] [%+ bugidsummary %]

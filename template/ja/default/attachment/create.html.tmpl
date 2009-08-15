@@ -26,7 +26,7 @@
 [%# Define strings that will serve as the title and header of this page %]
 [% title = BLOCK %][% terms.Bug %] #[% bug.bug_id %] への添付の登録[% END %]
 [% header = BLOCK %]
-  [%+ "$terms.Bug $bug.bug_id" FILTER bug_link(bug.bug_id) FILTER none %]
+  [%+ "$terms.Bug $bug.bug_id" FILTER bug_link(bug) FILTER none %]
   に新規添付を登録する。
 [% END %]
 [% subheader = BLOCK %][% bug.short_desc FILTER html %][% END %]

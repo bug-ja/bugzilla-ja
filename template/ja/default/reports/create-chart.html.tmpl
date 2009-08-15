@@ -260,8 +260,24 @@ function subcatSelected() {
 </form>
 
 [% IF user.in_group('editbugs') %]
-  <h3><a href="query.cgi?format=create-series">新しいデータセットを作成</a></h3>
-[% END %]                 
+  <h3>新規データセットの作成</h3>
+  <p>
+    あなたの保存された検索をもとに新しいデータセットを作成することも、
+    新しく作成し始めることも可能です。
+  </p>
+
+  <form action="chart.cgi" id="create_series" name="create_series" method="GET">
+    <input type="hidden" name="action" value="convert_search">
+    <label for="series_from_search">元にする検索:</label>
+    <select id="series_from_search" name="series_from_search">
+      <option value="">(新規作成)</option>
+      [% FOREACH q = user.queries %]
+        <option value="[% q.name FILTER html %]">[% q.name FILTER html %]</option>
+      [% END %]
+    </select>
+    <input id="submit_create" type="submit" value="新しいデータセットを作成する">
+  </form>
+[% END %]
 
 [% PROCESS global/footer.html.tmpl %]
 

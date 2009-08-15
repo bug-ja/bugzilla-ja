@@ -104,7 +104,7 @@ if (defined $cgi->param('maketemplate')) {
 umask 0;
 
 # get current time
-my $timestamp = $dbh->selectrow_array(q{SELECT NOW()});
+my $timestamp = $dbh->selectrow_array('SELECT LOCALTIMESTAMP(0)');
 
 # Group Validation
 my @selected_groups;
@@ -219,7 +219,10 @@ if (defined($cgi->upload('data')) || $cgi->param('attachurl')) {
 
     if ($attachment) {
         # Set attachment flags.
-        Bugzilla::Flag->set_flags($bug, $attachment, $timestamp, $vars);
+        my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi(
+                                      $bug, $attachment, $vars, SKIP_REQUESTEE_ON_ERROR);
+        $attachment->set_flags($flags, $new_flags);
+        $attachment->update($timestamp);
 
         # Update the comment to include the new attachment ID.
         # This string is hardcoded here because Template::quoteUrls()
@@ -246,7 +249,10 @@ if (defined($cgi->upload('data')) || $cgi->param('attachurl')) {
 }
 
 # Set bug flags.
-Bugzilla::Flag->set_flags($bug, undef, $timestamp, $vars);
+my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi($bug, undef, $vars,
+                                                             SKIP_REQUESTEE_ON_ERROR);
+$bug->set_flags($flags, $new_flags);
+$bug->update($timestamp);
 
 # Email everyone the details of the new bug 
 $vars->{'mailrecipients'} = {'changer' => $user->login};
@@ -267,13 +273,6 @@ push (@{$vars->{'sentmail'}}, { type => 'created',
 foreach my $i (@{$bug->dependson || []}, @{$bug->blocked || []}) {
     push (@{$vars->{'sentmail'}}, { type => 'dep', id => $i, });
 }
-
-my @bug_list;
-if ($cgi->cookie("BUGLIST")) {
-    @bug_list = split(/:/, $cgi->cookie("BUGLIST"));
-}
-$vars->{'bug_list'} = \@bug_list;
-$vars->{'use_keywords'} = 1 if Bugzilla::Keyword::keyword_count();
 
 if ($token) {
     trick_taint($token);

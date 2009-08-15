@@ -170,6 +170,24 @@ This describes what hooks exist in Bugzilla currently. They are mostly
 in alphabetical order, but some related hooks are near each other instead
 of being alphabetical.
 
+=head2 attachment-process_data
+
+This happens at the very beginning process of the attachment creation.
+You can edit the attachment content itself as well as all attributes
+of the attachment, before they are validated and inserted into the DB.
+
+Params:
+
+=over
+
+=item C<data> - A reference pointing either to the content of the file
+being uploaded or pointing to the filehandle associated with the file.
+
+=item C<attributes> - A hashref whose keys are the same as
+L<Bugzilla::Attachment/create>. The data it contains hasn't been checked yet.
+
+=back
+
 =head2 auth-login_methods
 
 This allows you to add new login types to Bugzilla.
@@ -377,7 +395,7 @@ Params:
 
 =head2 flag-end_of_update
 
-This happens at the end of L<Bugzilla::Flag/process>, after all other changes
+This happens at the end of L<Bugzilla::Flag/update_flags>, after all other changes
 are made to the database and after emails are sent. It gives you a before/after
 snapshot of flags so you can react to specific flag changes.
 This generally occurs inside a database transaction.
@@ -389,7 +407,7 @@ Params:
 
 =over
 
-=item C<bug> - The changed bug object.
+=item C<object> - The changed bug or attachment object.
 
 =item C<timestamp> - The timestamp used for all updates in this transaction.
 
@@ -475,6 +493,33 @@ Params:
 =over
 
 =item C<email> - The C<Email::MIME> object that's about to be sent.
+
+=back
+
+=head2 page-before_template
+
+This is a simple way to add your own pages to Bugzilla. This hooks C<page.cgi>,
+which loads templates from F<template/en/default/pages>. For example,
+C<page.cgi?id=fields.html> loads F<template/en/default/pages/fields.html.tmpl>.
+
+This hook is called right before the template is loaded, so that you can
+pass your own variables to your own pages.
+
+Params:
+
+=over
+
+=item C<page_id>
+
+This is the name of the page being loaded, like C<fields.html>.
+
+Note that if two extensions use the same name, it is uncertain which will
+override the others, so you should be careful with how you name your pages.
+
+=item C<vars>
+
+This is a hashref--put variables into here if you want them passed to
+your template.
 
 =back
 

@@ -29,6 +29,7 @@ use Bugzilla::Constants;
 use Bugzilla::Install::Util qw(vers_cmp install_string);
 use List::Util qw(max);
 use Safe;
+use Term::ANSIColor;
 
 use base qw(Exporter);
 our @EXPORT = qw(
@@ -93,11 +94,6 @@ sub REQUIRED_MODULES {
         version => ON_WINDOWS ? '0.79' : '0.71'
     },
     {
-        package => 'PathTools',
-        module  => 'File::Spec',
-        version => '0.84'
-    },
-    {
         package => 'DBI',
         module  => 'DBI',
         version => '1.41'
@@ -149,13 +145,13 @@ sub OPTIONAL_MODULES {
         package => 'GD',
         module  => 'GD',
         version => '1.20',
-        feature => 'Graphical Reports, New Charts, Old Charts'
+        feature => [qw(graphical_reports new_charts old_charts)],
     },
     {
         package => 'Chart',
         module  => 'Chart::Base',
         version => '1.0',
-        feature => 'New Charts, Old Charts'
+        feature => [qw(new_charts old_charts)],
     },
     {
         package => 'Template-GD',
@@ -163,68 +159,62 @@ sub OPTIONAL_MODULES {
         # on Template-Toolkits after 2.14, and still works with 2.14 and lower.
         module  => 'Template::Plugin::GD::Image',
         version => 0,
-        feature => 'Graphical Reports'
+        feature => ['graphical_reports'],
     },
     {
         package => 'GDTextUtil',
         module  => 'GD::Text',
         version => 0,
-        feature => 'Graphical Reports'
+        feature => ['graphical_reports'],
     },
     {
         package => 'GDGraph',
         module  => 'GD::Graph',
         version => 0,
-        feature => 'Graphical Reports'
+        feature => ['graphical_reports'],
     },
     {
         package => 'XML-Twig',
         module  => 'XML::Twig',
         version => 0,
-        feature => 'Move Bugs Between Installations'
+        feature => ['moving'],
     },
     {
         package => 'MIME-tools',
         # MIME::Parser is packaged as MIME::Tools on ActiveState Perl
         module  => ON_WINDOWS ? 'MIME::Tools' : 'MIME::Parser',
         version => '5.406',
-        feature => 'Move Bugs Between Installations'
+        feature => ['moving'],
     },
     {
         package => 'libwww-perl',
         module  => 'LWP::UserAgent',
         version => 0,
-        feature => 'Automatic Update Notifications'
+        feature => ['updates'],
     },
     {
         package => 'PatchReader',
         module  => 'PatchReader',
         version => '0.9.4',
-        feature => 'Patch Viewer'
-    },
-    {
-        package => 'PerlMagick',
-        module  => 'Image::Magick',
-        version => 0,
-        feature => 'Optionally Convert BMP Attachments to PNGs'
+        feature => ['patch_viewer'],
     },
     {
         package => 'perl-ldap',
         module  => 'Net::LDAP',
         version => 0,
-        feature => 'LDAP Authentication'
+        feature => ['auth_ldap'],
     },
     {
         package => 'Authen-SASL',
         module  => 'Authen::SASL',
         version => 0,
-        feature => 'SMTP Authentication'
+        feature => ['smtp_auth'],
     },
     {
         package => 'RadiusPerl',
         module  => 'Authen::Radius',
         version => 0,
-        feature => 'RADIUS Authentication'
+        feature => ['auth_radius'],
     },
     {
         package => 'SOAP-Lite',
@@ -232,26 +222,26 @@ sub OPTIONAL_MODULES {
         version => 0,
         # These versions (0.70 -> 0.710.05) are affected by bug 468009
         blacklist => ['^0\.70', '^0\.710?\.0[1-5]$'],
-        feature => 'XML-RPC Interface'
+        feature => ['xmlrpc'],
     },
     {
         package => 'JSON-RPC',
         module  => 'JSON::RPC',
         version => 0,
-        feature => 'JSON-RPC Interface'
+        feature => ['jsonrpc'],
     },
     {
         # We need the 'utf8_mode' method of HTML::Parser, for HTML::Scrubber.
         package => 'HTML-Parser',
         module  => 'HTML::Parser',
         version => '3.40',
-        feature => 'More HTML in Product/Group Descriptions'
+        feature => ['html_desc'],
     },
     {
         package => 'HTML-Scrubber',
         module  => 'HTML::Scrubber',
         version => 0,
-        feature => 'More HTML in Product/Group Descriptions'
+        feature => ['html_desc'],
     },
 
     # Inbound Email
@@ -259,13 +249,13 @@ sub OPTIONAL_MODULES {
         package => 'Email-MIME-Attachment-Stripper',
         module  => 'Email::MIME::Attachment::Stripper',
         version => 0,
-        feature => 'Inbound Email'
+        feature => ['inbound_email'],
     },
     {
         package => 'Email-Reply',
         module  => 'Email::Reply',
         version => 0,
-        feature => 'Inbound Email'
+        feature => ['inbound_email'],
     },
 
     # Mail Queueing
@@ -273,13 +263,13 @@ sub OPTIONAL_MODULES {
         package => 'TheSchwartz',
         module  => 'TheSchwartz',
         version => 0,
-        feature => 'Mail Queueing',
+        feature => ['jobqueue'],
     },
     {
         package => 'Daemon-Generic',
         module  => 'Daemon::Generic',
         version => 0,
-        feature => 'Mail Queueing',
+        feature => ['jobqueue'],
     },
 
     # mod_perl
@@ -287,7 +277,7 @@ sub OPTIONAL_MODULES {
         package => 'mod_perl',
         module  => 'mod_perl2',
         version => '1.999022',
-        feature => 'mod_perl'
+        feature => ['mod_perl'],
     },
     );
 
@@ -411,7 +401,8 @@ sub print_module_instructions {
         print '*' x TABLE_WIDTH . "\n";
         foreach my $package (@missing) {
             printf "* \%${longest_name}s * %-${remaining_space}s *\n",
-                   $package->{package}, $package->{feature};
+                   $package->{package}, 
+                   _translate_feature($package->{feature});
         }
     }
 
@@ -428,8 +419,8 @@ sub print_module_instructions {
             if (vers_cmp($perl_ver, '5.10') > -1) {
                 $url_to_theory58S = 'http://cpan.uwinnipeg.ca/PPMPackages/10xx/';
             }
-            print install_string('ppm_repo_add', 
-                                 { theory_url => $url_to_theory58S });
+            print colored(install_string('ppm_repo_add', 
+                                 { theory_url => $url_to_theory58S }), 'red');
             # ActivePerls older than revision 819 require an additional command.
             if (_get_activestate_build_id() < 819) {
                 print install_string('ppm_repo_up');
@@ -462,7 +453,7 @@ sub print_module_instructions {
     }
 
     if (my @missing = @{$check_results->{missing}}) {
-        print install_string('commands_required') . "\n";
+        print colored(install_string('commands_required'), 'red') . "\n";
         foreach my $package (@missing) {
             my $command = install_command($package);
             print "    $command\n";
@@ -472,6 +463,18 @@ sub print_module_instructions {
     if ($output && $check_results->{any_missing} && !ON_WINDOWS) {
         print install_string('install_all', { perl => $^X });
     }
+    if (!$check_results->{pass}) {
+        print colored(install_string('installation_failed'), 'red') . "\n\n";
+    }
+}
+
+sub _translate_feature {
+    my $features = shift;
+    my @strings;
+    foreach my $feature (@$features) {
+        push(@strings, install_string("feature_$feature"));
+    }
+    return join(', ', @strings);
 }
 
 sub check_graphviz {
@@ -552,8 +555,9 @@ sub have_vers {
         my $want_string  = $wanted ? "v$wanted" : install_string('any');
 
         $ok = "$ok:" if $ok;
-        printf "%s %19s %-9s $ok $vstr $black_string\n",
-            install_string('checking_for'), $package, "($want_string)";
+        my $str = sprintf "%s %19s %-9s $ok $vstr $black_string\n",
+                    install_string('checking_for'), $package, "($want_string)";
+        print $vok ? $str : colored($str, 'red');
     }
     
     return $vok ? 1 : 0;

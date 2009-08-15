@@ -31,14 +31,9 @@
 
 [% message = BLOCK %]
   [% IF    message_tag == "account_created" %]
-    [% title = "User $otheruser.login created" %]
-    新規アカウント [% otheruser.login FILTER html %] は正常に作成されました。
+    アカウント [% otheruser.login FILTER html %] は正常に作成されました。
     [% IF groups.size %]
       もし、グループ設定を編集したい場合は、下のフォームから行ってください。
-    [% END %]
-    [% IF login_info %]
-      <a href="index.cgi">ログイン</a> ページからこの [% terms.Bugzilla %]
-      にログインできます。
     [% END %]
 
   [% ELSIF message_tag == "account_creation_canceled" %]
@@ -787,16 +782,22 @@
   [% ELSIF message_tag == "workflow_updated" %]
     ワークフローが更新されました。
 
-  [% ELSE %]
-    [%# Give sensible error if error functions are used incorrectly.
-      #%]
+  [% END %]
+[% END %]
+
+[% IF !message %]
+  [% message = Hook.process('messages') %]
+[% END %]
+
+[%# Give sensible error if the message function is used incorrectly. #%]
+[% IF !message %]
+  [% message = BLOCK %]
     [% terms.Bugzilla %] のメッセージ機能を間違って利用しています。
     '[% message_tag %]' が渡されました。正しい利用方法は、
     タグを渡すようにして、messages.html.tmpl にタグを定義する必要があります。<br>
     <br>
-    もし、あなたが [% terms.Bugzilla %] のエンドユーザで、
+    もし、あなたが [% terms.Bugzilla %] の利用者で、
     このメッセージを見ているなら、ページを保存して 
     [% Param('maintainer') %] に連絡してください。
-
   [% END %]
 [% END %]

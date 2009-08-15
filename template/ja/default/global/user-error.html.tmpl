@@ -784,12 +784,6 @@
     <br>また、[% jawords.attachment_file FILTER html %] が画像ファイルなら、圧縮形式、
     たとえば JPG や PNG などの形式に変換してもう一度試してください。
 
-  [% ELSIF error == "flag_not_multiplicable" %]
-    [% docslinks = {'flags-overview.html' => 'フラグの説明',
-                    'flags.html' => 'フラグの利用方法'} %]
-    複数の人に対して同時に <em>[% type.name FILTER html %]</em>
-    [% jawords.flag FILTER html %] を [% jawords.flag_request FILTER html %] することはできません。
-
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] のアカウントに権限が必要です [% END %]
     [% requestee.identity FILTER html %] は <em>[% flagtype.name FILTER html %]</em>
@@ -854,6 +848,12 @@
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
     [% jawords.flag_name FILTER html %] <em>[% name FILTER html %]</em> は 1 ～ 50 文字で、
     スペースやカンマを含むことはできません。
+
+  [% ELSIF error == "flag_type_not_multiplicable" %]
+    [% docslinks = {'flags-overview.html' => 'フラグについて',
+                    'flags.html' => 'フラグの利用方法'} %]
+    複数の <em>[% type.name FILTER html %]</em> フラグを
+    この [% IF attachment %] 添付 [% ELSE %] [%+ terms.bug %] [% END %] に設定することはできません。
 
   [% ELSIF error == "flag_update_denied" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の編集が拒否されました [% END %]
@@ -1485,11 +1485,6 @@
     [% title = BLOCK %] [% jawords.account_password FILTER html %] が一致しませんでした [% END %]
     入力された二つの [% jawords.account_password FILTER html %] が一致していません。
 
-  [% ELSIF error == "password_too_long" %]
-    [% title = BLOCK %] [% jawords.account_password FILTER html %] が長すぎます [% END %]
-    入力された [% jawords.account_password FILTER html %] は長すぎます。
-    [%+ constants.USER_PASSWORD_MAX_LENGTH FILTER html %] 文字以内にしてください。
-
   [% ELSIF error == "password_too_short" %]
     [% title = BLOCK %] [% jawords.account_password FILTER html %] が短すぎます [% END %]
     入力された [% jawords.account_password FILTER html %] は短すぎます。
@@ -1950,6 +1945,10 @@
     [% jawords.milestone FILTER html %]
   [% ELSIF class == "Bugzilla::Status" %]
     [% jawords.bug_status FILTER html %]
+  [% ELSIF class == "Bugzilla::Flag" %]
+    フラグ
+  [% ELSIF class == "Bugzilla::FlagType" %]
+    フラグ型
   [% ELSIF class == "Bugzilla::Field" %]
     フィールド
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]

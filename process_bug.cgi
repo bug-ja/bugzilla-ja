@@ -69,7 +69,6 @@ my $cgi = Bugzilla->cgi;
 my $dbh = Bugzilla->dbh;
 my $template = Bugzilla->template;
 my $vars = {};
-$vars->{'use_keywords'} = 1 if Bugzilla::Keyword::keyword_count();
 
 ######################################################################
 # Subroutines
@@ -143,21 +142,12 @@ if (defined $cgi->param('dontchange')) {
 }
 
 # do a match on the fields if applicable
-
-# The order of these function calls is important, as Flag::validate
-# assumes User::match_field has ensured that the values
-# in the requestee fields are legitimate user email addresses.
-&Bugzilla::User::match_field($cgi, {
+Bugzilla::User::match_field($cgi, {
     'qa_contact'                => { 'type' => 'single' },
     'newcc'                     => { 'type' => 'multi'  },
     'masscc'                    => { 'type' => 'multi'  },
     'assigned_to'               => { 'type' => 'single' },
-    '^requestee(_type)?-(\d+)$' => { 'type' => 'multi'  },
 });
-
-# Validate flags in all cases. validate() should not detect any
-# reference to flags if $cgi->param('id') is undefined.
-Bugzilla::Flag::validate($cgi->param('id'));
 
 print $cgi->header() unless Bugzilla->usage_mode == USAGE_MODE_EMAIL;
 
@@ -208,18 +198,15 @@ else {
 
 $vars->{'title_tag'} = "bug_processed";
 
-# Set up the vars for navigational <link> elements
-my @bug_list;
-if ($cgi->cookie("BUGLIST")) {
-    @bug_list = split(/:/, $cgi->cookie("BUGLIST"));
-    $vars->{'bug_list'} = \@bug_list;
-}
-
 my ($action, $next_bug);
 if (defined $cgi->param('id')) {
     $action = Bugzilla->user->settings->{'post_bug_submit_action'}->{'value'};
 
     if ($action eq 'next_bug') {
+        my @bug_list;
+        if ($cgi->cookie("BUGLIST")) {
+            @bug_list = split(/:/, $cgi->cookie("BUGLIST"));
+        }
         my $cur = lsearch(\@bug_list, $cgi->param('id'));
         if ($cur >= 0 && $cur < $#bug_list) {
             $next_bug = $bug_list[$cur + 1];
@@ -278,6 +265,12 @@ foreach my $bug (@bug_objects) {
     # this will be deleted later when code moves to $bug->set_all
     my $changed = $bug->set_all($args);
     $product_change ||= $changed;
+}
+
+# Flags should be set AFTER the bug has been moved into another product/component.
+if ($cgi->param('id')) {
+    my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi($first_bug, undef, $vars);
+    $first_bug->set_flags($flags, $new_flags);
 }
 
 if ($cgi->param('id') && (defined $cgi->param('dependson')
@@ -585,9 +578,6 @@ foreach my $bug (@bug_objects) {
         @msgs = RemoveVotes($bug->id, 0, 'votes_bug_moved');
         CheckIfVotedConfirmed($bug->id);
     }
-
-    # Set and update flags.
-    Bugzilla::Flag->process($bug, undef, $timestamp, $vars);
 
     $dbh->bz_commit_transaction();
 

@@ -31,15 +31,10 @@
 
 [% message = BLOCK %]
   [% IF    message_tag == "account_created" %]
-    [% title = "User $otheruser.login created" %]
-    A new user account [% otheruser.login FILTER html %] has been created
+    The user account [% otheruser.login FILTER html %] has been created
     successfully.
     [% IF groups.size %]
       You may want to edit the group settings now, using the form below.
-    [% END %]
-    [% IF login_info %]
-      You can now go to the <a href="index.cgi">Log In</a> page to enter
-      this [% terms.Bugzilla %] installation.
     [% END %]
 
   [% ELSIF message_tag == "account_creation_canceled" %]
@@ -797,16 +792,21 @@
 
   [% ELSIF message_tag == "workflow_updated" %]
     The workflow has been updated.
+  [% END %]
+[% END %]
 
-  [% ELSE %]
-    [%# Give sensible error if error functions are used incorrectly.
-      #%]        
+[% IF !message %]
+  [% message = Hook.process('messages') %]
+[% END %]
+
+[%# Give sensible error if the message function is used incorrectly. #%]
+[% IF !message %]
+  [% message = BLOCK %]
     You are using [% terms.Bugzilla %]'s messaging functions incorrectly. You
     passed in the string '[% message_tag %]'. The correct use is to pass
     in a tag, and define that tag in the file messages.html.tmpl.<br>
     <br>
-    If you are a [% terms.Bugzilla %] end-user seeing this message, please 
+    If you are a [% terms.Bugzilla %] end-user seeing this message, please
     save this page and send it to [% Param('maintainer') %].
-    
   [% END %]
 [% END %]

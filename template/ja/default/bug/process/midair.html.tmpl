@@ -45,7 +45,7 @@
 
 <p>
   ほかの誰かが
-  [%+ "$terms.bug $bug.id" FILTER bug_link(bug.id) FILTER none %]
+  [%+ "$terms.bug $bug.id" FILTER bug_link(bug) FILTER none %]
   にあなたと同時に変更を加えました。
   変更内容は以下のとおりです。
 </p>
@@ -101,7 +101,7 @@
   [% END %]
   <li>
     自分の変更をやめて、
-    [%+ "$terms.bug $bug.id に戻る" FILTER bug_link(bug.id) FILTER none %]
+    [%+ "$terms.bug $bug.id に戻る" FILTER bug_link(bug) FILTER none %]
   </li>
 </ul>
 

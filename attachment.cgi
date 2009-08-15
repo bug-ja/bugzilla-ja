@@ -400,7 +400,8 @@ sub enter {
                                               'product_id'   => $bug->product_id,
                                               'component_id' => $bug->component_id});
   $vars->{'flag_types'} = $flag_types;
-  $vars->{'any_flags_requesteeble'} = grep($_->is_requesteeble, @$flag_types);
+  $vars->{'any_flags_requesteeble'} =
+    grep { $_->is_requestable && $_->is_requesteeble } @$flag_types;
   $vars->{'token'} = issue_session_token('create_attachment:');
 
   print $cgi->header();
@@ -469,25 +470,15 @@ sub insert {
          store_in_file => scalar $cgi->param('bigfile'),
          });
 
-    Bugzilla::Flag->set_flags($bug, $attachment, $timestamp, $vars);
-
-    my $fieldid = get_field_id('attachments.isobsolete');
-
     foreach my $obsolete_attachment (@obsolete_attachments) {
-        # If the obsolete attachment has request flags, cancel them.
-        # This call must be done before updating the 'attachments' table.
-        Bugzilla::Flag->CancelRequests($bug, $obsolete_attachment, $timestamp);
-
-        $dbh->do('UPDATE attachments SET isobsolete = 1, modification_time = ?
-                  WHERE attach_id = ?',
-                 undef, ($timestamp, $obsolete_attachment->id));
-
-        $dbh->do('INSERT INTO bugs_activity (bug_id, attach_id, who, bug_when,
-                                             fieldid, removed, added)
-                  VALUES (?,?,?,?,?,?,?)',
-                  undef, ($bug->bug_id, $obsolete_attachment->id, $user->id,
-                          $timestamp, $fieldid, 0, 1));
+        $obsolete_attachment->set_is_obsolete(1);
+        $obsolete_attachment->update($timestamp);
     }
+
+    my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi(
+                                  $bug, $attachment, $vars, SKIP_REQUESTEE_ON_ERROR);
+    $attachment->set_flags($flags, $new_flags);
+    $attachment->update($timestamp);
 
     # Insert a comment about the new attachment into the database.
     my $comment = "Created an attachment (id=" . $attachment->id . ")\n" .
@@ -532,7 +523,6 @@ sub insert {
   $vars->{'bugs'} = [new Bugzilla::Bug($bugid)];
   $vars->{'header_done'} = 1;
   $vars->{'contenttypemethod'} = $cgi->param('contenttypemethod');
-  $vars->{'use_keywords'} = 1 if Bugzilla::Keyword::keyword_count();
 
   print $cgi->header();
   # Generate and return the UI (HTML page) from the appropriate template.
@@ -552,7 +542,12 @@ sub edit {
   # We only want attachment IDs.
   @$bugattachments = map { $_->id } @$bugattachments;
 
-  $vars->{'any_flags_requesteeble'} = grep($_->is_requesteeble, @{$attachment->flag_types});
+  my $any_flags_requesteeble =
+    grep { $_->is_requestable && $_->is_requesteeble } @{$attachment->flag_types};
+  # Useful in case a flagtype is no longer requestable but a requestee
+  # has been set before we turned off that bit.
+  $any_flags_requesteeble ||= grep { $_->requestee_id } @{$attachment->flags};
+  $vars->{'any_flags_requesteeble'} = $any_flags_requesteeble;
   $vars->{'attachment'} = $attachment;
   $vars->{'attachments'} = $bugattachments;
 
@@ -627,27 +622,18 @@ sub update {
         $bug->add_comment($comment, { isprivate => $attachment->isprivate });
     }
 
-    # The order of these function calls is important, as Flag::validate
-    # assumes User::match_field has ensured that the values in the
-    # requestee fields are legitimate user email addresses.
-    Bugzilla::User::match_field($cgi, {
-        '^requestee(_type)?-(\d+)$' => { 'type' => 'multi' }
-    });
-    Bugzilla::Flag::validate($bug->id, $attachment->id);
-
+    my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi($bug, $attachment, $vars);
+    $attachment->set_flags($flags, $new_flags);
 
     # Figure out when the changes were made.
-    my ($timestamp) = $dbh->selectrow_array("SELECT NOW()");
-    
-    # Update flags.  We have to do this before committing changes
-    # to attachments so that we can delete pending requests if the user
-    # is obsoleting this attachment without deleting any requests
-    # the user submits at the same time.
-    Bugzilla::Flag->process($bug, $attachment, $timestamp, $vars);
+    my $timestamp = $dbh->selectrow_array('SELECT LOCALTIMESTAMP(0)');
 
-    $attachment->update($timestamp);
+    my $changes = $attachment->update($timestamp);
+    # If there are changes, we updated delta_ts in the DB. We have to
+    # reflect this change in the bug object.
+    $bug->{delta_ts} = $timestamp if scalar(keys %$changes);
     # Commit the comment, if any.
-    $bug->update();
+    $bug->update($timestamp);
 
     # Commit the transaction now that we are finished updating the database.
     $dbh->bz_commit_transaction();
@@ -657,7 +643,6 @@ sub update {
     $vars->{'attachment'} = $attachment;
     $vars->{'bugs'} = [$bug];
     $vars->{'header_done'} = 1;
-    $vars->{'use_keywords'} = 1 if Bugzilla::Keyword::keyword_count();
 
     print $cgi->header();
 
@@ -729,7 +714,6 @@ sub delete_attachment {
         # Required to display the bug the deleted attachment belongs to.
         $vars->{'bugs'} = [$bug];
         $vars->{'header_done'} = 1;
-        $vars->{'use_keywords'} = 1 if Bugzilla::Keyword::keyword_count();
 
         $template->process("attachment/updated.html.tmpl", $vars)
           || ThrowTemplateError($template->error());

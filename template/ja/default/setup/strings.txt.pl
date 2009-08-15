@@ -43,6 +43,23 @@ EOT
 (*必ず*これらすべてのコマンドを実行後、checksetup.pl を再実行してください)
 EOT
     done => '完了',
+
+    feature_auth_ldap         => 'LDAP 認証',
+    feature_auth_radius       => 'RADIUS 認証',
+    feature_graphical_reports => 'グラフレポート',
+    feature_html_desc         => 'プロダクト・グループ説明での追加の HTML',
+    feature_inbound_email     => 'システム向け Email',
+    feature_jobqueue          => 'メールキュー',
+    feature_jsonrpc           => 'JSON-RPC インターフェース',
+    feature_new_charts        => '新形式のチャート',
+    feature_old_charts        => '旧形式のチャート',
+    feature_mod_perl          => 'mod_perl',
+    feature_moving            => 'サイト間バグ移動',
+    feature_patch_viewer      => 'パッチビューア',
+    feature_smtp_auth         => 'SMTP 認証でのメール送信',
+    feature_updates           => 'システム更新通知',
+    feature_xmlrpc            => 'XML-RPC インターフェース',
+
     header => "* これは perl ##perl_ver## で動作中の Bugzilla ##bz_ver## です\n"
             . "* ##os_name## ##os_ver## で起動中です",
     install_all => <<EOT,
@@ -60,6 +77,7 @@ EOT
 
 EOT
     install_module => '##module## バージョン ##version## をインストール中...',
+    installation_failed => '*** インストールが中止されました。上記のメッセージをご覧ください。 ***',
     max_allowed_packet => <<EOT,
 警告 : max_allowed_packet パラメータを MySQL 設定ファイルに最低 ##needed## 
 以上で設定する必要があります。現在の設定値は ##current## です。

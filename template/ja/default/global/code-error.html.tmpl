@@ -218,13 +218,10 @@
     あなたは [% terms.bug %] [%+ my_bug_id FILTER html %] へ新しい添付をつけるときに
     無効化しようとしました。
 
-  [% ELSIF error == "flags_not_available" %]
-    [% title = "フラグ編集は許可されていません" %]
-    [% IF type == "b" %]
-      複数の [% terms.bugs %] のフラグは一度に設定や変更できません。
-    [% ELSE %]
-      新規に添付するときの既存のフラグの参照は無効です。
-    [% END %] 
+  [% ELSIF error == "flag_unexpected_object" %]
+    [% title = "認識できないオブジェクトです" %]
+    [% caller FILTER html %] 型のオブジェクトにはフラグを設定できません。
+    [% terms.bugs %] もしくは添付にのみ設定可能です。
 
   [% ELSIF error == "flag_requestee_disabled" %]
     [% title = "特定の人からのフラグ要請はできません" %]

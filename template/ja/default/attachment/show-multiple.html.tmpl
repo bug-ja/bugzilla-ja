@@ -20,7 +20,7 @@
 
 [% PROCESS global/variables.none.tmpl %]
 [% filtered_summary = bugsummary FILTER html %]
-[% header = BLOCK %][%"$terms.Bug $bug.bug_id" FILTER bug_link(bug.bug_id) FILTER none %]
+[% header = BLOCK %][% "$terms.Bug $bug.id" FILTER bug_link(bug) FILTER none %]
 の全ての添付を見る[% END %]
 
 [% title = BLOCK %]
