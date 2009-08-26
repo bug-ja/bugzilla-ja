@@ -335,8 +335,8 @@
 
   [% ELSIF error == "param_must_be_numeric" %]
     [% title = "無効なパラメータ" %]
-    無効なパラメータが [% function FILTER html %] に渡されました。
-    数値であるべきです。
+    無効なパラメータ <code>[% param FILTER html %]</code> が
+    <code>[% function FILTER html %]</code> に渡されました: 数値であるべきです。
 
   [% ELSIF error == "param_required" %]
     [% title = "パラメータがありません" %]

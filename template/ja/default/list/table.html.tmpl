@@ -54,6 +54,7 @@
     "short_short_desc"  => { maxlength => 60 , ellipsis => "..." , wrap => 1 } ,
     "status_whiteboard" => { title => "ホワイトボード" , wrap => 1 } , 
     "keywords"          => { wrap => 1 } ,
+    "flagtypes.name"    => { wrap => 1 } ,
     "component"         => { maxlength => 8 , title => "コン" } , 
     "product"           => { maxlength => 8 } , 
     "version"           => { maxlength => 5 , title => "バー" } , 
@@ -134,7 +135,7 @@
     [% IF (om = order.match("$id( DESC)?")) %]
       [% desc = ' DESC' IF NOT om.0 %]
     [% END %]
-    [% order = order.remove("$id( DESC)?,?") %]
+    [% order = order.remove("\\b$id( DESC)?(,\\s*|\$)") %]
     <a href="buglist.cgi?[% urlquerypart FILTER html %]&amp;order=
       [% id FILTER url_quote %][% desc FILTER url_quote %]
       [% ",$order" FILTER url_quote IF order %]

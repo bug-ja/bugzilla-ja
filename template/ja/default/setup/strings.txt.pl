@@ -33,6 +33,8 @@
     checking_dbd      => '既存の perl DBD モジュールを確認中...',
     checking_optional => '以下は任意の Perl モジュールです :',
     checking_modules  => 'Perl モジュールを確認中...',
+    chmod_failed      => '##path##: 権限変更に失敗しました: ##error##',
+    chown_failed      => '##path##: 所有者変更に失敗しました: ##error##',
     commands_dbd      => <<EOT,
 必ず次のうちのひとつのコマンドを実行してください
 (どのコマンドかはどのデータベースを利用しているかによります)
@@ -142,6 +144,11 @@ EOT
 * リストの最初に "theory58S" が何度も表示されることになります。       *
 EOT
     template_precompile   => "テンプレートの事前コンパイル中...",
+    template_removal_failed => <<END,
+警告: ディレクトリ '##datadir##/template' を削除できません。
+      '##datadir##/deleteme' に移動させましたので、ディスクスペースの
+      節約のためには手動で削除してください。
+END
     template_removing_dir => "既存のコンパイル済テンプレートを削除中...",
 );
 

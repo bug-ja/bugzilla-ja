@@ -2340,10 +2340,11 @@ sub _initialize_dependency_tree_changes_email_pref {
 
     foreach my $desc (keys %events) {
         my $event = $events{$desc};
-        my $sth = $dbh->prepare("SELECT COUNT(*) FROM email_setting 
-                                  WHERE event = $event");
-        $sth->execute();
-        if (!($sth->fetchrow_arrayref()->[0])) {
+        my $have_events = $dbh->selectrow_array(
+            "SELECT 1 FROM email_setting WHERE event = $event "
+            . $dbh->sql_limit(1));
+
+        if (!$have_events) {
             # No settings in the table yet, so we assume that this is the
             # first time it's being set.
             print "Initializing \"$desc\" email_setting ...\n";
@@ -2901,11 +2902,8 @@ sub _initialize_workflow {
     # and mark these statuses as 'closed', even if some of these statuses are
     # expected to be open statuses. Bug statuses we have no information about
     # are left as 'open'.
-    my @closed_statuses =
-      @{$dbh->selectcol_arrayref('SELECT DISTINCT bug_status FROM bugs
-                                  WHERE resolution != ?', undef, '')};
-
-    # Append the default list of closed statuses *unless* we detect at least
+    #
+    # We append the default list of closed statuses *unless* we detect at least
     # one closed state in the DB (i.e. with is_open = 0). This would mean that
     # the DB has already been updated at least once and maybe the admin decided
     # that e.g. 'RESOLVED' is now an open state, in which case we don't want to
@@ -2916,6 +2914,9 @@ sub _initialize_workflow {
                                                    WHERE is_open = 0');
 
     if (!$num_closed_states) {
+        my @closed_statuses =
+            @{$dbh->selectcol_arrayref('SELECT DISTINCT bug_status FROM bugs
+                                         WHERE resolution != ?', undef, '')};
         @closed_statuses =
           map {$dbh->quote($_)} (@closed_statuses, qw(RESOLVED VERIFIED CLOSED));
 
@@ -3133,52 +3134,22 @@ sub _populate_bugs_fulltext {
         my $bug_ids = $dbh->selectcol_arrayref('SELECT bug_id FROM bugs');
         return if !@$bug_ids;
 
-        # Populating bugs_fulltext can be very slow for large installs,
-        # so we special-case any DB that supports GROUP_CONCAT, which is
-        # a much faster way to do things.
-        if (UNIVERSAL::can($dbh, 'sql_group_concat')) {
-            print "Populating bugs_fulltext...";
-            print " (this can take a long time.)\n";
-            $dbh->do(
-                q{INSERT INTO bugs_fulltext (bug_id, short_desc, comments, 
-                                             comments_noprivate)
-                       SELECT bugs.bug_id, bugs.short_desc, }
-                     . $dbh->sql_group_concat('longdescs.thetext', '\'\n\'')
-              . ', ' . $dbh->sql_group_concat('nopriv.thetext',    '\'\n\'') .
-                      q{ FROM bugs 
-                              LEFT JOIN longdescs
-                                     ON bugs.bug_id = longdescs.bug_id
-                              LEFT JOIN longdescs AS nopriv
-                                     ON longdescs.comment_id = nopriv.comment_id
-                                        AND nopriv.isprivate = 0 }
-                     . $dbh->sql_group_by('bugs.bug_id', 'bugs.short_desc'));
-        }
-        # The slow way, without group_concat.
-        else {
-            print "Populating bugs_fulltext.short_desc...\n";
-            $dbh->do('INSERT INTO bugs_fulltext (bug_id, short_desc)
-                           SELECT bug_id, short_desc FROM bugs');
-
-            my $count = 1;
-            my $sth_all = $dbh->prepare('SELECT thetext FROM longdescs 
-                                          WHERE bug_id = ?');
-            my $sth_nopriv = $dbh->prepare(
-                'SELECT thetext FROM longdescs
-                  WHERE bug_id = ? AND isprivate = 0');
-            my $sth_update = $dbh->prepare(
-                'UPDATE bugs_fulltext SET comments = ?, comments_noprivate = ?
-                  WHERE bug_id = ?');
-
-            print "Populating bugs_fulltext comment fields...\n";
-            foreach my $id (@$bug_ids) { 
-                my $all = $dbh->selectcol_arrayref($sth_all, undef, $id);
-                my $nopriv = $dbh->selectcol_arrayref($sth_nopriv, undef, $id);
-                $sth_update->execute(join("\n", @$all), join("\n", @$nopriv), $id);
-                indicate_progress({ total   => scalar @$bug_ids, every => 100,
-                                    current => $count++ });
-            }
-            print "\n";
-        }
+        print "Populating bugs_fulltext...";
+        print " (this can take a long time.)\n";
+        my $newline = $dbh->quote("\n");
+        $dbh->do(
+            q{INSERT INTO bugs_fulltext (bug_id, short_desc, comments, 
+                                         comments_noprivate)
+                   SELECT bugs.bug_id, bugs.short_desc, }
+                 . $dbh->sql_group_concat('longdescs.thetext', $newline)
+          . ', ' . $dbh->sql_group_concat('nopriv.thetext',    $newline) .
+                  q{ FROM bugs 
+                          LEFT JOIN longdescs
+                                 ON bugs.bug_id = longdescs.bug_id
+                          LEFT JOIN longdescs AS nopriv
+                                 ON longdescs.comment_id = nopriv.comment_id
+                                    AND nopriv.isprivate = 0 }
+                 . $dbh->sql_group_by('bugs.bug_id', 'bugs.short_desc'));
     }
 }
 

@@ -57,7 +57,7 @@
     <p><b>まだこのグループに所属しているユーザが居ます。
     これらのユーザが所属している間は削除することができません。</b>
 
-    <br><a href="editusers.cgi?action=list&groupid=[% gid FILTER html %]&grouprestrict=1">該当するユーザを表示する</a>
+    <br><a href="editusers.cgi?action=list&amp;groupid=[% gid FILTER html %]&amp;grouprestrict=1">該当するユーザを表示する</a>
      - <input type="checkbox" name="removeusers">このグループから全てのユーザを削除する。</p>
   [% END %]
 
@@ -85,7 +85,7 @@
     <p><b>このグループで承認可能なフラグタイプがあります。
     このグループがフラグタイプから利用されている間は削除することができません。</b>
 
-    <br><a href="editflagtypes.cgi?action=list&group=[% gid FILTER html %]">該当のフラグタイプを表示する</a>
+    <br><a href="editflagtypes.cgi?action=list&amp;group=[% gid FILTER html %]">該当のフラグタイプを表示する</a>
      - <input type="checkbox" name="removeflags">このグループから全てのフラグタイプを削除する。</p>
   [% END %]
 
