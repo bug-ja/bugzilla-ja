@@ -41,11 +41,15 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [%+ threadingmarker %]
 
 [%+ urlbase %]show_bug.cgi?id=[% bugid %]
+[%- IF diffs %]
 
 [%+ diffs %]
+[% END -%]
 [% FOREACH comment = new_comments %]
 
+[%- IF comment.count %]
 --- [% comment.author.identity %] からの [%+ comment.time FILTER time %] のコメント #[% comment.count %]  ---
+[% END %]
 [%+ PROCESS bug/format_comment.txt.tmpl comment = comment %]
 [% END %]
 
