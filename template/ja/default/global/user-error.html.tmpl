@@ -1385,28 +1385,6 @@
     [% title = BLOCK %] [% jawords.tag FILTER html %] が選択されていません [% END %]
     [% terms.bugs %] から削除する [% jawords.tag FILTER html %] が選択されていません。
 
-  [% ELSIF error == "no_dupe_stats" %]
-    [% title = BLOCK %] 重複する [% jawords.stats FILTER html %] は見つかりませんでした [% END %]
-    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
-    今日 ([% today FILTER html %]) か昨日に重複する [% jawords.stats FILTER html %] は設定されていません。
-
-  [% ELSIF error == "no_dupe_stats_error_today" %]
-    [% title = BLOCK %] 今日の重複データを読み込む際にエラーが発生しました [% END %]
-    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
-    今日の重複のデータファイルを開く際にエラーが発生しました: [% error_msg FILTER html %]
-
-  [% ELSIF error == "no_dupe_stats_error_whenever" %]
-    [% title = BLOCK %] 過去の重複データを読み込む際にエラーが発生しました [% END %]
-    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
-    [% changedsince FILTER html %] 日前 ([% whenever FILTER html %])
-    の重複データファイルを開く際にエラーが発生しました: [% error_msg FILTER html %]
-
-  [% ELSIF error == "no_dupe_stats_error_yesterday" %]
-    [% title = BLOCK %] 昨日の重複データを読み込む際にエラーが発生しました [% END %]
-    [% admindocslinks = {'extraconfig.html' => 'collecstats.pl ジョブの設定'} %]
-    今日 ([% today FILTER html %]) の重複の [% jawords.stats_data FILTER html %] が存在せず、
-    昨日の [% jawords.stats_data FILTER html %] を開く際にもエラーが発生しました: [% error_msg FILTER html %]
-
   [% ELSIF error == "no_initial_bug_status" %]
     [% title = BLOCK %] [% terms.Bug %] [% jawords.bug_status FILTER html %] の初期値がありません [% END %]
     [% terms.bug %] を作成時に選択可能な [% terms.bug %] [% jawords.bug_status FILTER html %] がありません。
