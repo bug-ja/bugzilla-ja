@@ -3,7 +3,6 @@ D/create////
 D/process////
 D/votes////
 /choose.html.tmpl/1.8/Tue Apr  7 09:32:40 2009//TBUGZILLA-3_4-BRANCH
-/comments.html.tmpl/1.41/Tue Apr  7 09:32:42 2009//TBUGZILLA-3_4-BRANCH
 /dependency-graph.html.tmpl/1.14/Tue Apr  7 09:32:40 2009//TBUGZILLA-3_4-BRANCH
 /dependency-tree.html.tmpl/1.31/Tue Apr  7 09:32:40 2009//TBUGZILLA-3_4-BRANCH
 /knob.html.tmpl/1.41/Tue Apr  7 09:32:42 2009//TBUGZILLA-3_4-BRANCH
@@ -17,3 +16,4 @@ D/votes////
 /edit.html.tmpl/1.156.2.2/Sat Aug  1 15:38:37 2009//TBUGZILLA-3_4-BRANCH
 /field.html.tmpl/1.24.2.5/Sat Aug  1 15:38:37 2009//TBUGZILLA-3_4-BRANCH
 /show.xml.tmpl/1.29.2.2/Wed Aug  5 14:59:34 2009//TBUGZILLA-3_4-BRANCH
+/comments.html.tmpl/1.41.2.1/Tue Sep  8 04:38:36 2009//TBUGZILLA-3_4-BRANCH
