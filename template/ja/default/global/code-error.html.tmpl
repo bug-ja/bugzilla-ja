@@ -311,6 +311,11 @@
     [%+ get_status("UNCONFIRMED") FILTER html %] 
     から活動中の状態への有効な遷移が定義されていません。
 
+  [% ELSIF error == "param_invalid" %]
+    [% title = "無効なパラメータ" %]
+    <code>[% param FILTER html %]</code> は、[% function FILTER html %] 
+    関数で有効なパラメータではありません。
+
   [% ELSIF error == "param_must_be_numeric" %]
     [% title = "無効なパラメータ" %]
     無効なパラメータが [% function FILTER html %] に渡されました。
