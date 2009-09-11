@@ -57,6 +57,54 @@
 
 <h2><a name="v34_point"></a>3.4.x リリースでの更新点</h2>
 
+<h3>3.4.2</h3>
+
+<p>このリリースでは複数のセキュリティー問題への修正を含み、うち一つは緊急の脆弱性です。
+  詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.0.8/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下の重要な修正や変更がこのリリースでは行われました。</p>
+
+<ul>
+  <li>古いリリースからのアップグレードで、UTF-8 への変換中に外部キーに関するエラーが
+    発生する可能性がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=508181">[% terms.Bug %] 508181</a>)
+  </li>
+  <li>特定のフィールドを利用する [% terms.bug %] のソートでエラーが発生しました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=510944">[% terms.Bug %] 510944</a>)
+  </li>
+  <li>[% terms.Bug %] 更新メールはその先頭やセクション間に、
+    2行もしくは3行の改行を含むことがありました。
+    現在ではそれらの場所は1行のみ入るようになり、よりメールが短くなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=73330">[% terms.Bug %] 73330</a>)
+  </li>
+  <li>新規 [% terms.bugs %] の [% terms.Bug %] メール通知に、
+    "コメント 0" という間違った行が含まれていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=510798">[% terms.Bug %] 510798</a>)
+  </li>
+  <li><kbd>./collectstats.pl --regenerate</kbd> の実行が 20 倍から 100 倍程度高速になりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=286625">[% terms.Bug %] 286625</a>)
+  </li>
+  <li>RHEL, CentOS, Fedora などのユーザ向けに、<kbd>./jobqueue.pl install</kbd> 
+    により jobqueue.pl がデーモンとして自動的にインストールされるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=475403">[% terms.Bug %] 475403</a>)
+  </li>
+  <li>XML-RPC インターフェースは間違った Content-Length ヘッダを含み、
+    末尾が切られることがありましたが、現在では正しい UTF-8 文字数を持つようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=486306">[% terms.Bug %] 486306</a>)
+  </li>
+  <li>タイムトラッキングフィールドにアクセスできないユーザが、
+    タイムトラッキングフィールドに更新が入った際に空の
+    [% terms.bug %] 更新メールを受け取ることがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=509035">[% terms.Bug %] 509035</a>)
+  </li>
+  <li>新形式のチャートで、公開されていないシリーズについて、
+    アクセスできないものは表示されないようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=389396">[% terms.Bug %] 389396</a>)
+  </li>
+</ul>
+
 <h3>3.4.1</h3>
 
 <p>このリリースでは重大なセキュリティー問題を修正しています。詳細については、
