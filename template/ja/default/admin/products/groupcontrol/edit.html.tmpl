@@ -54,7 +54,7 @@
             無効
           </td>
           <td>
-            [% group.bug_count %]
+            [% group.bug_count FILTER html %]
           </td>
         <tr>
       [% ELSIF group.group.isactive != 0 %]
@@ -131,7 +131,7 @@
             [% " checked=\"checked\"" IF group.editbugs %]>
           </td>
           <td>
-            [% group.bug_count %]
+            [% group.bug_count || 0 FILTER html %]
           </td>
         </tr>
       [% END %]

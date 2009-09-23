@@ -196,7 +196,6 @@ sub FILESYSTEM {
     my %create_dirs = (
         $datadir                => $ws_dir_full_control,
         "$datadir/mining"       => $ws_dir_readable,
-        "$datadir/duplicates"   => $ws_dir_readable,
         $attachdir              => $ws_dir_writeable,
         $extensionsdir          => $ws_dir_readable,
         graphs                  => $ws_dir_writeable,
@@ -335,10 +334,10 @@ sub update_filesystem {
     foreach my $dir (sort keys %dirs) {
         unless (-d $dir) {
             print "Creating $dir directory...\n";
-            mkdir $dir || die $!;
+            mkdir $dir or die "mkdir $dir failed: $!";
             # For some reason, passing in the permissions to "mkdir"
             # doesn't work right, but doing a "chmod" does.
-            chmod $dirs{$dir}, $dir || die $!;
+            chmod $dirs{$dir}, $dir or warn "Cannot chmod $dir: $!";
         }
     }
 

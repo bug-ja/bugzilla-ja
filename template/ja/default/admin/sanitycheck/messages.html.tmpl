@@ -313,6 +313,18 @@
     <a href="sanitycheck.cgi?remove_old_whine_targets=1">
     whine にある古いユーザ・グループを削除する</a>
 
+  [% ELSE %]
+    [% message = Hook.process("statuses") %]
+
+    [% IF message %]
+      [% message FILTER none %]
+    [% ELSE %]
+      文字列 <code>[% san_tag FILTER html %]</code> 
+      に対応するステータスメッセージをを発見できませんでした。
+      [% Param("maintainer") %] に、
+      このメッセージが出現した時の再現手順とともに連絡してください。
+    [% END %]
+
   [% END %]
 [% END %]
 

@@ -206,6 +206,11 @@
         var BUGZILLA = {
             param: {
                 cookiepath: '[% Param('cookiepath') FILTER js %]'
+            },
+
+            string: {
+                attach_desc_required:
+                    '添付の説明を入力する必要があります。'
             }
         };
         [% IF javascript %]
