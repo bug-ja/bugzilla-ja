@@ -1,5 +1,5 @@
 <!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"> -->
-<!-- $Id: troubleshooting.xml,v 1.13 2008/04/04 06:48:25 timeless%mozdev.org Exp $ -->
+<!-- $Id: troubleshooting.xml,v 1.14 2009/10/18 23:35:00 lpsolit%gmail.com Exp $ -->
 
 <appendix id="troubleshooting">
 <title>トラブルシュート</title>
@@ -205,34 +205,6 @@ TEST-OK Webserver is preventing fetch of http://landfill.bugzilla.org/bugzilla-t
     (Bugzilla 2.18 と 2.16.5 以降から)
     </para>
   </section>
-
-  <section id="trbl-relogin-some">
-  <title>何人かのユーザが定期的に再ログインを求められます</title>
-
-    <para>最初に、クッキーが該当のユーザのブラウザで有効になっていることを確認してください。
-    </para>
-
-    <para>それでも問題が発生する場合、ユーザの ISP が複数プロキシサーバでの運用に
-    なっていることの影響の可能性があります。この運用はユーザの実効の IP アドレス
-    (Bugzilla サーバがどこからのアクセスかと認識しているアドレス)
-    が定期的に変わる可能性があります。Bugzilla クッキーは特定の IP 
-    アドレスに紐付けられていますので、実効のアドレスが変わるたびに、
-    ユーザは再ログインを求められることになります。
-     </para>
-
-     <para>もし、2.18 (かそれ以降) を利用している場合は、<quote>loginnetmask</quote>
-     パラメータがあり、このパラメータではユーザの IP アドレスが、
-     クッキーの認証の際にどこまで一致する必要があるかを設定できます。
-     このパラメータを 32 以下に設定すれば、ユーザには <quote>このログインをこの IP
-     アドレスに限りますか</quote> というチェックボックスがログイン画面で表示され、
-     既定はチェックが入った状態になります。
-     もしチェックしたままにすれば、Bugzilla は以前のように完全に IP
-     アドレスが合致しているのを要求するようになります。
-     チェックボックスをチェック無しにすると、IP アドレスの左側のみ 
-     (パラメータで設定したビット数まで) がログイン中かどうかの判定に利用されるようになります。
-     </para>
-
-   </section>
 
   <section id="trbl-index">
   <title><filename>index.cgi</filename> が URL を指定しないと表示されない</title>

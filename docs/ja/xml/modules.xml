@@ -134,7 +134,7 @@
     <title>追加のモジュール群</title>
 
     <para>
-      Chart::Base:
+      Chart::Lines:
       <literallayout>
         CPAN ダウンロードページ: <ulink url="http://search.cpan.org/dist/Chart/"/>
         ドキュメント: <ulink url="http://search.cpan.org/dist/Chart/Chart.pod"/>
