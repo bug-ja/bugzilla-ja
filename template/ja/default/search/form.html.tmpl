@@ -628,7 +628,6 @@ function doOnSelectProduct(selectmode) {
           <option value="[% value OR '---' FILTER html %]"
             [% " selected" IF lsearch(default.${sel.name}, value) != -1 %]>
               [% value FILTER html %]
-            [% END %]
           </option>
         [% END %]
       [% END %]
