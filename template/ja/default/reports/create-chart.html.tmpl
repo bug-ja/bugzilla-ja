@@ -120,7 +120,7 @@ function subcatSelected() {
 
  <h3>プロットするデータセットのリスト</h3>
 
-  [% IF chart.lines.size > 0 %]
+  [% IF chart.lines.size %]
     <table cellspacing="2" cellpadding="2">
       <tr>
         <th style="width: 5em;">選択</th>
@@ -173,9 +173,11 @@ function subcatSelected() {
             </td>
 
             <td align="center">
-              [% IF user.id == series.creator OR user.in_group("admin") %]
+              [% IF user.id == series.creator_id OR user.in_group("admin") %]
                <a href="chart.cgi?action=edit&amp;series_id=
                        [% series.series_id %]">編集</a> |
+               <a href="chart.cgi?action=confirm-delete&amp;series_id=         
+                       [%- series.series_id %]">削除</a> |                   
               [% END %]
               <a href="buglist.cgi?cmdtype=dorem&amp;namedcmd=
                 [% series.category FILTER url_quote %]%20/%20

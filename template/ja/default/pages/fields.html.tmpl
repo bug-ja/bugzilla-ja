@@ -54,48 +54,48 @@
     <td>
       <dl>
         <dt>
-          <b>[% get_status("UNCONFIRMED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "UNCONFIRMED") FILTER html %]</b>
         </dt>
         <dd>
           この [% terms.bug %] は最近データベースに追加されました。
           誰もまだ [% terms.bug %] が正しいものかを確認していません。
           "canconfirm" 権限を持つユーザはこの [% terms.bug %] を承認でき、
-          ステータスを [% get_status("NEW") FILTER html %] に変更可能です。
-          もしくは、直接解決し、[% get_status("RESOLVED") FILTER html %] 
+          ステータスを [% display_value("bug_status", "NEW") FILTER html %] に変更可能です。
+          もしくは、直接解決し、[% display_value("bug_status", "RESOLVED") FILTER html %] 
           とすることも可能です。
         </dd>
 
         <dt>
-          <b>[% get_status("NEW") FILTER html %]</b>
+          <b>[% display_value("bug_status", "NEW") FILTER html %]</b>
         </dt>
         <dd>
           この [% terms.bug %] は最近担当者の [% terms.bugs %] リストに追加され、
           処理を魔っています。このステータスの [% terms.Bugs %] は承認される可能性があり、
-          <b>[% get_status("ASSIGNED") FILTER html %]</b> になるか、
-          他の誰かに渡されるか、<b>[% get_status("NEW") FILTER html %]</b> のままにされるか、
-          解決され <b>[% get_status("RESOLVED") FILTER html %]</b> となるかでしょう。
+          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b> になるか、
+          他の誰かに渡されるか、<b>[% display_value("bug_status", "NEW") FILTER html %]</b> のままにされるか、
+          解決され <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるかでしょう。
         </dd>
 
         <dt>
-          <b>[% get_status("ASSIGNED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b>
         </dt>
         <dd>
           この [% terms.bug %] は未解決ですが、ある担当者に割り当てられています。
           この段階からは、[% terms.bugs %] は他の担当者に再割り当てされ、
-          <b>[% get_status("NEW") FILTER html %]</b> となるか、
-          解決され <b>[% get_status("RESOLVED") FILTER html %]</b> となるでしょう。
+          <b>[% display_value("bug_status", "NEW") FILTER html %]</b> となるか、
+          解決され <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるでしょう。
         </dd>
 
         <dt>
-          <b>[% get_status("REOPENED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b>
         </dt>
         <dd>
           この [% terms.bug %] は一度解決されましたが、解決方法が正しくありませんでした。
-          たとえば、<b>[% get_resolution("WORKSFORME") FILTER html %]</b> [% terms.bug %]
+          たとえば、<b>[% display_value("resolution", "WORKSFORME") FILTER html %]</b> [% terms.bug %]
           がより詳細な情報が得られ、再現するようになれば
-          <b>[% get_status("REOPENED") FILTER html %]</b> となるでしょう。
-          この段階からは、[% terms.bugs %] は <b>[% get_status("ASSIGNED") FILTER html %]</b> 
-          となるか、<b>[% get_status("RESOLVED") FILTER html %]</b> となるでしょう。
+          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> となるでしょう。
+          この段階からは、[% terms.bugs %] は <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b> 
+          となるか、<b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるでしょう。
         </dd>
       </dl>
     </td>
@@ -114,33 +114,33 @@
     <td>
       <dl>
         <dt>
-          <b>[% get_status("RESOLVED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>
         </dt>
         <dd>
           解決策がとられ、QA の確認待ちの状態です。
           この段階からは、[% terms.bugs %] は再開され
-          <b>[% get_status("REOPENED") FILTER html %]</b> となるか、確認され
-          <b>[% get_status("VERIFIED") FILTER html %]</b> となるか、
-          問題がなくなり閉じられて <b>[% get_status("CLOSED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> となるか、確認され
+          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b> となるか、
+          問題がなくなり閉じられて <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b>
           となるかでしょう。
         </dd>
 
         <dt>
-          <b>[% get_status("VERIFIED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b>
         </dt>
         <dd>
           QA が [% terms.bug %] の解決方法を確認し、とられた解決方法に同意しました。
           [% terms.Bugs %] は、報告対象のプロダクトが提供されている間はこのステータスで、
-          それ以後は <b>[% get_status("CLOSED") FILTER html %]</b> となるでしょう。
+          それ以後は <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b> となるでしょう。
         </dd>
 
         <dt>
-          <b>[% get_status("CLOSED") FILTER html %]</b>
+          <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b>
         </dt>
         <dd>
           [% terms.bug %] は無効と考えられていますが、解決方法は正しいです。
           作業したい [% terms.bugs %] があれば、まず
-          <b>[% get_status("REOPENED") FILTER html %]</b> する必要があります。
+          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> する必要があります。
         </dd>
       </dl>
     </td>
@@ -148,28 +148,28 @@
     <td>
       <dl>
         <dt>
-          <b>[% get_resolution("FIXED") FILTER html %]</b>
+          <b>[% display_value("resolution", "FIXED") FILTER html %]</b>
         </dt>
         <dd>
           この [% terms.bug %] の解決策はツリーにチェックインされ試験されました。
         </dd>
 
         <dt>
-          <b>[% get_resolution("INVALID") FILTER html %]</b>
+          <b>[% display_value("resolution", "INVALID") FILTER html %]</b>
         </dt>
         <dd>
           述べられている問題は [% terms.abug %] ではありません。
         </dd>
 
         <dt>
-          <b>[% get_resolution("WONTFIX") FILTER html %]</b>
+          <b>[% display_value("resolution", "WONTFIX") FILTER html %]</b>
         </dt>
         <dd>
           述べられている問題は [% terms.abug %] ですが修正されることはありません。
         </dd>
 
         <dt>
-         <b>[% get_resolution("DUPLICATE") FILTER html %]</b>
+         <b>[% display_value("resolution", "DUPLICATE") FILTER html %]</b>
         </dt>
         <dd>
           報告された問題は既存の [% terms.bug %] の重複です。
@@ -178,7 +178,7 @@
         </dd>
 
         <dt>
-          <b>[% get_resolution("WORKSFORME") FILTER html %]</b>
+          <b>[% display_value("resolution", "WORKSFORME") FILTER html %]</b>
         </dt>
         <dd>
           この [% terms.bug %] を再現しようとする試みは全て失敗し、
@@ -187,7 +187,7 @@
         </dd>
 
         <dt>
-          <b>[% get_resolution("MOVED") FILTER html %]</b>
+          <b>[% display_value("resolution", "MOVED") FILTER html %]</b>
         </dt>
         <dd>
           問題は他の [% terms.bugs %] データベースで扱われているプロダクトに関連する
@@ -208,7 +208,6 @@
 このフィールドは重要度を示しており、どの [% terms.abug %] から修正されるべきかを示します。
 このフィールドは、プログラマやエンジニアが、
 どれから片付けるべきかを順序付けするために利用するものです。
-利用可能な重要度は <b>P1</b> (最重要) から <b>P5</b> (重要でない) です。
 
 <h2><a name="bug_severity">深刻度</a></h2>
 [% terms.abug %] の深刻度を示します。
@@ -296,12 +295,12 @@
 
 <p>
 これは、[% terms.bug %] を解決するのに割り当てられた担当者です。
-このフィールドが変更されるたび、ステータスが <b>[% get_status("NEW") FILTER html %]</b> 
+このフィールドが変更されるたび、ステータスが <b>[% display_value("bug_status", "NEW") FILTER html %]</b> 
 に変更され、担当者のリストで新しい [% terms.bugs %] が簡単にわかるようになっています。</p>
 
 <p>
-クエリでの既定のステータスでは [% get_status("NEW") FILTER html %]、
-[%+ get_status("ASSIGNED") FILTER html %] と [% get_status("REOPENED") FILTER html %]
+クエリでの既定のステータスでは [% display_value("bug_status", "NEW") FILTER html %]、
+[%+ display_value("bug_status", "ASSIGNED") FILTER html %] と [% display_value("bug_status", "REOPENED") FILTER html %]
 が選択されています。
 解決済みや確認済みの [% terms.bugs %] を検索するためには、
 ステータスフィールドを設定する必要があることを覚えておいてください。

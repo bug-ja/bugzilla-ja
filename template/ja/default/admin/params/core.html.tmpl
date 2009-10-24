@@ -36,8 +36,11 @@
 
   sslbase => "この $terms.Bugzilla の HTTPS (SSL) 接続での URL の共通する先頭部分。",
 
-  ssl => "$terms.Bugzilla がセッションに <tt>sslbase</tt> を利用した HTTPS " _
-         "を強制する時点の指定。",
+  ssl_redirect =>
+    "有効の場合、$terms.Bugzilla はすべてのページが SSL でアクセスされるよう、" _
+    "HTTP でのアクセスを HTTPS へ <tt>sslbase</tt> パラメータを元にリダイレクトします。" _
+    "また、配信されるメールにおいても $terms.Bugzilla は <tt>sslbase</tt> を " _
+    "<tt>urlbase</tt> の代わりに利用するようになります。",
 
   cookiedomain => "$terms.Bugzilla クッキーのドメイン。通常空白にしてください。" _
                   "'www.foo.com' にサイトがあって、これを '.foo.com' に指定すると、" _

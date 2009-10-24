@@ -52,6 +52,8 @@ use Bugzilla::Attachment::PatchReader;
 use Bugzilla::Token;
 use Bugzilla::Keyword;
 
+use Encode qw(encode);
+
 # For most scripts we don't make $cgi and $template global variables. But
 # when preparing Bugzilla for mod_perl, this script used these
 # variables in so many subroutines that it was easier to just
@@ -83,12 +85,6 @@ if ($action ne 'view') {
     }
     Bugzilla->login();
 }
-
-# Determine if PatchReader is installed
-eval {
-    require PatchReader;
-    $vars->{'patchviewerinstalled'} = 1;
-};
 
 # When viewing an attachment, do not request credentials if we are on
 # the alternate host. Let view() decide when to call Bugzilla->login.
@@ -317,6 +313,11 @@ sub view {
     # escape quotes and backslashes in the filename, per RFCs 2045/822
     $filename =~ s/\\/\\\\/g; # escape backslashes
     $filename =~ s/"/\\"/g; # escape quotes
+
+    # Avoid line wrapping done by Encode, which we don't need for HTTP
+    # headers. See discussion in bug 328628 for details.
+    local $Encode::Encoding{'MIME-Q'}->{'bpl'} = 10000;
+    $filename = encode('MIME-Q', $filename);
 
     my $disposition = Bugzilla->params->{'allow_attachment_display'} ? 'inline' : 'attachment';
 
@@ -572,37 +573,39 @@ sub update {
     my $attachment = validateID();
     my $bug = $attachment->bug;
     $attachment->_check_bug;
-    $attachment->validate_can_edit($bug->product_id); # FIXME: allow comments anyway.
+    my $can_edit = $attachment->validate_can_edit($bug->product_id);
 
-    $attachment->set_description(scalar $cgi->param('description'));
-    $attachment->set_is_patch(scalar $cgi->param('ispatch'));
-    $attachment->set_content_type(scalar $cgi->param('contenttypeentry'));
-    $attachment->set_is_obsolete(scalar $cgi->param('isobsolete'));
-    $attachment->set_is_private(scalar $cgi->param('isprivate'));
-    $attachment->set_filename(scalar $cgi->param('filename'));
+    if ($can_edit) {
+        $attachment->set_description(scalar $cgi->param('description'));
+        $attachment->set_is_patch(scalar $cgi->param('ispatch'));
+        $attachment->set_content_type(scalar $cgi->param('contenttypeentry'));
+        $attachment->set_is_obsolete(scalar $cgi->param('isobsolete'));
+        $attachment->set_is_private(scalar $cgi->param('isprivate'));
+        $attachment->set_filename(scalar $cgi->param('filename'));
 
-    # Now make sure the attachment has not been edited since we loaded the page.
-    if (defined $cgi->param('delta_ts')
-        && $cgi->param('delta_ts') ne $attachment->modification_time)
-    {
-        ($vars->{'operations'}) =
-            Bugzilla::Bug::GetBugActivity($bug->id, $attachment->id, $cgi->param('delta_ts'));
+        # Now make sure the attachment has not been edited since we loaded the page.
+        if (defined $cgi->param('delta_ts')
+            && $cgi->param('delta_ts') ne $attachment->modification_time)
+        {
+            ($vars->{'operations'}) =
+                Bugzilla::Bug::GetBugActivity($bug->id, $attachment->id, $cgi->param('delta_ts'));
 
-        # The token contains the old modification_time. We need a new one.
-        $cgi->param('token', issue_hash_token([$attachment->id, $attachment->modification_time]));
+            # The token contains the old modification_time. We need a new one.
+            $cgi->param('token', issue_hash_token([$attachment->id, $attachment->modification_time]));
 
-        # If the modification date changed but there is no entry in
-        # the activity table, this means someone commented only.
-        # In this case, there is no reason to midair.
-        if (scalar(@{$vars->{'operations'}})) {
-            $cgi->param('delta_ts', $attachment->modification_time);
-            $vars->{'attachment'} = $attachment;
+            # If the modification date changed but there is no entry in
+            # the activity table, this means someone commented only.
+            # In this case, there is no reason to midair.
+            if (scalar(@{$vars->{'operations'}})) {
+                $cgi->param('delta_ts', $attachment->modification_time);
+                $vars->{'attachment'} = $attachment;
 
-            print $cgi->header();
-            # Warn the user about the mid-air collision and ask them what to do.
-            $template->process("attachment/midair.html.tmpl", $vars)
-              || ThrowTemplateError($template->error());
-            exit;
+                print $cgi->header();
+                # Warn the user about the mid-air collision and ask them what to do.
+                $template->process("attachment/midair.html.tmpl", $vars)
+                  || ThrowTemplateError($template->error());
+                exit;
+            }
         }
     }
 
@@ -622,16 +625,22 @@ sub update {
         $bug->add_comment($comment, { isprivate => $attachment->isprivate });
     }
 
-    my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi($bug, $attachment, $vars);
-    $attachment->set_flags($flags, $new_flags);
+    if ($can_edit) {
+        my ($flags, $new_flags) =
+          Bugzilla::Flag->extract_flags_from_cgi($bug, $attachment, $vars);
+        $attachment->set_flags($flags, $new_flags);
+    }
 
     # Figure out when the changes were made.
     my $timestamp = $dbh->selectrow_array('SELECT LOCALTIMESTAMP(0)');
 
-    my $changes = $attachment->update($timestamp);
-    # If there are changes, we updated delta_ts in the DB. We have to
-    # reflect this change in the bug object.
-    $bug->{delta_ts} = $timestamp if scalar(keys %$changes);
+    if ($can_edit) {
+        my $changes = $attachment->update($timestamp);
+        # If there are changes, we updated delta_ts in the DB. We have to
+        # reflect this change in the bug object.
+        $bug->{delta_ts} = $timestamp if scalar(keys %$changes);
+    }
+
     # Commit the comment, if any.
     $bug->update($timestamp);
 

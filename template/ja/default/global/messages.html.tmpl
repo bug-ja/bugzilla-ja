@@ -338,10 +338,10 @@
     [% field_descs.$field_name FILTER html %]
 
   [% ELSIF message_tag == "get_resolution" %]
-    [% get_resolution(resolution) FILTER html %]
+    [% display_value("resolution", resolution) FILTER html %]
 
   [% ELSIF message_tag == "get_status" %]
-    [% get_status(status) FILTER html %]
+    [% display_value("bug_status", status) FILTER html %]
 
   [% ELSIF message_tag == "group_created" %]
     [% title = "新規グループ追加" %]
@@ -733,8 +733,13 @@
       の作成が完了しました。最大で
       [%+ series.frequency * 2 %] 日間、
       チャート作成に十分なデータが蓄積されるのを待つ必要があることに注意してください。
-      <br><br>
-      <a href="query.cgi?format=create-series">他のシリーズの作成</a> に戻る。
+
+  [% ELSIF message_tag == "series_deleted" %]
+    [% title = "シリーズ削除完了" %]
+    シリーズ <em>[% series.category FILTER html %] /
+      [%+ series.subcategory FILTER html %] /
+      [%+ series.name FILTER html %]</em>
+      の削除を完了しました。
 
   [% ELSIF message_tag == "shutdown" %]
     [% title = "$terms.Bugzilla 停止中" %]

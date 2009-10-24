@@ -35,8 +35,8 @@
 <p>
   このページで、どのステータス変更がワークフローとして有効かを定義します。
   旧バージョンの [% terms.Bugzilla %] との互換性のため、[% terms.abug %] の再開では
-  [% get_status("UNCONFIRMED") FILTER html %] もしくは 
-  [%+ get_status("REOPENED") FILTER html %] (ワークフローで有効なら) の両方ではなく、
+  [% display_value("bug_status", "UNCONFIRMED") FILTER html %] もしくは 
+  [%+ display_value("bug_status", "REOPENED") FILTER html %] (ワークフローで有効なら) の両方ではなく、
   どちらかしか表示されません。
   この選択は [% terms.bug %] がすでに承認されたかどうかによります。
   そのため、両方の変更を有効にし [% terms.Bugzilla %] が選択可能にしておくべきです。

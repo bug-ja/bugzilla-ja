@@ -42,6 +42,7 @@ use Bugzilla::Auth::Persist::Cookie;
 use Bugzilla::CGI;
 use Bugzilla::DB;
 use Bugzilla::Install::Localconfig qw(read_localconfig);
+use Bugzilla::Install::Requirements qw(OPTIONAL_MODULES);
 use Bugzilla::JobQueue;
 use Bugzilla::Template;
 use Bugzilla::User;
@@ -84,7 +85,6 @@ use constant SHUTDOWNHTML_EXIT_SILENTLY => [
 sub init_page {
     (binmode STDOUT, ':utf8') if Bugzilla->params->{'utf8'};
 
-
     if (${^TAINT}) {
         # Some environment variables are not taint safe
         delete @::ENV{'PATH', 'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
@@ -92,6 +92,12 @@ sub init_page {
         # PATH is undefined.
         $ENV{'PATH'} = '';
     }
+
+    # Because this function is run live from perl "use" commands of
+    # other scripts, we're skipping the rest of this function if we get here
+    # during a perl syntax check (perl -c, like we do during the
+    # 001compile.t test).
+    return if $^C;
 
     # IIS prints out warnings to the webpage, so ignore them, or log them
     # to a file if the file exists.
@@ -107,18 +113,15 @@ sub init_page {
         };
     }
 
+    do_ssl_redirect_if_required();
+
     # If Bugzilla is shut down, do not allow anything to run, just display a
     # message to the user about the downtime and log out.  Scripts listed in 
     # SHUTDOWNHTML_EXEMPT are exempt from this message.
     #
-    # Because this is code which is run live from perl "use" commands of other
-    # scripts, we're skipping this part if we get here during a perl syntax 
-    # check -- runtests.pl compiles scripts without running them, so we 
-    # need to make sure that this check doesn't apply to 'perl -c' calls.
-    #
     # This code must go here. It cannot go anywhere in Bugzilla::CGI, because
     # it uses Template, and that causes various dependency loops.
-    if (!$^C && Bugzilla->params->{"shutdownhtml"} 
+    if (Bugzilla->params->{"shutdownhtml"} 
         && lsearch(SHUTDOWNHTML_EXEMPT, basename($0)) == -1)
     {
         # Allow non-cgi scripts to exit silently (without displaying any
@@ -185,6 +188,40 @@ sub template_inner {
     $class->request_cache->{"template_inner_$lang"}
         ||= Bugzilla::Template->create();
     return $class->request_cache->{"template_inner_$lang"};
+}
+
+sub feature {
+    my ($class, $feature) = @_;
+    my $cache = $class->request_cache;
+    return $cache->{feature}->{$feature}
+        if exists $cache->{feature}->{$feature};
+
+    my $feature_map = $cache->{feature_map};
+    if (!$feature_map) {
+        foreach my $package (@{ OPTIONAL_MODULES() }) {
+            foreach my $f (@{ $package->{feature} }) {
+                $feature_map->{$f} ||= [];
+                push(@{ $feature_map->{$f} }, $package->{module});
+            }
+        }
+        $cache->{feature_map} = $feature_map;
+    }
+
+    if (!$feature_map->{$feature}) {
+        ThrowCodeError('invalid_feature', { feature => $feature });
+    }
+
+    my $success = 1;
+    foreach my $module (@{ $feature_map->{$feature} }) {
+        # We can't use a string eval and "use" here (it kills Template-Toolkit,
+        # see https://rt.cpan.org/Public/Bug/Display.html?id=47929), so we have
+        # to do a block eval.
+        $module =~ s{::}{/}g;
+        $module .= ".pm";
+        eval { require $module; 1; } or $success = 0;
+    }
+    $cache->{feature}->{$feature} = $success;
+    return $success;
 }
 
 sub cgi {
@@ -283,14 +320,6 @@ sub login {
         $class->set_user($authenticated_user);
     }
 
-    # We run after the login has completed since
-    # some of the checks in ssl_require_redirect
-    # look for Bugzilla->user->id to determine 
-    # if redirection is required.
-    if (i_am_cgi() && ssl_require_redirect()) {
-        $class->cgi->require_https($class->params->{'sslbase'});
-    }
-    
     return $class->user;
 }
 
@@ -758,5 +787,10 @@ consuming, so we cache this information for future references.
 Returns a L<Bugzilla::JobQueue> that you can use for queueing jobs.
 Will throw an error if job queueing is not correctly configured on
 this Bugzilla installation.
+
+=item C<feature>
+
+Tells you whether or not a specific feature is enabled. For names
+of features, see C<OPTIONAL_MODULES> in C<Bugzilla::Install::Requirements>.
 
 =back

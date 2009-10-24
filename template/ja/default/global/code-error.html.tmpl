@@ -192,6 +192,12 @@
     [% title = "無効な寸法です" %]
     指定された幅もしくは高さが正の整数ではありません。
 
+  [% ELSIF error == "invalid_feature" %]
+    [% title = "無効な機能名" %]
+    [% feature FILTER html %] は機能名として無効です。
+    <code>Bugzilla::Install::Requirements</code> にある
+    <code>OPTIONAL_MODULES</code> を、有効な名前の一覧として参照してください。
+
   [% ELSIF error == "invalid_flag_association" %]
     [% title = "無効なフラグ関係性です" %]
     いくつかのフラグが
@@ -330,7 +336,7 @@
 
   [% ELSIF error == "no_open_bug_status" %]
     [% title = "$terms.Bug を承認できません" %]
-    [%+ get_status("UNCONFIRMED") FILTER html %]
+    [%+ display_value("bug_status", "UNCONFIRMED") FILTER html %]
     から活動中のステータスへの有効な遷移が定義されていません。
 
   [% ELSIF error == "param_invalid" %]

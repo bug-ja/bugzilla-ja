@@ -346,10 +346,10 @@
     [% field_descs.$field_name FILTER html %]
 
   [% ELSIF message_tag == "get_resolution" %]
-    [% get_resolution(resolution) FILTER html %]
+    [% display_value("resolution", resolution) FILTER html %]
 
   [% ELSIF message_tag == "get_status" %]
-    [% get_status(status) FILTER html %]
+    [% display_value("bug_status", status) FILTER html %]
 
   [% ELSIF message_tag == "group_created" %]
     [% title = "New Group Created" %]
@@ -742,10 +742,14 @@
       has been created. Note that you may need to wait up to 
       [%+ series.frequency * 2 %] days before there will be enough data for a
       chart of this series to be produced.
-      <br><br>
-      Go back or 
-      <a href="query.cgi?format=create-series">create another series</a>.
-    
+
+  [% ELSIF message_tag == "series_deleted" %]
+    [% title = "Series Deleted" %]
+    The series <em>[% series.category FILTER html %] /
+      [%+ series.subcategory FILTER html %] /
+      [%+ series.name FILTER html %]</em>
+      has been deleted.
+
   [% ELSIF message_tag == "shutdown" %]
     [% title = "$terms.Bugzilla is Down" %]
     [% Param("shutdownhtml") %]

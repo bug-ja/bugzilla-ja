@@ -44,7 +44,7 @@
     [% PROCESS initial_action %]
     [% NEXT IF bug_status.name == bug.bug_status %]
     <option value="[% bug_status.name FILTER html %]">
-      [% get_status(bug_status.name) FILTER html %]
+      [% display_value("bug_status", bug_status.name) FILTER html %]
     </option>
     [% IF  !bug_status.is_open  %]
       [% show_resolution = 1 %]
@@ -71,13 +71,13 @@
   [% IF bug_status_select_displayed %]
     </select>
   [% ELSE %]
-      [% get_status(bug.bug_status) FILTER html %]
+      [% display_value("bug_status", bug.bug_status) FILTER html %]
       [% IF bug.resolution %]
         [% IF bug.dup_id %]
           <span id="duplicate_display">
           [% "${terms.bug} ${bug.dup_id}" FILTER bug_link(bug.dup_id) FILTER none %] の</span>
         [% END %]
-        [%+ get_resolution(bug.resolution) FILTER html %]
+        [%+ display_value("resolution", bug.resolution) FILTER html %]
       [% END %]
   [% END %]
   [% IF bug.user.canedit || bug.user.isreporter %]  
@@ -94,7 +94,10 @@
       <noscript><br>解決方法</noscript>
       <span id="resolution_settings">[% PROCESS select_resolution %]</span>
     [% END %]
-    
+    [% IF bug.dup_id %]
+        <noscript>[% bug.dup_id FILTER bug_link(bug.dup_id) FILTER none %]</noscript>
+    [% END %]
+
     <div id="dup_id_discoverable" class="bz_default_hidden">
       <a href="#" id="dup_id_discoverable_action">重複として処理する</a>
     </div>
@@ -130,7 +133,7 @@
 [% BLOCK initial_action %]
   [% IF !initial_action_shown %]
     <option selected value="[% bug.bug_status FILTER html %]">
-      [% get_status(bug.bug_status) FILTER html %]
+      [% display_value("bug_status", bug.bug_status) FILTER html %]
     </option>
     [% IF !bug.isopened  %] 
       [% show_resolution = 1 %]
@@ -144,10 +147,9 @@
 [% BLOCK select_resolution %]
   <select name="resolution" id="resolution">
     [% FOREACH r = bug.choices.resolution %]
-      [% NEXT IF r == "MOVED" && bug.resolution != "MOVED" %]
-      <option value="[% r FILTER html %]"
-      [% "selected" IF r == bug.resolution %]>
-        [% get_resolution(r) FILTER html %]</option>
+      <option value="[% r.name FILTER html %]"
+      [% ' selected="selected"' IF r.name == bug.resolution %]>
+        [% display_value("resolution", r.name) FILTER html %]</option>
     [% END %]
   </select>
 [% END %]

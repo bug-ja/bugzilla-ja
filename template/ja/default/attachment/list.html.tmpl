@@ -118,7 +118,7 @@ function toggle_display(link) {
 
         <td valign="top">
           <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">詳細</a>
-          [% IF attachment.ispatch && patchviewerinstalled %]
+          [% IF attachment.ispatch && feature_enabled('patch_viewer') %]       
             | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">Diff</a>
           [% END %]
           [% Hook.process("action") %]

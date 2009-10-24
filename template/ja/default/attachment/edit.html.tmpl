@@ -40,7 +40,7 @@
 %]
 
 [%# No need to display the Diff button and iframe if the attachment is not a patch. %]
-[% patchviewerinstalled = (patchviewerinstalled && attachment.ispatch) %]
+[% use_patchviewer = (feature_enabled('patch_viewer') && attachment.ispatch) %]
 
 <form method="post" action="attachment.cgi" onsubmit="normalizeComments();">
   <input type="hidden" name="id" value="[% attachment.id %]">
@@ -127,7 +127,7 @@
         <input type="submit" value="Submit" id="update"><br><br>
         <strong>操作:</strong>
         <a href="attachment.cgi?id=[% attachment.id %]">見る</a>
-        [% IF attachment.ispatch && patchviewerinstalled %]
+        [% IF use_patchviewer %]                                               
          | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=diff">Diff</a>
         [% END %]
         [% IF Param("allow_attachment_deletion")
@@ -183,14 +183,14 @@
             var patchviewerinstalled = 0;
             var attachment_id = [% attachment.id %];
             if (typeof document.getElementById == "function") {
-[% IF patchviewerinstalled %]
+[% IF use_patchviewer %]
               var patchviewerinstalled = 1;
               document.write('<iframe id="viewDiffFrame" style="height: 400px; width: 100%; display: none;"><\/iframe>');
 [% END %]
               document.write('<button type="button" id="editButton" onclick="editAsComment(patchviewerinstalled);"添付をコメントに引用して編集<\/button>');
               document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment(patchviewerinstalled);" style="display: none;">コメントとしての編集をやめる<\/button>');
               document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment(patchviewerinstalled);" style="display: none;">コメントとしての編集を再開する<\/button>');
-[% IF patchviewerinstalled %]
+[% IF use_patchviewer %]
               document.write('<button type="button" id="viewDiffButton" onclick="viewDiff(attachment_id, patchviewerinstalled);">Diff 形式で添付を見る<\/button>');
 [% END %]
               document.write('<button type="button" id="viewRawButton" onclick="viewRaw(patchviewerinstalled);" style="display: none;">Raw 形式で添付を見る<\/button>');
@@ -214,7 +214,7 @@
 
   </table>
 
-  この [% terms.Bug %] への添付:
+  この [% "$terms.bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %] への添付:
   [% FOREACH a = attachments %]
     [% IF a == attachment.id %]
       [%+ a %]

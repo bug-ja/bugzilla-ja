@@ -45,7 +45,6 @@ use Bugzilla::User;
 use Bugzilla::Error;
 use Bugzilla::Status;
 use Bugzilla::Token;
-use Bugzilla::Template::Parser;
 
 use Cwd qw(abs_path);
 use MIME::Base64;
@@ -58,28 +57,6 @@ use IO::Dir;
 use Scalar::Util qw(blessed);
 
 use base qw(Template);
-
-# As per the Template::Base documentation, the _init() method is being called 
-# by the new() constructor. We take advantage of this in order to plug our
-# UTF-8-aware Parser object in neatly after the original _init() method has
-# happened, in particular, after having set up the constants namespace.
-# See bug 413121 for details.
-sub _init {
-    my $self = shift;
-    my $config = $_[0];
-
-    $self->SUPER::_init(@_) || return undef;
-
-    $self->{PARSER} = $config->{PARSER}
-        = new Bugzilla::Template::Parser($config);
-
-    # Now we need to re-create the default Service object, making it aware
-    # of our Parser object.
-    $self->{SERVICE} = $config->{SERVICE}
-        = Template::Config->service($config);
-
-    return $self;
-}
 
 # Convert the constants in the Bugzilla::Constants module into a hash we can
 # pass to the template object for reflection into its "constants" namespace
@@ -163,7 +140,7 @@ sub get_format {
 # If you want to modify this routine, read the comments carefully
 
 sub quoteUrls {
-    my ($text, $curr_bugid, $already_wrapped) = (@_);
+    my ($text, $bug, $comment) = (@_);
     return $text unless $text;
 
     # We use /g for speed, but uris can have other things inside them
@@ -180,7 +157,8 @@ sub quoteUrls {
 
     # If the comment is already wrapped, we should ignore newlines when
     # looking for matching regexps. Else we should take them into account.
-    my $s = $already_wrapped ? qr/\s/ : qr/[[:blank:]]/;
+    my $s = ($comment && $comment->{already_wrapped}) 
+            ? qr/\s/ : qr/[[:blank:]]/;
 
     # However, note that adding the title (for buglinks) can affect things
     # In particular, attachment matches go before bug titles, so that titles
@@ -194,6 +172,26 @@ sub quoteUrls {
     my @things;
     my $count = 0;
     my $tmp;
+
+    my @hook_regexes;
+    Bugzilla::Hook::process('bug-format_comment',
+        { text => \$text, bug => $bug, regexes => \@hook_regexes,
+          comment => $comment });
+
+    foreach my $re (@hook_regexes) {
+        my ($match, $replace) = @$re{qw(match replace)};
+        if (ref($replace) eq 'CODE') {
+            $text =~ s/$match/($things[$count++] = $replace->({matches => [
+                                                               $1, $2, $3, $4,
+                                                               $5, $6, $7, $8, 
+                                                               $9, $10]}))
+                               && ("\0\0" . ($count-1) . "\0\0")/egx;
+        }
+        else {
+            $text =~ s/$match/($things[$count++] = $replace) 
+                              && ("\0\0" . ($count-1) . "\0\0")/egx;
+        }
+    }
 
     # Provide tooltips for full bug links (Bug 74355)
     my $urlbase_re = '(' . join('|',
@@ -242,7 +240,7 @@ sub quoteUrls {
               ~egmxi;
 
     # Current bug ID this comment belongs to
-    my $current_bugurl = $curr_bugid ? "show_bug.cgi?id=$curr_bugid" : "";
+    my $current_bugurl = $bug ? ("show_bug.cgi?id=" . $bug->id) : "";
 
     # This handles bug a, comment b type stuff. Because we're using /g
     # we have to do this in one pattern, and so this is semi-messy.
@@ -304,12 +302,8 @@ sub get_attachment_link {
         # If the attachment is a patch, try to link to the diff rather
         # than the text, by default.
         my $patchlink = "";
-        if ($is_patch) {
-            # Determine if PatchReader is installed
-            my $patchviewer_installed = eval { require PatchReader; };
-            if ($patchviewer_installed) {
-                $patchlink = '&amp;action=diff';
-            }
+        if ($is_patch and Bugzilla->feature('patch_viewer')) {
+            $patchlink = '&amp;action=diff';
         }
 
         # Whitespace matters here because these links are in <pre> tags.
@@ -480,6 +474,8 @@ sub create {
         # Initialize templates (f.e. by loading plugins like Hook).
         PRE_PROCESS => "global/initialize.none.tmpl",
 
+        ENCODING => Bugzilla->params->{'utf8'} ? 'UTF-8' : undef,
+
         # Functions for processing text within templates in various ways.
         # IMPORTANT!  When adding a filter here that does not override a
         # built-in filter, please also add a stub filter to t/004template.t.
@@ -566,10 +562,10 @@ sub create {
             css_class_quote => \&Bugzilla::Util::css_class_quote ,
 
             quoteUrls => [ sub {
-                               my ($context, $bug, $already_wrapped) = @_;
+                               my ($context, $bug, $comment) = @_;
                                return sub {
                                    my $text = shift;
-                                   return quoteUrls($text, $bug, $already_wrapped);
+                                   return quoteUrls($text, $bug, $comment);
                                };
                            },
                            1
@@ -765,6 +761,8 @@ sub create {
                 }
                 return \@bug_list;
             },
+
+            'feature_enabled' => sub { return Bugzilla->feature(@_); },
 
             # These don't work as normal constants.
             DB_MODULE        => \&Bugzilla::Constants::DB_MODULE,

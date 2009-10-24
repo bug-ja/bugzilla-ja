@@ -192,6 +192,13 @@ sub update_params {
         $param->{'mail_delivery_method'} = $translation{$method};
     }
 
+    # Convert the old "ssl" parameter to the new "ssl_redirect" parameter.
+    # Both "authenticated sessions" and "always" turn on "ssl_redirect"
+    # when upgrading.
+    if (exists $param->{'ssl'} and $param->{'ssl'} ne 'never') {
+        $param->{'ssl_redirect'} = 1;
+    }
+
     # --- DEFAULTS FOR NEW PARAMS ---
 
     _load_params unless %params;
@@ -199,7 +206,12 @@ sub update_params {
         my $name = $item->{'name'};
         unless (exists $param->{$name}) {
             print "New parameter: $name\n" unless $new_install;
-            $param->{$name} = $answer->{$name} || $item->{'default'};
+            if (exists $answer->{$name}) {
+                $param->{$name} = $answer->{$name};
+            }
+            else {
+                $param->{$name} = $item->{'default'};
+            }
         }
     }
 

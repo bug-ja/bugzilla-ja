@@ -57,8 +57,8 @@
             深刻度: [%+ bug.bug_severity -%]
   プラットフォーム: [%+ bug.rep_platform %]
             担当者: [%+ bug.$assignee_login_string %]
-        ステータス: [%+ get_status(bug.bug_status) %]
-            [%- IF bug.resolution -%] 解決方法: [% get_resolution(bug.resolution) -%]
+        ステータス: [%+ display_value("bug_status", bug.bug_status) %]
+            [%- IF bug.resolution -%] 解決方法: [% display_value("resolution", bug.resolution) -%]
                                 [%- END %]
               要約: [% bug.short_desc %]
 
