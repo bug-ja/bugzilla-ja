@@ -67,6 +67,7 @@ our $_request_cache = {};
 use constant SHUTDOWNHTML_EXEMPT => [
     'editparams.cgi',
     'checksetup.pl',
+    'migrate.pl',
     'recode.pl',
 ];
 
@@ -113,7 +114,10 @@ sub init_page {
         };
     }
 
-    do_ssl_redirect_if_required();
+    # Because of attachment_base, attachment.cgi handles this itself.
+    if (basename($0) ne 'attachment.cgi') {
+        do_ssl_redirect_if_required();
+    }
 
     # If Bugzilla is shut down, do not allow anything to run, just display a
     # message to the user about the downtime and log out.  Scripts listed in 

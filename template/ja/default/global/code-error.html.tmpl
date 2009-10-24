@@ -107,11 +107,6 @@
 
   [% ELSIF error == "chart_file_open_fail" %]
     チャート用データファイル <tt>[% filename FILTER html %]</tt> が開けません。
-  
-  [% ELSIF error == "chart_lines_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'チャートのために必要な Perl モジュールをインストールする'} %]
-    チャート機能は、Chart::Lines の Perl モジュールがなければ動きません。
-    checksetup.pl を実行して表示されるインストールのための指示に従ってください。
 
   [% ELSIF error == "column_not_null_without_default" %]
     カラム [% name FILTER html %] の追加に失敗しました:
@@ -161,11 +156,6 @@
   [% ELSIF error == "field_not_custom" %]
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
     はカスタムフィールドではありません。
-
-  [% ELSIF error == "gd_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'チャートに必要な perl モジュールをインストールする'} %]
-    GD Perl 用モジュールがインストールされていなければチャート機能は動作しません。
-    checksetup.pl を実行しインストール指示に従ってください。
 
   [% ELSIF error == "illegal_content_type_method" %]
     あなたの変更には間違いがあります。
@@ -224,6 +214,15 @@
     あなたは [% terms.bug %] [%+ my_bug_id FILTER html %] へ新しい添付をつけるときに
     無効化しようとしました。
 
+  [% ELSIF error == "feature_disabled" %]
+    [% install_string("feature_$feature") FILTER html %] 機能が
+    この [% terms.Bugzilla %] にインストールされていません。
+    [% IF user.in_group('admin') %]
+      この機能を有効にするには、
+      <kbd>checksetup.pl</kbd> を実行し、
+      この機能のために必要なモジュールのインストール方法を確認してください。
+    [% END %]
+
   [% ELSIF error == "flag_unexpected_object" %]
     [% title = "認識できないオブジェクトです" %]
     [% caller FILTER html %] 型のオブジェクトにはフラグを設定できません。
@@ -275,22 +274,10 @@
     <code>[% job FILTER html %]</code> をジョブキューに追加する処理が、
     以下の理由で失敗しました : [% errmsg FILTER html %]
 
-  [% ELSIF error == "jobqueue_not_configured" %]
-    ジョブキューシステムを利用するには必要な Perl 
-    モジュールがインストールされている必要があります。
-    <code>checksetup.pl</code> を実行すると不足しているモジュールが表示されます。
-
   [% ELSIF error == "jobqueue_no_job_mapping" %]
     <code>Bugzilla::JobQueue</code> はジョブ "[% job FILTER html %]" 
     を処理するように設定されていません。ジョブタイプを <code>Bugzilla::JobQueue</code>
     の <code>JOB_MAP</code> 定数に追加する必要があります。
-
-  [% ELSIF error == "json_rpc_not_installed" %]
-   [% admindocslinks = { 'installation.html#install-perlmodules' 
-                         => 'Perl モジュールのインストール' } %]
-    JSON-RPC インターフェースは <code>JSON::RPC</code> Perl モジュールなしには、
-    動作しません。<code>checksetup.pl</code> を実行して、
-    表示される必要なモジュールをインストールインストールしてください。
 
   [% ELSIF error == "ldap_bind_failed" %]
     LDAP サーバへの接続に失敗しました。エラーメッセージは次のとおりです。
@@ -412,11 +399,6 @@
   [% ELSIF error == "setting_value_invalid" %]
     値 "<code>[% value FILTER html %]</code>" は有効な <em>[% name FILTER html %]</em> 
     設定の値のリストにありません。
-
-  [% ELSIF error == "soap_not_installed" %]
-    [% admindocslinks = {'installation.html#install-perlmodules' => 'Perl モジュールのインストール'} %]
-    XMLRPC インターフェースは、SOAP::Lite Perl モジュールがインストールされていなければ
-    利用できません。checksetup.pl を実行し、インストール手順を見てください。
 
   [% ELSIF error == "token_generation_error" %]
     トークン生成システムで深刻な問題が発生しています。

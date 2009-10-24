@@ -481,6 +481,44 @@
     [% title = "$terms.Bugzilla ログイン情報変更" %]
     あなたの [% terms.Bugzilla %] へのログイン情報が変更されました。
 
+  [% ELSIF message_tag == "migrate_component_created" %]
+    コンポーネント作成: [% comp.name FILTER html %]
+    ([% product.name FILTER html %] 中)
+
+  [% ELSIF message_tag == "migrate_creating_bugs" %]
+    [% terms.bugs %] 作成中...
+
+  [% ELSIF message_tag == "migrate_field_created" %]
+    新規カスタムフィールド: [% field.description FILTER html %]
+    ([% field.name FILTER html %])
+
+  [% ELSIF message_tag == "migrate_product_created" %]
+    プロダクト作成: [% created.name FILTER html %]
+
+  [% ELSIF message_tag == "migrate_reading_bugs" %]
+    [% terms.bugs %] 読み込み中...
+
+  [% ELSIF message_tag == "migrate_reading_products" %]
+    プロダクト読み込み中...
+
+  [% ELSIF message_tag == "migrate_reading_users" %]
+    ユーザ読み込み中...
+
+  [% ELSIF message_tag == "migrate_translating_bugs" %]
+    [% terms.bug %] の値を相当する
+    [%+ terms.Bugzilla %] の値に変換中...
+
+  [% ELSIF message_tag == "migrate_user_created" %]
+    ユーザ作成: [% created.email FILTER html %]
+    [% IF password %] パスワード: [% password FILTER html %][% END %]
+
+  [% ELSIF message_tag == "migrate_value_created" %]
+    [% IF product.defined %]
+      [% product.name FILTER html %]
+    [% END %]
+    [%+ field_descs.${field.name} FILTER html %] の値を作成
+    : [% value FILTER html %]
+
   [% ELSIF message_tag == "milestone_created" %]
     [% title = "マイルストーン作成完了" %]
     マイルストーン <em>[% milestone.name FILTER html %]</em> を作成しました。

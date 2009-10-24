@@ -33,14 +33,8 @@
 
 [% PROCESS 'global/field-descs.none.tmpl' %]
 
-[% IF comment.already_wrapped %]
-  [% wrapped_comment = comment.body %]
-[% ELSE %]
-  [% wrapped_comment = comment.body FILTER wrap_comment %]
-[% END %]
-
 [%- IF comment.type == constants.CMT_DUPE_OF -%]
-[% wrapped_comment %]
+[% comment.body %]
 
 *** この [% terms.bug %] は [% terms.bug %] [%+ comment.extra_data %] の重複として処理されました。 ***
 [% ELSIF comment.type == constants.CMT_HAS_DUPE %]
@@ -48,7 +42,7 @@
 [% ELSIF comment.type == constants.CMT_POPULAR_VOTES %]
 *** この [% terms.bug %] は投票数によって承認されました。 ***
 [% ELSIF comment.type == constants.CMT_MOVED_TO %]
-[% wrapped_comment %]
+[% comment.body %]
 
 [%+ terms.Bug %] は [% Param("move-to-url") %] に移動しました。
 移動が成功した場合、[% comment.extra_data %] は、他のデータベースにおける
@@ -57,5 +51,5 @@
 新しい [% terms.bug %] へのリンクをここへ貼り付けてください。
 そうでなければ、この [% terms.bug %] を再開してください。
 [%- ELSE -%]
-[%- wrapped_comment %]
+[%- comment.body %]
 [% END %]

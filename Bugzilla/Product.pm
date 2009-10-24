@@ -105,15 +105,19 @@ sub create {
 
     my $params = $class->run_create_validators(@_);
     # Some fields do not exist in the DB as is.
-    $params->{classification_id} = delete $params->{classification};
+    if (defined $params->{classification}) {
+        $params->{classification_id} = delete $params->{classification}; 
+    }
     my $version = delete $params->{version};
     my $create_series = delete $params->{create_series};
 
     my $product = $class->insert_create_data($params);
+    Bugzilla->user->clear_product_cache();
 
     # Add the new version and milestone into the DB as valid values.
     Bugzilla::Version->create({name => $version, product => $product});
-    Bugzilla::Milestone->create({name => $params->{defaultmilestone}, product => $product});
+    Bugzilla::Milestone->create({ name => $product->default_milestone, 
+                                  product => $product });
 
     # Create groups and series for the new product, if requested.
     $product->_create_bug_group() if Bugzilla->params->{'makeproductgroups'};
@@ -361,6 +365,7 @@ sub update {
     $dbh->bz_commit_transaction();
     # Changes have been committed.
     delete $self->{check_group_controls};
+    Bugzilla->user->clear_product_cache();
 
     # Now that changes have been committed, we can send emails to voters.
     foreach my $msg (@msgs) {

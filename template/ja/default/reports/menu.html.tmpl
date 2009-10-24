@@ -48,28 +48,34 @@
     </strong> -
     1, 2, 3 次元の [% terms.bug %] 数の表を HTML か CSV で
   </li>
-  <li>
-    <strong>
-      <a href="query.cgi?format=report-graph">グラフレポート</a>
-    </strong> -
-    線グラフ、バー・パイチャート
-  </li>
-</ul>
-
-<h2>時間変化</h2>
-
-<ul>
-  <li>
-    <strong><a href="reports.cgi">旧形式</a></strong> - 
-    時間、プロダクトごとのデータベースの [% terms.bugs %] のステータス、
-    解決方法のプロット。
-  </li>
-  [% IF user.in_group(Param("chartgroup")) %]
+  [% IF feature_enabled('graphical_reports') %]
     <li>
-      <strong><a href="chart.cgi">新形式</a></strong> - 
-      時間ごとの任意の検索結果のプロットで、より高機能。
+      <strong>
+        <a href="query.cgi?format=report-graph"グラフレポート</a>
+      </strong> -
+      線グラフ、バー・パイチャート
     </li>
   [% END %]
 </ul>
+
+[% IF feature_enabled('new_charts') OR feature_enabled('old_charts') %]
+  <h2>時間変化</h2>
+
+  <ul>
+    [% IF feature_enabled('old_charts') %]
+      <li>
+        <strong><a href="reports.cgi">旧形式</a></strong> - 
+        時間、プロダクトごとのデータベースの [% terms.bugs %] のステータス、
+        解決方法のプロット。
+      </li>
+    [% END %]
+    [% IF feature_enabled('new_charts') AND user.in_group(Param("chartgroup")) %]
+      <li>
+        <strong><a href="chart.cgi">新形式</a></strong> - 
+        時間ごとの任意の検索結果のプロットで、より高機能。
+      </li>
+    [% END %]
+  </ul>
+[% END %]
 
 [% PROCESS global/footer.html.tmpl %]

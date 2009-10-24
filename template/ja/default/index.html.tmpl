@@ -100,11 +100,6 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
         このメッセージの表示に関しては、
       <a href="editparams.cgi?section=core#upgrade_notification">パラメータ</a> 
         ページから設定できます。</p>
-    [% ELSIF release.error == "missing_package" %]
-      <p>パッケージ '[% release.package FILTER html %]' が見つかりません。
-        このパッケージは、
-      <a href="editparams.cgi?section=core#upgrade_notification">新バージョンリリース通知機能</a>
-        のために必要です。</p>
     [% ELSIF release.error == "cannot_download" %]
       <p>ローカルに XML ファイル '[% release.xml_file FILTER html %]' を作成できません。
       ウェブサーバの設定を見直して、ディレクトリに書き込み可能でサーバからウェブに接続可能かを確認してください。

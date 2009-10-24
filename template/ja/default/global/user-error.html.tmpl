@@ -1210,6 +1210,15 @@
     [% jawords.search FILTER html %] %user% は [% jawords.account_login FILTER html %] しなければ利用できません。
     %user% はあなたの [% jawords.account_login_name FILTER html %] を参照する必要がありますが、それができません。
 
+  [% ELSIF error == "migrate_config_created" %]
+    ファイル <kbd>[% file FILTER html %]</kbd> に移行前に設定すべき項目が含まれますが、
+    それらが設定されていません。
+
+  [% ELSIF error == "migrate_from_invalid" %]
+    '[% from FILTER html %]' は、移行元の [% terms.bug %] 
+    追跡システムとして有効ではありません。<kbd>B[% %]ugzilla/Migrate/</kbd>
+    ディレクトリが有効な移行元の [% terms.bug %] 追跡システムですのリスト。
+
   [% ELSIF error == "milestone_already_exists" %]
     [% title = BLOCK %] 指定された [% jawords.milestone FILTER html %] は既に存在しています [% END %]
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
