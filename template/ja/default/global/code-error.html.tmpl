@@ -149,13 +149,17 @@
     を呼ぶ必要があります。(Bugzilla::Field::Choice 
     で直接クラスメソッドを呼ぶことはできません。)
 
+  [% ELSIF error == "field_not_custom" %]
+    '[% field.description FILTER html %]' ([% field.name FILTER html %])
+    はカスタムフィールドではありません。
+
   [% ELSIF error == "field_type_mismatch" %]
     <code>[% field FILTER html %]</code> と <code>[% type FILTER html %]</code> 
     を同時に処理できません。
 
-  [% ELSIF error == "field_not_custom" %]
-    '[% field.description FILTER html %]' ([% field.name FILTER html %])
-    はカスタムフィールドではありません。
+  [% ELSIF error == "field_type_not_specified" %]
+    [% title = "フィールド型が指定されていません" %]
+    カスタムフィールドを作成するには型を指定する必要があります。
 
   [% ELSIF error == "illegal_content_type_method" %]
     あなたの変更には間違いがあります。

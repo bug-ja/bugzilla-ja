@@ -68,6 +68,14 @@
     ファイル名が壊れていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=328628">[% terms.Bug %] 328628</a>)
   </li>
+  <li>データベースのカラム名にユニコード文字を含むカスタムフィールドを作成するのは、
+    サポートされなくなりました。(cf_のあとにマルチバイトを含むようなもの)
+    作成した場合 [% terms.Bugzilla %] が壊れます。
+    もし、そのようなカスタムフィールドを作成した場合は、
+    <a href="editfields.cgi">editfields.cgi</a>
+    で、用済みとしたあとリストの "削除" ボタンから削除してください。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=525025">[% terms.Bug %] 525025</a>)
+  </li>                                                                        
   <li>"衝突検出" ページで "コメントのみを投稿" をクリックすると "無効な動作" 
     の警告が発生していました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=514378">[% terms.Bug %] 514378</a>)

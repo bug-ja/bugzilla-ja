@@ -273,7 +273,7 @@ sub _check_name {
     my $name_regex = qr/^[\w\.]+$/;
     # Custom fields have more restrictive name requirements than
     # standard fields.
-    $name_regex = qr/^\w+$/ if $is_custom;
+    $name_regex = qr/^[a-zA-Z0-9_]+$/ if $is_custom;
     # Custom fields can't be named just "cf_", and there is no normal
     # field named just "cf_".
     ($name =~ $name_regex && $name ne "cf_")
@@ -837,6 +837,11 @@ sub run_create_validators {
                                      $params->{visibility_field_id});
 
     my $type = $params->{type} || 0;
+    
+    if ($params->{custom} && !$type) {
+        ThrowCodeError('field_type_not_specified');
+    }
+    
     $params->{value_field_id} = 
         $class->_check_value_field_id($params->{value_field_id},
             ($type == FIELD_TYPE_SINGLE_SELECT 
