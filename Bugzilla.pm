@@ -43,7 +43,6 @@ use Bugzilla::CGI;
 use Bugzilla::DB;
 use Bugzilla::Install::Localconfig qw(read_localconfig);
 use Bugzilla::Install::Requirements qw(OPTIONAL_MODULES);
-use Bugzilla::JobQueue;
 use Bugzilla::Template;
 use Bugzilla::User;
 use Bugzilla::Error;
@@ -234,6 +233,22 @@ sub cgi {
     return $class->request_cache->{cgi};
 }
 
+sub input_params {
+    my ($class, $params) = @_;
+    my $cache = $class->request_cache;
+    # This is how the WebService and other places set input_params.
+    if (defined $params) {
+        $cache->{input_params} = $params;
+    }
+    return $cache->{input_params} if defined $cache->{input_params};
+
+    # Making this scalar makes it a tied hash to the internals of $cgi,
+    # so if a variable is changed, then it actually changes the $cgi object
+    # as well.
+    $cache->{input_params} = $class->cgi->Vars;
+    return $cache->{input_params};
+}
+
 sub localconfig {
     my $class = shift;
     $class->request_cache->{localconfig} ||= read_localconfig();
@@ -363,6 +378,7 @@ sub logout_request {
 
 sub job_queue {
     my $class = shift;
+    require Bugzilla::JobQueue;
     $class->request_cache->{job_queue} ||= Bugzilla::JobQueue->new();
     return $class->request_cache->{job_queue};
 }
@@ -539,7 +555,11 @@ sub local_timezone {
 sub request_cache {
     if ($ENV{MOD_PERL}) {
         require Apache2::RequestUtil;
-        return Apache2::RequestUtil->request->pnotes();
+        # Sometimes (for example, during mod_perl.pl), the request
+        # object isn't available, and we should use $_request_cache instead.
+        my $request = eval { Apache2::RequestUtil->request };
+        return $_request_cache if !$request;
+        return $request->pnotes();
     }
     return $_request_cache;
 }
@@ -646,6 +666,26 @@ reset to the current one (the one used by Bugzilla->template).
 The current C<cgi> object. Note that modules should B<not> be using this in
 general. Not all Bugzilla actions are cgi requests. Its useful as a convenience
 method for those scripts/templates which are only use via CGI, though.
+
+=item C<input_params>
+
+When running under the WebService, this is a hashref containing the arguments
+passed to the WebService method that was called. When running in a normal
+script, this is a hashref containing the contents of the CGI parameters.
+
+Modifying this hashref will modify the CGI parameters or the WebService
+arguments (depending on what C<input_params> currently represents).
+
+This should be used instead of L</cgi> in situations where your code
+could be being called by either a normal CGI script or a WebService method,
+such as during a code hook.
+
+B<Note:> When C<input_params> represents the CGI parameters, any
+parameter specified more than once (like C<foo=bar&foo=baz>) will appear
+as an arrayref in the hash, but any value specified only once will appear
+as a scalar. This means that even if a value I<can> appear multiple times,
+if it only I<does> appear once, then it will be a scalar in C<input_params>,
+not an arrayref.
 
 =item C<user>
 

@@ -54,7 +54,7 @@
     <th>&nbsp;</th>
     [% FOREACH status = statuses %]
       <th class="col-header[% status.is_open ? " open-status" : " closed-status" %]">
-        [% status.name FILTER html %]
+        [% display_value("bug_status", status.name) FILTER html %]
       </th>
     [% END %]
   </tr>
@@ -64,7 +64,7 @@
   [% FOREACH status = p.merge(statuses) %]
     <tr class="highlight">
       <th align="right" class="[% status.is_open ? "open-status" : "closed-status" %]">
-        [% status.name FILTER html %]
+        [% display_value("bug_status", status.name) FILTER html %]
       </th>
 
       [% FOREACH new_status = statuses %]
@@ -88,7 +88,7 @@
 
 <p>
   [% terms.abug %] が他の重複とされ、他のサイトに移動された場合、[% terms.bug %] 
-  ステータスは自動的に <b>[% Param("duplicate_or_move_bug_status") FILTER html %]</b>
+  ステータスは自動的に <b>[% display_value("bug_status", Param("duplicate_or_move_bug_status")) FILTER html %]</b>
   に設定されます。この [% terms.bug %] ステータスへの全ての変更は有効にされなければなりません。
   (そのため、上の表では弄れないように設定されています。)<br>
   注: この設定は

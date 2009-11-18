@@ -322,7 +322,7 @@
     有効な quipid が必要です。
 
   [% ELSIF error == "no_manual_moved" %]
-    [% terms.bug %] を移動させることなく、[% terms.abug %] を MOVED 
+    [% terms.bug %] を移動させることなく、[% terms.abug %] を [% display_value("resolution", "MOVED") FILTER html %]
     の解決方法にできません。
 
   [% ELSIF error == "no_open_bug_status" %]

@@ -144,6 +144,9 @@ These params are accessible through L<Bugzilla/hook_args>.
 That returns a hashref. Very frequently, if you want your
 hook to do anything, you have to modify these variables.
 
+You may also want to use L<Bugzilla/input_params> to get parameters
+that were passed to the current CGI script or WebService method.
+
 =head2 Versioning Extensions
 
 Every extension must have a file in its root called F<info.pl>.
@@ -274,6 +277,21 @@ Params:
 values.
 
 =item C<timestamp> - The timestamp used for all updates in this transaction.
+
+=back
+
+=head2 bug-end_of_create_validators
+
+This happens during L<Bugzilla::Bug/create>, after all parameters have
+been validated, but before anything has been inserted into the database.
+
+Params:
+
+=over
+
+=item C<params>
+
+A hashref. The validated parameters passed to C<create>.
 
 =back
 
@@ -579,6 +597,77 @@ Params:
 =over
 
 =item C<email> - The C<Email::MIME> object that's about to be sent.
+
+=back
+
+=head2 object-before_create
+
+This happens at the beginning of L<Bugzilla::Object/create>.
+
+Params:
+
+=over
+
+=item C<class>
+
+The name of the class that C<create> was called on. You can check this 
+like C<< if ($class->isa('Some::Class')) >> in your code, to perform specific
+tasks before C<create> for only certain classes.
+
+=item C<params>
+
+A hashref. The set of named parameters passed to C<create>.
+
+=back
+
+=head2 object-before_set
+
+Called during L<Bugzilla::Object/set>, before any actual work is done.
+You can use this to perform actions before a value is changed for
+specific fields on certain types of objects.
+
+Params:
+
+=over
+
+=item C<object>
+
+The object that C<set> was called on. You will probably want to
+do something like C<< if ($object->isa('Some::Class')) >> in your code to
+limit your changes to only certain subclasses of Bugzilla::Object.
+
+=item C<field>
+
+The name of the field being updated in the object.
+
+=item C<value> 
+
+The value being set on the object.
+
+=back
+
+=head2 object-end_of_create_validators
+
+Called at the end of L<Bugzilla::Object/run_create_validators>. You can
+use this to run additional validation when creating an object.
+
+If a subclass has overridden C<run_create_validators>, then this usually
+happens I<before> the subclass does its custom validation.
+
+Params:
+
+=over
+
+=item C<class>
+
+The name of the class that C<create> was called on. You can check this 
+like C<< if ($class->isa('Some::Class')) >> in your code, to perform specific
+tasks for only certain classes.
+
+=item C<params>
+
+A hashref. The set of named parameters passed to C<create>, modified and
+validated by the C<VALIDATORS> specified for the object.
 
 =back
 

@@ -271,8 +271,7 @@ EOT
 }
 
 # List of abstract methods we are checking the derived class implements
-our @_abstract_methods = qw(REQUIRED_VERSION PROGRAM_NAME DBD_VERSION
-                            new sql_regexp sql_not_regexp sql_limit sql_to_days
+our @_abstract_methods = qw(new sql_regexp sql_not_regexp sql_limit sql_to_days
                             sql_date_format sql_interval bz_explain
                             sql_group_concat);
 
@@ -287,7 +286,7 @@ sub import {
         # make sure all abstract methods are implemented
         foreach my $meth (@_abstract_methods) {
             $pkg->can($meth)
-                or croak("Class $pkg does not define method $meth");
+                or die("Class $pkg does not define method $meth");
         }
     }
 
@@ -537,6 +536,13 @@ sub bz_alter_column {
                 "SELECT 1 FROM $table WHERE $name IS NULL");
             ThrowCodeError('column_not_null_no_default_alter', 
                            { name => "$table.$name" }) if ($any_nulls);
+        }
+        # Preserve foreign key definitions in the Schema object when altering
+        # types.
+        if (defined $current_def->{REFERENCES}) {
+            # Make sure we don't modify the caller's $new_def.
+            $new_def = dclone($new_def);
+            $new_def->{REFERENCES} = $current_def->{REFERENCES};
         }
         $self->bz_alter_column_raw($table, $name, $new_def, $current_def,
                                    $set_nulls_to);

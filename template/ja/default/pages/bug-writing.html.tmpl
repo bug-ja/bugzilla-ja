@@ -72,8 +72,8 @@
 
     <p><b>OS:</b> どの OS で問題を発見しましたか？
         (例 Linux, Windows XP, Mac OS X.)<br>
-        [% terms.bug %] がひとつ以上の OS で発生するなら、"All" を選択してください。
-        もしリストになければ、Other を選択してください。</p>
+        [% terms.bug %] がひとつ以上の OS で発生するなら、<em>[% display_value("op_sys", "All") FILTER html %]</em> を選択してください。
+        もしリストになければ、<em>[% display_value("op_sys", "Other") FILTER html %]</em> を選択してください。</p>
 
     <p><b>要約:</b> [% terms.bug %] を 60 文字程度以下で説明できますか ?<br>
      よい要約は、<b>簡単に混同することなく [% terms.abug %] 報告を判別できる</b>

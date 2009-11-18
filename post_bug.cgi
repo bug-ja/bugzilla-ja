@@ -103,9 +103,6 @@ if (defined $cgi->param('maketemplate')) {
 
 umask 0;
 
-# get current time
-my $timestamp = $dbh->selectrow_array('SELECT LOCALTIMESTAMP(0)');
-
 # Group Validation
 my @selected_groups;
 foreach my $group (grep(/^bit-\d+$/, $cgi->param())) {
@@ -160,7 +157,6 @@ my %bug_params;
 foreach my $field (@bug_fields) {
     $bug_params{$field} = $cgi->param($field);
 }
-$bug_params{'creation_ts'} = $timestamp;
 $bug_params{'cc'}          = [$cgi->param('cc')];
 $bug_params{'groups'}      = \@selected_groups;
 $bug_params{'comment'}     = $comment;
@@ -176,6 +172,10 @@ my $bug = Bugzilla::Bug->create(\%bug_params);
 
 # Get the bug ID back.
 my $id = $bug->bug_id;
+# We do this directly from the DB because $bug->creation_ts has the seconds
+# formatted out of it (which should be fixed some day).
+my $timestamp = $dbh->selectrow_array(
+    'SELECT creation_ts FROM bugs WHERE bug_id = ?', undef, $id);
 
 # Set Version cookie, but only if the user actually selected
 # a version on the page.
@@ -229,13 +229,13 @@ if (defined($cgi->upload('data')) || $cgi->param('attachurl')) {
         # expects to find this exact string.
         my $new_comment = "Created an attachment (id=" . $attachment->id . ")\n" .
                           $attachment->description . "\n";
-        # We can use $bug->longdescs here because we are sure that the bug
+        # We can use $bug->comments here because we are sure that the bug
         # description is of type CMT_NORMAL. No need to include it if it's
         # empty, though.
-        if ($bug->longdescs->[0]->{'body'} !~ /^\s+$/) {
-            $new_comment .= "\n" . $bug->longdescs->[0]->{'body'};
+        if ($bug->comments->[0]->body !~ /^\s+$/) {
+            $new_comment .= "\n" . $bug->comments->[0]->body;
         }
-        $bug->update_comment($bug->longdescs->[0]->{'id'}, $new_comment);
+        $bug->update_comment($bug->comments->[0]->id, $new_comment);
     }
     else {
         $vars->{'message'} = 'attachment_creation_failed';

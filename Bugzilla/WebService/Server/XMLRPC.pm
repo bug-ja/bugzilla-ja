@@ -64,10 +64,23 @@ package Bugzilla::XMLRPC::Deserializer;
 use strict;
 # We can't use "use base" because XMLRPC::Serializer doesn't return
 # a true value.
-eval { require XMLRPC::Lite; };
+use XMLRPC::Lite;
 our @ISA = qw(XMLRPC::Deserializer);
 
 use Bugzilla::Error;
+use Scalar::Util qw(tainted);
+
+sub deserialize {
+    my $self = shift;
+    my ($xml) = @_;
+    my $som = $self->SUPER::deserialize(@_);
+    if (tainted($xml)) {
+        $som->{_bz_do_taint} = 1;
+    }
+    bless $som, 'Bugzilla::XMLRPC::SOM';
+    Bugzilla->input_params($som->paramsin); 
+    return $som;
+}
 
 # Some method arguments need to be converted in some way, when they are input.
 sub decode_value {
@@ -126,6 +139,25 @@ sub _validation_subs {
 
 1;
 
+package Bugzilla::XMLRPC::SOM;
+use strict;
+use XMLRPC::Lite;
+our @ISA = qw(XMLRPC::SOM);
+use Bugzilla::WebService::Util qw(taint_data);
+
+sub paramsin {
+    my $self = shift;
+    return $self->{bz_params_in} if $self->{bz_params_in};
+    my $params = $self->SUPER::paramsin(@_);
+    if ($self->{_bz_do_taint}) {
+        taint_data($params);
+    }
+    $self->{bz_params_in} = $params;
+    return $self->{bz_params_in};
+}
+
+1;
+
 # This package exists to fix a UTF-8 bug in SOAP::Lite.
 # See http://rt.cpan.org/Public/Bug/Display.html?id=32952.
 package Bugzilla::XMLRPC::Serializer;
@@ -133,7 +165,7 @@ use Scalar::Util qw(blessed);
 use strict;
 # We can't use "use base" because XMLRPC::Serializer doesn't return
 # a true value.
-eval { require XMLRPC::Lite; };
+use XMLRPC::Lite;
 our @ISA = qw(XMLRPC::Serializer);
 
 sub new {

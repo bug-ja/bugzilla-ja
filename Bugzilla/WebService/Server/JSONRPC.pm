@@ -26,6 +26,7 @@ use base qw(JSON::RPC::Server::CGI Bugzilla::WebService::Server);
 
 use Bugzilla::Error;
 use Bugzilla::WebService::Constants;
+use Bugzilla::WebService::Util qw(taint_data);
 use Date::Parse;
 use DateTime;
 
@@ -111,17 +112,15 @@ sub _argument_type_check {
     my $self = shift;
     my $params = $self->SUPER::_argument_type_check(@_);
 
-    # This is the best time to do login checks.
-    $self->handle_login();
-
-    # If there are no parameters, we don't need to parse them.
-    return $params if !ref $params;
-
     # JSON-RPC 1.0 requires all parameters to be passed as an array, so
     # we just pull out the first item and assume it's an object.
+    my $params_is_array;
     if (ref $params eq 'ARRAY') {
         $params = $params->[0];
+        $params_is_array = 1;
     }
+
+    taint_data($params);
 
     # Now, convert dateTime fields on input.
     $self->_bz_method_name =~ /^(\S+)\.(\S+)$/;
@@ -141,6 +140,11 @@ sub _argument_type_check {
         }
     }
 
+    Bugzilla->input_params($params);
+
+    # This is the best time to do login checks.
+    $self->handle_login();
+
     # Bugzilla::WebService packages call internal methods like
     # $self->_some_private_method. So we have to inherit from 
     # that class as well as this Server class.
@@ -148,6 +152,10 @@ sub _argument_type_check {
     my $isa_string = 'our @ISA = qw(' . ref($self) . " $pkg)";
     eval "package $new_class;$isa_string;";
     bless $self, $new_class;
+
+    if ($params_is_array) {
+        $params = [$params];
+    }
 
     return $params;
 }

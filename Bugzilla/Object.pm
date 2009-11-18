@@ -24,6 +24,7 @@ use strict;
 package Bugzilla::Object;
 
 use Bugzilla::Constants;
+use Bugzilla::Hook;
 use Bugzilla::Util;
 use Bugzilla::Error;
 
@@ -278,6 +279,10 @@ sub set {
                             superclass => __PACKAGE__,
                             function   => 'Bugzilla::Object->set' });
 
+    Bugzilla::Hook::process('object-before_set',
+                            { object => $self, field => $field,
+                              value => $value });
+
     my %validators = (%{$self->VALIDATORS}, %{$self->UPDATE_VALIDATORS});
     if (exists $validators{$field}) {
         my $validator = $validators{$field};
@@ -399,6 +404,11 @@ sub _check_field {
 sub check_required_create_fields {
     my ($class, $params) = @_;
 
+    # This hook happens here so that even subclasses that don't call
+    # SUPER::create are still affected by the hook.
+    Bugzilla::Hook::process('object-before_create', { class => $class,
+                                                      params => $params });
+
     foreach my $field ($class->REQUIRED_CREATE_FIELDS) {
         ThrowCodeError('param_required',
             { function => "${class}->create", param => $field })
@@ -428,6 +438,9 @@ sub run_create_validators {
         trick_taint($value) if defined $value && !ref($value);
         $field_values{$field} = $value;
     }
+
+    Bugzilla::Hook::process('object-end_of_create_validators',
+                            { class => $class, params => \%field_values });
 
     return \%field_values;
 }

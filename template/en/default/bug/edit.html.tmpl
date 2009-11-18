@@ -75,7 +75,7 @@
         replytext = prefix;
       [% END %]
 
-    [% IF Param("insidergroup") && user.in_group(Param("insidergroup")) %]
+    [% IF user.is_insider %]
       if (document.getElementById('isprivate_' + real_id).checked) {
           document.getElementById('newcommentprivacy').checked = 'checked';
       }
@@ -115,7 +115,7 @@
       return text;
   }
 
-[% IF user.in_group(Param('timetrackinggroup')) %]
+[% IF user.is_timetracker %]
   var fRemainingTime = [% bug.remaining_time %]; // holds the original value
   function adjustRemainingTime() {
       // subtracts time spent from remaining time
@@ -142,7 +142,7 @@
 <form name="changeform" method="post" action="process_bug.cgi">
 
   <input type="hidden" name="delta_ts" value="[% bug.delta_ts %]">
-  <input type="hidden" name="longdesclength" value="[% bug.longdescs.size %]">
+  <input type="hidden" name="longdesclength" value="[% bug.comments.size %]">
   <input type="hidden" name="id" value="[% bug.bug_id %]">
   <input type="hidden" name="token" value="[% issue_hash_token([bug.id, bug.delta_ts]) FILTER html %]">
 
@@ -213,7 +213,7 @@
 
   
   [% PROCESS section_restrict_visibility %]
-  [% IF user.in_group(Param('timetrackinggroup')) %]
+  [% IF user.is_timetracker %]
     <br>
     [% PROCESS section_timetracking %]
   [% END %]
@@ -287,7 +287,7 @@
         <hr>
         <div id="comments">
         [% PROCESS bug/comments.html.tmpl
-           comments = bug.longdescs
+           comments = bug.comments
            mode = user.id ? "edit" : "show"
          %]
         </div>

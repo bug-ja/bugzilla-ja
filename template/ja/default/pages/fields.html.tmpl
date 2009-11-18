@@ -19,7 +19,6 @@
   #                 Gervase Markham <gerv@gerv.net>
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
 [% PROCESS "global/field-descs.none.tmpl" %]
 [% INCLUDE global/header.html.tmpl title = "$terms.Bug のライフサイクル" %]
 
@@ -214,46 +213,46 @@
 
 <table>
   <tr>
-    <th>Blocker</th>
+    <th>[% display_value("bug_severity", "blocker") FILTER html %]</th>
 
     <td>開発や試験を妨害する</td>
   </tr>
 
   <tr>
-    <th>Critical</th>
+    <th>[% display_value("bug_severity", "critical") FILTER html %]</th>
 
     <td>クラッシュ、データ喪失、深刻なメモリリーク</td>
   </tr>
 
   <tr>
-    <th>Major</th>
+    <th>[% display_value("bug_severity", "major") FILTER html %]</th>
 
     <td>主要機能が動作しなくなる</td>
   </tr>
 
   <tr>
-    <th>Normal</th>
+    <th>[% display_value("bug_severity", "normal") FILTER html %]</th>
 
     <td>通常の問題で、ある環境下で機能が利用できなくなる</td>
   </tr>
 
 
   <tr>
-    <th>Minor</th>
+    <th>[% display_value("bug_severity", "minor") FILTER html %]</th>
 
     <td>機能の一部が利用できなくなるや、
     簡単なワークラウンドが存在する</td>
   </tr>
 
   <tr>
-    <th>Trivial</th>
+    <th>[% display_value("bug_severity", "trivial") FILTER html %]</th>
 
     <td>単語のスペルミスやそろっていないテキストなどの、
         表示上の問題</td>
   </tr>
 
   <tr>
-    <th>Enhancement</th>
+    <th>[% display_value("bug_severity", "enhancement") FILTER html %]</th>
 
     <td>機能要望</td>
 </table>
@@ -263,13 +262,13 @@
 有効なプラットフォームには以下のものなどがあります
 
 <ul>
-  <li>All (全てのプラットフォームで再現する; クロスプラットフォーム [% terms.bug %])</li>
+  <li>[% display_value("rep_platform", "All") FILTER html %] (全てのプラットフォームで再現する; クロスプラットフォーム [% terms.bug %])</li>
 
-  <li>Macintosh</li>
+  <li>[% display_value("rep_platform", "Macintosh") FILTER html %]</li>
 
-  <li>PC</li>
+  <li>[% display_value("rep_platform", "PC") FILTER html %]</li>
 </ul>
-<b>注:</b> 検索の際は、"All" ではどのプラットフォームにもあたっていない
+<b>注:</b> 検索の際は、<em>[% display_value("rep_platform", "All") FILTER html %]</em> ではどのプラットフォームにもあたっていない
 [% terms.bugs %] は選択されません。
 全てのプラットフォームで発生するという条件では
 [% terms.bugs %] が該当することは少ないです。
@@ -279,7 +278,7 @@
 有効な OS には以下のものなどがあります。
 
 <ul>
-  <li>All (全ての OS で再現する; クロスープラットフォーム
+  <li>[% display_value("op_sys", "All") FILTER html %] (全ての OS で再現する; クロスープラットフォーム
   [% terms.bug %])</li>
 
   <li>Windows</li>

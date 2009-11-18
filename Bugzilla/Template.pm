@@ -170,7 +170,7 @@ sub quoteUrls {
 
     # If the comment is already wrapped, we should ignore newlines when
     # looking for matching regexps. Else we should take them into account.
-    my $s = ($comment && $comment->{already_wrapped}) 
+    my $s = ($comment && $comment->already_wrapped) 
             ? qr/\s/ : qr/[[:blank:]]/;
 
     # However, note that adding the title (for buglinks) can affect things
@@ -729,6 +729,14 @@ sub create {
             # Currently logged in user, if any
             # If an sudo session is in progress, this is the user we're faking
             'user' => sub { return Bugzilla->user; },
+           
+            # Currenly active language
+            # XXX Eventually this should probably be replaced with something
+            # like Bugzilla->language.
+            'current_language' => sub {
+                my ($language) = include_languages();
+                return $language;
+            },
 
             # If an sudo session is in progress, this is the user who
             # started the session.

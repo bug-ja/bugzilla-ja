@@ -126,6 +126,8 @@ use File::Basename;
     FIELD_TYPE_BUG_ID
     FIELD_TYPE_BUG_URLS
 
+    TIMETRACKING_FIELDS
+
     USAGE_MODE_BROWSER
     USAGE_MODE_CMDLINE
     USAGE_MODE_XMLRPC
@@ -171,7 +173,7 @@ use File::Basename;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "3.5.1";
+use constant BUGZILLA_VERSION => "3.5.1+";
 
 # These are unique values that are unlikely to match a string or a number,
 # to be used in criteria for match() functions and other things. They start
@@ -357,6 +359,12 @@ use constant FIELD_TYPE_TEXTAREA  => 4;
 use constant FIELD_TYPE_DATETIME  => 5;
 use constant FIELD_TYPE_BUG_ID  => 6;
 use constant FIELD_TYPE_BUG_URLS => 7;
+
+# The fields from fielddefs that are blocked from non-timetracking users.
+# work_time is sometimes called actual_time.
+use constant TIMETRACKING_FIELDS =>
+    qw(estimated_time remaining_time work_time actual_time
+       percentage_complete deadline);
 
 # The maximum number of days a token will remain valid.
 use constant MAX_TOKEN_AGE => 3;

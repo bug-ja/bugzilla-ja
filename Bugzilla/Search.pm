@@ -328,27 +328,30 @@ sub init {
         }
     }
     
-    my @legal_fields = ("product", "version", "assigned_to", "reporter", 
-                        "component", "classification", "target_milestone",
-                        "bug_group");
-
-    # Include custom select fields.
-    push(@legal_fields, map { $_->name } @select_fields);
-    push(@legal_fields, map { $_->name } @multi_select_fields);
-
-    foreach my $field ($params->param()) {
-        if (lsearch(\@legal_fields, $field) != -1) {
-            push(@specialchart, [$field, "anyexact",
-                                 join(',', $params->param($field))]);
+    # All fields that don't have a . in their name should be specifyable
+    # in the URL directly.
+    my @legal_fields = grep { $_->name !~ /\./ } Bugzilla->get_fields;
+    if (!$user->is_timetracker) {
+        foreach my $field (TIMETRACKING_FIELDS) {
+            @legal_fields = grep { $_->name ne $field } @legal_fields;
         }
     }
 
-    if ($params->param('keywords')) {
-        my $t = $params->param('keywords_type');
-        if (!$t || $t eq "or") {
-            $t = "anywords";
+    foreach my $field ($params->param()) {
+        if (grep { $_->name eq $field } @legal_fields) {
+            my $type = $params->param("${field}_type");
+            if (!$type) {
+                if ($field eq 'keywords') {
+                    $type = 'anywords';
+                }
+                else {
+                    $type = 'anyexact';
+                }
+            }
+            $type = 'matches' if $field eq 'content';
+            push(@specialchart, [$field, $type,
+                                 join(',', $params->param($field))]);
         }
-        push(@specialchart, ["keywords", $t, $params->param('keywords')]);
     }
 
     foreach my $id ("1", "2") {
@@ -530,10 +533,8 @@ sub init {
       my $deadlineto;
             
       if ($params->param('deadlinefrom')){
-        $deadlinefrom = $params->param('deadlinefrom');
-        validate_date($deadlinefrom)
-          || ThrowUserError('illegal_date', {date => $deadlinefrom,
-                                             format => 'YYYY-MM-DD'});
+        $params->param('deadlinefrom', '') if lc($params->param('deadlinefrom')) eq 'now';
+        $deadlinefrom = SqlifyDate($params->param('deadlinefrom'));
         $sql_deadlinefrom = $dbh->quote($deadlinefrom);
         trick_taint($sql_deadlinefrom);
         my $term = "bugs.deadline >= $sql_deadlinefrom";
@@ -545,10 +546,8 @@ sub init {
       }
       
       if ($params->param('deadlineto')){
-        $deadlineto = $params->param('deadlineto');
-        validate_date($deadlineto)
-          || ThrowUserError('illegal_date', {date => $deadlineto,
-                                             format => 'YYYY-MM-DD'});
+        $params->param('deadlineto', '') if lc($params->param('deadlineto')) eq 'now';
+        $deadlineto = SqlifyDate($params->param('deadlineto'));
         $sql_deadlineto = $dbh->quote($deadlineto);
         trick_taint($sql_deadlineto);
         my $term = "bugs.deadline <= $sql_deadlineto";
@@ -572,10 +571,6 @@ sub init {
                 push(@specialchart, [$f, $type, $s]);
             }
         }
-    }
-
-    if (defined $params->param('content')) {
-        push(@specialchart, ['content', 'matches', $params->param('content')]);
     }
 
     my $multi_fields = join('|', map($_->name, @multi_select_fields));

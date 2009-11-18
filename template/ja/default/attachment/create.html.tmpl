@@ -57,8 +57,7 @@
         <em>(任意) 新しい添付によって用済みになる既存の添付をチェックしてください。</em><br>
         [% IF attachments.size %]
           [% FOREACH attachment = attachments %]
-            [% IF ((attachment.isprivate == 0) || (Param("insidergroup")
-              && user.in_group(Param("insidergroup")))) %]
+            [% IF ((attachment.isprivate == 0) || user.is_insider) %]
               <input type="checkbox" id="[% attachment.id %]"
                    name="obsolete" value="[% attachment.id %]">
               <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">[% attachment.id %]: [% attachment.description FILTER html %]</a><br>
@@ -110,7 +109,7 @@
         %]
       </td>
     </tr>
-    [% IF (Param("insidergroup") && user.in_group(Param("insidergroup"))) %]
+    [% IF user.is_insider %]
       <tr>
         <th>プライベート化:</th>
         <td>
