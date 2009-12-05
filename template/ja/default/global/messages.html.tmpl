@@ -273,6 +273,11 @@
     [%+ new_email FILTER html %] へ変更する要請は中止されました。
     古い設定を復活させました。
 
+  [% ELSIF message_tag == "extension_created" %]
+    [% name FILTER html %] という名前の拡張が [% path FILTER html %]
+    に作成されました。コード中の "YOUR NAME" と "YOUR EMAIL ADDRESS" 
+    をあなたの名前とメールアドレスに変更してください。
+
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "新しいフィールド値の作成" %]
     フィールド値 <em>[% value.name FILTER html %]</em> が

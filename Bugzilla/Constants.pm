@@ -91,6 +91,7 @@ use File::Basename;
     CMT_HAS_DUPE
     CMT_POPULAR_VOTES
     CMT_MOVED_TO
+    CMT_ATTACHMENT_CREATED
 
     THROW_ERROR
     
@@ -228,7 +229,7 @@ use constant AUTH_DISABLED => 4;
 use constant AUTH_NO_SUCH_USER  => 5;
 
 # The minimum length a password must have.
-use constant USER_PASSWORD_MIN_LENGTH => 3;
+use constant USER_PASSWORD_MIN_LENGTH => 6;
 
 use constant LOGIN_OPTIONAL => 0;
 use constant LOGIN_NORMAL => 1;
@@ -276,6 +277,7 @@ use constant CMT_DUPE_OF => 1;
 use constant CMT_HAS_DUPE => 2;
 use constant CMT_POPULAR_VOTES => 3;
 use constant CMT_MOVED_TO => 4;
+use constant CMT_ATTACHMENT_CREATED => 5;
 
 # Determine whether a validation routine should return 0 or throw
 # an error when the validation fails.

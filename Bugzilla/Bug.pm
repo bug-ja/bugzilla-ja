@@ -107,7 +107,7 @@ sub DB_COLUMNS {
     $dbh->sql_date_format('deadline', '%Y-%m-%d') . ' AS deadline',
     @custom_names);
     
-    Bugzilla::Hook::process("bug-columns", { columns => \@columns });
+    Bugzilla::Hook::process("bug_columns", { columns => \@columns });
     
     return @columns;
 }
@@ -543,7 +543,7 @@ sub create {
     $dbh->do('INSERT INTO longdescs (' . join(',', @columns)  . ")
                    VALUES ($qmarks)", undef, @values);
 
-    Bugzilla::Hook::process('bug-end_of_create', { bug => $bug,
+    Bugzilla::Hook::process('bug_end_of_create', { bug => $bug,
                                                    timestamp => $timestamp,
                                                  });
 
@@ -613,7 +613,7 @@ sub run_create_validators {
     delete $params->{lastdiffed};
     delete $params->{bug_id};
 
-    Bugzilla::Hook::process('bug-end_of_create_validators',
+    Bugzilla::Hook::process('bug_end_of_create_validators',
                             { params => $params });
 
     return $params;
@@ -870,7 +870,7 @@ sub update {
         $changes->{'dup_id'} = [$old_dup || undef, $cur_dup || undef];
     }
 
-    Bugzilla::Hook::process('bug-end_of_update', { bug       => $self,
+    Bugzilla::Hook::process('bug_end_of_update', { bug       => $self,
                                                    timestamp => $delta_ts,
                                                    changes   => $changes,
                                                  });
@@ -1779,7 +1779,7 @@ sub fields {
         # Custom Fields
         map { $_->name } Bugzilla->active_custom_fields
     );
-    Bugzilla::Hook::process("bug-fields", {'fields' => \@fields} );
+    Bugzilla::Hook::process('bug_fields', {'fields' => \@fields} );
     
     return @fields;
 }
@@ -2678,6 +2678,7 @@ sub comments {
         my $count = 0;
         foreach my $comment (@{ $self->{'comments'} }) {
             $comment->{count} = $count++;
+            $comment->{bug} = $self;
         }
     }
     my @comments = @{ $self->{'comments'} };
@@ -2972,37 +2973,6 @@ sub bug_alias_to_id {
 #####################################################################
 # Subroutines
 #####################################################################
-
-sub update_comment {
-    my ($self, $comment_id, $new_comment) = @_;
-
-    # Some validation checks.
-    if ($self->{'error'}) {
-        ThrowCodeError("bug_error", { bug => $self });
-    }
-    detaint_natural($comment_id)
-      || ThrowCodeError('bad_arg', {argument => 'comment_id', function => 'update_comment'});
-
-    # The comment ID must belong to this bug.
-    my @current_comment_obj = grep {$_->id == $comment_id} @{$self->comments};
-    scalar(@current_comment_obj)
-      || ThrowCodeError('bad_arg', {argument => 'comment_id', function => 'update_comment'});
-
-    # If the new comment is undefined, then there is nothing to update.
-    # To delete a comment, an empty string should be passed.
-    return unless defined $new_comment;
-    $new_comment =~ s/\s*$//s;    # Remove trailing whitespaces.
-    $new_comment =~ s/\r\n?/\n/g; # Handle Windows and Mac-style line endings.
-    trick_taint($new_comment);
-
-    # We assume _check_comment() has already been called earlier.
-    Bugzilla->dbh->do('UPDATE longdescs SET thetext = ? WHERE comment_id = ?',
-                       undef, ($new_comment, $comment_id));
-    $self->_sync_fulltext();
-
-    # Update the comment object with this new text.
-    $current_comment_obj[0]->{'thetext'} = $new_comment;
-}
 
 # Represents which fields from the bugs table are handled by process_bug.cgi.
 sub editable_bug_fields {

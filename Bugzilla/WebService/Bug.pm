@@ -139,6 +139,8 @@ sub comments {
 # Helper for Bug.comments
 sub _translate_comment {
     my ($self, $comment, $filters) = @_;
+    my $attach_id = $comment->is_about_attachment ? $comment->extra_data
+                                                  : undef;
     return filter $filters, {
         id         => $self->type('int', $comment->id),
         bug_id     => $self->type('int', $comment->bug_id),
@@ -146,6 +148,7 @@ sub _translate_comment {
         time       => $self->type('dateTime', $comment->creation_ts),
         is_private => $self->type('boolean', $comment->is_private),
         text       => $self->type('string', $comment->body_full),
+        attachment_id => $self->type('int', $attach_id),
     };
 }
 
@@ -350,9 +353,13 @@ sub add_comment {
     
     Bugzilla->user->can_edit_product($bug->product_id)
         || ThrowUserError("product_edit_denied", {product => $bug->product});
-        
+    
+    # Backwards-compatibility for versions before 3.6    
+    if (defined $params->{private}) {
+        $params->{is_private} = delete $params->{private};
+    }
     # Append comment
-    $bug->add_comment($comment, { isprivate => $params->{private},
+    $bug->add_comment($comment, { isprivate => $params->{is_private},
                                   work_time => $params->{work_time} });
     
     # Capture the call to bug->update (which creates the new comment) in 
@@ -786,6 +793,11 @@ C<int> The globally unique ID for the comment.
 
 C<int> The ID of the bug that this comment is on.
 
+=item attachment_id
+
+C<int> If the comment was made on an attachment, this will be the
+ID of that attachment. Otherwise it will be null.
+
 =item text
 
 C<string> The actual text of the comment.
@@ -823,6 +835,16 @@ private comments.
 You specified an id in the C<comment_ids> argument that is invalid--either
 you specified something that wasn't a number, or there is no comment with
 that id.
+
+=back
+
+=item B<History>
+
+=over
+
+=item Added in Bugzilla B<3.4>.
+
+=item C<attachment_id> was added to the return value in Bugzilla B<3.6>.
 
 =back
 
@@ -1501,8 +1523,8 @@ comment to.
 If this is empty or all whitespace, an error will be thrown saying that
 you did not set the C<comment> parameter.
 
-=item C<private> (boolean) - If set to true, the comment is private, otherwise
-it is assumed to be public.
+=item C<is_private> (boolean) - If set to true, the comment is private, 
+otherwise it is assumed to be public.
 
 =item C<work_time> (double) - Adds this many hours to the "Hours Worked"
 on the bug. If you are not in the time tracking group, this value will
@@ -1548,6 +1570,10 @@ You tried to add a private comment, but don't have the necessary rights.
 
 =item Modified to throw an error if you try to add a private comment
 but can't, in Bugzilla B<3.4>.
+
+=item Before Bugzilla B<3.6>, the C<is_private> argument was called
+C<private>, and you can still call it C<private> for backwards-compatibility
+purposes if you wish.
 
 =back
 

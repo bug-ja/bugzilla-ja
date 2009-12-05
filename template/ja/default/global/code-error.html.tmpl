@@ -117,6 +117,23 @@
     [% name FILTER html %] カラムを規定値もしくは $set_nulls_to を指定しないで
     NOT NULL に変更しようとしましたが、現在 NULL 値を持つエントリがあります。
 
+  [% ELSIF error == "comment_extra_data_not_allowed" %]
+    <code>extra_data</code> フィールドに
+    '[% extra_data FILTER html %]' を設定しようとしましたが、[% type FILTER html %]
+    型のコメントは <code>extra_data</code> を受け付けません。
+
+  [% ELSIF error == "comment_extra_data_required" %]
+    [% type FILTER html %] 型のコメントは <code>extra_data</code>
+    が設定されていることを必要とします。
+
+  [% ELSIF error == "comment_extra_data_not_numeric" %]
+    <code>extra_data</code> フィールドを
+    '[% extra_data FILTER html %]' に設定しようとしましたが、[% type FILTER html %]
+    型のコメントは数値の <code>extra_data</code> 引数を要求します。
+
+  [% ELSIF error == "comment_type_invalid" %]
+    '[% type FILTER html %]' は有効なコメント型ではありません。
+
   [% ELSIF error == "db_rename_conflict" %]
     名前が衝突しました: [% old FILTER html %] を
     [% new FILTER html %] に変更できません。[% new FILTER html %] はすでに存在します。
@@ -134,9 +151,32 @@
       ユーザのメールアドレスを含むような環境変数の名前を設定する必要があります。
     [% END %]
 
-  [% ELSIF error == "extension_invalid" %]
-    拡張機能 [% extension FILTER html %] の中で [% name FILTER html %]
-    のフックを処理する際にエラーが発生しました: [% errstr FILTER html %]
+  [% ELSIF error == "extension_must_be_subclass" %]
+    <code>[% filename FILTER html %]</code> の
+    <code>[% package FILTER html %]</code> は
+    <code>[% class FILTER html %]</code> のサブクラスではありません。
+
+  [% ELSIF error == "extension_must_return_name" %]
+    <code>[% extension FILTER html %]</code> は
+    <code>[% returned FILTER html %]</code> を返しますが、
+    拡張の名前として有効ではありません。拡張は <code>1</code> や数字ではなく、
+    その名前を返すべきです。詳細は、
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Extension.html">Bugzilla::Extension</a>
+    のドキュメントを参照してください。
+
+  [% ELSIF error == "extension_no_name" %]
+    <code>NAME</code> メソッドを (<code>[% filename FILTER html %]</code>
+    から読み込まれた) <code>[% package FILTER html %]</code> 
+    内で見つけられませんでした。これは、拡張が以下にあげるうちの、
+    ひとつ以上の問題を抱えていることを示します。
+
+    <ul>
+      <li><code>[% filename FILTER html %]</code> が
+        <code>[% package FILTER html %]</code> パッケージで定義されていない。</li>
+      <li><code>[% package FILTER html %]</code> が
+        <code>NAME</code> メソッドを定義していない。(もしくは、
+        <code>NAME</code> メソッドが空文字列を返す。)</li>
+    </ul>
 
   [% ELSIF error == "extern_id_conflict" %]
     外部 ID '[% extern_id FILTER html %]' はすでにデータベースに '[% username FILTER html %]'

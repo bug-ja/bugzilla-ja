@@ -46,6 +46,11 @@ EOT
 EOT
     done => '完了',
 
+    extension_must_return_name => <<END,
+##file## は ##returned## という拡張名には有効でない名前を返しました。
+拡張は、<code>1</code> や数字ではなく、必ずその名前を返す必要があります。
+詳細は、Bugzilla::Extension のドキュメントを参照してください。
+END
     feature_auth_ldap         => 'LDAP 認証',
     feature_auth_radius       => 'RADIUS 認証',
     feature_graphical_reports => 'グラフレポート',

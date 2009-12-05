@@ -17,6 +17,7 @@
   #
   # Contributor(s): Gervase Markham <gerv@gerv.net>
   #                 Frederic Buclin <LpSolit@gmail.com>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
 
 [%# INTERFACE:
@@ -32,10 +33,10 @@
   # in this file; if you do not wish to change it, use the "none" filter.
   #
   # Extension- or custom-specific error handling  can be easily added 
-  # via hooks: just place your <extension>-errors.html.tmpl into 
-  # template/en/extension/hook/global/user-error.html.tmpl/errors/
-  # Note: be aware of uniqueness of error string parameter value, since 
-  # nobody can guarantee the hook files processing order in the future
+  # via hooks: just place additional code into
+  # template/en/hook/global/user-error-errors.html.tmpl
+  # Note: be aware of uniqueness of error string parameter value, since
+  # nobody can guarantee the hook files processing order in the future.
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -643,6 +644,13 @@
     <em>[% product FILTER html %]</em> は存在しないか、
     あなたのアカウントはこの [% jawords.product FILTER html %] に
     [% terms.abug %] を登録する権限がありません。
+
+  [% ELSIF error == "extension_create_no_name" %]
+    このスクリプトの引数として、拡張の名前を指定する必要があります。
+
+  [% ELSIF error == "extension_first_letter_caps" %]
+    拡張の名前の最初の文字は大文字である必要があります。
+    (指定されたものは '[% name FILTER html %]' でした。)
 
   [% ELSIF error == "field_already_exists" %]
     [% title = BLOCK %] 指定されたフィールド名は既に存在しています [% END %]
@@ -1922,8 +1930,10 @@
 [% PROCESS global/footer.html.tmpl %]
 
 [% BLOCK object_name %]
-  [% IF class == "Bugzilla::User" %]
-    [% jawords.user FILTER html %]
+  [% IF class == "Bugzilla::Attachment" %]
+    添付
+  [% ELSIF class == "Bugzilla::User" %]
+    ユーザ
   [% ELSIF class == "Bugzilla::Component" %]
     [% jawords.component FILTER html %]
   [% ELSIF class == "Bugzilla::Version" %]

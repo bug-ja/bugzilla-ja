@@ -30,6 +30,7 @@ use Bugzilla::Status;
 use Bugzilla::Install::Requirements;
 use Bugzilla::Mailer;
 use Bugzilla::Series;
+use Bugzilla::Hook;
 
 # Currently, we only implement enough of the Bugzilla::Field::Choice
 # interface to control the visibility of other fields.
@@ -122,6 +123,8 @@ sub create {
     # Create groups and series for the new product, if requested.
     $product->_create_bug_group() if Bugzilla->params->{'makeproductgroups'};
     $product->_create_series() if $create_series;
+
+    Bugzilla::Hook::process('product_end_of_create', { product => $product });
 
     $dbh->bz_commit_transaction();
     return $product;
@@ -376,7 +379,7 @@ sub update {
 }
 
 sub remove_from_db {
-    my $self = shift;
+    my ($self, $params) = @_;
     my $user = Bugzilla->user;
     my $dbh = Bugzilla->dbh;
 
@@ -399,8 +402,31 @@ sub remove_from_db {
         }
     }
 
-    # XXX - This line can go away as soon as bug 427455 is fixed.
-    $dbh->do("DELETE FROM group_control_map WHERE product_id = ?", undef, $self->id);
+    if ($params->{delete_series}) {
+        my $series_ids =
+          $dbh->selectcol_arrayref('SELECT series_id
+                                      FROM series
+                                INNER JOIN series_categories
+                                        ON series_categories.id = series.category
+                                     WHERE series_categories.name = ?',
+                                    undef, $self->name);
+
+        $dbh->do('DELETE FROM series WHERE ' . $dbh->sql_in('series_id', $series_ids));
+
+        # If no subcategory uses this product name, completely purge it.
+        my $in_use =
+          $dbh->selectrow_array('SELECT 1
+                                   FROM series
+                             INNER JOIN series_categories
+                                     ON series_categories.id = series.subcategory
+                                  WHERE series_categories.name = ? ' .
+                                   $dbh->sql_limit(1),
+                                  undef, $self->name);
+        if (!$in_use) {
+            $dbh->do('DELETE FROM series_categories WHERE name = ?', undef, $self->name);
+        }
+    }
+
     $dbh->do("DELETE FROM products WHERE id = ?", undef, $self->id);
 
     $dbh->bz_commit_transaction();

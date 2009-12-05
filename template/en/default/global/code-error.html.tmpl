@@ -120,6 +120,23 @@
     without specifying a default or something for $set_nulls_to, because
     there are NULL values currently in it.
 
+  [% ELSIF error == "comment_extra_data_not_allowed" %]
+    You tried to set the <code>extra_data</code> field to 
+    '[% extra_data FILTER html %]' but comments of type [% type FILTER html %]
+    do not accept an <code>extra_data</code> argument.
+
+  [% ELSIF error == "comment_extra_data_required" %]
+    Comments of type [% type FILTER html %] require an <code>extra_data</code>
+    argument to be set.
+
+  [% ELSIF error == "comment_extra_data_not_numeric" %]
+    You tried to set the <code>extra_data</code> field to
+    '[% extra_data FILTER html %]' but comments of type [% type FILTER html %]
+    require a numeric <code>extra_data</code> argument.
+
+  [% ELSIF error == "comment_type_invalid" %]
+    '[% type FILTER html %]' is not a valid comment type.
+
   [% ELSIF error == "db_rename_conflict" %]
     Name conflict: Cannot rename [% old FILTER html %] to
     [% new FILTER html %] because [% new FILTER html %] already exists.
@@ -139,9 +156,32 @@
       address.
     [% END %]
 
-  [% ELSIF error == "extension_invalid" %]
-    An error occurred processing hook [% name FILTER html %] in
-    extension [% extension FILTER html %]: [% errstr FILTER html %]
+  [% ELSIF error == "extension_must_be_subclass" %]
+    <code>[% package FILTER html %]</code> from 
+    <code>[% filename FILTER html %]</code> is not a subclass of
+    <code>[% class FILTER html %]</code>.
+
+  [% ELSIF error == "extension_must_return_name" %]
+    <code>[% extension FILTER html %]</code> returned
+    <code>[% returned FILTER html %]</code>, which is not a valid name
+    for an extension. Extensions must return their name, not <code>1</code>
+    or a number. See the documentation of
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Extension.html">Bugzilla::Extension</a>
+    for details.
+
+  [% ELSIF error == "extension_no_name" %]
+    We did not find a <code>NAME</code> method in 
+    <code>[% package FILTER html %]</code> (loaded from
+    <code>[% filename FILTER html %]</code>). This means that
+    the extension has one or more of the following problems:
+
+    <ul>
+      <li><code>[% filename FILTER html %]</code> did not define a
+        <code>[% package FILTER html %]</code> package.</li>
+      <li><code>[% package FILTER html %]</code> did not define a
+        <code>NAME</code> method (or the <code>NAME</code> method
+        returned an empty string).</li>
+    </ul>
 
   [% ELSIF error == "extern_id_conflict" %]
     The external ID '[% extern_id FILTER html %]' already exists

@@ -237,6 +237,12 @@
   <p>本当にこのプロダクトを削除してもよろしいですか?</p>
 
   <form method="post" action="editproducts.cgi">
+    <input type="checkbox" id="delete_series" name="delete_series" value=1>
+    <label for="delete_series">
+      関連するすべてのシリーズを削除します (もしくは後でも
+      <a href="chart.cgi?category=[% product.name FILTER html %]">
+      新形式のチャート</a> から削除できます。)
+    </label><p>
     <input type="submit" id="delete" value="はい、削除します">
     <input type="hidden" name="action" value="delete">
     <input type="hidden" name="product" value="[% product.name FILTER html %]">
