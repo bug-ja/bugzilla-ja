@@ -1,3 +1,4 @@
+[%# -*- mode: perl -*- %]
 [%# The contents of this file are subject to the Mozilla Public
   # License Version 1.1 (the "License"); you may not use this file
   # except in compliance with the License. You may obtain a copy of
@@ -10,15 +11,31 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # The Initial Developer of the Original Code is Netscape Communications
-  # Corporation. Portions created by Netscape are
-  # Copyright (C) 1998 Netscape Communications Corporation. All
-  # Rights Reserved.
+  # The Initial Developer of the Original Code is Everything Solved, Inc.
+  # Portions created by the Initial Developer are Copyright (C) 2009 the
+  # Initial Developer. All Rights Reserved.
   #
-  # Contributor(s): Nitish Bezzala <nbezzala@yahoo.com>
+  # Contributor(s):
+  #   Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# INTERFACE:
+  # name: string; The name of the extension.
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
 
-<p><a href="./">[% terms.bugs %] メインページ</a>に戻る、
-もしくは、他の classifications を <a href="editclassifications.cgi">編集</a> する。</p>
+[% PROCESS extensions/license.txt.tmpl %]
+
+package B[% %]ugzilla::Extension::[% name %];
+use strict;
+
+use constant NAME => '[% name %]';
+
+use constant REQUIRED_MODULES => [
+];
+
+use constant OPTIONAL_MODULES => [
+];
+
+__PACKAGE__->NAME;

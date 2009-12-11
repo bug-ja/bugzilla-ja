@@ -36,21 +36,21 @@
 [% IF comment.type == constants.CMT_DUPE_OF %]
 X[% comment_body %]
 
-*** ‚±‚Ì [% terms.bug %] ‚Í [% terms.bug %] [%+ comment.extra_data %] ‚Ìd•¡‚Æ‚µ‚Äˆ—‚³‚ê‚Ü‚µ‚½B ***
+*** ã“ã® [% terms.bug %] ã¯ [% terms.bug %] [%+ comment.extra_data %] ã®é‡è¤‡ã¨ã—ã¦å‡¦ç†ã•ã‚Œã¾ã—ãŸã€‚ ***
 [% ELSIF comment.type == constants.CMT_HAS_DUPE %]
-*** [% terms.Bug %] [%+ comment.extra_data %] ‚ª‚±‚Ì [% terms.bug %] ‚Ìd•¡‚Æˆ—‚³‚ê‚Ü‚µ‚½B ***
+*** [% terms.Bug %] [%+ comment.extra_data %] ãŒã“ã® [% terms.bug %] ã®é‡è¤‡ã¨å‡¦ç†ã•ã‚Œã¾ã—ãŸã€‚ ***
 [% ELSIF comment.type == constants.CMT_POPULAR_VOTES %]
-*** ‚±‚Ì [% terms.bug %] ‚Í“Š•[”‚É‚æ‚Á‚Ä³”F‚³‚ê‚Ü‚µ‚½B ***
+*** ã“ã® [% terms.bug %] ã¯æŠ•ç¥¨æ•°ã«ã‚ˆã£ã¦æ‰¿èªã•ã‚Œã¾ã—ãŸã€‚ ***
 [% ELSIF comment.type == constants.CMT_MOVED_TO %]
 X[% comment_body %]
 
-[%+ terms.Bug %] ‚Í [% Param("move-to-url") %] ‚ÉˆÚ“®‚µ‚Ü‚µ‚½B
-ˆÚ“®‚ª¬Œ÷‚µ‚½ê‡A[% comment.extra_data %] ‚ÍA‘¼‚Ìƒf[ƒ^ƒx[ƒX‚É‚¨‚¯‚é
-V‚µ‚¢ [% terms.bug %] ”Ô†‚ðŠÜ‚Þƒ[ƒ‹‚ðŽó‚¯Žæ‚é‚Å‚µ‚å‚¤B
-‘S‚Ä‚¤‚Ü‚­‚¢‚¯‚ÎAV‚µ‚¢ [% terms.bug %] ‚Ö‚ÌƒŠƒ“ƒN‚ð‚±‚±‚Ö“\‚è•t‚¯‚Ä‚­‚¾‚³‚¢B
-‚»‚¤‚Å‚È‚¯‚ê‚ÎA‚±‚Ì [% terms.bug %] ‚ðÄŠJ‚µ‚Ä‚­‚¾‚³‚¢B
+[%+ terms.Bug %] ã¯ [% Param("move-to-url") %] ã«ç§»å‹•ã—ã¾ã—ãŸã€‚
+ç§»å‹•ãŒæˆåŠŸã—ãŸå ´åˆã€[% comment.extra_data %] ã¯ã€ä»–ã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«ãŠã‘ã‚‹
+æ–°ã—ã„ [% terms.bug %] ç•ªå·ã‚’å«ã‚€ãƒ¡ãƒ¼ãƒ«ã‚’å—ã‘å–ã‚‹ã§ã—ã‚‡ã†ã€‚
+å…¨ã¦ã†ã¾ãã„ã‘ã°ã€æ–°ã—ã„ [% terms.bug %] ã¸ã®ãƒªãƒ³ã‚¯ã‚’ã“ã“ã¸è²¼ã‚Šä»˜ã‘ã¦ãã ã•ã„ã€‚
+ãã†ã§ãªã‘ã‚Œã°ã€ã“ã® [% terms.bug %] ã‚’å†é–‹ã—ã¦ãã ã•ã„ã€‚
 [% ELSIF comment.type == constants.CMT_ATTACHMENT_CREATED %]
-“Y•t [% comment.extra_data %] ‚ð’Ç‰Á
+æ·»ä»˜ [% comment.extra_data %] ã‚’è¿½åŠ 
 [% IF is_bugmail %]
   --> [% urlbase _ "attachment.cgi?id=" _ comment.extra_data %]
 [% END %]

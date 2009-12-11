@@ -1,0 +1,38 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Everything Solved, Inc.
+  # Portions created by the Initial Developer are Copyright (C) 2009 the
+  # Initial Developer. All Rights Reserved.
+  #
+  # Contributor(s):
+  #   Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[% PROCESS global/variables.none.tmpl %]
+
+通常のテンプレートはこのディレクトリに配置されます。
+テンプレートは、以下のようにコードから読むことができます。
+
+use B[% %]ugzilla::Error;
+my $template = B[% %]ugzilla->template;
+$template->process('[% name FILTER lower %]/some-template.html.tmpl')
+  or ThrowTemplateError($template->error());
+
+これが、このディレクトリにある some-template.html.tmpl というテンプレート
+ファイルの呼び出し方です。
+
+注意: あなたのテンプレートに付けたフルパスが、[% terms.Bugzilla %] や、
+ほかの拡張にすでに存在するテンプレートと重ならないように注意してください。
+重なると、それらのテンプレートを上書きすることになります。これが、システム
+が '[% name FILTER lower %]' ディレクトリを作成している理由であり、衝突な
+しにテンプレートを作成することが可能になります。
