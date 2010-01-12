@@ -339,7 +339,11 @@
   [% ELSIF error == "ldap_search_error" %]
     LDAP サーバで &quot;[% username FILTER html %]&quot;
     を検索する時にエラーが発生しました。
-   <code>[% errstr FILTER html %]</code>
+    [% IF errstr %]
+      <code>[% errstr FILTER html %]</code>
+    [% ELSE %]
+      LDAP でユーザが見つかりませんでした
+    [% END %]
 
   [% ELSIF error == "ldap_server_not_defined" %]
     認証用 LDAP サーバが設定されていません。

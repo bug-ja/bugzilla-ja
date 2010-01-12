@@ -48,7 +48,6 @@
 [%# NEVER USE THIS
   #%]
 [% jawords = {
-  "account" => "アカウント",
   "account_password" => "パスワード",
   "account_current_password" => "(現在の) パスワード"
   "account_login" => "ログイン",
@@ -254,7 +253,6 @@
 
   "workflow" => "ワークフロー",
 
-  "XXX_End_Item" => "これは最後の行に置いてください"
   }
 %]
 
@@ -290,6 +288,12 @@
       [% jawords.login_name FILTER html %]
     [% END %]
     のアカウントは既に存在しています。
+
+  [% ELSIF error == "account_locked" %]
+    [% title = "アカウントはロックされました" %]
+    許容される最大のログイン失敗回数を超えたため、
+    あなたの IP アドレス ([% ip_addr FILTER html %]) はこのアカウントについて
+    [% unlock_at FILTER time %] までロックされています。
 
   [% ELSIF error == "alias_has_comma_or_space" %]
     [% title = BLOCK %] [% jawords.bug_alias FILTER html %] に無効な文字が含まれています [% END %]
@@ -340,7 +344,11 @@
     [% IF object == "administrative_pages" %]
       [% jawords.admin_pages FILTER html %]
     [% ELSIF object == "attachment" %]
-      この [% jawords.attachment FILTER html %]
+      [% IF attach_id %]
+        添付 #[% attach_id FILTER html %]
+      [% ELSE %]
+        この添付
+      [% END %]
     [% ELSIF object == "bugs" %]
       [%+ terms.bugs %]
     [% ELSIF object == "charts" %]
@@ -799,7 +807,7 @@
     [% jawords.group FILTER html %] に所属する [% jawords.user FILTER html %] を選択してください。
 
   [% ELSIF error == "flag_requestee_unauthorized" %]
-    [% title = BLOCK %] $jpword.flag の [% jawords.flag_request_target FILTER html %] の [% jawords.account FILTER html %] は認証されていません [% END %]
+    [% title = BLOCK %] $jpword.flag の [% jawords.flag_request_target FILTER html %] のアカウントは認証されていません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
@@ -817,7 +825,7 @@
     その人を [% jawords.bug_cc_list FILTER html %] に追加してください。
 
   [% ELSIF error == "flag_requestee_unauthorized_attachment" %]
-    [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] の [% jawords.account FILTER html %] は認証されていません [% END %]
+    [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] のアカウントは認証されていません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
                          'groups.html' => 'グループセキュリティー'} %]
     [% docslinks = {'flags-overview.html' => 'フラグの説明',
@@ -904,15 +912,16 @@
     <p><em>[% text FILTER html %]</em></p>
 
   [% ELSIF error == "group_cannot_delete" %]
-    [% title = BLOCK %] [% jawords.group FILTER html %] を削除できません [% END %]
-    <em>[% name FILTER html %]</em> [% jawords.group FILTER html %] は削除できません。
+    [% title = BLOCK %]グループを削除できません[% END %]
+    <em>[% group.name FILTER html %]</em> グループは削除できません。
     データベース中で以下の
-    <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">[% jawords.record FILTER html %]</a>
+    <a href="editgroups.cgi?action=del&amp;group=
+             [%- group.id FILTER url_quote %]">登録</a>
     から参照されています。
-    先にこの [% jawords.group FILTER html %] への全ての参照を削除してください。
+    先にこのグループへの全ての参照を削除してください。
 
   [% ELSIF error == "group_change_denied" %]
-    [% title = BLOCK %] [% jawords.group FILTER html %] を追加、または削除できません [% END %]
+    [% title = BLOCK %] グループを追加、または削除できません [% END %]
     [% jawords.group FILTER html %] ID [% group_id FILTER html %] を
     [% terms.bug %] [%+ bug.id FILTER html %]
     から削除しようとしましたが、あなたはこの権限を持っていません。
@@ -1182,6 +1191,14 @@
   [% ELSIF error == "invalid_username_or_password" %]
     [% title = BLOCK %] ログイン名、もしくはパスワードが無効です [% END %]
     指定されたログイン名、もしくはパスワードが無効です。
+    [%# People get two login attempts before being warned about
+      # being locked out.
+      #%]
+    [% IF remaining <=  2 %]
+      [%+ remaining FILTER html %] 回以上パスワードを間違えた場合、
+      このアカウントへのログインは
+      [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分間ロックされます。
+    [% END %]
 
   [% ELSIF error == "json_rpc_post_only" %]
     セキュリティー上の問題から、POST HTTP メソッドを利用するには、
@@ -1460,7 +1477,7 @@
       '[% name FILTER html %]' という名前の
     [% END %] [% type FILTER html %] がありません。
     [% IF class == "Bugzilla::User" %]
-      入力した [% jawords.account_login_name FILTER html %] が間違えているか、その人は [% terms.Bugzilla %] には [% jawords.account FILTER html %] を登録していないのかもしれません。
+      入力した [% jawords.account_login_name FILTER html %] が間違えているか、その人は [% terms.Bugzilla %] にはアカウントを登録していないのかもしれません。
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
@@ -1610,20 +1627,20 @@
     クエリ名は [% constants.MAX_LEN_QUERY_NAME FILTER html %] 文字以内でなくてはなりません。
 
   [% ELSIF error == "quicksearch_unknown_field" %]
-    [% title = BLOCK %] 認識できない [% jawords.quick_search_field FILTER html %] です [% END %]
-    [% IF fields.unique.size == 1 %]
-      [% jawords.quick_search_field FILTER html %] <code>[% fields.first FILTER html %]</code> は有効な
-      [% jawords.quick_search_field FILTER html %] ではありません。
-    [% ELSE %]
-      フィールド
-      [% FOREACH field = fields.unique.sort %]
-         <code>[% field FILTER html %]</code>
-         [% ', ' UNLESS loop.last() %]
-      [% END %]
-      は有効な [% jawords.quick_search_field FILTER html %] ではありません。
+    [% title = "簡易検索エラー" %]
+    検索中に問題が発生しました: 
+    [% FOREACH field = unknown %]
+      <p><code>[% field FILTER html %]</code> はフィールド名として無効です。</p>
     [% END %]
-    有効な [% jawords.quick_search_field FILTER html %] は
-    <a href="page.cgi?id=quicksearchhack.html">[% jawords.help FILTER html %] にリストアップされています</a>。
+    [% FOREACH field = ambiguous.keys %]
+      <p><code>[% field FILTER html %]</code> は一つ以上のフィールドにマッチします:
+        [%+ ambiguous.${field}.join(', ') FILTER html %]</p>
+    [% END %]
+
+    [% IF unknown.size %]
+      <p>有効なフィールド名は
+        <a href="page.cgi?id=quicksearchhack.html">このリスト</a>で参照できます。</p>
+    [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
     [% title = BLOCK %] 新しい担当者の [% jawords.mail_address FILTER html %] が指定されていません [% END %]
@@ -1948,6 +1965,10 @@
     フラグ型
   [% ELSIF class == "Bugzilla::Field" %]
     フィールド
+  [% ELSIF class == "Bugzilla::Group" %]
+    グループ
+  [% ELSIF class == "Bugzilla::Product" %]
+    プロダクト
   [% ELSIF class == "Bugzilla::Search::Saved" %]
     保存された検索
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]

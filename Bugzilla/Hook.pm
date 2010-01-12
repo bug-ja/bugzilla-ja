@@ -25,11 +25,32 @@ use strict;
 
 sub process {
     my ($name, $args) = @_;
+
+    _entering($name);
+
     foreach my $extension (@{ Bugzilla->extensions }) {
         if ($extension->can($name)) {
             $extension->$name($args);
         }
     }
+
+    _leaving($name);
+}
+
+sub in {
+    my $hook_name = shift;
+    my $currently_in = Bugzilla->request_cache->{hook_stack}->[-1] || '';
+    return $hook_name eq $currently_in ? 1 : 0;
+}
+
+sub _entering {
+    my ($hook_name) = @_;
+    my $hook_stack = Bugzilla->request_cache->{hook_stack} ||= [];
+    push(@$hook_stack, $hook_name);
+}
+
+sub _leaving {
+    pop @{ Bugzilla->request_cache->{hook_stack} };
 }
 
 1;
@@ -395,6 +416,8 @@ L</config_add_panels> if you want to add new panels.
 
 =head2 enter_bug_entrydefaultvars
 
+B<DEPRECATED> - Use L</template_before_process> instead.
+
 This happens right before the template is loaded on enter_bug.cgi.
 
 Params:
@@ -635,6 +658,8 @@ your template.
 
 =head2 product_confirm_delete
 
+B<DEPRECATED> - Use L</template_before_process> instead.
+
 Called before displaying the confirmation message when deleting a product.
 
 Params:
@@ -709,11 +734,25 @@ look at the code for C<create> in L<Bugzilla::Template>.)
 
 =head2 template_before_process
 
+This hook is called any time Bugzilla processes a template file, including
+calls to C<< $template->process >>, C<PROCESS> statements in templates,
+and C<INCLUDE> statements in templates. It is not called when templates
+process a C<BLOCK>, only when they process a file.
+
 This hook allows you to define additional variables that will be available to
-the template being processed. You probably want to restrict your hook
-to operating only if a certain file is being loaded (which is why you
-get a C<file> argument below). Otherwise, modifying the C<vars> argument
-will affect every single template in Bugzilla.
+the template being processed, or to modify the variables that are currently
+in the template. It works exactly as though you inserted code to modify
+template variables at the top of a template.
+
+You probably want to restrict this hook to operating only if a certain 
+file is being processed (which is why you get a C<file> argument
+below). Otherwise, modifying the C<vars> argument will affect every single
+template in Bugzilla.
+
+B<Note:> This hook is not called if you are already in this hook.
+(That is, it won't call itself recursively.) This prevents infinite
+recursion in situations where this hook needs to process a template
+(such as if this hook throws an error).
 
 Params:
 
@@ -721,20 +760,22 @@ Params:
 
 =item C<vars>
 
-The template vars hashref--these are the values that get passed to the
-template. Adding new keys to this hashref will cause those new values
-to also get passed to the template.
+This is the entire set of variables that the current template can see.
+Technically, this is a L<Template::Stash> object, but you can just
+use it like a hashref if you want.
 
-=item C<file> 
+=item C<file>
 
-The name of the template being processed. This is relative
-to the main template directory for the language (i.e. for
+The name of the template file being processed. This is relative to the
+main template directory for the language (i.e. for
 F<template/en/default/bug/show.html.tmpl>, this variable will contain
 C<bug/show.html.tmpl>).
 
-=item C<template>
+=item C<context>
 
-The L<Bugzilla::Template> object that C<process> was called on.
+A L<Template::Context> object. Usually you will not have to use this, but
+if you need information about the template itself (other than just its
+name), you can get it from here.
 
 =back
 

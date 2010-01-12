@@ -31,7 +31,7 @@ X-Bugzilla-Type: whine
 ([% urlbase %])
 
 これらの [% terms.bugs %] は [% display_value("bug_status", "NEW") %] か
-[% display_value("bug_status", "REOPENED") %] 状態で、[% Param("whinedays") %] 日以上対応されていません。
+[%= display_value("bug_status", "REOPENED") %] 状態で、[% Param("whinedays") %] 日以上対応されていません。
 これらについて対応し、初期処理を行ってください。
 
 通常、これは以下のどれかを行うこととなります。
@@ -40,10 +40,9 @@ X-Bugzilla-Type: whine
     であるなど) 今すぐ対応する。
 (2) [% terms.bug %] があなたのものでないと決断し、だれか担当者に割り振る。
     ヒント: 誰に割り振ればいいかわからなければ、コンポーネントが正しいかを確認し、
-    "[% terms.bug %] を選択されているコンポーネントの既定の担当者に再割り当てする"
-    を選択してください。
+    "既定の担当者に戻す" を選択してください。
 (3) [% terms.bug %] が自分のものであると判断したが、すぐに解決できない場合、
-    "[% terms.bug %]" を受け入れるを選択してください。
+    [% get_status("ASSIGNED") %] にすることで [% terms.bug %] を受け入れてください。
 
 全ての [% display_value("bug_status", "NEW") %]/[% display_value("bug_status", "REOPENED") %] [%+ terms.bugs %] のリストを見るには、
 以下の URL を開いてください。(必要ならブックマークしてください。)

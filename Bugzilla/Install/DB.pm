@@ -459,8 +459,10 @@ sub update_table_definitions {
     _move_data_nomail_into_db();
 
     # The products table lacked sensible defaults.
-    $dbh->bz_alter_column('products', 'milestoneurl',
-                          {TYPE => 'TINYTEXT', NOTNULL => 1, DEFAULT => "''"});
+    if ($dbh->bz_column_info('products', 'milestoneurl')) {
+        $dbh->bz_alter_column('products', 'milestoneurl',
+            {TYPE => 'TINYTEXT', NOTNULL => 1, DEFAULT => "''"});
+    }
     if ($dbh->bz_column_info('products', 'disallownew')){
         $dbh->bz_alter_column('products', 'disallownew',
                               {TYPE => 'BOOLEAN', NOTNULL => 1,  DEFAULT => 0});
@@ -586,7 +588,13 @@ sub update_table_definitions {
     # 2009-11-01 LpSolit@gmail.com - Bug 525025
     _fix_invalid_custom_field_names();
 
-    _move_attachment_creation_comments_into_comment_type();
+    _set_attachment_comment_types();
+
+    $dbh->bz_drop_column('products', 'milestoneurl');
+
+    _add_allows_unconfirmed_to_product_table();
+    _convert_flagtypes_fks_to_set_null();
+    _fix_decimal_types();
 
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #
@@ -623,8 +631,6 @@ sub _update_pre_checksetup_bugzillas {
                             {TYPE => 'BOOLEAN', NOTNULL => 1}, 0);
     }
 
-    $dbh->bz_add_column('products', 'milestoneurl',
-                        {TYPE => 'TINYTEXT', NOTNULL => 1}, '');
     $dbh->bz_add_column('components', 'initialqacontact',
                         {TYPE => 'TINYTEXT'});
     $dbh->bz_add_column('components', 'description',
@@ -3253,53 +3259,107 @@ sub _fix_invalid_custom_field_names {
     }
 }
 
-sub _move_attachment_creation_comments_into_comment_type {
+sub _set_attachment_comment_type {
+    my ($type, $string) = @_;
     my $dbh = Bugzilla->dbh;
-    # We check if there are any CMT_ATTACHMENT_CREATED comments already,
-    # first, because this is faster than a full LIKE search on the comments,
+    # We check if there are any comments of this type already, first, 
+    # because this is faster than a full LIKE search on the comments,
     # and currently this will run every time we run checksetup.
     my $test = $dbh->selectrow_array(
-        'SELECT 1 FROM longdescs WHERE type = ' . CMT_ATTACHMENT_CREATED
-        . ' ' . $dbh->sql_limit(1));
-    return if $test;
+        "SELECT 1 FROM longdescs WHERE type = $type " . $dbh->sql_limit(1));
+    return [] if $test;
     my %comments = @{ $dbh->selectcol_arrayref(
         "SELECT comment_id, thetext FROM longdescs
-          WHERE thetext LIKE 'Created an attachment (id=%'", 
+          WHERE thetext LIKE '$string%'", 
         {Columns=>[1,2]}) };
     my @comment_ids = keys %comments;
-    return if !scalar @comment_ids;
-    print "Setting the type field on attachment creation comments...\n";
+    return [] if !scalar @comment_ids;
+    my $what = "update";
+    if ($type == CMT_ATTACHMENT_CREATED) {
+        $what = "creation";
+    }
+    print "Setting the type field on attachment $what comments...\n";
     my $sth = $dbh->prepare(
         'UPDATE longdescs SET thetext = ?, type = ?, extra_data = ?
           WHERE comment_id = ?');
     my $count = 0;
     my $total = scalar @comment_ids;
-    $dbh->bz_start_transaction();
     foreach my $id (@comment_ids) {
         $count++;
         my $text = $comments{$id};
-        next if $text !~ /attachment \(id=(\d+)/;
+        next if $text !~ /^\Q$string\E(\d+)/;
         my $attachment_id = $1;
-        # Now we have to remove the text up until we find a line that's
-        # just a single newline, because the old "Created an attachment"
-        # text included the attachment description underneath it, and in
-        # Bugzillas before 2.20, that could be wrapped into multiple lines,
-        # in the database.
         my @lines = split("\n", $text);
-        while (1) {
-            my $line = shift @lines;
-            last if (!defined $line or trim($line) eq '');
+        if ($type == CMT_ATTACHMENT_CREATED) {
+            # Now we have to remove the text up until we find a line that's
+            # just a single newline, because the old "Created an attachment"
+            # text included the attachment description underneath it, and in
+            # Bugzillas before 2.20, that could be wrapped into multiple lines,
+            # in the database.
+            while (1) {
+                my $line = shift @lines;
+                last if (!defined $line or trim($line) eq '');
+            }
+        }
+        else {
+            # However, the "From update of attachment" line is always just
+            # one line--the first line of the comment.
+            shift @lines;
         }
         $text = join("\n", @lines);
-        $sth->execute($text, CMT_ATTACHMENT_CREATED, $attachment_id, $id);
+        $sth->execute($text, $type, $attachment_id, $id);
         indicate_progress({ total => $total, current => $count, 
                             every => 25 });
     }
+    return \@comment_ids;
+}
+
+sub _set_attachment_comment_types {
+    my $dbh = Bugzilla->dbh;
+    $dbh->bz_start_transaction();
+    my $created_ids = _set_attachment_comment_type(
+        CMT_ATTACHMENT_CREATED, 'Created an attachment (id=');
+    my $updated_ids = _set_attachment_comment_type(
+        CMT_ATTACHMENT_UPDATED, '(From update of attachment ');
+    $dbh->bz_commit_transaction();
+    return unless (@$created_ids or @$updated_ids);
+
+    my @comment_ids = (@$created_ids, @$updated_ids);
+
     my $bug_ids = $dbh->selectcol_arrayref(
         'SELECT DISTINCT bug_id FROM longdescs WHERE '
         . $dbh->sql_in('comment_id', \@comment_ids));
     _populate_bugs_fulltext($bug_ids);
-    $dbh->bz_commit_transaction();
+}
+
+sub _add_allows_unconfirmed_to_product_table {
+    my $dbh = Bugzilla->dbh;
+    if (!$dbh->bz_column_info('products', 'allows_unconfirmed')) {
+        $dbh->bz_add_column('products', 'allows_unconfirmed',
+            { TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'FALSE' });
+        $dbh->do('UPDATE products SET allows_unconfirmed = 1 
+                   WHERE votestoconfirm > 0');
+    }
+}
+
+sub _convert_flagtypes_fks_to_set_null {
+    my $dbh = Bugzilla->dbh;
+    foreach my $column (qw(request_group_id grant_group_id)) {
+        my $fk = $dbh->bz_fk_info('flagtypes', $column);
+        if ($fk and !defined $fk->{DELETE}) {
+            # checksetup will re-create the FK with the appropriate definition
+            # at the end of its table upgrades, so we just drop it here.
+            $dbh->bz_drop_fk('flagtypes', $column);
+        }
+    }
+}
+
+sub _fix_decimal_types {
+    my $dbh = Bugzilla->dbh;
+    my $type = {TYPE => 'decimal(7,2)', NOTNULL => 1, DEFAULT => '0'};
+    $dbh->bz_alter_column('bugs', 'estimated_time', $type);
+    $dbh->bz_alter_column('bugs', 'remaining_time', $type);
+    $dbh->bz_alter_column('longdescs', 'work_time', $type);
 }
 
 1;

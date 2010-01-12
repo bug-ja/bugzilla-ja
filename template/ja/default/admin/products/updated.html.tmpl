@@ -39,6 +39,8 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
+[% PROCESS "global/field-descs.none.tmpl" %]
+
 [% IF changes.name.defined %]
   <p>
   プロダクト名を '[% changes.name.0 FILTER html %]' から
@@ -64,23 +66,6 @@
     不可能
   [% END %]
   になりました。
-  </p>
-[% END %]
-
-[% IF changes.milestoneurl.defined %]
-  <p>
-  マイルストーンの URL が
-  [% IF changes.milestoneurl.0 != '' %]
-    <br> <a href="[%- changes.milestoneurl.0 FILTER html %]">
-    [%- changes.milestoneurl.0 FILTER html %]</a> から
-  [% END %]
-  [% IF product.milestone_url != '' %]
-     <br><a href="[%- product.milestone_url FILTER html %]">
-     [%- product.milestone_url FILTER html %]</a>
-  [% ELSE %]
-    空
-  [% END %]
-  に変更されました。
   </p>
 [% END %]
 
@@ -116,6 +101,24 @@
   [%+ product.votes_to_confirm FILTER html %] に変更されました。
   </p>
   [% checkvotes = 1 %]
+[% END %]
+
+[% IF changes.allows_unconfirmed.defined %]
+  <p>
+  [% IF product.allows_unconfirmed %]
+    このプロダクトで
+    [%+ display_value('bug_status', 'UNCONFIRMED') FILTER html %] ステータスにすることができます。
+  [% ELSE %]
+    このプロダクトでは
+    [%+ display_value('bug_status', 'UNCONFIRMED') FILTER html %] ステータスにすることができなくなりました。
+    すべての現存する
+    <a href="buglist.cgi?product=
+            [%- product.name FILTER url_quote %]&amp;bug_status=UNCONFIRMED"> ステータスの
+    [%- terms.bugs %] は
+    [%+ display_value('bug_status', 'UNCONFIRMED') FILTER html %] ステータス</a>
+    に変更されるまでとどまります。
+  [% END %]
+  </p>
 [% END %]
 
 [% IF !changes.keys.size %]

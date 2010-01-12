@@ -122,6 +122,9 @@ use constant REQUIRED_CREATE_FIELDS => qw(
 # There are also other, more complex validators that are called
 # from run_create_validators.
 sub VALIDATORS {
+    my $cache = Bugzilla->request_cache;
+    return $cache->{bug_validators} if defined $cache->{bug_validators};
+
     my $validators = {
         alias          => \&_check_alias,
         bug_file_loc   => \&_check_bug_file_loc,
@@ -163,7 +166,8 @@ sub VALIDATORS {
         $validators->{$field->name} = $validator;
     }
 
-    return $validators;
+    $cache->{bug_validators} = $validators;
+    return $cache->{bug_validators};
 };
 
 use constant UPDATE_VALIDATORS => {
@@ -235,6 +239,27 @@ use constant UPDATE_COMMENT_COLUMNS => qw(
 # Used in LogActivityEntry(). Gives the max length of lines in the
 # activity table.
 use constant MAX_LINE_LENGTH => 254;
+
+# This maps the names of internal Bugzilla bug fields to things that would
+# make sense to somebody who's not intimately familiar with the inner workings
+# of Bugzilla. (These are the field names that the WebService and email_in.pl
+# use.)
+use constant FIELD_MAP => {
+    creation_time    => 'creation_ts',
+    description      => 'comment',
+    id               => 'bug_id',
+    last_change_time => 'delta_ts',
+    platform         => 'rep_platform',
+    severity         => 'bug_severity',
+    status           => 'bug_status',
+    summary          => 'short_desc',
+    url              => 'bug_file_loc',
+    whiteboard       => 'status_whiteboard',
+
+    # These are special values for the WebService Bug.search method.
+    limit            => 'LIMIT',
+    offset           => 'OFFSET',
+};
 
 #####################################################################
 
@@ -556,7 +581,6 @@ sub create {
 
     return $bug;
 }
-
 
 sub run_create_validators {
     my $class  = shift;
@@ -1090,7 +1114,7 @@ sub _check_bug_status {
     my $old_status; # Note that this is undef for new bugs.
 
     if (ref $invocant) {
-        @valid_statuses = @{$invocant->status->can_change_to};
+        @valid_statuses = @{$invocant->statuses_available};
         $product = $invocant->product_obj;
         $old_status = $invocant->status;
         my $comments = $invocant->{added_comments} || [];
@@ -1098,12 +1122,9 @@ sub _check_bug_status {
     }
     else {
         @valid_statuses = @{Bugzilla::Status->can_change_to()};
-    }
-
-    if (!$product->votes_to_confirm) {
-        # UNCONFIRMED becomes an invalid status if votes_to_confirm is 0,
-        # even if you are in editbugs.
-        @valid_statuses = grep {$_->name ne 'UNCONFIRMED'} @valid_statuses;
+        if (!$product->allows_unconfirmed) {
+            @valid_statuses = grep {$_->name ne 'UNCONFIRMED'} @valid_statuses;
+        }
     }
 
     # Check permissions for users filing new bugs.
@@ -1134,9 +1155,13 @@ sub _check_bug_status {
             }
         }
     }
+
     # Time to validate the bug status.
     $new_status = Bugzilla::Status->check($new_status) unless ref($new_status);
-    if (!grep {$_->name eq $new_status->name} @valid_statuses) {
+    # We skip this check if we are changing from a status to itself.
+    if ( (!$old_status || $old_status->id != $new_status->id)
+          && !grep {$_->name eq $new_status->name} @valid_statuses) 
+    {
         ThrowUserError('illegal_bug_status_transition',
                        { old => $old_status, new => $new_status });
     }
@@ -1167,6 +1192,9 @@ sub _check_bug_status {
 sub _check_cc {
     my ($invocant, $component, $ccs) = @_;
     return [map {$_->id} @{$component->initial_cc}] unless $ccs;
+
+    # Allow comma-separated input as well as arrayrefs.
+    $ccs = [split(/[\s,]+/, $ccs)] if !ref $ccs;
 
     my %cc_ids;
     foreach my $person (@$ccs) {
@@ -1732,6 +1760,17 @@ sub _check_freetext_field {
 
 sub _check_multi_select_field {
     my ($invocant, $values, $field) = @_;
+
+    # Allow users (mostly email_in.pl) to specify multi-selects as
+    # comma-separated values.
+    if (defined $values and !ref $values) {
+        # We don't split on spaces because multi-select values can and often
+        # do have spaces in them. (Theoretically they can have commas in them
+        # too, but that's much less common and people should be able to work
+        # around it pretty cleanly, if they want to use email_in.pl.)
+        $values = [split(',', $values)];
+    }
+
     return [] if !$values;
     my @checked_values;
     foreach my $value (@$values) {
@@ -1865,6 +1904,7 @@ sub set_component  {
 }
 sub set_custom_field {
     my ($self, $field, $value) = @_;
+
     if (ref $value eq 'ARRAY' && $field->type != FIELD_TYPE_MULTI_SELECT) {
         $value = $value->[0];
     }
@@ -1938,7 +1978,6 @@ sub set_product {
         $self->{_old_product_name} = $old_product->name;
         # Delete fields that depend upon the old Product value.
         delete $self->{choices};
-        delete $self->{milestoneurl};
         $product_changed = 1;
     }
 
@@ -2132,6 +2171,8 @@ sub set_status {
     my $old_status = $self->status;
     $self->set('bug_status', $status);
     delete $self->{'status'};
+    delete $self->{'statuses_available'};
+    delete $self->{'choices'};
     my $new_status = $self->status;
     
     if ($new_status->is_open) {
@@ -2645,11 +2686,6 @@ sub isopened {
     return is_open_state($self->{bug_status}) ? 1 : 0;
 }
 
-sub isunconfirmed {
-    my $self = shift;
-    return ($self->bug_status eq 'UNCONFIRMED') ? 1 : 0;
-}
-
 sub keywords {
     my ($self) = @_;
     return join(', ', (map { $_->name } @{$self->keyword_objects}));
@@ -2701,15 +2737,6 @@ sub comments {
         @comments = grep { datetime_from($_->creation_ts) <= $to } @comments;
     }
     return \@comments;
-}
-
-sub milestoneurl {
-    my ($self) = @_;
-    return $self->{'milestoneurl'} if exists $self->{'milestoneurl'};
-    return '' if $self->{'error'};
-
-    $self->{'milestoneurl'} = $self->product_obj->milestone_url;
-    return $self->{'milestoneurl'};
 }
 
 sub product {
@@ -2768,6 +2795,36 @@ sub status {
 
     $self->{'status'} ||= new Bugzilla::Status({name => $self->{'bug_status'}});
     return $self->{'status'};
+}
+
+sub statuses_available {
+    my $self = shift;
+    return [] if $self->{'error'};
+    return $self->{'statuses_available'}
+        if defined $self->{'statuses_available'};
+
+    my @statuses = @{ $self->status->can_change_to };
+
+    # UNCONFIRMED is only a valid status if it is enabled in this product.
+    if (!$self->product_obj->allows_unconfirmed) {
+        @statuses = grep { $_->name ne 'UNCONFIRMED' } @statuses;
+    }
+
+    my @available;
+    foreach my $status (@statuses) {
+        # Make sure this is a legal status transition
+        next if !$self->check_can_change_field(
+                     'bug_status', $self->status->name, $status->name);
+        push(@available, $status);
+    }
+
+    # If this bug has an inactive status set, it should still be in the list.
+    if (!grep($_->name eq $self->status->name, @available)) {
+        unshift(@available, $self->status);
+    }
+
+    $self->{'statuses_available'} = \@available;
+    return $self->{'statuses_available'};
 }
 
 sub show_attachment_flags {
@@ -2923,9 +2980,10 @@ sub choices {
     }
 
     my %choices = (
-        product   => \@products,
-        component => $self->product_obj->components,
-        version   => $self->product_obj->versions,
+        bug_status => $self->statuses_available,
+        product    => \@products,
+        component  => $self->product_obj->components,
+        version    => $self->product_obj->versions,
         target_milestone => $self->product_obj->milestones,
     );
 
@@ -3177,6 +3235,25 @@ sub LogActivityEntry {
     }
 }
 
+# Convert WebService API and email_in.pl field names to internal DB field
+# names.
+sub map_fields {
+    my ($params) = @_; 
+
+    my %field_values;
+    foreach my $field (keys %$params) {
+        my $field_name = FIELD_MAP->{$field} || $field;
+        $field_values{$field_name} = $params->{$field};
+    }
+
+    # This protects the WebService Bug.search method.
+    unless (Bugzilla->user->is_timetracker) {
+        delete @field_values{qw(estimated_time remaining_time deadline)};
+    }
+    
+    return \%field_values;
+}
+
 # CountOpenDependencies counts the number of open dependent bugs for a
 # list of bugs and returns a list of bug_id's and their dependency count
 # It takes one parameter:
@@ -3297,7 +3374,10 @@ sub CheckIfVotedConfirmed {
     my $bug = new Bugzilla::Bug($id);
 
     my $ret = 0;
-    if (!$bug->everconfirmed && $bug->votes >= $bug->product_obj->votes_to_confirm) {
+    if (!$bug->everconfirmed
+        and $bug->product_obj->votes_to_confirm
+        and $bug->votes >= $bug->product_obj->votes_to_confirm) 
+    {
         $bug->add_comment('', { type => CMT_POPULAR_VOTES });
 
         if ($bug->bug_status eq 'UNCONFIRMED') {
@@ -3397,12 +3477,7 @@ sub check_can_change_field {
     }
 
     # *Only* users with (product-specific) "canconfirm" privs can confirm bugs.
-    if ($field eq 'canconfirm'
-        || ($field eq 'everconfirmed' && $newvalue)
-        || ($field eq 'bug_status'
-            && $oldvalue eq 'UNCONFIRMED'
-            && is_open_state($newvalue)))
-    {
+    if ($self->_changes_everconfirmed($field, $oldvalue, $newvalue)) {
         $$PrivilegesRequired = 3;
         return $user->in_group('canconfirm', $self->{'product_id'});
     }
@@ -3475,6 +3550,24 @@ sub check_can_change_field {
     # If we haven't returned by this point, then the user doesn't
     # have the necessary permissions to change this field.
     $$PrivilegesRequired = 1;
+    return 0;
+}
+
+# A helper for check_can_change_field
+sub _changes_everconfirmed {
+    my ($self, $field, $old, $new) = @_;
+    return 1 if $field eq 'everconfirmed';
+    if ($field eq 'bug_status') {
+        if ($self->everconfirmed) {
+            # Moving a confirmed bug to UNCONFIRMED will change everconfirmed.
+            return 1 if $new eq 'UNCONFIRMED';
+        }
+        else {
+            # Moving an unconfirmed bug to an open state that isn't 
+            # UNCONFIRMED will confirm the bug.
+            return 1 if (is_open_state($new) and $new ne 'UNCONFIRMED');
+        }
+    }
     return 0;
 }
 
@@ -3572,8 +3665,7 @@ sub _validate_attribute {
     my @valid_attributes = (
         # Miscellaneous properties and methods.
         qw(error groups product_id component_id
-           comments milestoneurl attachments
-           isopened isunconfirmed
+           comments milestoneurl attachments isopened
            flag_types num_attachment_flag_types
            show_attachment_flags any_flags_requesteeble),
 

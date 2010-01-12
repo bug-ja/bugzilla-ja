@@ -17,6 +17,7 @@
 #                 Mads Bondo Dydensborg <mbd@dbc.dk>
 #                 Tsahi Asher <tsahi_75@yahoo.com>
 #                 Noura Elhawary <nelhawar@redhat.com>
+#                 Frank Becker <Frank@Frank-Becker.de>
 
 package Bugzilla::WebService::Bug;
 
@@ -32,28 +33,13 @@ use Bugzilla::WebService::Util qw(filter validate);
 use Bugzilla::Bug;
 use Bugzilla::BugMail;
 use Bugzilla::Util qw(trim);
+use Bugzilla::Version;
+use Bugzilla::Milestone;
+use Bugzilla::Status;
 
 #############
 # Constants #
 #############
-
-# This maps the names of internal Bugzilla bug fields to things that would
-# make sense to somebody who's not intimately familiar with the inner workings
-# of Bugzilla. (These are the field names that the WebService uses.)
-use constant FIELD_MAP => {
-    creation_time    => 'creation_ts',
-    description      => 'comment',
-    id               => 'bug_id',
-    last_change_time => 'delta_ts',
-    platform         => 'rep_platform',
-    severity         => 'bug_severity',
-    status           => 'bug_status',
-    summary          => 'short_desc',
-    url              => 'bug_file_loc',
-    whiteboard       => 'status_whiteboard',
-    limit            => 'LIMIT',
-    offset           => 'OFFSET',
-};
 
 use constant PRODUCT_SPECIFIC_FIELDS => qw(version target_milestone component);
 
@@ -76,6 +62,145 @@ BEGIN {
 ###########
 # Methods #
 ###########
+
+sub fields {
+    my ($self, $params) = validate(@_, 'ids', 'names');
+
+    my @fields;
+    if (defined $params->{ids}) {
+        my $ids = $params->{ids};
+        foreach my $id (@$ids) {
+            my $loop_field = Bugzilla::Field->check({ id => $id });
+            push(@fields, $loop_field);
+        }
+    }
+
+    if (defined $params->{names}) {
+        my $names = $params->{names};
+        foreach my $field_name (@$names) {
+            my $loop_field = Bugzilla::Field->check($field_name);
+            push(@fields, $loop_field); 
+        }
+    }
+
+    if (!defined $params->{ids}
+        and !defined $params->{names})
+    {
+        @fields = @{Bugzilla::Field->match({obsolete => 0})};
+    }
+
+    my @fields_out;
+    foreach my $field (@fields) {
+        my $visibility_field = $field->visibility_field 
+                               ? $field->visibility_field->name : undef;
+        my $visibility_value = $field->visibility_value 
+                               ? $field->visibility_value->name : undef;
+        my $value_field = $field->value_field
+                          ? $field->value_field->name : undef;
+
+        my @values;
+        if ( ($field->is_select and $field->name ne 'product')
+             or grep($_ eq $field->name, PRODUCT_SPECIFIC_FIELDS))
+        {
+             @values = @{ $self->_legal_field_values({ field => $field }) };
+        }
+
+        if (grep($_ eq $field->name, PRODUCT_SPECIFIC_FIELDS)) {
+             $value_field = 'product';
+        }
+
+        push (@fields_out, filter $params, {
+           id                => $self->type('int', $field->id),
+           type              => $self->type('int', $field->type),
+           is_custom         => $self->type('boolean', $field->custom),
+           name              => $self->type('string', $field->name),
+           display_name      => $self->type('string', $field->description),
+           is_on_bug_entry   => $self->type('boolean', $field->enter_bug),
+           visibility_field  => $self->type('string', $visibility_field),
+           visibility_values => [$self->type('string', $visibility_value)],
+           value_field       => $self->type('string', $value_field),
+           values            => \@values,
+        });
+    }
+
+    return { fields => \@fields_out };
+}
+
+sub _legal_field_values {
+    my ($self, $params) = @_;
+    my $field = $params->{field};
+    my $field_name = $field->name;
+    my $user = Bugzilla->user;
+
+    my @result;
+    if (grep($_ eq $field_name, PRODUCT_SPECIFIC_FIELDS)) {
+        my @list;
+        if ($field_name eq 'version') {
+            @list = Bugzilla::Version->get_all;
+        }
+        elsif ($field_name eq 'component') {
+            @list = Bugzilla::Component->get_all;
+        }
+        else {
+            @list = Bugzilla::Milestone->get_all;
+        }
+
+        foreach my $value (@list) {
+            my $sortkey = $field_name eq 'target_milestone'
+                          ? $value->sortkey : 0;
+            # XXX This is very slow for large numbers of values.
+            my $product_name = $value->product->name;
+            if ($user->can_see_product($product_name)) {
+                push(@result, {
+                    name    => $self->type('string', $value->name),
+                    sortkey => $self->type('int', $sortkey),
+                    visibility_values => [$self->type('string', $product_name)],
+                });
+            }
+        }
+    }
+
+    elsif ($field_name eq 'bug_status') {
+        my @status_all = Bugzilla::Status->get_all;
+        foreach my $status (@status_all) {
+            my @can_change_to;
+            foreach my $change_to (@{ $status->can_change_to }) {
+                # There's no need to note that a status can transition
+                # to itself.
+                next if $change_to->id == $status->id;
+                my %change_to_hash = (
+                    name => $self->type('string', $change_to->name),
+                    comment_required => $self->type('boolean', 
+                        $change_to->comment_required_on_change_from($status)),
+                );
+                push(@can_change_to, \%change_to_hash);
+            }
+
+            push (@result, {
+               name          => $self->type('string', $status->name),
+               is_open       => $self->type('boolean', $status->is_open),
+               sortkey       => $self->type('int', $status->sortkey),
+               can_change_to => \@can_change_to,
+            });
+        }
+    }
+
+    else {
+        my @values = Bugzilla::Field::Choice->type($field)->get_all();
+        foreach my $value (@values) {
+            my $visibility_value = $value->visibility_value;
+            my $vis_val_name = $visibility_value ? $visibility_value->name
+                                                 : undef;
+            push(@result, {
+                name              => $self->type('string', $value->name),
+                sortkey           => $self->type('int'   , $value->sortkey),
+                visibility_values => [$self->type('string', $vis_val_name)],
+            });
+        }
+    }
+
+    return \@result;
+}
 
 sub comments {
     my ($self, $params) = validate(@_, 'ids', 'comment_ids');
@@ -251,7 +376,7 @@ sub search {
                        { param => 'limit', function => 'Bug.search()' });
     }
     
-    $params = _map_fields($params);
+    $params = Bugzilla::Bug::map_fields($params);
     delete $params->{WHERE};
     
     # Do special search types for certain fields.
@@ -286,7 +411,7 @@ sub search {
 sub create {
     my ($self, $params) = @_;
     Bugzilla->login(LOGIN_REQUIRED);
-    $params = _map_fields($params);
+    $params = Bugzilla::Bug::map_fields($params);
     my $bug = Bugzilla::Bug->create($params);
     Bugzilla::BugMail::Send($bug->bug_id, { changer => $bug->reporter->login });
     return { id => $self->type('int', $bug->bug_id) };
@@ -294,7 +419,8 @@ sub create {
 
 sub legal_values {
     my ($self, $params) = @_;
-    my $field = FIELD_MAP->{$params->{field}} || $params->{field};
+    my $field = Bugzilla::Bug::FIELD_MAP->{$params->{field}} 
+                || $params->{field};
 
     my @global_selects = Bugzilla->get_fields(
         {type => [FIELD_TYPE_SINGLE_SELECT, FIELD_TYPE_MULTI_SELECT]});
@@ -428,21 +554,44 @@ sub update_see_also {
 }
 
 sub attachments {
-    my ($self, $params) = validate(@_, 'ids');
+    my ($self, $params) = validate(@_, 'ids', 'attachment_ids');
 
-    my $ids = $params->{ids};
-    defined $ids || ThrowCodeError('param_required', { param => 'ids' });
+    if (!(defined $params->{ids}
+          or defined $params->{attachment_ids}))
+    {
+        ThrowCodeError('param_required',
+                       { function => 'Bug.attachments', 
+                         params   => ['ids', 'attachment_ids'] });
+    }
 
-    my %attachments;
+    my $ids = $params->{ids} || [];
+    my $attach_ids = $params->{attachment_ids} || [];
+
+    my %bugs;
     foreach my $bug_id (@$ids) {
         my $bug = Bugzilla::Bug->check($bug_id);
-        $attachments{$bug->id} = [];
+        $bugs{$bug->id} = [];
         foreach my $attach (@{$bug->attachments}) {
-            push @{$attachments{$bug->id}},
+            push @{$bugs{$bug->id}},
                 $self->_attachment_to_hash($attach, $params);
         }
     }
-    return { bugs => \%attachments };
+
+    my %attachments;
+    foreach my $attach (@{Bugzilla::Attachment->new_from_list($attach_ids)}) {
+        Bugzilla::Bug->check($attach->bug_id);
+        if ($attach->isprivate && !Bugzilla->user->is_insider) {
+            ThrowUserError('auth_failure', {action    => 'access',
+                                            object    => 'attachment',
+                                            attach_id => $attach->id});
+        }
+        $attachments{$attach->id} =
+            $self->_attachment_to_hash($attach, $params);
+    }
+
+    $bugs{attachments} = \%attachments;
+
+    return { bugs => \%bugs };
 }
 
 ##############################
@@ -520,24 +669,6 @@ sub _attachment_to_hash {
     };
 }
 
-# Convert WebService API field names to internal DB field names.
-# Used by create() and search().
-sub _map_fields {
-    my ($params) = @_;
-    
-    my %field_values;
-    foreach my $field (keys %$params) {
-        my $field_name = FIELD_MAP->{$field} || $field;
-        $field_values{$field_name} = $params->{$field};
-    }
-
-    unless (Bugzilla->user->is_timetracker) {
-        delete @field_values{qw(estimated_time remaining_time deadline)};
-    }
-    
-    return \%field_values;
-}
-
 1;
 
 __END__
@@ -561,9 +692,198 @@ and what B<STABLE>, B<UNSTABLE>, and B<EXPERIMENTAL> mean.
 
 =over
 
+=item C<fields>
+
+B<UNSTABLE>
+
+=over
+
+=item B<Description>
+
+Get information about valid bug fields, including the lists of legal values
+for each field.
+
+=item B<Params>
+
+You can pass either field ids or field names.
+
+B<Note>: If neither C<ids> nor C<names> is specified, then all 
+non-obsolete fields will be returned.
+
+In addition to the parameters below, this method also accepts the
+standard L<include_fields|Bugzilla::WebService/include_fields> and
+L<exclude_fields|Bugzilla::WebService/exclude_fields> arguments.
+
+=over
+
+=item C<ids>   (array) - An array of integer field ids.
+
+=item C<names> (array) - An array of strings representing field names.
+
+=back
+
+=item B<Returns>
+
+A hash containing a single element, C<fields>. This is an array of hashes,
+containing the following keys:
+
+=over
+
+=item C<id>
+
+C<int> An integer id uniquely idenfifying this field in this installation only.
+
+=item C<type>
+
+C<int> The number of the fieldtype. The following values are defined:
+
+=over
+
+=item C<0> Unknown
+
+=item C<1> Free Text
+
+=item C<2> Drop Down
+
+=item C<3> Multiple-Selection Box
+
+=item C<4> Large Text Box
+
+=item C<5> Date/Time
+
+=item C<6> Bug Id
+
+=item C<7> Bug URLs ("See Also")
+
+=back
+
+=item C<is_custom>
+
+C<boolean> True when this is a custom field, false otherwise.
+
+=item C<name>
+
+C<string> The internal name of this field. This is a unique identifier for
+this field. If this is not a custom field, then this name will be the same
+across all Bugzilla installations.
+
+=item C<display_name>
+
+C<string> The name of the field, as it is shown in the user interface.
+
+=item C<is_on_bug_entry>
+
+C<boolean> For custom fields, this is true if the field is shown when you
+enter a new bug. For standard fields, this is currently always false,
+even if the field shows up when entering a bug. (To know whether or not
+a standard field is valid on bug entry, see L</create>.)
+
+=item C<visibility_field>
+
+C<string>  The name of a field that controls the visibility of this field
+in the user interface. This field only appears in the user interface when
+the named field is equal to one of the values in C<visibility_values>.
+Can be null.
+
+=item C<visibility_values>
+
+C<array> of C<string>s This field is only shown when C<visibility_field>
+matches one of these values. When C<visibility_field> is null,
+then this is an empty array.
+
+=item C<value_field>
+
+C<string>  The name of the field that controls whether or not particular
+values of the field are shown in the user interface. Can be null.
+
+=item C<values>
+
+This is an array of hashes, representing the legal values for
+select-type (drop-down and multiple-selection) fields. This is also
+populated for the C<component>, C<version>, and C<target_milestone>
+fields, but not for the C<product> field (you must use
+L<Product.get_accessible_products|Bugzilla::WebService::Product/get_accessible_products>
+for that.
+
+For fields that aren't select-type fields, this will simply be an empty
+array.
+
+Each hash has the following keys:
+
+=over 
+
+=item C<name>
+
+C<string> The actual value--this is what you would specify for this
+field in L</create>, etc.
+
+=item C<sortkey>
+
+C<int> Values, when displayed in a list, are sorted first by this integer
+and then secondly by their name.
+
+=item C<visibility_values>
+
+If C<value_field> is defined for this field, then this value is only shown
+if the C<value_field> is set to one of the values listed in this array.
+Note that for per-product fields, C<value_field> is set to C<'product'>
+and C<visibility_values> will reflect which product(s) this value appears in.
+
+=item C<is_open>
+
+C<boolean> For C<bug_status> values, determines whether this status
+specifies that the bug is "open" (true) or "closed" (false). This item
+is only included for the C<bug_status> field.
+
+=item C<can_change_to>
+
+For C<bug_status> values, this is an array of hashes that determines which
+statuses you can transition to from this status. (This item is only included
+for the C<bug_status> field.)
+
+Each hash contains the following items:
+
+=over
+
+=item C<name>
+
+the name of the new status
+
+=item C<comment_required>
+
+this C<boolean> True if a comment is required when you change a bug into
+this status using this transition.
+
+=back
+
+=back
+
+=back
+
+=item B<Errors>
+
+=over
+
+=item 51 (Invalid Field Name or Id)
+
+You specified an invalid field name or id.
+
+=back
+
+=item B<History>
+
+=over
+
+=item Added in Bugzilla B<3.6>.
+
+=back
+
+=back
+
+
 =item C<legal_values> 
 
-B<EXPERIMENTAL>
+B<DEPRECATED> - Use L</fields> instead.
 
 =over
 
@@ -621,12 +941,15 @@ B<EXPERIMENTAL>
 
 =item B<Description>
 
-Gets information about all attachments from a bug.
+It allows you to get data about attachments, given a list of bugs
+and/or attachment ids.
 
 B<Note>: Private attachments will only be returned if you are in the 
 insidergroup or if you are the submitter of the attachment.
 
 =item B<Params>
+
+B<Note>: At least one of C<ids> or C<attachment_ids> is required.
 
 =over
 
@@ -634,13 +957,52 @@ insidergroup or if you are the submitter of the attachment.
 
 See the description of the C<ids> parameter in the L</get> method.
 
+=item C<attachment_ids>
+
+C<array> An array of integer attachment ids.
+
 =back
 
 =item B<Returns>
 
-A hash containing a single element, C<bugs>. This is a hash of hashes. 
-Each hash has the numeric bug id as a key, and contains the following
-items:
+A hash containing two elements: C<bugs> and C<attachments>. The return
+value looks like this:
+
+ {
+     bugs => {
+         1345 => {
+             attachments => [
+                 { (attachment) },
+                 { (attachment) }
+             ]
+         },
+         9874 => {
+             attachments => [
+                 { (attachment) },
+                 { (attachment) }
+             ]
+
+         },
+     },
+
+     attachments => {
+         234 => { (attachment) },
+         123 => { (attachment) },
+     }
+ }
+
+The attachments of any bugs that you specified in the C<ids> argument in
+input are returned in C<bugs> on output. C<bugs> is a hash that has integer
+bug IDs for keys and contains a single key, C<attachments>. That key points
+to an arrayref that contains attachments as a hash. (Fields for attachments
+are described below.)
+
+For any attachments that you specified directly in C<attachment_ids>, they
+are returned in C<attachments> on output. This is a hash where the attachment
+ids point directly to hashes describing the individual attachment.
+
+The fields for each attachment (where it says C<(attachment)> in the
+diagram above) are:
 
 =over
 
@@ -700,7 +1062,18 @@ C<string> The login name of the user that created the attachment.
 
 =item B<Errors>
 
-This method can throw all the same errors as L</get>.
+This method can throw all the same errors as L</get>. In addition,
+it can also throw the following error:
+
+=over
+
+=item 304 (Auth Failure, Attachment is Private)
+
+You specified the id of a private attachment in the C<attachment_ids>
+argument, and you are not in the "insider group" that can see
+private attachments.
+
+=back
 
 =item B<History>
 

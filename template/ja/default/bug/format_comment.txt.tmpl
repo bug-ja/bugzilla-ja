@@ -50,7 +50,15 @@ X[% comment_body %]
 全てうまくいけば、新しい [% terms.bug %] へのリンクをここへ貼り付けてください。
 そうでなければ、この [% terms.bug %] を再開してください。
 [% ELSIF comment.type == constants.CMT_ATTACHMENT_CREATED %]
-添付 [% comment.extra_data %] を追加
+attachment [% comment.extra_data %] を追加
+[% IF is_bugmail %]
+  --> [% urlbase _ "attachment.cgi?id=" _ comment.extra_data %]
+[% END %]
+[%+ comment.attachment.description %]
+
+[%+ comment.body %]
+[% ELSIF comment.type == constants.CMT_ATTACHMENT_UPDATED %]
+attachment [% comment.extra_data %] へのコメント
 [% IF is_bugmail %]
   --> [% urlbase _ "attachment.cgi?id=" _ comment.extra_data %]
 [% END %]

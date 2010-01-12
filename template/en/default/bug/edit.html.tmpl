@@ -48,7 +48,7 @@
        */
       [% IF user.settings.quote_replies.value != 'off' %]
         document.write('[<a href="#add_comment" onclick="replyToComment(' + 
-                       id + ',' + real_id + ');">reply<' + '/a>]');
+                       id + ',' + real_id + '); return false;">reply<' + '/a>]');
       [% END %]
   }
 
@@ -211,90 +211,36 @@
     </tr>
   </table>
 
-  
-  [% PROCESS section_restrict_visibility %]
-  [% IF user.is_timetracker %]
-    <br>
-    [% PROCESS section_timetracking %]
-  [% END %]
-  
+  <table id="bz_big_form_parts" cellspacing="0" cellpadding="0"><tr>
+  <td>
+    [% IF user.is_timetracker %]
+      [% PROCESS section_timetracking %]
+    [% END %]
 
-[%# *** Attachments *** %]
+    [%# *** Attachments *** %]
 
-  [% PROCESS attachment/list.html.tmpl
-             attachments = bug.attachments
-             bugid       = bug.bug_id
-             num_attachment_flag_types = bug.num_attachment_flag_types
-             show_attachment_flags = bug.show_attachment_flags
-   %]
+    [% PROCESS attachment/list.html.tmpl
+               attachments = bug.attachments
+               bugid       = bug.bug_id
+               num_attachment_flag_types = bug.num_attachment_flag_types
+               show_attachment_flags = bug.show_attachment_flags
+    %]
 
+    [% PROCESS comment_box %]
+  </td>
+  <td>
+    [% PROCESS section_restrict_visibility %]
+  </td>
+  </tr></table>
 
-[%# *** Comments Groups *** %]
+  [%# *** Additional Comments *** %]
+  <div id="comments">
+    [% PROCESS bug/comments.html.tmpl
+      comments = bug.comments
+      mode = user.id ? "edit" : "show"
+    %]
+  </div>
 
-  <br>
-  <table cellpadding="1" cellspacing="1">
-    <tr>
-      <td id="comment_status_commit">
-        <!-- The table keeps the commit button aligned with the box. -->
-        <a name="add_comment"></a>
-        [% IF user.id %]
-          <label for="comment" accesskey="c"><b>Additional <u>C</u>omments</b></label>:
-          [% IF user.is_insider %]
-            <input type="checkbox" name="commentprivacy" value="1"
-                   id="newcommentprivacy"
-                   onClick="updateCommentTagControl(this, form)">
-            <label for="newcommentprivacy"> 
-              Make comment private (visible only to members of the
-              <strong>[% Param('insidergroup') FILTER html %]</strong>
-              group)
-            </label>
-          [% END %]
-          <table><tr><td>
-          [% INCLUDE global/textarea.html.tmpl
-                     name      = 'comment'
-                     id        = 'comment'
-                     minrows   = 10
-                     maxrows   = 25
-                     cols      = constants.COMMENT_COLS
-          %]
-          [% Hook.process("after_comment_textarea") %]
-          <br>
-          [% PROCESS commit_button id=""%]
-          <table class="status" cellspacing="0" cellpadding="0">
-            <tr>
-              <td class="field_label">
-                <b><a href="page.cgi?id=fields.html#status">Status</a></b>:
-              </td>
-              <td>
-                <a name="bug_status_bottom"></a>
-                [% PROCESS bug/knob.html.tmpl %]
-              </td>
-            </tr>
-          </table>
-          </td></tr></table>
-        [% ELSE %]
-          <fieldset>
-            <legend>Note</legend>
-            <p>
-              You need to
-              <a href="show_bug.cgi?id=
-                       [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">log in</a>
-              before you can comment on or make changes to this [% terms.bug %].
-            </p>
-          </fieldset>
-        [% END %]
-        [%# *** Additional Comments *** %]
-        <hr>
-        <div id="comments">
-        [% PROCESS bug/comments.html.tmpl
-           comments = bug.comments
-           mode = user.id ? "edit" : "show"
-         %]
-        </div>
-        
-      </td>
-    </tr>
-  </table>
 </form>
 
 [%############################################################################%]
@@ -499,13 +445,10 @@
 
     [% IF Param("usetargetmilestone") && bug.target_milestone %]
       <tr>
-        <td class="field_label">
-          <label for="target_milestone"><b>
-            [% IF bug.milestoneurl %]
-              <a href="[% bug.milestoneurl FILTER html %]">
-            [% END %]
-            Target&nbsp;Milestone[% "</a>" IF bug.milestoneurl %]
-          [%%]</b></label>:
+        <th class="field_label">
+          <label for="target_milestone">
+              <a href="page.cgi?id=fields.html#target_milestone">
+            Target&nbsp;Milestone</a></label>:
         </td>
         [% PROCESS select selname = "target_milestone" %]
       </tr>
@@ -706,103 +649,92 @@
 [% BLOCK section_restrict_visibility %]
   [% RETURN UNLESS bug.groups.size %]
 
-  [% inallgroups = 1 %]
-  [% inagroup = 0 %]
-  [% emitted_description = 0 %]
+  <div class="bz_group_visibility_section">
+    [% inallgroups = 1 %]
+    [% inagroup = 0 %]
+    [% emitted_description = 0 %]
 
-  [% FOREACH group = bug.groups %]
-    [% SET inallgroups = 0 IF NOT group.ingroup %]
-    [% SET inagroup = 1 IF group.ison %]
+    [% FOREACH group = bug.groups %]
+      [% SET inallgroups = 0 IF NOT group.ingroup %]
+      [% SET inagroup = 1 IF group.ison %]
 
-    [% NEXT IF group.mandatory %]
+      [% NEXT IF group.mandatory %]
 
-    [% IF NOT emitted_description %]
-      [% emitted_description = 1 %]
-      <table class="bz_group_visibility_section">
-        <tr>
-          <td class="field_label">
-            <label id="bz_restrict_group_visibility_label"><b>Restrict Group Visibility</b>:</label>
-          </td>
-          <td>
-            <div id="bz_restrict_group_visibility_help">
-              <b>Only users in all of the selected groups can view this [% terms.bug %]:</b>
-              <br>
-              <small>
-                (Unchecking all boxes makes this a more public [% terms.bug %].)
-              </small>
-            </div>
-    [% END %]
+      [% IF NOT emitted_description %]
+        [% emitted_description = 1 %]
+          <div id="bz_restrict_group_visibility_help">
+            <b>Only users in all of the selected groups can view this 
+              [%+ terms.bug %]:</b>
+             <p class="instructions">
+               Unchecking all boxes makes this a more public [% terms.bug %].
+             </p>
+          </div>
+      [% END %]
 
-    [% IF group.ingroup %]
-      <input type="hidden" name="defined_bit-[% group.bit %]" value="1">
-    [% END %]
-    <input type="checkbox" value="1" name="bit-[% group.bit %]" id="bit-[% group.bit %]"
-           [% ' checked="checked"' IF group.ison %]
-           [% ' disabled="disabled"' IF NOT group.ingroup %]>
-    <label for="bit-[% group.bit %]">[% group.description FILTER html_light %]</label>
-    <br>
-  [% END %]
+      [% IF group.ingroup %]
+        <input type="hidden" name="defined_bit-[% group.bit %]" value="1">
+      [% END %]
 
-  [% IF emitted_description %]
-    [% IF NOT inallgroups %]
-      <b>Only members of a group can change the visibility of [% terms.abug %] for that group.</b>
+      <input type="checkbox" value="1" name="bit-[% group.bit %]" 
+             id="bit-[% group.bit %]"
+             [% ' checked="checked"' IF group.ison %]
+             [% ' disabled="disabled"' IF NOT group.ingroup %]>
+      <label for="bit-[% group.bit %]">
+      [%- group.description FILTER html_light %]</label>
       <br>
     [% END %]
-      </td>
-    </tr>
-    [% "</table>" IF NOT inagroup %]
-  [% END %]
 
-  [% IF inagroup %]
-    [% IF NOT emitted_description %]
-      [% emitted_description = 1 %]
-      <table class="bz_group_visibility_section">
+    [% IF emitted_description %]
+      [% IF NOT inallgroups %]
+        <p class="instructions">Only members of a group can change the 
+          visibility of [% terms.abug %] for that group.</p>
+      [% END %]
     [% END %]
-    <tr>
-      <td class="field_label">
-        <label id="bz_enable_role_visibility_label"><b>Enable Role Visibility</b>:</label>
-      </td>
-      <td>
-        <div id="bz_enable_role_visibility_help">
-          <b>Users in the roles selected below can always view this [% terms.bug %]:</b>
-          <br>
-          <small>
-            (The assignee
-            [% IF (Param('useqacontact')) %]
-               and QA contact
-            [% END %]
-            can always see [% terms.abug %], and this section does not take effect unless
-            the [% terms.bug %] is restricted to at least one group.)
-          </small>
+
+    [% IF inagroup %]
+      <div id="bz_enable_role_visibility_help">
+        <b>Users in the roles selected below can always view 
+          this [% terms.bug %]:</b>
+      </div>
+      <div id="bz_enable_role_visibility">
+        <div>
+          [% user_can_edit_accessible = 
+            bug.check_can_change_field("reporter_accessible", 0, 1) 
+          %]
+          [% IF user_can_edit_accessible %]
+            <input type="hidden" name="defined_reporter_accessible" value="1">
+          [% END %]
+          <input type="checkbox" value="1"
+                 name="reporter_accessible" id="reporter_accessible"
+                 [% " checked" IF bug.reporter_accessible %]
+                 [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
+          <label for="reporter_accessible">Reporter</label>
         </div>
         <div>
-          <div>
-            [% user_can_edit_accessible = bug.check_can_change_field("reporter_accessible", 0, 1) %]
-            [% IF user_can_edit_accessible %]
-              <input type="hidden" name="defined_reporter_accessible" value="1">
-            [% END %]
-            <input type="checkbox" value="1"
-                   name="reporter_accessible" id="reporter_accessible"
-                   [% " checked" IF bug.reporter_accessible %]
-                   [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
-            <label for="reporter_accessible">Reporter</label>
-          </div>
-          <div>
-            [% user_can_edit_accessible = bug.check_can_change_field("cclist_accessible", 0, 1) %]
-            [% IF user_can_edit_accessible %]
-              <input type="hidden" name="defined_cclist_accessible" value="1">
-            [% END %]
-            <input type="checkbox" value="1"
-                   name="cclist_accessible" id="cclist_accessible"
-                   [% " checked" IF bug.cclist_accessible %]
-                   [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
-            <label for="cclist_accessible">CC List</label>
-          </div>
+          [% user_can_edit_accessible = 
+            bug.check_can_change_field("cclist_accessible", 0, 1) 
+          %]
+          [% IF user_can_edit_accessible %]
+            <input type="hidden" name="defined_cclist_accessible" value="1">
+          [% END %]
+          <input type="checkbox" value="1"
+                 name="cclist_accessible" id="cclist_accessible"
+                 [% " checked" IF bug.cclist_accessible %]
+                 [% " disabled=\"disabled\"" UNLESS user_can_edit_accessible %]>
+          <label for="cclist_accessible">CC List</label>
         </div>
-      </td>
-    </tr>
-  </table>
-  [% END %]
+        <p class="instructions">
+          The assignee
+          [% IF (Param('useqacontact')) %]
+             and QA contact
+          [% END %]
+          can always see [% terms.abug %], and this section does not
+          take effect unless the [% terms.bug %] is restricted to at
+          least one group.
+        </p>
+      </div>
+    [% END %]
+  </div> [%# bz_group_visibility_section %]
 [% END %]
 
 [%############################################################################%]
@@ -1099,6 +1031,66 @@
       </td>
     </tr>
   </table> 
+[% END %]
+
+[%############################################################################%]
+[%# Block for the Additional Comments box                                    #%]
+[%############################################################################%]
+
+[% BLOCK comment_box %]
+  <div class="bz_section_additional_comments">
+    <a name="add_comment"></a>
+    [% IF user.id %]
+      <label for="comment" accesskey="c"><b>Additional 
+        <u>C</u>omments</b></label>:
+
+      [% IF user.is_insider %]
+        <input type="checkbox" name="commentprivacy" value="1"
+               id="newcommentprivacy"
+               onClick="updateCommentTagControl(this, form)">
+        <label for="newcommentprivacy">
+          Make comment private (visible only to members of the
+          <strong>[% Param('insidergroup') FILTER html %]</strong> group)
+        </label>
+      [% END %]
+
+      <!-- This table keeps the submit button aligned with the box. -->
+      <table><tr><td>
+        [% INCLUDE global/textarea.html.tmpl
+                   name      = 'comment'
+                   id        = 'comment'
+                   minrows   = 10
+                   maxrows   = 25
+                   cols      = constants.COMMENT_COLS
+        %]
+        [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
+        <br>
+        [% PROCESS commit_button id=""%]
+
+        <table class="status" cellspacing="0" cellpadding="0">
+          <tr>
+            <td class="field_label">
+              <b><a href="page.cgi?id=fields.html#status">Status</a></b>:
+            </td>
+            <td>
+              <a name="bug_status_bottom"></a>
+              [% PROCESS bug/knob.html.tmpl %]
+            </td>
+          </tr>
+        </table>
+      </td></tr></table>
+
+    [%# For logged-out users %]
+    [% ELSE %]
+      <table><tr><td><fieldset>
+        <legend>Note</legend>
+        You need to
+        <a href="show_bug.cgi?id=
+                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">log in</a>
+         before you can comment on or make changes to this [% terms.bug %].
+      </fieldset></table><tr></td>
+    [% END %]
+  </div>
 [% END %]
 
 [%############################################################################%]

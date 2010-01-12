@@ -53,12 +53,12 @@ use constant DB_COLUMNS => qw(
    name
    classification_id
    description
-   milestoneurl
    isactive
    votesperuser
    maxvotesperbug
    votestoconfirm
    defaultmilestone
+   allows_unconfirmed
 );
 
 use constant REQUIRED_CREATE_FIELDS => qw(
@@ -71,20 +71,20 @@ use constant UPDATE_COLUMNS => qw(
     name
     description
     defaultmilestone
-    milestoneurl
     isactive
     votesperuser
     maxvotesperbug
     votestoconfirm
+    allows_unconfirmed
 );
 
 use constant VALIDATORS => {
+    allows_unconfirmed => \&Bugzilla::Object::check_boolean,
     classification   => \&_check_classification,
     name             => \&_check_name,
     description      => \&_check_description,
     version          => \&_check_version,
     defaultmilestone => \&_check_default_milestone,
-    milestoneurl     => \&_check_milestone_url,
     isactive         => \&Bugzilla::Object::check_boolean,
     votesperuser     => \&_check_votes_per_user,
     maxvotesperbug   => \&_check_votes_per_bug,
@@ -630,11 +630,11 @@ sub _create_series {
 sub set_name { $_[0]->set('name', $_[1]); }
 sub set_description { $_[0]->set('description', $_[1]); }
 sub set_default_milestone { $_[0]->set('defaultmilestone', $_[1]); }
-sub set_milestone_url { $_[0]->set('milestoneurl', $_[1]); }
 sub set_is_active { $_[0]->set('isactive', $_[1]); }
 sub set_votes_per_user { $_[0]->set('votesperuser', $_[1]); }
 sub set_votes_per_bug { $_[0]->set('maxvotesperbug', $_[1]); }
 sub set_votes_to_confirm { $_[0]->set('votestoconfirm', $_[1]); }
+sub set_allows_unconfirmed { $_[0]->set('allows_unconfirmed', $_[1]); }
 
 sub set_group_controls {
     my ($self, $group, $settings) = @_;
@@ -886,8 +886,8 @@ sub flag_types {
 ####      Accessors      ######
 ###############################
 
+sub allows_unconfirmed { return $_[0]->{'allows_unconfirmed'}; }
 sub description       { return $_[0]->{'description'};       }
-sub milestone_url     { return $_[0]->{'milestoneurl'};      }
 sub is_active         { return $_[0]->{'isactive'};       }
 sub votes_per_user    { return $_[0]->{'votesperuser'};      }
 sub max_votes_per_bug { return $_[0]->{'maxvotesperbug'};    }
@@ -940,13 +940,13 @@ Bugzilla::Product - Bugzilla product class.
     my $id               = $product->id;
     my $name             = $product->name;
     my $description      = $product->description;
-    my $milestoneurl     = $product->milestone_url;
     my isactive          = $product->is_active;
     my votesperuser      = $product->votes_per_user;
     my maxvotesperbug    = $product->max_votes_per_bug;
     my votestoconfirm    = $product->votes_to_confirm;
     my $defaultmilestone = $product->default_milestone;
     my $classificationid = $product->classification_id;
+    my $allows_unconfirmed = $product->allows_unconfirmed;
 
 =head1 DESCRIPTION
 

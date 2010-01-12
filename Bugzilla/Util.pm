@@ -35,7 +35,7 @@ use base qw(Exporter);
                              detaint_signed
                              html_quote url_quote xml_quote
                              css_class_quote html_light_quote url_decode
-                             i_am_cgi correct_urlbase
+                             i_am_cgi correct_urlbase remote_ip
                              lsearch do_ssl_redirect_if_required use_attachbase
                              diff_arrays
                              trim wrap_hard wrap_comment find_wrap_point
@@ -54,6 +54,7 @@ use DateTime;
 use DateTime::TimeZone;
 use Digest;
 use Email::Address;
+use List::Util qw(first);
 use Scalar::Util qw(tainted);
 use Template::Filters;
 use Text::Wrap;
@@ -289,6 +290,15 @@ sub correct_urlbase {
     }
 }
 
+sub remote_ip {
+    my $ip = $ENV{'REMOTE_ADDR'} || '127.0.0.1';
+    my @proxies = split(/[\s,]+/, Bugzilla->params->{'inbound_proxies'});
+    if (first { $_ eq $ip } @proxies) {
+        $ip = $ENV{'HTTP_X_FORWARDED_FOR'} if $ENV{'HTTP_X_FORWARDED_FOR'};
+    }
+    return $ip;
+}
+
 sub use_attachbase {
     my $attachbase = Bugzilla->params->{'attachment_base'};
     return ($attachbase ne ''
@@ -403,8 +413,8 @@ sub wrap_hard {
 sub format_time {
     my ($date, $format, $timezone) = @_;
 
-    # If $format is undefined, try to guess the correct date format.
-    if (!defined($format)) {
+    # If $format is not set, try to guess the correct date format.
+    if (!$format) {
         if (!ref $date
             && $date =~ /^(\d{4})[-\.](\d{2})[-\.](\d{2}) (\d{2}):(\d{2})(:(\d{2}))?$/) 
         {

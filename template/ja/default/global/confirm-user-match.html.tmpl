@@ -38,6 +38,23 @@
 [%# use the global field descs %]
 [% PROCESS "global/field-descs.none.tmpl" %]
 
+[%# This lists fields which use the user auto-completion feature and which
+  # are not listed in field_descs. %]
+[% field_labels = { # Used by editcomponents.cgi
+                    "initialcc"               => "既定の CC リスト",
+                    "initialowner"            => "既定の担当者",
+                    "initialqacontact"        => "既定の QA コンタクト",
+                    # Used by process_bug.cgi
+                    "masscc"                  => "CC リスト",
+                    # Used by request.cgi
+                    "requester"               => "要請者",
+                    "requestee"               => "被要請者",
+                    # Used by userprefs.cgi
+                    "new_watchedusers"        => "監視リスト",
+
+   }
+%]
+
 [% IF matchsuccess == 1 %]
   [% PROCESS global/header.html.tmpl title="検索結果の照合" %]
 
@@ -165,14 +182,12 @@
 
 [% BLOCK field_names %]
 
-  [% IF field_descs.${field_name} %]
-    [%  field_descs.${field_name} FILTER html -%]
-
-  [%-# ELSIF for things that don't belong in the field_descs hash here -%]
-
+  [% IF field_descs.$field_name %]
+    [% field_descs.$field_name FILTER html %]
+  [% ELSIF field_labels.$field_name %]
+    [% field_labels.$field_name FILTER html %]
   [% ELSIF field_name.match("^requestee") %]
     [% fields.${field_name}.flag_type.name %] 要請者
-
   [% ELSE %]
     [% field_name FILTER html %]
   [% END %]

@@ -1,0 +1,50 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[% 
+   title = "高度な設定"
+   desc = "高度な設定項目項目です。"
+%]
+
+[% param_descs = {
+  cookiedomain => "$terms.Bugzilla クッキーのドメイン。通常空白にしてください。" _
+                  "'www.foo.com' にサイトがあって、これを '.foo.com' に指定すると、" _
+                  "'bar.foo.com' といったドメインからも $terms.Bugzilla クッキーに" _
+                  "アクセスできるようになります。同じウェブサーバに、ひとつ以上の" _
+                  "ホスト名が付いていて、$terms.Bugzilla クッキーを共有したい場合には" _
+                  "有用です。",
+
+  inbound_proxies =>
+    "$terms.Bugzilla への内向き通信がプロキシ経由の場合、"
+    _ "$terms.Bugzilla はすべてのユーザの IP アドレスがプロキシのものと"
+    _ "誤解してしまいます。このパラメータにカンマ区切りの IP アドレスの"
+    _ "リストを設定すれば、$terms.Bugzilla はそれらの IP アドレスからの"
+    _ " <code>X-Forwarded-For</code> ヘッダを解釈し、"
+    _ "その値をユーザの IP アドレスとして認識します。",
+
+  proxy_url => "$terms.Bugzilla が新リリースのデータを取得するには、<tt>upgrade_notification</tt>" _
+               "パラメータにあるようにウェブにアクセスする必要があります。" _
+               "プロキシの内側に設置されている場合、ウェブサーバのグループが HTTP_PROXY " _
+               "環境変数を定義していなければ、ここに URL を入力する必要があります。" _
+               "もし、認証が必要なら<code>http://user:pass@proxy_url/</code>" _
+               "形式を利用してください。",
+
+} %]

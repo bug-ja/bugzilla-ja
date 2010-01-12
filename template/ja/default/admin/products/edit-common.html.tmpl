@@ -45,12 +45,6 @@
 
 [% IF Param('usetargetmilestone') -%]
   <tr>
-    <th align="right">このプロダクトのマイルストーンについて説明している URL:</th>
-    <td><input type="text" size="64" maxlength="255" name="milestoneurl"
-               value="[% product.milestoneurl FILTER html %]">
-    </td>
-  </tr>
-  <tr>
     <th align="right">既定のマイルストーン:</th>
     <td>
       [% IF product.milestones.size %]
@@ -75,37 +69,44 @@
        [% ' checked="checked"' IF product.is_active %]>
   </td>
 </tr>
-
-[% IF !Param('usevotes') %]
-<tr class="param_disabled">
-  <td colspan="2"
-      style="font-family: arial; font-style: italic; font-size: 0.7em; text-align: center;">
-    'usevotes' パラメータは現在、'off' です。
-    投票に関する設定は、'uservotes' パラメータが次に有効化された際に反映されます。
-</tr>
-[% END %]
-<tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
-  <th align="right">一人当たりの最大投票数:</th>
-  <td><input size="5" maxlength="5" name="votesperuser" 
-             value="[% product.votesperuser FILTER html %]">
-  </td>
-</tr>
-<tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
-  <th align="right">一つの [% terms.Bug %] あたりの一人の最大投票数:
-  </th>
-  <td><input size="5" maxlength="5" name="maxvotesperbug" 
-             value="[% product.maxvotesperbug FILTER html %]">
-  </td>
-</tr>
-<tr [% IF !Param('usevotes') %]class="param_disabled" [% END %]>
+<tr>
   <th align="right">
-    確認されたとみなす票数:
+    <label for="allows_unconfirmed">このプロダクトで
+      [%+ display_value('bug_status', 'UNCONFIRMED') FILTER html %] ステータス
+      を有効にする:</label>
   </th>
-  <td>
-    自動的に
-    <a href="page.cgi?id=fields.html#status">[% display_value("bug_status", "UNCONFIRMED") FILTER html %]</a>
-    状態を解除する投票数を入力してください<br>
-    <input size="5" maxlength="5" name="votestoconfirm" 
-           value="[% product.votestoconfirm FILTER html %]">
+  <td><input type="checkbox" id="allows_unconfirmed" name="allows_unconfirmed"
+             [% ' checked="checked"' IF product.allows_unconfirmed %]
+             [% IF Param('usevotes') %]
+               onchange="bz_toggleClass('votes_to_confirm_container', 
+                                        'bz_default_hidden')"
+             [% END %]>
+    [% IF Param('usevotes') %]
+      <span id="votes_to_confirm_container"
+            [% ' class="bz_default_hidden"' IF !product.allows_unconfirmed %]>
+        ...そして、
+        <input size="3" maxlength="5" name="votestoconfirm" id="votestoconfirm"
+               value="[% product.votes_to_confirm FILTER html %]">
+        票を得た [% terms.bugs %] を自動的に承認する。
+        (0 に設定すると [% terms.bugs %] の自動承認が無効になります。)
+      </span>
+    [% END %]
   </td>
 </tr>
+
+[% IF Param('usevotes') %]
+  <tr>
+    <th align="right">一人当たりの最大投票数:</th>
+    <td><input size="5" maxlength="5" name="votesperuser" id="votesperuser"
+               value="[% product.votesperuser FILTER html %]">
+    </td>
+  </tr>
+  <tr>
+    <th align="right">
+      一人が一つの [% terms.bug %] に投票可能な票数: 
+    </th>
+    <td><input size="5" maxlength="5" name="maxvotesperbug" id="maxvotesperbug"
+               value="[% product.maxvotesperbug FILTER html %]">
+    </td>
+  </tr>
+[% END %]

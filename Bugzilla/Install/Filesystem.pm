@@ -36,6 +36,7 @@ use Bugzilla::Util;
 use File::Find;
 use File::Path;
 use File::Basename;
+use File::Copy qw(move);
 use IO::File;
 use POSIX ();
 
@@ -44,6 +45,7 @@ our @EXPORT = qw(
     update_filesystem
     create_htaccess
     fix_all_file_permissions
+    fix_file_permissions
 );
 
 # This looks like a constant because it effectively is, but
@@ -129,7 +131,6 @@ sub FILESYSTEM {
         'docs/*/README.docs'   => { perms => $owner_readable },
         "$datadir/bugzilla-update.xml" => { perms => $ws_writeable },
         "$datadir/params" => { perms => $ws_writeable },
-        "$datadir/mailer.testfile" => { perms => $ws_writeable },
         "$extensionsdir/create.pl" => { perms => $owner_executable },
     );
 
@@ -212,6 +213,12 @@ sub FILESYSTEM {
     my %create_files = (
         "$datadir/extensions/additional" => { perms    => $ws_readable, 
                                               contents => '' },
+        # We create this file so that it always has the right owner
+        # and permissions. Otherwise, the webserver creates it as
+        # owned by itself, which can cause problems if jobqueue.pl
+        # or something else is not running as the webserver or root.
+        "$datadir/mailer.testfile" => { perms    => $ws_writeable,
+                                        contents => '' },
     );
 
     # Each standard stylesheet has an associated custom stylesheet that
@@ -347,6 +354,13 @@ sub update_filesystem {
         }
     }
 
+    # Move the testfile if we can't write to it, so that we can re-create
+    # it with the correct permissions below.
+    my $testfile = "$datadir/mailer.testfile";
+    if (-e $testfile and !-w $testfile) {
+        _rename_file($testfile, "$testfile.old");
+    }
+
     _create_files(%files);
     if ($params->{index_html}) {
         _create_files(%{$fs->{index_html}});
@@ -439,6 +453,17 @@ sub create_htaccess {
         $webdot = new IO::File("$webdot_dir/.htaccess", 'w') || die $!;
         print $webdot $webdot_data;
         $webdot->close;
+    }
+}
+
+sub _rename_file {
+    my ($from, $to) = @_;
+    print "Renaming $from to $to...\n";
+    if (-e $to) {
+        warn "$to already exists, not moving\n";
+    }
+    else {
+        move($from, $to) or warn $!;
     }
 }
 
@@ -538,12 +563,20 @@ sub _update_old_charts {
     } 
 }
 
+sub fix_file_permissions {
+    my ($file) = @_;
+    return if ON_WINDOWS;
+    my $perms = FILESYSTEM()->{all_files}->{$file}->{perms};
+    # Note that _get_owner_and_group is always silent here.
+    my ($owner_id, $group_id) = _get_owner_and_group();
+    _fix_perms($file, $owner_id, $group_id, $perms);
+}
 
 sub fix_all_file_permissions {
     my ($output) = @_;
 
-    my $ws_group = Bugzilla->localconfig->{'webservergroup'};
-    my $group_id = _check_web_server_group($ws_group, $output);
+    # _get_owner_and_group also checks that the webservergroup is valid.
+    my ($owner_id, $group_id) = _get_owner_and_group($output);
 
     return if ON_WINDOWS;
 
@@ -553,9 +586,6 @@ sub fix_all_file_permissions {
     my %recurse_dirs = %{$fs->{recurse_dirs}};
 
     print get_text('install_file_perms_fix') . "\n" if $output;
-
-    my $owner_id = POSIX::getuid();
-    $group_id = POSIX::getgid() unless defined $group_id;
 
     foreach my $dir (sort keys %dirs) {
         next unless -d $dir;
@@ -593,6 +623,16 @@ sub fix_all_file_permissions {
     _fix_cvs_dirs($owner_id, '.');
 }
 
+sub _get_owner_and_group {
+    my ($output) = @_;
+    my $group_id = _check_web_server_group($output);
+    return () if ON_WINDOWS;
+
+    my $owner_id = POSIX::getuid();
+    $group_id = POSIX::getgid() unless defined $group_id;
+    return ($owner_id, $group_id);
+}
+
 # A helper for fix_all_file_permissions
 sub _fix_cvs_dirs {
     my ($owner_id, $dir) = @_;
@@ -609,17 +649,22 @@ sub _fix_cvs_dirs {
 sub _fix_perms {
     my ($name, $owner, $group, $perms) = @_;
     #printf ("Changing $name to %o\n", $perms);
-    chown $owner, $group, $name
-        or warn install_string('chown_failed', { path => $name, 
-                                                 error => $! }) . "\n";
+
+    # The webserver should never try to chown files.
+    if (Bugzilla->usage_mode == USAGE_MODE_CMDLINE) {
+        chown $owner, $group, $name
+            or warn install_string('chown_failed', { path => $name, 
+                                                     error => $! }) . "\n";
+    }
     chmod $perms, $name
         or warn install_string('chmod_failed', { path => $name, 
                                                  error => $! }) . "\n";
 }
 
 sub _check_web_server_group {
-    my ($group, $output) = @_;
+    my ($output) = @_;
 
+    my $group    = Bugzilla->localconfig->{'webservergroup'};
     my $filename = bz_locations()->{'localconfig'};
     my $group_id;
 
@@ -702,5 +747,11 @@ Params:      C<$output> - C<true> if you want this function to print
                  out information about what it's doing.
 
 Returns:     nothing
+
+=item C<fix_file_permissions>
+
+Given the name of a file, its permissions will be fixed according to
+how they are supposed to be set in Bugzilla's current configuration.
+If it fails to set the permissions, a warning will be printed to STDERR.
 
 =back

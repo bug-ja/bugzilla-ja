@@ -1,0 +1,66 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Dave Miller <justdave@bugzilla.org>
+  #                 Frederic Buclin <LpSolit@gmail.com>
+  #%]
+
+[% 
+   title = "全般"
+   desc = "必須ではない全般的なその他の設定です。" 
+%]
+
+[% param_descs = {
+  maintainer => "この ${terms.Bugzilla} サイトのメンテナのメールアドレス",
+
+  docs_urlbase => "すべての $terms.Bugzilla ドキュメント URL の先頭に入る" _
+                  "共通の文字列。絶対 URL や urlbase に対する相対 URL が指定可能です。" _
+                  "空白にするとすべてのドキュメントへのリンクが無効化されます。" _
+                  "'%lang%' はユーザに最適な言語 (存在すれば) に置換されます。",
+
+  utf8 => "UTF-8 (Unicode) エンコーディングを ${terms.Bugzilla} のすべてのテキストで" _
+          "利用します。新規インストールでは文字コード問題を回避するためにこれを設定" _
+          "すべきです。<strong>既存のデータベースに関しては、<code>contrib/recode.pl</code>" _
+          "を利用して文字コードを UTF-8 に変換してから(注: Bugzilla-ja 2.20以前に対して" _
+          "正常に動作するかは保証されませんので、このスクリプトを利用しないでください。)" _
+          "、このオプションを有効にしてください。</strong><br><br>注: このオプションを有効にしたら" _
+          "すぐに checksetup.pl を実行してください。",
+
+  shutdownhtml => "これが空白でなければ、$terms.Bugzilla は完全に利用できなくなり、" _
+                  "それぞれの $terms.Bugzilla ページの代わりにこのテキストが表示されます。",
+
+  announcehtml => "これが空白でなければ、$terms.Bugzilla はここに設定されているものを" _
+                  "すべての HTML ページの上部に表示します。ここに設定した HTML はまったく" _
+                  "何も処理されずに利用されます。<tt>&lt;div&gt;</tt> で囲むことを推奨" _
+                  "します。divに<em>id=message</em>を設定すれば、赤い囲みの緑表示、" _
+                  "<em>class=bz_private</em>を設定すれば赤い背景の暗赤表示になります。" _
+                  "<tt>skins/standard/global.css</tt>や<tt>skins/custom/global.css</tt>" _
+                  "で定義されているものがすべて動作します。中心寄せにしたい場合、" _
+                  "<em>style=\"text-align: center;\"</em> を利用してください。",
+
+  upgrade_notification => "<p>$terms.Bugzilla は新リリースが存在するかの通知を表示できます。" _
+                          "通知は $terms.Bugzilla のホームページに管理者のみに表示されます。</p>" _
+                          "<ul><li>'development_snapshot' では、trunkの最新リリース (開発" _
+                          "版スナップショットなど) が通知されます。</li>" _
+                          "<li>'latest_stable_release' では、最新の安定版リリースが通知" _
+                          "されます。このバージョンはあなたが利用しているものと異なる可能性があります。</li>" _
+                          "<li>'stable_branch_release' では、あなたが利用しているバージョン" _
+                          "の最新版について通知します。リリース候補版を利用している場合、" _
+                          "最新のリリース候補版について通知されます。</li>" _
+                          "<li>'disabled' では、まったく何も通知しませんが、外部サーバへの" _
+                          "接続を行わなくなります。</li></ul>" 
+} %]

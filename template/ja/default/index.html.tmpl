@@ -98,7 +98,7 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
       <p class="notice">
         このメッセージは管理者権限を持つログインユーザにのみ表示されます。
         このメッセージの表示に関しては、
-      <a href="editparams.cgi?section=core#upgrade_notification">パラメータ</a> 
+      <a href="editparams.cgi?section=general#upgrade_notification">パラメータ</a> 
         ページから設定できます。</p>
     [% ELSIF release.error == "cannot_download" %]
       <p>ローカルに XML ファイル '[% release.xml_file FILTER html %]' を作成できません。

@@ -19,18 +19,14 @@
   #                 Joel Peshkin <bugreport@peshkin.net>
   #                 Jacob Steenhagen <jake@bugzilla.org>
   #                 Vlad Dascalu <jocuri@softhome.net>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
 
 [%# INTERFACE:
-  # gid: number. The group ID.
-  # name: string. The name of the group.
-  # description: string. The description of the group.
-  # hasusers: boolean int. True if the group includes users in it.
-  # hasbugs: boolean int. True if the group includes bugs in it.
-  # hasproduct: boolean int. True if the group is binded to a product.
-  # hasflags: boolean int. True if the group is used by a flag type.
-  # shared_queries: int. Number of saved searches being shared with this group.
-  # buglist: string. The list of bugs included in this group.
+  # group: A Bugzilla::Group object representing the group that is
+  #        about to be deleted.
+  # shared_queries: int; The number of queries being shared with this
+  #                 group.
   #%]
 
 
@@ -46,47 +42,91 @@
     <th>説明</th>
   </tr>
   <tr>
-    <td>[% gid FILTER html %]</td>
-    <td>[% name FILTER html %]</td>
-    <td>[% description FILTER html_light %]</td>
+    <td>[% group.id FILTER html %]</td>
+    <td>[% group.name FILTER html %]</td>
+    <td>[% group.description FILTER html_light %]</td>
   </tr>
 </table>
 
 <form method="post" action="editgroups.cgi">
-  [% IF hasusers %]
-    <p><b>まだこのグループに所属しているユーザが居ます。
+  [% IF group.members_non_inherited.size %]
+    <p><b>まだこのグループに所属しているユーザが
+    [% group.members_non_inherited.size FILTER html %] 人居ます。
     これらのユーザが所属している間は削除することができません。</b>
 
-    <br><a href="editusers.cgi?action=list&amp;groupid=[% gid FILTER html %]&amp;grouprestrict=1">該当するユーザを表示する</a>
-     - <input type="checkbox" name="removeusers">このグループから全てのユーザを削除する。</p>
+    <br><a href="editusers.cgi?action=list&amp;groupid=
+                 [%- group.id FILTER url_quote %]&amp;grouprestrict=1">該当するユーザを表示する</a>
+     - <label><input type="checkbox" name="removeusers">このグループから全てのユーザを削除する。</label></p>
   [% END %]
 
-  [% IF hasbugs %]
-    <p><b>まだこのグループからのみ閲覧可能な [% terms.bug %] レポートがあります。
+  [% IF group.bugs.size %]
+    <p><b>まだこのグループからのみ閲覧可能な [% terms.bug %] レポートが
+    [% group.bugs.size FILTER html %] [%+ terms.bug %] 件あります。
     このグループを利用している [% terms.bugs %] がある間は削除することができません。</b>
 
-    <br><a href="buglist.cgi?bug_id=[% buglist FILTER html %]">該当する [% terms.bugs %] を表示する</a>
-     - <input type="checkbox" name="removebugs">このグループから全ての [% terms.bugs %] を削除する。</p>
+    <br><a href="buglist.cgi?field0-0-0=bug_group&amp;type0-0-0=equals&amp;value0-0-0=
+                 [%- group.name FILTER url_quote %]">該当する [% terms.bugs %] を表示する</a>
+     - <label><input type="checkbox" name="removebugs">このグループから全ての [% terms.bugs %] を削除する。</label></p>
 
     <p><b>※注意:</b> このチェックボックスを使うことで、該当する [% terms.bugs %]
     を公開することは可能です。しかし、このチェックボックスをオンにする前に、
     このグループの [% terms.bugs %] を全て確認することを <b>強く</b> 推奨します。</p>
   [% END %]
 
-  [% IF hasproduct %]
-    <p><b>このグループは <U>[% name FILTER html %]</U> に関連づけられています。
-    このグループがプロダクトに関連づけられている間は削除することができません。</b>
+  [% IF group.products.size %]
+    <p><b>このグループは以下のプロダクトに関連付けられています:</b></p>
+    [% SET any_hidden = 0 %]
+    <ul>
+      [% FOREACH data = group.products %]
 
-    <br><input type="checkbox" name="unbind">このグループを強制的に削除し、
-    プロダクト <U>[% name FILTER html %]</U> を公開します。</p>
+        [% SET active = [] %]
+        [% FOREACH control = data.controls.keys.sort %]
+          [% NEXT IF !data.controls.$control %]
+          [% IF control == 'othercontrol' OR control == 'membercontrol' %]
+            [% SWITCH data.controls.$control %]
+              [% CASE constants.CONTROLMAPMANDATORY %]
+                [% SET type = "Mandatory" %]
+              [% CASE constants.CONTROLMAPSHOWN %]
+                [% SET type = "Shown" %]
+              [% CASE constants.CONTROLMAPDEFAULT %]
+                [% SET type = "Default" %]
+            [% END %]
+            [% active.push("$control: $type") %]
+          [% ELSE %]
+            [% active.push(control) %]
+          [% END %]
+        [% END %]
+
+        [% SET hidden = 0 %]
+        [% IF data.controls.othercontrol == constants.CONTROLMAPMANDATORY
+              AND data.controls.membercontrol == constants.CONTROLMAPMANDATORY
+              AND data.controls.entry 
+        %]
+          [% SET hidden = 1 %]
+        [% END %]
+
+        <li><a href="editproducts.cgi?action=editgroupcontrols&amp;product=
+                    [%- data.product.name FILTER url_quote %]">
+          [%- data.product.name FILTER html %]</a>
+          ([% active.join(', ') FILTER html %])
+          [% IF hidden %]
+            <strong>警告: このプロダクトは現在隠されています。
+            このグループを削除すると公開されるようになります。
+            </strong>
+          [% END %]</li>
+      [% END %]
+    </ul>
+    <p><label><input type="checkbox" name="unbind">このグループを削除し、
+      関連する制御項目を削除します。</label></p>
   [% END %]
 
-  [% IF hasflags %]
+  [% IF group.flag_types.size %]
     <p><b>このグループで承認可能なフラグタイプがあります。
     このグループがフラグタイプから利用されている間は削除することができません。</b>
 
-    <br><a href="editflagtypes.cgi?action=list&amp;group=[% gid FILTER html %]">該当のフラグタイプを表示する</a>
-     - <input type="checkbox" name="removeflags">このグループから全てのフラグタイプを削除する。</p>
+    <br><br><a href="editflagtypes.cgi?action=list&amp;group=
+                 [%- group.id FILTER url_quote %]">該当のフラグタイプを表示する</a>
+     - <label><input type="checkbox" name="removeflags">このグループから全てのフラグタイプを削除する。</label></p>
   [% END %]
 
   [% IF shared_queries %]
@@ -105,7 +145,9 @@
   <h2>確認</h2>
 
   <p>本当にこのグループを削除してもよろしいですか?</p>
-  [% IF (hasusers || hasbugs || hasproduct || hasflags) %]
+  [% IF group.users.size || group.bugs.size || group.products.size 
+        || group.flags.size
+  %]
     <p><b>上記のチェックボックス全てにチェックを入れるか、
           指摘された問題を解決しなければ処理できません。</b></p>
   [% END %]
@@ -113,7 +155,7 @@
   <p>
     <input type="submit" id="delete" value="はい、削除します">
     <input type="hidden" name="action" value="delete">
-    <input type="hidden" name="group" value="[% gid FILTER html %]">
+    <input type="hidden" name="group" value="[% group.id FILTER html %]">
     <input type="hidden" name="token" value="[% token FILTER html %]">
   </p>
 </form>

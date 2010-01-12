@@ -77,6 +77,12 @@
       that login name.
     [% END %]
 
+  [% ELSIF error == "account_locked" %]
+    [% title = "Account Locked" %]
+    Your IP ([% ip_addr FILTER html %]) has been locked out of this
+    account until [% unlock_at FILTER time %], as you have
+    exceeded the maximum number of login attempts.
+
   [% ELSIF error == "alias_has_comma_or_space" %]
     [% title = "Invalid Characters In Alias" %]
     The alias you entered, <em>[% alias FILTER html %]</em>,
@@ -154,7 +160,11 @@
     [% IF object == "administrative_pages" %]
       administrative pages
     [% ELSIF object == "attachment" %]
-      this attachment
+      [% IF attach_id %]
+        attachment #[% attach_id FILTER html %]
+      [% ELSE %]
+        this attachment
+      [% END %]
     [% ELSIF object == "bugs" %]
       [%+ terms.bugs %]
     [% ELSIF object == "charts" %]
@@ -672,9 +682,10 @@
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = "Cannot Delete Group" %]
-    The <em>[% name FILTER html %]</em> group cannot be deleted because
+    The <em>[% group.name FILTER html %]</em> group cannot be deleted because
     there are
-    <a href="editgroups.cgi?action=del&amp;group=[% gid FILTER url_quote %]">records</a>
+    <a href="editgroups.cgi?action=del&amp;group=
+             [%- group.id FILTER url_quote %]">records</a>
     in the database which refer to it. All references to this group must
     be removed before you can remove it.
 
@@ -962,6 +973,15 @@
   [% ELSIF error == "invalid_username_or_password" %]
     [% title = "Invalid Username Or Password" %]
     The username or password you entered is not valid.
+    [%# People get two login attempts before being warned about
+      # being locked out.
+      #%]
+    [% IF remaining <=  2 %]
+      If you do not enter the correct password after 
+      [%+ remaining FILTER html %] more attempt(s), you will be
+      locked out of this account for 
+      [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] minutes.
+    [% END %]
 
   [% ELSIF error == "json_rpc_post_only" %]
     For security reasons, you may only use JSON-RPC with the POST
@@ -1400,18 +1420,20 @@
     characters long.
 
   [% ELSIF error == "quicksearch_unknown_field" %]
-    [% title = "Unknown QuickSearch Field" %]
-    [% IF fields.unique.size == 1 %]
-      Field <code>[% fields.first FILTER html %]</code> is not a known field.
-    [% ELSE %]
-      Fields
-      [% FOREACH field = fields.unique.sort %]
-         <code>[% field FILTER html %]</code>
-         [% ', ' UNLESS loop.last() %]
-      [% END %]
-      are not known fields.
+    [% title = "QuickSearch Error" %]
+    There is a problem with your search:
+    [% FOREACH field = unknown %]
+      <p><code>[% field FILTER html %]</code> is not a valid field name.</p>
     [% END %]
-    The legal field names are <a href="page.cgi?id=quicksearchhack.html">listed here</a>.
+    [% FOREACH field = ambiguous.keys %]
+      <p><code>[% field FILTER html %]</code> matches more than one field:
+        [%+ ambiguous.${field}.join(', ') FILTER html %]</p>
+    [% END %]
+
+    [% IF unknown.size %]
+      <p>The legal field names are
+        <a href="page.cgi?id=quicksearchhack.html">listed here</a>.</p>
+    [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
     [% title = "Illegal Reassignment" %]
@@ -1739,6 +1761,10 @@
     flagtype
   [% ELSIF class == "Bugzilla::Field" %]
     field
+  [% ELSIF class == "Bugzilla::Group" %]
+    group
+  [% ELSIF class == "Bugzilla::Product" %]
+    product
   [% ELSIF class == "Bugzilla::Search::Saved" %]
     saved search
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]
