@@ -1829,6 +1829,11 @@
     <tt>[% name FILTER html %]</tt> は登録されていないか、
     あなたのアカウントにこの [% jawords.user FILTER html %] を閲覧する権限がありません。
 
+  [% ELSIF error == "user_match_too_many" %]
+    [% title = "すべてに合致するエントリはありません" %]
+    [% terms.Bugzilla %] は [% fields.join(', ') FILTER html %] フィールドに入力された、
+    ひとつ以上の名前・メールアドレスのすべてに合致するエントリを見つけられませんでした。
+
   [% ELSIF error == "user_not_insider" %]
     [% title = "このユーザは Insidergroup にいません" %]
     申し訳ありませんが、あなたはコメントや添付のプライベートフラグを変更できません。

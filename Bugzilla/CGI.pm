@@ -110,6 +110,7 @@ sub new {
 sub canonicalise_query {
     my ($self, @exclude) = @_;
 
+    $self->convert_old_params();
     # Reconstruct the URL by concatenating the sorted param=value pairs
     my @parameters;
     foreach my $key (sort($self->param())) {
@@ -134,6 +135,17 @@ sub canonicalise_query {
     return join("&", @parameters);
 }
 
+sub convert_old_params {
+    my $self = shift;
+
+    # bugidtype is now bug_id_type.
+    if ($self->param('bugidtype')) {
+        my $value = $self->param('bugidtype') eq 'exclude' ? 'nowords' : 'anyexact';
+        $self->param('bug_id_type', $value);
+        $self->delete('bugidtype');
+    }
+}
+
 sub clean_search_url {
     my $self = shift;
     # Delete any empty URL parameter.
@@ -153,9 +165,6 @@ sub clean_search_url {
         }
     }
 
-    # Delete certain parameters if the associated parameter is empty.
-    $self->delete('bugidtype')  if !$self->param('bug_id');
-
     # Delete leftovers from the login form
     $self->delete('Bugzilla_remember', 'GoAheadAndLogIn');
 
@@ -173,7 +182,8 @@ sub clean_search_url {
     # chfieldto is set to "Now" by default in query.cgi. But if none
     # of the other chfield parameters are set, it's meaningless.
     if (!defined $self->param('chfieldfrom') && !$self->param('chfield')
-        && !defined $self->param('chfieldvalue'))
+        && !defined $self->param('chfieldvalue') && $self->param('chfieldto')
+        && lc($self->param('chfieldto')) eq 'now')
     {
         $self->delete('chfieldto');
     }

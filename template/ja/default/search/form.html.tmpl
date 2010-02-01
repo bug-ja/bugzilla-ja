@@ -535,9 +535,9 @@ function doOnSelectProduct(selectmode) {
 <table>
   <tr>
     <td>
-      <select name="bugidtype">
-        <option value="include"[% " selected" IF default.bugidtype.0 == "include" %]>次のバグの中から</option>
-        <option value="exclude"[% " selected" IF default.bugidtype.0 == "exclude" %]>次のバグ以外から</option>
+      <select name="bug_id_type">
+        <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>次のバグの中から</option>
+        <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>次のバグ以外から</option>
       </select>
       <label for="bug_id">[% terms.bugs %] 番号</label>:
     </td>
@@ -623,11 +623,12 @@ function doOnSelectProduct(selectmode) {
     <select name="[% sel.name %]" id="[% sel.name %]"
             multiple="multiple" size="[% sel.size %]">
       [% FOREACH value = ${sel.name} %]
-      [% IF value.id %]
-        [%# This only applies for Resolution really %]
-          <option value="[% value.name OR '---' FILTER html %]"
-            [% " selected" IF lsearch(default.${sel.name}, value.name) != -1 %]>
-            [% display_value(sel.name, value.name) FILTER html %]
+        [% IF value.id %]
+          [%# This only applies for Resolution really %]
+          [% v = value.name OR '---' -%]
+          <option value="[% v FILTER html %]"
+            [% " selected" IF lsearch(default.${sel.name}, v) != -1 %]>
+             [% display_value(sel.name, value.name) FILTER html %]
           </option>
         [% ELSE %]
           <option value="[% value OR '---' FILTER html %]"

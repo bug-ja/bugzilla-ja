@@ -535,9 +535,9 @@ function doOnSelectProduct(selectmode) {
 <table>
   <tr>
     <td>
-      <select name="bugidtype">
-        <option value="include"[% " selected" IF default.bugidtype.0 == "include" %]>Only include</option>
-        <option value="exclude"[% " selected" IF default.bugidtype.0 == "exclude" %]>Exclude</option>
+      <select name="bug_id_type">
+        <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>Only include</option>
+        <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>Exclude</option>
       </select>
       <label for="bug_id">[% terms.bugs %] numbered</label>:
     </td>
@@ -624,10 +624,11 @@ function doOnSelectProduct(selectmode) {
     <select name="[% sel.name %]" id="[% sel.name %]"
             multiple="multiple" size="[% sel.size %]">
       [% FOREACH value = ${sel.name} %]
-      [% IF value.id %]
-        [%# This only applies for Resolution really %]
-          <option value="[% value.name OR '---' FILTER html %]"
-            [% " selected" IF lsearch(default.${sel.name}, value.name) != -1 %]>
+        [% IF value.id %]
+          [%# This only applies for Resolution really %]
+          [% v = value.name OR '---' -%]
+          <option value="[% v FILTER html %]"
+            [% " selected" IF lsearch(default.${sel.name}, v) != -1 %]>
             [% display_value(sel.name, value.name) FILTER html %]
           </option>
         [% ELSE %]

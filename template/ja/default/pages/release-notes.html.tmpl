@@ -57,6 +57,39 @@
 
 <h2><a name="v34_point"></a>3.4.x リリースでの更新点</h2>
 
+<h3>3.4.5</h3>
+
+<p>このリリースではひとつのセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.0.10/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下のようないくつかの重要な修正や変更が行われました。</p>
+
+<ul>
+  <li>'Whining' は jobqueue.pl が有効な場合に失敗していました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=530270">[% terms.Bug %] 530270</a>)
+  </li>
+  <li>Whine メールで担当者フィールドが空白になっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=511216">[% terms.Bug %] 511216</a>)
+  </li>
+  <li>管理者が認証形式に "Env" (環境変数) を利用していても、editusers.cgi 経由で
+    アカウントを正常に作成できるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=483987">[% terms.Bug %] 483987</a>)
+  </li>
+  <li>[% terms.Bug %] メールの中でコメントが追加された時間を表示するときに、
+    変更者のタイムゾーンでなく、メール受信ユーザのタイムゾーンを利用するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=534587">[% terms.Bug %] 534587</a>)
+  </li>
+  <li>コメント中の "[% terms.bug %] 1234" が "[% terms.bug %]" と番号の間で改行されたとき、
+    リンクにならない問題がありました。
+   (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=514703">[% terms.Bug %] 514703</a>)
+  </li>
+  <li>Windows で checksetup.pl を実行したときに、OCI.dll に関するエラーが表示されなく
+    なりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=480968">[% terms.Bug %] 480968</a>)
+  </li>
+</ul>
+
 <h3>3.4.4</h3>
 
 <p>このリリースでは一つのセキュリティー問題への修正を含みます。

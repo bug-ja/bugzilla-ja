@@ -194,6 +194,7 @@ sub init {
     my $self = shift;
     my @fields = @{ $self->{'fields'} || [] };
     my $params = $self->{'params'};
+    $params->convert_old_params();
     $self->{'user'} ||= Bugzilla->user;
     my $user = $self->{'user'};
 
@@ -290,14 +291,6 @@ sub init {
         }
     }
 
-    if ($params->param('bug_id')) {
-        my $type = "anyexact";
-        if ($params->param('bugidtype') && $params->param('bugidtype') eq 'exclude') {
-            $type = "nowords";
-        }
-        push(@specialchart, ["bug_id", $type, join(',', $params->param('bug_id'))]);
-    }
-
     # If the user has selected all of either status or resolution, change to
     # selecting none. This is functionally equivalent, but quite a lot faster.
     # Also, if the status is __open__ or __closed__, translate those
@@ -305,7 +298,9 @@ sub init {
     if ($params->param('bug_status')) {
         my @bug_statuses = $params->param('bug_status');
         # Also include inactive bug statuses, as you can query them.
-        my @legal_statuses = @{Bugzilla::Field->new({name => 'bug_status'})->legal_values};
+        my @legal_statuses =
+          map {$_->name} @{Bugzilla::Field->new({name => 'bug_status'})->legal_values};
+
         if (scalar(@bug_statuses) == scalar(@legal_statuses)
             || $bug_statuses[0] eq "__all__")
         {
