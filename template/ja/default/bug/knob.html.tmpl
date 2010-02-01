@@ -74,8 +74,12 @@
 </div>
 
 <script type="text/javascript">
-  var close_status_array = new Array("[% closed_status_array.join('", "') FILTER replace(',$', '')
-                                                                FILTER none %]");
+  var close_status_array = [
+    [% FOREACH status = bug.choices.bug_status %]
+      [% NEXT IF status.is_open %]
+      '[% status.name FILTER js %]'[% ',' UNLESS loop.last %]
+    [% END %]
+  ];
   YAHOO.util.Dom.removeClass('dup_id_discoverable', 'bz_default_hidden');
   hideEditableField( "dup_id_container", "dup_id", 'dup_id_edit_action',
                      'dup_id', '[% bug.dup_id FILTER js %]' )
