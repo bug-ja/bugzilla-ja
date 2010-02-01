@@ -31,16 +31,6 @@
       editable = bug.choices.bug_status.size > 1
   %]
 
-  <span id="resolution_settings">
-  [% PROCESS bug/field.html.tmpl
-      no_tds = 1
-      field  = bug_fields.resolution
-      value  = bug.resolution
-      override_legal_values = bug.choices.resolution
-      editable = bug.check_can_change_field('resolution', bug.resolution, 1)
-  %]
-  </span>
-
   [% IF bug.check_can_change_field('dup_id', 0, 1) %]
     <noscript><br></noscript>
     <span id="duplicate_settings">
@@ -56,6 +46,19 @@
       の
     </span>
     <noscript>重複</noscript>
+  [% END %]
+
+  <span id="resolution_settings">
+  [% PROCESS bug/field.html.tmpl
+      no_tds = 1
+      field  = bug_fields.resolution
+      value  = bug.resolution
+      override_legal_values = bug.choices.resolution
+      editable = bug.check_can_change_field('resolution', bug.resolution, 1)
+  %]
+  </span>
+
+  [% IF bug.check_can_change_field('dup_id', 0, 1) %]
     <div id="dup_id_discoverable" class="bz_default_hidden">
       <a href="#" id="dup_id_discoverable_action">重複にする</a>
     </div>
