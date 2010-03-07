@@ -18,12 +18,24 @@
 package Bugzilla::WebService::Server;
 use strict;
 
+use Bugzilla::Error;
+use Bugzilla::Util qw(datetime_from);
+
 sub handle_login {
     my ($self, $class, $method, $full_method) = @_;
     eval "require $class";
+    ThrowCodeError('unknown_method', {method => $full_method}) if $@;
     return if ($class->login_exempt($method) 
                and !defined Bugzilla->input_params->{Bugzilla_login});
     Bugzilla->login();
+}
+
+sub datetime_format_inbound {
+    my ($self, $time) = @_;
+    
+    my $converted = datetime_from($time, Bugzilla->local_timezone);
+    $time = $converted->ymd() . ' ' . $converted->hms();
+    return $time
 }
 
 1;

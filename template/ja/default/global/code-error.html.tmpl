@@ -470,6 +470,9 @@
        あなたが何をしたいかわかりません。
     [% END %]
 
+  [% ELSIF error == "unknown_method" %]
+    要求されたメソッド '[% method FILTER html %]' が見つかりませんでした。
+
   [% ELSIF error == "usage_mode_invalid" %]
     '[% invalid_usage_mode FILTER html %]' は無効な利用方法です。
 

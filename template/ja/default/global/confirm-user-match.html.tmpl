@@ -58,7 +58,7 @@
 [% IF matchsuccess == 1 %]
   [% PROCESS global/header.html.tmpl title="検索結果の照合" %]
 
-[% USE Bugzilla %]
+  [% USE Bugzilla %]
 
   <form method="post" 
   [% IF script -%]
@@ -86,9 +86,13 @@
   [% PROCESS global/header.html.tmpl title="Match Failed" %]
   <p>
     [% terms.Bugzilla %] は前のページであなたが入力したひとつ以上の名前、
-    もしくはメールアドレスに合致するアカウントを見つけられませんでした。<br>
-    前のページに戻って、他の名前やメールアドレスで試してください。
+    もしくはメールアドレスに合致するアカウントを見つけられませんでした。
+    [% IF !user.id %]
+      <b>注: あなたは現在ログアウトしています。
+      メールアドレスに対する完全一致検索のみが利用できます。</b>
+    [% END %]
   </p>
+  <p>前のページに戻って、他の名前やメールアドレスで試してください。</p>
 [% END %]
 
   <table border="0">

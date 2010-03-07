@@ -188,6 +188,18 @@ sub buglist_columns {
     $columns->{'example'} = { 'name' => 'bugs.delta_ts' , 'title' => 'Example' };
 }
 
+sub bugmail_recipients {
+    my ($self, $args) = @_;
+    my $recipients = $args->{recipients};
+    my $bug = $args->{bug};
+    if ($bug->id == 1) {
+        # Uncomment the line below to add the second user in the Bugzilla
+        # database to the recipients list of every bugmail sent out about
+        # bug 1 as though that user were on the CC list.
+        #$recipients->{2}->{+REL_CC} = 1;
+    }
+}
+
 sub colchange_columns {
     my ($self, $args) = @_;
     
@@ -244,6 +256,51 @@ sub flag_end_of_update {
     # Uncomment this line to see $result in your webserver's error log whenever
     # you update flags.
     # warn $result;
+}
+
+sub group_before_delete {
+    my ($self, $args) = @_;
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+
+    my $group = $args->{'group'};
+    my $group_id = $group->id;
+    # Uncomment this line to see a line in your webserver's error log whenever
+    # you file a bug.
+    # warn "Group $group_id is about to be deleted!";
+}
+
+sub group_end_of_create {
+    my ($self, $args) = @_;
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+    my $group = $args->{'group'};
+
+    my $group_id = $group->id;
+    # Uncomment this line to see a line in your webserver's error log whenever
+    # you create a new group.
+    #warn "Group $group_id has been created!";
+}
+
+sub group_end_of_update {
+    my ($self, $args) = @_;
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+
+    my ($group, $changes) = @$args{qw(group changes)};
+
+    foreach my $field (keys %$changes) {
+        my $used_to_be = $changes->{$field}->[0];
+        my $now_it_is  = $changes->{$field}->[1];
+    }
+
+    my $group_id = $group->id;
+    my $num_changes = scalar keys %$changes;
+    my $result = 
+        "There were $num_changes changes to fields on group $group_id.";
+    # Uncomment this line to see $result in your webserver's error log whenever
+    # you update a group.
+    #warn $result;
 }
 
 sub install_before_final_checks {

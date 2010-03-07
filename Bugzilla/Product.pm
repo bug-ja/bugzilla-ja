@@ -411,7 +411,9 @@ sub remove_from_db {
                                      WHERE series_categories.name = ?',
                                     undef, $self->name);
 
-        $dbh->do('DELETE FROM series WHERE ' . $dbh->sql_in('series_id', $series_ids));
+        if (scalar @$series_ids) {
+            $dbh->do('DELETE FROM series WHERE ' . $dbh->sql_in('series_id', $series_ids));
+        }
 
         # If no subcategory uses this product name, completely purge it.
         my $in_use =
@@ -909,6 +911,17 @@ sub check_product {
     unless ($product) {
         ThrowUserError('product_doesnt_exist',
                        {'product' => $product_name});
+    }
+    return $product;
+}
+
+sub check {
+    my ($class, $params) = @_;
+    $params = { name => $params } if !ref $params;
+    $params->{_error} = 'product_access_denied';
+    my $product = $class->SUPER::check($params);
+    if (!Bugzilla->user->can_access_product($product)) {
+        ThrowUserError('product_access_denied', $params);
     }
     return $product;
 }

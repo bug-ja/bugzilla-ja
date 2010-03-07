@@ -354,6 +354,48 @@ The definition is structured as:
 
 =back
 
+=head2 bugmail_recipients
+
+This allows you to modify the list of users who are going to be receiving
+a particular bugmail. It also allows you to specify why they are receiving
+the bugmail.
+
+Users' bugmail preferences will be applied to any users that you add
+to the list. (So, for example, if you add somebody as though they were
+a CC on the bug, and their preferences state that they don't get email
+when they are a CC, they won't get email.)
+
+This hook is called before watchers or globalwatchers are added to the
+recipient list.
+
+Params:
+
+=over
+
+=item C<bug>
+
+The L<Bugzilla::Bug> that bugmail is being sent about.
+
+=item C<recipients>
+
+This is a hashref. The keys are numeric user ids from the C<profiles>
+table in the database, for each user who should be receiving this bugmail.
+The values are hashrefs. The keys in I<these> hashrefs correspond to
+the "relationship" that the user has to the bug they're being emailed
+about, and the value should always be C<1>. The "relationships"
+are described by the various C<REL_> constants in L<Bugzilla::Constants>.
+
+Here's an example of adding userid C<123> to the recipient list
+as though he were on the CC list:
+
+ $recipients->{123}->{+REL_CC} = 1
+
+(We use C<+> in front of C<REL_CC> so that Perl interprets it as a constant
+instead of as a string.)
+
+=back
+
+
 =head2 colchange_columns
 
 This happens in F<colchange.cgi> right after the list of possible display
@@ -451,6 +493,52 @@ Params:
 =item C<new_flags> - The snapshot of flag summaries after the change. Call
 C<my ($removed, $added) = diff_arrays(old_flags, new_flags)> to get the list of
 changed flags, and search for a specific condition like C<added eq 'review-'>.
+
+=back
+
+=head2 group_before_delete
+
+This happens in L<Bugzilla::Group/remove_from_db>, after we've confirmed
+that the group can be deleted, but before any rows have actually
+been removed from the database. This occurs inside a database
+transaction.
+
+Params:
+
+=over
+
+=item C<group> - The L<Bugzilla::Group> being deleted.
+
+=back
+
+=head2 group_end_of_create
+
+This happens at the end of L<Bugzilla::Group/create>, after all other
+changes are made to the database. This occurs inside a database transaction.
+
+Params:
+
+=over
+
+=item C<group> - The changed L<Bugzilla::Group> object, with all fields set
+to their updated values.
+
+=back
+
+=head2 group_end_of_update
+
+This happens at the end of L<Bugzilla::Group/update>, after all other 
+changes are made to the database. This occurs inside a database transaction.
+
+Params:
+
+=over
+
+=item C<group> - The changed L<Bugzilla::Group> object, with all fields set 
+to their updated values.
+
+=item C<changes> - The hash of changed fields. 
+C<< $changes->{$field} = [$old, $new] >>
 
 =back
 

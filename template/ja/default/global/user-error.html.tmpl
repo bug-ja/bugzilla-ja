@@ -1509,8 +1509,13 @@
     パッチをいくつかに分割して試してください。
 
   [% ELSIF error == "product_access_denied" %]
-    [% jawords.product FILTER html %] '[% product FILTER html %]' は存在しないか、
-    あなたのアカウントにはアクセスする権限がありません。
+    プロダクト
+    [%+ IF id.defined %]
+      id [% id FILTER html %]
+    [% ELSE %]
+      '[% name FILTER html %]'
+    [% END %]
+    は存在しないか、あなたのアカウントにはアクセスする権限がありません。
 
   [% ELSIF error == "product_doesnt_exist" %]
     [% title = BLOCK %] 指定された [% jawords.product FILTER html %] は存在していません [% END %]
@@ -1639,7 +1644,7 @@
 
     [% IF unknown.size %]
       <p>有効なフィールド名は
-        <a href="page.cgi?id=quicksearchhack.html">このリスト</a>で参照できます。</p>
+        <a href="page.cgi?id=quicksearch.html#fields">このリスト</a>で参照できます。</p>
     [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]

@@ -36,33 +36,33 @@
     <td class="admin_links">
       <dl>
         [% class = user.in_group('tweakparams') ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editparams.cgi">パラメータ</a></dt>
+        <dt id="parameters" class="[% class %]"><a href="editparams.cgi">パラメータ</a></dt>
         <dd class="[% class %]">サイトの基本的なパラメータの設定です。
         このサイトへアクセスするための URL や、ユーザ認証の方法、
         [% terms.bug %] のどのフィールドを表示するか、メール通知などでのメール転送の方式、
         チャートや共有された検索などを利用できるユーザグループの選択、
         などの設定が可能です。</dd>
 
-        <dt class="[% class %]"><a href="editsettings.cgi">既定の設定</a></dt>
+        <dt id="preferences" class="[% class %]"><a href="editsettings.cgi">既定の設定</a></dt>
         <dd class="[% class %]">既定のユーザ設定を設定します。
         全てのユーザの既定の設定となる値を設定します。
         ユーザは各自の <a href="userprefs.cgi?tab=settings">設定</a>
         から変更できます。</dd>
 
         [% class = user.in_group('editcomponents') ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="sanitycheck.cgi">整合性確認</a></dt>
+        <dt id="sanitycheck" class="[% class %]"><a href="sanitycheck.cgi">整合性確認</a></dt>
         <dd class="[% class %]">データベースが整合しているかを確認します。
         あなたのデータサイズによりますが、数十分かかることもあります。
         cron job で <tt>sanitycheck.pl</tt> を実行することで自動的に行うこともできます。
         エラーが検出されれば指定されたユーザに警告メールが送信されます。</dd>
 
         [% class = (user.in_group('editusers') || user.can_bless) ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editusers.cgi">ユーザ</a></dt>
+        <dt id="users" class="[% class %]"><a href="editusers.cgi">ユーザ</a></dt>
         <dd class="[% class %]">新しいユーザを登録や既存ユーザを編集できます。
         グループへユーザを追加・削除することもできます (いわゆる "ユーザ権限" です)。</dd>
 
         [% class = (Param('useclassification') && user.in_group('editclassifications')) ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editclassifications.cgi">Classifications</a></dt>
+        <dt id="classifications" class="[% class %]"><a href="editclassifications.cgi">Classifications</a></dt>
         <dd class="[% class %]">同時に大量のプロダクトを運用している場合、
         それらをいくつかの独立したカテゴリに分類することは有益です。
         この機能により、[% terms.bugs %] をユーザが検索や新規登録する時に、
@@ -70,7 +70,7 @@
 
         [% class = (user.in_group('editcomponents')
                     || user.get_products_by_permission("editcomponents").size) ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editproducts.cgi">プロダクト</a></dt>
+        <dt id="products" class="[% class %]"><a href="editproducts.cgi">プロダクト</a></dt>
         <dd class="[% class %]">グループ権限を含めたプロダクトの全ての設定を編集します。
         グループ権限は、あるプロダクトの [% terms.bugs %] へアクセスすることが可能なユーザの定義です。
         また、プロダクト内の特別な定義、<a href="editcomponents.cgi">コンポーネント</a>、
@@ -78,7 +78,7 @@
         <a href="editmilestones.cgi">マイルストーン</a> も直接編集できます。</dd>
 
         [% class = user.in_group('editcomponents') ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editflagtypes.cgi">フラグ</a></dt>
+        <dt id="flags" class="[% class %]"><a href="editflagtypes.cgi">フラグ</a></dt>
         <dd class="[% class %]">フラグは、[% terms.bugs %] や添付につけることができる
         4 状態を持つ編集可能な属性です。状態としては、承認、拒否、要求、未定義があります。
         [% terms.bug %] ごとに必要なだけのフラグを設定でき、
@@ -89,7 +89,7 @@
     <td class="admin_links">
       <dl>
         [% class = user.in_group('admin') ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editfields.cgi">カスタムフィールド</a></dt>
+        <dt id="custom_fields" class="[% class %]"><a href="editfields.cgi">カスタムフィールド</a></dt>
         <dd class="[% class %]">[% terms.Bugzilla %] では、既定では存在しないが、
         独自に必要となったフィールドを定義することができます。
         これらのフィールドは、ほかのフィールドと同じように扱え、[% terms.bugs %] 
@@ -99,29 +99,29 @@
         利用しにくくなることを念頭においてください。これを実行する前に、
         何かほかの手段で要求を満たせないか検討してください。</dd>
 
-        <dt class="[% class %]"><a href="editvalues.cgi">フィールド値</a></dt>
+        <dt id="field_values" class="[% class %]"><a href="editvalues.cgi">フィールド値</a></dt>
         <dd class="[% class %]">定義されたリストから選択されるべきフィールドの、
         有効な値を定義します。ここでは、いくつかのタイプのカスタムフィールドについても、
         有効な値を定義します。</dd>
 
-        <dt class="[% class %]"><a href="editworkflow.cgi">[%terms.Bug %] ステータスワークフロー</a></dt>
+        <dt id="status_workflow" class="[% class %]"><a href="editworkflow.cgi">[%terms.Bug %] ステータスワークフロー</a></dt>
         <dd class="[% class %]">ワークフローを変更、初期 [% terms.bug %] 状態の選択を行います。
         [% terms.bug %] を作成した時に有効なステータスや、既存の [% terms.bugs %] について、
         許される [% terms.bug %] のステータス遷移を設定します。</dd>
 
         [% class = user.in_group('creategroups') ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editgroups.cgi">グループ</a></dt>
+        <dt id="groups" class="[% class %]"><a href="editgroups.cgi">グループ</a></dt>
         <dd class="[% class %]">このサイトで利用するグループを定義します。
         [% terms.bugs %] へのアクセスを制限したり、ユーザの新しい権限を定義したりできます。</dd>
 
         [% class = user.in_group('editkeywords') ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editkeywords.cgi">キーワード</a></dt>
+        <dt id="keywords" class="[% class %]"><a href="editkeywords.cgi">キーワード</a></dt>
         <dd class="[% class %]">[% terms.bugs %] に設定できるキーワードを定義します。
         キーワードは [% terms.bugs %] への "タグ" 付けより簡易で、
         あとで検索しやすいものになります。</dd>
 
         [% class = user.in_group('bz_canusewhines') ? "" : "forbidden" %]
-        <dt class="[% class %]"><a href="editwhines.cgi">Whine</a></dt>
+        <dt id="whining" class="[% class %]"><a href="editwhines.cgi">Whine</a></dt>
         <dd class="[% class %]">指定された日時に実行される検索と、
         その結果の送り先メールアドレスを定義します。
         これは、サイトでの活動性を維持するためのリマインダとして有用です。</dd>

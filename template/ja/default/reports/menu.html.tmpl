@@ -28,6 +28,7 @@
 [% PROCESS global/header.html.tmpl
   title = "レポート・チャート作成"
   doc_section = "reporting.html"
+  style_urls = ['skins/standard/reports.css']
 %]
 
 <p>
@@ -38,24 +39,25 @@
 <h2>現状</h2>
 
 <ul>
-  <li>
+  <li id="report_search">
     <strong><a href="query.cgi">検索</a></strong> -
     [% terms.bugs %] リストの作成
   </li>
-  <li>
+  <li id="report_tabular">
     <strong>
       <a href="query.cgi?format=report-table">表レポート</a>
     </strong> -
     1, 2, 3 次元の [% terms.bug %] 数の表を HTML か CSV で
   </li>
   [% IF feature_enabled('graphical_reports') %]
-    <li>
+    <li id="report_graphical">
       <strong>
         <a href="query.cgi?format=report-graph"グラフレポート</a>
       </strong> -
       線グラフ、バー・パイチャート
     </li>
   [% END %]
+  [% Hook.process('current_state') %]
 </ul>
 
 [% IF feature_enabled('new_charts') OR feature_enabled('old_charts') %]
@@ -63,19 +65,21 @@
 
   <ul>
     [% IF feature_enabled('old_charts') %]
-      <li>
+      <li id="old_charts">
         <strong><a href="reports.cgi">旧形式</a></strong> - 
         時間、プロダクトごとのデータベースの [% terms.bugs %] のステータス、
         解決方法のプロット。
       </li>
     [% END %]
     [% IF feature_enabled('new_charts') AND user.in_group(Param("chartgroup")) %]
-      <li>
+      <li id="new_charts">
         <strong><a href="chart.cgi">新形式</a></strong> - 
         時間ごとの任意の検索結果のプロットで、より高機能。
       </li>
     [% END %]
   </ul>
 [% END %]
+
+[% Hook.process('end') %]
 
 [% PROCESS global/footer.html.tmpl %]

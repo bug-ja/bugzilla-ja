@@ -38,6 +38,11 @@ use constant UPDATE_VALIDATORS => {};
 use constant NUMERIC_COLUMNS   => ();
 use constant DATE_COLUMNS      => ();
 
+# This allows the JSON-RPC interface to return Bugzilla::Object instances
+# as though they were hashes. In the future, this may be modified to return
+# less information.
+sub TO_JSON { return { %{ $_[0] } }; }
+
 ###############################
 ####    Initialization     ####
 ###############################
@@ -134,7 +139,12 @@ sub check {
         # We don't want to override the normal template "user" object if
         # "user" is one of the params.
         delete $param->{user};
-        ThrowUserError('object_does_not_exist', { %$param, class => $class });
+        if (my $error = delete $param->{_error}) {
+            ThrowUserError($error, { %$param, class => $class });
+        }
+        else {
+            ThrowUserError('object_does_not_exist', { %$param, class => $class });
+        }
     }
     return $obj;
 }

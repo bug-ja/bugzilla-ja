@@ -19,11 +19,500 @@
 
 [% PROCESS global/variables.none.tmpl %]
 [% INCLUDE global/header.html.tmpl 
-  title = "$terms.Bugzilla 3.4 Release Notes" 
-  style_urls = ['skins/standard/release-notes.css'] 
+  title = "$terms.Bugzilla 3.6 リリースノート" 
+  style_urls = ['skins/standard/page.css'] 
 %]
 
 <h2>目次</h2>
+
+<ul class="bz_toc">
+  <li><a href="#v36_introduction">導入</a></li>
+  <li><a href="#v36_req">動作環境</a></li>
+  <li><a href="#v36_feat">新機能と改善点</a></li>
+  <li><a href="#v36_issues">既知の問題点</a></li>
+  <li><a href="#v36_upgrading">古いバージョンからのアップグレード方法</a></li>
+  <li><a href="#v36_code_changes">カスタマイズに影響するコードの変更</a></li>
+  <li><a href="#v36_previous">以前のバージョンのリリースノート</a></li>
+</ul>
+
+<h2 id="v36_introduction">導入</h2>
+
+<p>[% terms.Bugzilla %] 3.6にようこそ! 3.6 リリースは、
+  ユーザビリティーの改善と("なかった"もしくは常に必要とされたいくつかの細かい追加により)
+  すべての機能を"磨き上げる"ことを主目的としていますが、
+  それに加えていくつかのすばらしい新機能を加えました!</p>
+
+<p>アップグレードを考えている場合、<a href="#v36_upgrading">古いバージョンからの
+  アップグレード方法</a> を読んでください。3.4 より前のリリースからアップグレードする場合、
+  <a href="#v36_previous">以前のバージョン</a> のリリースノートのうち、
+  あなたが利用しているバージョンとこのバージョンの間の全てのものを読んでください。
+  <strong>特に各バージョンのリリースノートでの "アップグレード利用者向け"
+  の章に目を通してください。</strong></p>
+
+<p>また、次の団体からの、この[%+ terms.Bugzilla %]リリースにおける新機能開発や、
+  改善における支援に感謝いたします。
+  <a href="http://www.canonical.com/">Canonical Ltd.</a>, 
+  <a href="http://www.itasoftware.com/">ITA Software</a>,
+  the <a href="http://www.ibm.com/linux/ltc/">IBM Linux Technology Center</a>,
+  <a href="http://www.redhat.com/">Red Hat</a>, そして
+  <a href="http://www.novell.com/">Novell</a>に。</p>
+
+<h2 id="v36_req">動作環境</h2>
+
+<p>3.4.5 以降で追加された動作環境は
+  <span class="req_new">このように</span>表示されます。</p>
+
+<ul>
+  <li><a href="#v36_req_perl">Perl</a></li>
+  <li><a href="#v36_req_mysql">MySQL ユーザ向け</a></li>
+  <li><a href="#v36_req_pg">PostgreSQL ユーザ向け</a></li>
+  <li><a href="#v36_req_oracle">Oracle ユーザ向け</a></li>
+  <li><a href="#v36_req_modules">必須 Perl モジュール</a></li>
+  <li><a href="#v36_req_optional_mod">推奨 Perl モジュール</a></li>
+</ul>
+
+
+<h3 id="v36_req_perl">Perl</h3>
+
+<p>Perl v5.8.1</p>
+
+[% INCLUDE db_req db='mysql' %]
+
+[% INCLUDE db_req db='pg' %]
+
+[% INCLUDE db_req db='oracle' %]
+
+<h3 id="v36_req_modules">必須 Perl モジュール</h3>
+
+[% INCLUDE req_table reqs = REQUIRED_MODULES
+                     new = [] updated = [] %]
+
+<h3 id="v36_req_optional_mod">推奨 Perl モジュール</h3>
+
+<p>以下の Perl モジュールがインストールされていれば、
+  [% terms.Bugzilla %]のさまざまな機能が有効になります。</p>
+
+[% INCLUDE req_table reqs = OPTIONAL_MODULES
+                     new  = ['JSON-RPC', 'Test-Taint']
+                     updated = ['Chart']
+                     include_feature = 1 %]
+
+<h2 id="v36_feat">新機能と改善点</h2>
+
+<ul>
+  <li><a href="#v36_feat_usability">全般的なユーザビリティーの改善</a></li>
+  <li><a href="#v36_feat_extensions">新しい拡張システム</a></li>  
+  <li><a href="#v36_feat_qs">更新された簡易検索</a></li>
+  <li><a href="#v36_feat_browse">簡素化された"閲覧"インターフェース</a></li>
+  <li><a href="#v36_feat_suexec">SUExec サポート</a></li>
+  <li><a href="#v36_feat_mpwindows">実験的な Windows での mod_perl サポート</a></li>
+  <li><a href="#v36_email_attachments">メールでの添付登録機能</a></li>
+  <li><a href="#v36_feat_jsonrpc">JSON-RPC インターフェース</a></li>
+  <li><a href="#v36_feat_migrate">ほかの [% terms.Bug %]-トラッカーからの移転</a></li>
+  <li><a href="#v36_feat_other">その他の機能拡張と変更</a></li>
+</ul>
+
+<h3 id="v36_feat_usability">全般的なユーザビリティーの改善</h3>
+
+<p><a href="https://wiki.mozilla.org/Bugzilla:CMU_HCI_Research_2008">
+  科学的なユーザビリティー調査</a> がカーネギーメロン大学の研究者によって、
+  [% terms.Bugzilla %] に関して行われました。その結果を受けて、
+  <a href="https://bugzilla.mozilla.org/showdependencytree.cgi?id=490786&hide_resolved=0">
+  いくつかのユーザビリティー改善</a> が、調査の結果を受けて修正項目として登録されました。</p>
+
+<p>この結果、[% terms.Bugzilla %] のユーザビリティーにおいていくつかの
+  細かな修正が行われていることに気づくかもしれません。
+  たとえば、投稿前にいくつかの項目をJavascriptで検証する、ユーザインターフェース
+  で利用する単語を標準化する、[% terms.Bugzilla %] が何をユーザに要求しているかを
+  はっきりさせる、などがあり、新機能の項目にもリストされています。</p>
+
+<p>ユーザビリティー改善の作業は [% terms.Bugzilla %] の次のリリースでも
+  続けて行われますが、この調査の結果はこの3.6のリリースにも現れています。</p>
+
+<h3 id="v36_feat_extensions">新しい拡張システム</h3>
+
+<p>[% terms.Bugzilla %] はまったく新しい拡張システムを搭載しました。
+  このシステムは一貫性のある、高速なシステムで、
+  <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Extension.html">
+  完全にドキュメント化されています</a>。[% terms.Bugzilla %] のコードや
+  ユーザインターフェースを簡単に拡張し、新機能の追加や変更が可能になっています。
+  また、拡張を作成しやすくするために基本的なスケルトンを作成する
+  <a href="[% docs_urlbase FILTER html %]api/extensions/create.html">スクリプト</a>
+  もあります。新システムの詳細については、
+  <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Extension.html">
+  拡張システムのドキュメント</a>を参照してください。</p>
+
+<p>古い拡張システムを利用して [% terms.Bugzilla %] の拡張機能を作成している場合、
+  <a href="[% docs_urlbase FILTER html %]api/contrib/extension-convert.html">
+  古い拡張を新しい形式に変換するのを助けるスクリプト</a>も利用できます。</p>
+
+<h3 id="v36_feat_qs">更新された簡易検索</h3>
+
+<p>[% terms.Bugzilla %]のトップページやすべてのページのヘッダ・フッタに
+  表示される"簡易検索"のボックスはより単純化され、かつ高機能になりました。
+  ボックスの隣に <kbd>[?]</kbd> リンクが表示されており、簡単な
+  <a href="page.cgi?id=quicksearch.html">簡易検索ヘルプ</a>に飛びます。
+  ヘルプでは、検索で利用可能なフィールド名の省略形などの新機能を含む、
+  システムの機能がそれぞれ簡単な形式で表示されます。</p>
+
+<p>簡易検索は、特に大規模サイトにおいて前より早くなりました。</p>
+
+<p>新しい簡易検索を実装するために、旧システムのあまり利用されなかった機能は
+  削除されたことに注意してください:
+
+<ul>
+  <li>"追加の解決方法を検索"という意味の <b>+</b> と、
+    "要約のみを検索"という意味の <b>+</b>。要約の検索については、
+    <kbd>summary:</kbd>を代わりに利用してください。</li>
+  <li>深刻度の先頭数文字に合致する文字列を入れたときに行われる、
+    深刻度フィールドを対象とする検索。もし、[% terms.bugs %] 
+    を深刻度で検索したい場合は、項目のすべてを入力してください。</li>
+  <li>重要度の名前に完全に合致する文字列を入力したときの、重要度フィールド
+    を対象とした検索。[% terms.bugs %]を重要度で検索したい場合、
+    明示的に重要度フィールドを指定することで検索できます。</li>
+  <li>("pc", "windows" などの)ハードコードされた文字列を入力したときの
+    プラットフォームとOSフィールドを対象とした検索。[% terms.bugs %]
+    をプラットフォームやOSで検索したい場合、代わりにそれらのフィールドを
+    明示的に指定することで検索できます。</li>
+</ul>
+
+<h3 id="v36_feat_browse">簡素化された"閲覧"インターフェース</h3>
+
+<p>特定のコンポーネントに登録されたすべての活動中の[% terms.bugs %]
+  を簡単な形で見ることができる非常に簡素化されたインターフェースへの"閲覧"リンクが、
+  すべての[% terms.Bugzilla %]ページのヘッダに表示されるようになりました。</p>
+
+<h3 id="v36_feat_suexec">SUExec サポート</h3>
+
+<p>cPanelやPleskなどのコントロールパネルソフトウェアが利用している
+  Apacheの"SUExec"モードで、[% terms.Bugzilla %]を走らせることが可能になりました。
+  (ですので、[% terms.Bugzilla %]を共有スティングサービスで簡単にインストールで
+  きるようになりました。)SUExecサポートは、インストール中に、
+  <kbd>localconfig</kbd>ファイルにオプションとして表示されます。</p>
+
+<h3 id="36_feat_mpwindows">実験的な Windows での mod_perl サポート</h3>
+
+<p>(メモリ利用量などの)大きなパフォーマンス改善を目的として、
+  [% terms.Bugzilla %]をWindowsのmod_perl環境下で実行するための、
+  実験的なサポートが導入されました。</p>
+
+<h3 id="v36_email_attachments">メールでの添付登録機能</h3>
+
+<p><a href="[% docs_urlbase FILTER html %]api/email_in.html">email_in</a>
+  スクリプトに、メールで複数の添付ファイルを[% terms.abug %]の登録や更新時に
+  [% terms.abug %]へ登録できる機能が追加されました。</p>
+
+<h3 id="v36_feat_jsonrpc">JSON-RPC インターフェース</h3>
+
+<p>[% terms.Bugzilla %] は
+  <a href="http://json-rpc.org/">JSON-RPC</a> ウェブサービスプロトコルを
+  <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html">jsonrpc.cgi</a>
+  経由でサポートするようになりました。
+  このJSON-RPCインターフェースはこのリリースでは実験的サポートですので、
+  [% terms.Bugzilla %]の次期リリースに向けて、動作についての概念的な変更の要望についても
+  <a href="http://www.bugzilla.org/developers/reporting_bugs.html">知らせてください。</a></p>
+
+<h3 id="v36_feat_migrate">ほかの [% terms.Bug %]-トラッカーからの移転</h3>
+
+<p>[% terms.Bugzilla %] 3.6 には
+  <a href="[% docs_urlbase FILTER html %]api/migrate.html">migrate.pl</a>
+  というスクリプトがあり、他の[% terms.bug %]-トラッキングシステムからの
+  移転をサポートします。この移転システムにはいくつかの機能があります:</p>
+
+<ul>
+  <li>破壊的ではありません -- 既存の[% terms.Bugzilla %]に、そのデータを
+    破壊することなく移転することができます。</li>
+  <li>実際の移転を行う前に、"試験するため"のモードが存在します。</li>
+  <li>Perlを知っていれば、他のシステムに対する新しい移転コードを書くことは
+    簡単です。基本的な移転フレームワークがほとんどのことをやってくれますので、
+    あなたの対象とする[% terms.bug %]-トラッカーからのデータ供給を行うだけで
+    すみます。作成するための詳細情報は、
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Migrate.html">Bugzilla::Migrate</a>
+    のドキュメントと現存の
+    <kbd>Bugzilla/Migrate/GNATS.pm</kbd> を参照してください。</li>
+</ul>
+
+<p>最初の移転システムはGNATS [% terms.bug %]-トラッカーに対して実装されました。
+  他のシステムに対しての移転システムを歓迎します!
+  もし、新しいシステムに興味があるなら、[% terms.Bugzilla %]にコードを組み込むための
+  <a href="http://wiki.mozilla.org/Bugzilla:Developers">開発プロセス</a>
+  を参照してください。</p>
+
+<p>この機能の初期開発に投資していただいた
+  <a href="http://lambdares.com/">Lambda Research</a>に感謝いたします。</p>
+
+<h3 id="v36_feat_other">その他の機能拡張と変更</h3>
+
+<h4>ユーザ向け機能拡張</h4>
+
+<ul>
+  <li><b>[% terms.Bug %] 登録:</b> [% terms.abug %]登録の際、
+    [%+ terms.Bugzilla %] はどのフィールドが必須かを明示するようになりました。</li>
+  <li><b>[% terms.Bug %] 登録:</b> "ブックマーク可能なテンプレート"
+    が、"エイリアス"と"推定時間"フィールドをサポートしました。</li>
+  
+  <li><b>[% terms.Bug %] 更新:</b> [% terms.Bugzilla %]の過去のバージョンでは、
+    [% terms.abug %]にプライベートコメントを追加した際、プライベートコメントを
+    見ることができないユーザには、変更の<em>なにも</em>通知されませんでした。
+    今では、プライベートコメントを見れないユーザについても、公開されている
+    変更点は送信されますが、プライベートコメントだけがメール通知から除外
+    されるようになりました。</li>
+  <li><b>[% terms.Bug %] 更新:</b> グループでの閲覧制御パネルが、
+    [% terms.abug %]編集画面の添付と経過時間追跡パネルの右側に表示されるように
+    なりました。</li>
+  <li><b>[% terms.Bug %] 更新:</b> "すべてのコメントを閉じる" と
+    "すべてのコメントを開く" リンクがコメントリストの上でなく、
+    右側に表示されるようになりました。</li>
+
+  <li><b>添付:</b> 添付の"詳細"ページは、フィールドを編集する権限がなければ
+    変更不可の状態で表示されるようになりました。</li>
+  <li><b>添付:</b> 投稿前に、JavaScriptを利用して添付に対しての説明が記入さ
+    れているか確認するようになりました。</li>
+  <li><b>添付:</b> 添付の"詳細"ページの下に[% terms.bug %]に戻るための
+    リンクが表示されるようになりました。</li>
+  <li><b>添付:</b> コメント中の"attachment 12345"リンクをクリックしたとき、
+    添付がパッチの場合にはパッチそのものでなく"差分"の表示が行われるように
+    なりました。</li>
+  
+  <li><b>検索:</b> [% terms.bug %]のフラグを検索結果のカラムに表示できるように
+    なりました。</li>
+  <li><b>検索:</b> 検索結果の表示で、どのカラムを利用してソートされているかと
+    ソートの方向がカラムヘッダの隣に表示される矢印で判別できるようになりました。</li>
+  <li><b>検索:</b> 経過時間フィールドについて、("1d"、"2w"といった)相対日付で
+    検索できるようになりました。</li>
+  <li><b>検索:</b> 検索結果のiCalendar形式に PRIORITY フィールドが含まれるよう
+    になりました。</li>
+  <li><b>検索:</b> 検索URLに無効な検索順序条件を入力してもエラーにならなくなり
+    ました。[% terms.Bugzilla %]はいくつかの順序オプションが無効である警告を
+    表示するだけです。</li>
+  <li><b>検索:</b> 検索結果がなければ、いくつかの有用なリンクが表示され、
+    よくある次の手順に簡単に移れるようになりました。</li>
+  <li><b>検索:</b> 独自の<kbd>buglist.cgi</kbd> URL (カスタマイズを行っている
+    ユーザの)を作成しようとしているユーザ向けに、<kbd>buglist.cgi</kbd>
+    にて[% terms.Bugzilla %]はすべての有効なフィールドを
+    <kbd>&amp;field=value</kbd>形式で受け付けるようになりました。</li>
+  
+  <li><b>リクエスト:</b> "わたしのリクエスト"ページを表示するとき、
+    各表の下のリンクをクリックすることで、リストを通常の検索結果形式で見ること
+    ができるようになりました。</li>
+  <li><b>リクエスト:</b> "わたしのリクエスト"ページを表示するとき、
+    Classification を利用していれば、プロダクトのドロップダウンは
+    Classification でグループ化されるようになりました。</li>
+
+  <li><b>メールでの登録:</b> [% terms.abug %]をメールで登録する際、
+    [% terms.bug %]を登録しようとしているプロダクトが既定のグループを持つ場合、
+    [% terms.bug %]は自動的にそれらのグループに属するよう設定されます。</li>
+  <li><b>メールでの登録:</b> [% terms.bugs %]をメールで登録する場合に利用可能な
+    フィールド名は
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#create">B[% %]ug.create
+    ウェブサービス機能</a>で取得できる有効なパラメータ名への完全一致となります。
+    なお、後方互換性のために3.4もしくはそれ以前で利用できていた古いフィールド名の
+    大半はそのまま利用することが可能です。</li>
+
+  <li>[% terms.Bugzilla %]で複数言語を利用可能な場合、
+    [% terms.Bugzilla %]を表示する言語をどれにするかをすべてのページの上部に
+    表示されるリンクから選択することが可能になりました。</li>
+  <li>新規アカウント作成の際、パスワードを設定した後は自動的にログイン状態に
+    なります。</li>
+  <li>アカウントのパスワードの文字数制限はなくなりました。</li>
+  <li>Duskスキンでのリンク表示が見やすくなりました。</li>
+  <li>Whineシステムで、検索結果で[% terms.bugs %]が見つからなかった場合にも
+    メールを受信するように選択することができるようになりました。</li>
+  <li>依存グラフの矢印が逆向きになり、[% terms.bugs %]はその依存先を示すように
+    なりました。</li>
+  
+  <li><b>新形式のチャート:</b> 既存の保存された検索を、新形式のチャート用の
+    データシリーズに変換できるようになりました。</li>
+  <li><b>新形式のチャート:</b> データシリーズを削除するインターフェースが
+    追加されました。</li>
+  <li><b>新形式のチャート:</b> プロダクトを削除する際、そのプロダクトに
+    関連したデータシリーズを削除するオプションを選択できるようになりました。</li>
+</ul>
+
+<h4>管理者や開発者向けの機能拡張</h4>
+
+<ul>
+  <li>ワークフローの設定に依存しますが、閉じた状態の[% terms.bug %]
+    にステータスの選択肢として UNCONFIRMED と REOPENED が表示できるように
+    なりました。これ、もしくは他のものを表示したい場合、
+    ステータスワークフローを編集する(REOPENEDステータスを削除もしくは
+    無効化するなど)必要があります。</li>
+  <li>フィールド値を"無効化"することができるようになり、[% terms.abug %]
+    の選択肢にすでに設定されていない限り表示しないことができるようになりました。
+    ただし、まだ、プロダクトごとのフィールド値(コンポーネント、
+    ターゲットマイルストーン、バージョン)では動作しません。</li>
+  <li>ログインで5回以上パスワード認証に失敗したユーザは、
+    30分間アカウントをロックされるようになりました。
+    ユーザがこの機能でロックされるたび、"メンテナ"パラメータに設定されている
+    ユーザにメールで通知されます。</li>
+  <li>パスワードの最低文字数は6文字になりました。</li>
+  <li><kbd>UNCONFIRMED</kbd> ステータスが、投票パラメータに依存せず有効に
+    なりました。ただし、<kbd>UNCONFIRMED</kbd>ステータスをプロダクトで有効に
+    するためのチェックボックスが新設されています。</li>
+  <li>重複の情報が<kbd>data/</kbd>ディレクトリでなくデータベースに保存される
+    ようになりました。大規模なサイトでは数百MBの容量削減になるでしょう。</li>
+
+  <li><b>インストール:</b> [% terms.Bugzilla %]をインストールする際、
+    "メンテナ"パラメータは自動的に<kbd>checksetup.pl</kbd>で作成した
+    管理者に設定されるようになりました。</li>
+  <li><b>インストール:</b> <kbd>checksetup.pl</kbd> はエラーを特別な色で表示し、
+    何を行う必要があるかをユーザに示すようになりました。</li>
+  <li><b>インストール:</b> <kbd>checksetup.pl</kbd> でのアップグレードは、
+    特に古いサイトにおいて<em>かなり</em>高速化されました。
+    また、アップグレードでない場合でもより早くなりました。</li>
+  
+  <li>グループを編集する際、他のグループ権限を持っているメンバーに自動的に
+    そのグループに対しての権限が与えられるようなグループを指定できるように
+    なりました。</li>
+  <li>BMPの添付をPNGに変換する機能は拡張となりました。
+    この機能を有効化するには、
+    <kbd>extensions/BmpConvert/disabled</kbd> ファイルを削除し、
+    <kbd>checksetup.pl</kbd>を実行してください。</li>
+  <li>優先度フィールドの既定の値はP1, P2などに比べてもっとわかりやすい英語の
+    単語に変わりました。</li>
+  <li>すべてのフィールド値をローカライズできるようなシステムが導入されました。
+    <kbd>template/en/default/global/field-descs.none.tmpl</kbd>の
+    <kbd>value_descs</kbd>変数を参照してください。</li>
+  <li><kbd>config.cgi</kbd> はETagヘッダを返すようになり、また、
+    HTTPリクエストのIf-None-Matchヘッダを解釈するようになりました。</li>
+  <li><kbd>show_bug.cgi</kbd> のXML形式でより多くの情報を出します:
+    コンポーネントの数値ID、添付がURLかどうか、添付の更新時間、
+    フラグの数値ID、フラグ型の数値ID</li>
+  
+  <li><b>パラメータ:</b> 必須ではないパラメータは、パラメータページの"必須"
+    セクションからはずされました。その代わり、いくつかは"一般"セクションに、
+    そのほかは"拡張"セクションに移動しました。</li>
+  <li><b>パラメータ:</b> 古い <kbd>ssl</kbd> パラメータは <kbd>ssl_redirect</kbd>
+    に置き換わり、"on"もしくは"off"のどちらかを指定するだけになりました。
+    "on"の場合、すべてのユーザはどの[% terms.Bugzilla %]へのアクセスでも
+    SSLにリダイレクトされます。逆に"off"の場合、SSL関係のリダイレクトは
+    一切行われません。(ユーザがSSL経由で直接[% terms.Bugzilla %]にアクセスして
+    きても、<em>一切</em>非SSLページにリダイレクトされません。)</li>
+  <li><b>パラメータ:</b> 拡張パラメータに、新しい
+    <kbd>inbound_proxies</kbd> パラメータが追加されました。もしあなたの
+    [% terms.Bugzilla %]がプロキシの内側にある場合、このパラメータにプロキシの
+    IPアドレスを設定してください。その場合、[% terms.Bugzilla %]は、
+    プロキシから送られる"X-Forwarded-For"パラメータを"信じて"、
+    すべてのアクセスがプロキシから行われたように振舞うのでなく、
+    ユーザのIPアドレスにX-Forwarded-Forパラメータを利用するようになります。</li>
+    
+  <li><b>削除されたパラメータ:</b> <kbd>loginnetmask</kbd> パラメータは削除
+    されました。[% terms.Bugzilla %]が安全なクッキーを利用するようになりましたので、
+    ログイン情報を特定のIPやアドレスブロックに制限する必要がなくなりました。</li>
+  <li><b>削除されたパラメータ:</b> <kbd>quicksearch_comment_cutoff</kbd>
+    パラメータは削除されました。簡易検索は常にコメントを検索します。
+    しかしながら、より早いアルゴリズムが利用されています。</li>
+  <li><b>削除されたパラメータ:</b> <kbd>usermatchmode</kbd> パラメータは削除
+    されました。ユーザ検索は<em>常に</em>行われます。</li>
+  <li><b>削除されたパラメータ:</b> <kbd>useentrygroupdefault</kbd> パラメータ
+    は削除されました。[% terms.Bugzilla %]は常にこのパラメータが"off"であった
+    かのように振舞います。</li>
+  <li>オプションモジュールの設定やインストールされているかによらず、
+    <kbd>t/001compile.t</kbd> テストは常に合格となるでしょう。</li>
+  <li>新しいスクリプト: <kbd>contrib/console.pl</kbd>は[% terms.Bugzilla %]
+    へのコマンドラインアクセスを提供します。Perlのコードを入力するか、
+    いくつかのカスタムコマンドを利用できます。</li>
+</ul>
+
+<h4>ウェブサービス関係の変更</h4>
+
+<ul>
+  <li>ウェブサービスは日時をUTCで返すようにになりました。
+    <kbd>B[% %]ugzilla.time</kbd> は常に[% terms.Bugzilla %]サーバがUTC
+    で動作しているかのように振舞います。もし、すべてのバージョンにまたがって
+    動作するクライアントを作成したい場合は、<kbd>B[% %]ugzilla.timezone</kbd>
+    もしくは<kbd>B[% %]ugzilla.time</kbd>からのタイムゾーンを検出し、
+    そのタイムゾーンで日時を入力し、その形式で返ってくることを想定してください。</li>
+  <li><kbd>Bugzilla_login</kbd>と<kbd>Bugzilla_password</kbd> をウェブサービス
+    のメソッドへの引数として渡すことでログインすることができます。詳細については
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService.html#LOGGING_IN">Bugzilla::WebService</a>
+    ドキュメントを参照してください。</li>
+  <li>新メソッド:
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#attachments">B[% %]ug.attachments</a>
+    により添付に関する情報を入手することができます。</li>
+  <li>新メソッド:
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#fields">B[% %]ug.fields</a>
+    により[% terms.Bugzilla %]の[% terms.abug %]がもてるすべてのフィールドに
+    関する情報を取得できます。これには、カスタムフィールド、すべてのフィールド
+    での有効な値が含まれます。<kbd>B[% %]ug.legal_values</kbd> メソッドは
+    廃止されました。</li>
+  <li><kbd>B[% %]ug.add_comment</kbd> メソッドでは、"private"パラメータが
+    "is_private"に変更されました (他のメソッドとの一貫性のため)。
+    なお、後方互換性のため、"private"パラメータを利用することは可能です。</li>
+  <li>ウェブサービスでもPerlの"検証モード"が有効になりました。
+    これはすべてのデータがデータベースに渡される前に検証されることを意味します。
+    また、すべてのパラメータ名も検証され、文字列、数字、アンダースコア以外
+    の文字を名前に含むパラメータを渡したときには無視されることになります。
+    この変更はほぼカスタマイズを行っているユーザにのみ影響し、
+    [% terms.Bugzilla %]のウェブサービスはこの変更にほとんど影響されません。</li>
+</ul>
+
+<h2 id="v36_issues">既知の問題点</h2>
+
+<ul>
+  <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=423439">
+    [%- terms.Bug %] 423439</a>: コメントのタブが 4 空白文字に変換される。
+    これは、Perl 5.8.8 に存在する Perl のバグです。</li>
+  <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=69621">
+    [%- terms.Bug %] 69621</a>: [% terms.bugs %] で利用されているキーワードを、
+    名前変更か削除すると、<a href="sanitycheck.cgi">sanitycheck.cgi</a> を実行し、
+    必要であればそのキャッシュ再構築のオプションを選択することにで、
+    "キーワードキャッシュ" の再構築を行う操作が必要になります。そうしなければ、
+    検索結果にキーワードが正常に表示されません。</li>
+  <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=89822">
+    [%- terms.Bug %] 89822</a>: 複数 [% terms.bugs %] を一度に更新すると、
+    "操作衝突" の保護が働きません。</li>
+  <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=276230">
+    [%- terms.Bug %] 276230</a>: 新しいチャートの特定のカテゴリでのアクセス制限機能は、
+    完全ではありません。'chartgroup' パラメータは、
+    アクセス方法が存在するかの機能として考えるべきです。<br>
+    しかしながら、旧チャートから変換されたチャートは、
+    関連するプロダクトで委任されているグループに制限されます。
+    この制限を変更する方法は現状ではありませんし、プロダクトの変更により、
+    グループ設定が更新されない限りアップグレードされません。</li>
+</ul>
+
+<h2 id="v36_upgrading">古いバージョンからのアップグレードにおける注意</h2>
+
+<p>3.6 にアップグレードする際、<kbd>checksetup.pl</kbd> は、
+  データベースのさまざまなカラムに外部キーを設定します。これを実行する前に、
+  データベースの整合性を確認します。もし、整合性に未解決の問題がある場合、
+  データベースのどのテーブルやカラムに無効値が入っているかと、
+  どの値が無効であるかを表示します。もし、何をすべきか分からない場合、
+  データベースにログインし、次のコマンドを実行することで、
+  無効値を含むデータベースレコードを削除してください。</p>
+
+<p><code>DELETE FROM <var>table</var> WHERE <var>column</var> IN 
+  (<var>1, 2, 3, 4</var>)</code></p>
+
+<p>"table" と "column" を <kbd>checksetup.pl</kbd> が表示した名前に、
+  "1, 2, 3, 4" を <kbd>checksetup.pl</kbd> が表示した無効な値に置き換えてください。</p>
+
+<p>なお、必ずアップグレード前にデータベースのバックアップをとることを忘れないでください。</p>
+
+<h2 id="v36_code_changes">カスタマイズに影響するコードの変更</h2>
+
+<ul>
+  <li>コメントはハッシュではなく
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Comment.html">Bugzilla::Comment</a>
+    オブジェクト経由で表示されるようになりました。</li>
+  <li>以前のバージョンの [% terms.Bugzilla %]では、[% terms.abug %]を表示する
+    ためのテンプレートは大量の外部変数を要求していましたが、それらは
+    グローバルテンプレート変数に置き換えられました。</li>
+  <li>インストール済みのオプションモジュールのチェックのために、
+    Perlコード内では<kbd>Bugzilla-&gt;feature</kbd>を、
+    テンプレート内では<kbd>feature_enabled</kbd>を利用できます。</li>
+  <li>[% terms.bug %]を表示するために必要なさまざまなテンプレートヘッダ情報は、
+    すべてひとつのテンプレート
+    <kbd>template/en/default/bug/show-header.html.tmpl</kbd>に格納されました。</li>
+  <li>テンプレート中での<kbd>get_status</kbd> や <kbd>get_resolution</kbd>
+    のかわりに、<kbd>display_value</kbd>を利用する必要があります。
+    <kbd>display_value</kbd> は値を表示する必要のある全ての&lt;select&gt;-type
+    フィールドで利用されるべきです。</li>
+</ul>
+
+
+<h1 id="v36_previous">[% terms.Bugzilla %] 3.4 リリースノート</h1>
 
 <ul class="bz_toc">
   <li><a href="#v34_introduction">導入</a></li>
@@ -36,7 +525,7 @@
   <li><a href="#v34_previous">以前のバージョンのリリースノート</a></li>
 </ul>
 
-<h2><a name="v34_introduction"></a>導入</h2>
+<h2 id="v34_introduction">導入</h2>
 
 <p>[% terms.Bugzilla %] 3.4 にようこそ! [% terms.Bugzilla %] 3.4 は、
   ユーザインタフェースに関するさまざまな改良、たくさんの興味深い新機能、
@@ -55,7 +544,50 @@
   San Jose State University Foundation</a>経由のいくつかの新機能の開発のための資金提供
   に感謝いたします。</p>
 
-<h2><a name="v34_point"></a>3.4.x リリースでの更新点</h2>
+<h2 id="v34_point">3.4.x リリースでの更新点</h2>
+
+<h3>3.4.6</h3>
+
+<ul>
+  <li>"等しくない"、"文字列を含まない"のような"否定的"な条件での検索の際に、
+    結果の [% terms.bug %] リストの上部に表示される検索条件の説明が、
+    肯定的な表現になっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=474738">[% terms.Bug %] 474738</a>)
+  </li>
+  <li>Internet Explorer において、RESOLVED DUPLICATE の[% terms.bug %] を
+    REOPENED に簡単に変更することが、JavaScriptのエラーのためできませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=546719">[% terms.Bug %] 546719</a>)
+  </li>
+  <li>"ブックマーク可能なテンプレート"を[% terms.bug %]登録ページのフォームを
+    事前に埋めるために利用していた場合、かつ他のフィールドの値に依存して、
+    表示される(もしくはとりえる値が制限される)カスタムフィールドを利用していた
+    場合に、そのカスタムフィールドが正常に動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=538211">[% terms.Bug %] 538211</a>)
+  </li>
+  <li>[% terms.bug %]の解決方法がFIXEDの場合にのみ表示される設定のカスタム
+    フィールドを利用している場合、[% terms.bug %]編集フォームでユーザが
+    [% terms.bug %]のステータスをRESOLVEDに設定したときにも正常に動作するように
+    なりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=520993">[% terms.Bug %] 520993</a>)
+  </li>
+  <li>ログアウトしており、かつ<kbd>request.cgi</kbd>を利用すると、
+    要請者と被要請者フィールドは<kbd>usermatching</kbd>パラメータを
+    反映しなくなりました -- 常にユーザ名全体を要求します。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=533018">[% terms.Bug %] 533018</a>)
+  </li>
+  <li>大量の文字を含む検索を行おうとした場合 (7000文字程度以上を含むURL
+    になるようなもの)、Apacheが検索結果ではなく、500エラーを返すことがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=513989">[% terms.Bug %] 513989</a>)
+  </li>
+  <li>[% terms.Bugzilla %] は、新しいフィールドをソート順に追加した際、
+    既存のソート順からフィールドを落としてしまうことがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=470214">[% terms.Bug %] 470214</a>)
+  </li>
+  <li>Atom形式の検索結果が、時々いくつかの[% terms.bugs %]において
+    報告者や担当者フィールドを含まないことがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=537834">[% terms.Bug %] 537834</a>)
+  </li>
+</ul>
 
 <h3>3.4.5</h3>
 
@@ -187,7 +719,7 @@
   <a href="http://www.bugzilla.org/security/3.4/">セキュリティーアドバイザリ</a>
   をご覧ください。</p>
 
-<h2><a name="v34_req">動作環境</a></h2>
+<h2 id="v34_req">動作環境</h2>
 
 <p>3.2.3 以降の新しい必要条件は <span class="req_new">このように</span> 
   表示されます。</p>
@@ -201,34 +733,208 @@
   <li><a href="#v34_req_optional_mod">追加の Perl モジュール</a></li>
 </ul>
 
-<h3><a name="v34_req_perl"></a>Perl</h3>
+<h3 id="v34_req_perl">Perl</h3>
 
 <p>Perl v5.8.1</p>
 
-[% INCLUDE db_req db='mysql' %]
+<h3 id="v34_req_mysql">MySQL ユーザ</h3> 
+ 
+<ul> 
+  <li>MySQL v4.1.2</li> 
+  <li><strong>perl module:</strong> DBD::mysql v4.00</li> 
+</ul>
 
-[% INCLUDE db_req db='pg' %]
+<h3 id="v34_req_pg">PostgreSQL ユーザ</h3> 
+ 
+<ul> 
+  <li>PostgreSQL v8.00.0000</li>
+  <li><strong>perl module:</strong> DBD::Pg v1.45</li>
+</ul>
 
-[% INCLUDE db_req db='oracle' %]
+<h3 id="v34_req_oracle">Oracle ユーザ</h3>
+ 
+<ul> 
+  <li>Oracle v10.02.0</li>
+  <li><strong>perl module:</strong> DBD::Oracle v1.19</li>
+</ul> 
 
-<h3><a name="v34_req_modules"></a>必須 Perl モジュール</h3>
 
-[% INCLUDE req_table reqs = REQUIRED_MODULES
-                     new = ['URI', 'DateTime', 'DateTime-TimeZone', 
-                            'Digest-SHA']
-                     updated = ['Template-Toolkit'] %]
+<h3 id="v34_req_modules">必須 Perl モジュール</h3>
 
-<h3><a name="v34_req_optional_mod"></a>追加の Perl モジュール</h3>
+<table class="req_table" border="0" cellspacing="0" cellpadding="0"> 
+  <tr> 
+    <th>モジュール</th> <th>バージョン</th> 
+  </tr> 
+  <tr> 
+    <td>CGI</td> 
+    <td>3.21</td> 
+  </tr> 
+  <tr> 
+    <td class="req_new">Digest::SHA</td> 
+    <td class="req_new"> (Any)</td> 
+  </tr> 
+  <tr> 
+    <td>Date::Format</td> 
+    <td>2.21</td> 
+  </tr> 
+  <tr> 
+    <td class="req_new">DateTime</td> 
+    <td class="req_new">0.28</td> 
+  </tr> 
+  <tr> 
+    <td class="req_new">DateTime::TimeZone</td> 
+    <td class="req_new">0.71</td> 
+  </tr> 
+  <tr> 
+    <td>DBI</td> 
+    <td>1.41</td> 
+  </tr> 
+  <tr> 
+    <td>Template</td> 
+    <td class="req_new">2.22</td> 
+  </tr>
+  <tr>
+    <td>Email::Send</td> 
+    <td>2.00</td> 
+  </tr> 
+  <tr> 
+    <td>Email::MIME</td> 
+    <td>1.861</td> 
+  </tr> 
+  <tr> 
+    <td>Email::MIME::Encodings</td> 
+    <td>1.313</td> 
+  </tr> 
+  <tr> 
+    <td>Email::MIME::Modifier</td> 
+    <td>1.442</td> 
+  </tr> 
+  <tr> 
+    <td class="req_new">URI</td> 
+    <td class="req_new">(Any)</td> 
+  </tr> 
+</table> 
+ 
+<h3 id="v34_req_optional_mod">追加の Perl モジュール</h3>
 
 <p>以下の Perl モジュールについては、インストールされていれば、いくつかの 
   [% terms.Bugzilla %]の機能が有効になります。</p>
 
-[% INCLUDE req_table reqs = OPTIONAL_MODULES
-                     new  = ['TheSchwartz', 'Daemon-Generic']
-                     updated = []
-                     include_feature = 1 %]
+<table class="req_table" border="0" cellspacing="0" cellpadding="0"> 
+  <tr> 
+    <th>モジュール</th>
+    <th>バージョン</th> 
+    <th>有効になる機能</th> 
+  </tr> 
+  <tr> 
+    <td>LWP::UserAgent</td> 
+    <td>(Any)</td> 
+    <td>アップデート通知</td> 
+  </tr> 
+  <tr> 
+    <td>Template::Plugin::GD::Image</td> 
+    <td>(Any)</td> 
+    <td>画像レポート</td> 
+  </tr> 
+  <tr> 
+    <td>GD::Text</td> 
+    <td>(Any)</td> 
+    <td>画像レポート</td> 
+  </tr> 
+  <tr> 
+    <td>GD::Graph</td> 
+    <td>(Any)</td> 
+    <td>画像レポート</td> 
+  </tr> 
+  <tr> 
+    <td>GD</td> 
+    <td>1.20</td> 
+    <td>画像レポート、新形式・旧形式のチャート</td> 
+  </tr> 
+  <tr> 
+    <td>Email::MIME::Attachment::Stripper</td> 
+    <td>(Any)</td> 
+    <td>メール受信</td> 
+  </tr> 
+  <tr> 
+    <td>Email::Reply</td> 
+    <td>(Any)</td> 
+    <td>メール受信</td> 
+  </tr> 
+  <tr> 
+    <td>Net::LDAP</td> 
+    <td>(Any)</td> 
+    <td>LDAP 認証</td> 
+  </tr> 
+  <tr> 
+    <td class="req_new">TheSchwartz</td> 
+    <td class="req_new">(Any)</td> 
+    <td>メール送信のキュー化</td> 
+  </tr> 
+  <tr> 
+    <td class="req_new">Daemon::Generic</td> 
+    <td class="req_new">(Any)</td> 
+    <td>メール送信のキュー化</td> 
+  </tr> 
+  <tr> 
+    <td>HTML::Parser</td> 
+    <td>3.40</td> 
+    <td>プロダクト・グループ説明でのHTML利用</td> 
+  </tr> 
+  <tr> 
+    <td>HTML::Scrubber</td> 
+    <td>(Any)</td> 
+    <td>プロダクト・グループ説明でのHTML利用</td> 
+  </tr> 
+  <tr> 
+    <td>XML::Twig</td> 
+    <td>(Any)</td> 
+    <td>システム間の [% terms.Bugs %] 移動</td> 
+  </tr> 
+  <tr> 
+    <td>MIME::Parser</td> 
+    <td>5.406</td> 
+    <td>システム間の [% terms.Bugs %] 移動</td> 
+  </tr> 
+  <tr> 
+    <td>Chart::Base</td> 
+    <td>1.0</td> 
+    <td>新形式・旧形式のチャート</td> 
+  </tr> 
+  <tr> 
+    <td>Image::Magick</td> 
+    <td>(Any)</td> 
+    <td>BMP 形式添付の PNG への変換</td> 
+  </tr> 
+  <tr> 
+    <td>PatchReader</td> 
+    <td>0.9.4</td> 
+    <td>パッチビューア</td> 
+  </tr> 
+  <tr> 
+    <td>Authen::Radius</td> 
+    <td>(Any)</td> 
+    <td>RADIUS 認証</td> 
+  </tr> 
+  <tr> 
+    <td>Authen::SASL</td> 
+    <td>(Any)</td> 
+    <td>SMTP 認証</td> 
+  </tr> 
+  <tr> 
+    <td>SOAP::Lite</td> 
+    <td>0.710.06</td> 
+    <td>XML-RPC インターフェース</td> 
+  </tr> 
+  <tr> 
+    <td>mod_perl2</td> 
+    <td>1.999022</td> 
+    <td>mod_perl</td> 
+  </tr> 
+</table> 
 
-<h2><a name="v34_feat"></a>新機能と改良点</h2>
+
+<h2 id="v34_feat">新機能と改良点</h2>
 
 <ul>
   <li><a href="#v34_feat_enter">簡単な [% terms.Bug %] 登録</a></li>
@@ -249,7 +955,7 @@
   <li><a href="#v34_feat_other">他の機能拡張や変更点</a></li>
 </ul>
 
-<h3><a name="v34_feat_enter">簡単な [% terms.Bug %] 登録</a></h3>
+<h3 id="v34_feat_enter">簡単な [% terms.Bug %] 登録</h3>
 
 <p>新規 [% terms.bug %] 登録時、ほとんどのフィールドは最初は隠されるようになり、
   登録フォームの見た目がより簡単になりました。必要であれば "詳細フィールドの表示" 
@@ -258,13 +964,13 @@
   "詳細" と "簡単" のどちらを利用したかを記憶し、次の [% terms.abug %] 
   登録時には同じバージョンを表示します。</p>
 
-<h3><a name="v34_feat_index">新しいホームページ</a></h3>
+<h3 id="v34_feat_index">新しいホームページ</h3>
 
 <p>[% terms.Bugzilla %] のフロントページがデザイン変更され、新規ユーザにとって、
   よく利用される機能がより分かりやすい形で表示されるようになりました。
   ホームページのより高機能化は将来の [% terms.Bugzilla %] で行われます。</p>
 
-<h3><a name="v34_feat_spam"></a>ログアウトユーザに対してのメールアドレスの隠蔽</h3>
+<h3 id="v34_feat_spam">ログアウトユーザに対してのメールアドレスの隠蔽</h3>
 
 <p>[% terms.Bugzilla %] ユーザへの spam を防止するために、[% terms.Bugzilla %]
   に保存されているすべてのメールアドレスはログイン時にのみ表示されるようになりました。
@@ -276,12 +982,12 @@
 <p>[% terms.bug %] コメントにあるメールアドレスはフィルターされません。
   ウェブサービスでは、ログアウトしていても完全なメールアドレスを返します。</p>
 
-<h3><a name="v34_feat_urls"></a>より短い検索 URL</h3>
+<h3 id="v34_feat_urls">より短い検索 URL</h3>
 
 <p>検索を実行したとき、すべての利用していないフィールドが URL から除かれ、
   検索 URL がより短い意味のあるものになりました。</p>
 
-<h3><a name="v34_feat_async">非同期メール送信</a></h3>
+<h3 id="v34_feat_async">非同期メール送信</h3>
 
 <p>過去の [% terms.Bugzilla %] での最大のパフォーマンス問題は、
   [% terms.bugs %] を更新する際に、通知が必要なすべてのユーザにメールが即座に送信され、
@@ -297,14 +1003,14 @@
 <p>バックグラウンドメール送信デーモンを直接メール送信の代わりに利用すると、
   大規模サイトでの [% terms.bugs %] 更新ではかなりの高速化になります。</p>
 
-<h3><a name="v34_feat_tz">日時のユーザのタイムゾーンでの表示</a></h3>
+<h3 id="v34_feat_tz">日時のユーザのタイムゾーンでの表示</h3>
 
 <p>ユーザは自身の居るタイムゾーンを選択できるようになり、[% terms.Bugzilla %]
   は表示する日時をそのタイムゾーンにあわせます。しかしながら、
   ユーザが入力する日時は [% terms.Bugzilla %] のタイムゾーンに従わねばなりません。</p>
 
-<h3><a name="v34_feat_vis">他のフィールドが特定の値に設定されているときのみ
-    表示されるカスタムフィールド機能</a></h3>
+<h3 id="v34_feat_vis">他のフィールドが特定の値に設定されているときのみ
+    表示されるカスタムフィールド機能</h3>
 
 <p>新しいカスタムフィールドを作成する (もしくは既存のカスタムフィールドの
   定義を更新するとき) ときに、ユーザは "このフィールドはフィールド X 
@@ -318,8 +1024,8 @@
 
 <p>この機能はプロダクトに特有のフィールドに有用です。</p>
 
-<h3><a name="v34_feat_vals">他のフィールドの値によって変化するカスタムフィールドの
-    有効値リスト</a></h3>
+<h3 id="v34_feat_vals">他のフィールドの値によって変化するカスタムフィールドの
+    有効値リスト</h3>
 
 <p>ドロップダウンもしくは複数選択のカスタムフィールドを作成するとき、
   他のフィールドを "値を制限する" フィールドとして設定できます。
@@ -336,14 +1042,14 @@
   [% terms.Bugzilla %] そのもののバックエンドでは、
   どのような値の組み合わせでも有効とし受け入れます。</p>
 
-<h3><a name="v34_feat_bugid">新しいカスタムフィールド型: 
-    [%+ terms.Bug %] ID</a></h3>
+<h3 id="v34_feat_bugid">新しいカスタムフィールド型: 
+    [%+ terms.Bug %] ID</h3>
 
 <p>単一の [% terms.bug %] ID への参照を追加可能なカスタムフィールドを
   作成できるようになりました。将来的にはこのフィールドを経由して相互に
   [% terms.bugs %] を参照可能にする拡張がなされるでしょう。</p>
 
-<h3><a name="v34_feat_see">"参照先" フィールド</a></h3>
+<h3 id="v34_feat_see">"参照先" フィールド</h3>
 
 <p>新しい標準的なフィールド "参照先" が追加されました。このフィールドには、
   関連するどの [% terms.Bugzilla %] サイトの複数の [% terms.bugs %] URL 
@@ -358,18 +1064,18 @@
   <a href="editparams.cgi?section=bugfields#use_see_also">use_see_also
   パラメータ</a> を無効化することで隠せます。</p>
 
-<h3><a name="v34_feat_cols">検索結果でのカラム並び順変更</a></h3>
+<h3 id="v34_feat_cols">検索結果でのカラム並び順変更</h3>
 
 <p>検索結果で表示されるカラムの選択を行うユーザインターフェースが変更になり、
   [% terms.bug %] リストでの表示で、
   どの順序で左から右に並べるかを設定できるようになりました。</p>
 
-<h3><a name="v34_feat_desc">検索の説明</a></h3>
+<h3 id="v34_feat_desc">検索の説明</h3>
 
 <p>検索結果の表示で、[% terms.Bugzilla %] は、
   [% terms.bug %] リストの先頭に検索条件の概要を表示するようになりました。</p>
 
-<h3><a name="v34_feat_other"></a>他の機能拡張や変更点</h3>
+<h3 id="v34_feat_other">他の機能拡張や変更点</h3>
 
 <h4>ユーザ向けの機能拡張</h4>
 
@@ -483,7 +1189,7 @@
     また、空白の値を受け取った場合は、<kbd>undef</kbd> に変換します。</li>
 </ul>
 
-<h2><a name="v34_issues">既知の問題点</a></h2>
+<h2 id="v34_issues">既知の問題点</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=423439">
@@ -510,7 +1216,7 @@
     [%- terms.Bug %] 370370</a>: mod_perl はいまのところ Windows では動作しません。</li>
 </ul>
 
-<h2><a name="v34_upgrading"></a>古いバージョンからのアップグレード方法</h2>
+<h2 id="v34_upgrading">古いバージョンからのアップグレード方法</h2>
 
 <p>3.4 にアップグレードする際、<kbd>checksetup.pl</kbd> は、
   データベースのさまざまなカラムに外部キーを設定します。これを実行する前に、
@@ -528,7 +1234,7 @@
 
 <p>なお、必ずアップグレード前にデータベースのバックアップをとることを忘れないでください。</p>
 
-<h2><a name="v34_code_changes"></a>カスタマイズに影響するコードの変更</h2>
+<h2 id="v34_code_changes">カスタマイズに影響するコードの変更</h2>
 
 <ul>
   <li><kbd>checksetup.pl</kbd> が <kbd>localconfig</kbd> を毎回書き換えます。
@@ -575,7 +1281,7 @@
 
 
 
-<h1><a name="v34_previous"></a>[% terms.Bugzilla %] 3.2 リリースノート</h1>
+<h1 id="v34_previous">[% terms.Bugzilla %] 3.2 リリースノート</h1>
 
 <h2>目次</h2>
 
@@ -591,7 +1297,7 @@
   <li><a href="#v32_previous">以前のバージョンのリリースノート</a></li>
 </ul>
 
-<h2><a name="v32_introduction"></a>導入</h2>
+<h2 id="v32_introduction">導入</h2>
 
 <p>[% terms.Bugzilla %] 3.2 にようこそ! これは、[% terms.Bugzilla %] 3.0
   以来はじめての機能追加のリリースで、さまざまな改善と、
@@ -604,7 +1310,7 @@
   <strong>特に各バージョンのリリースノートでの "アップグレード利用者向け"
   の章に目を通してください。</strong></p>
 
-<h2><a name="v32_point">3.2.x リリースでの更新内容</a></h2>
+<h2 id="v32_point">3.2.x リリースでの更新内容</h2>
 
 <p>この節では 3.2 以降の最新の [% terms.Bugzilla %] 
   修正版リリースでの変更点を説明しています。
@@ -679,7 +1385,7 @@
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=469136">[% terms.Bug %] 469136</a>)</li>
 </ul>
 
-<h2><a name="v32_security">3.2.x リリースでのセキュリティー更新</a></h2>
+<h2 id="v32_security">3.2.x リリースでのセキュリティー更新</h2>
 
 <h3>3.2.3</h3>
 
@@ -702,7 +1408,7 @@
   <a href="http://www.bugzilla.org/security/2.22.7/">セキュリティーアドバイザリ</a>
   を読むことを強く推奨します。</p>
 
-<h2><a name="v32_req"></a>動作環境</h2>
+<h2 id="v32_req">動作環境</h2>
 
 <p>3.0.5 以降の動作環境の更新は
   <span class="req_new">このように</span> 表示されます。</p>
@@ -716,11 +1422,11 @@
   <li><a href="#v32_req_optional_mod">追加の Perl モジュール</a></li>
 </ul>
 
-<h3><a name="v32_req_perl"></a>Perl</h3>
+<h3 id="v32_req_perl">Perl</h3>
 
 <p>Perl <span class="req_new">v<strong>5.8.1</strong></span></p>
 
-<h3><a name="v32_req_mysql"></a>MySQL ユーザ</h3>
+<h3 id="v32_req_mysql">MySQL ユーザ</h3>
 
 <ul>
   <li>MySQL v4.1.2</li>
@@ -728,21 +1434,21 @@
       DBD::mysql <span class="req_new">v4.00</span></li>
 </ul>
 
-<h3><a name="v32_req_pg"></a>PostgreSQL ユーザ</h3>
+<h3 id="v32_req_pg">PostgreSQL ユーザ</h3>
 
 <ul>
   <li>PostgreSQL v8.00.0000</li>
   <li><strong>perl module:</strong> DBD::Pg v1.45</li>
 </ul>
 
-<h3><a name="v32_req_oracle"></a>Oracle ユーザ</h3>
+<h3 id="v32_req_oracle">Oracle ユーザ</h3>
 
 <ul>
   <li>Oracle v10.02.0</li>
   <li><strong>perl module:</strong> DBD::Oracle v1.19</li>
 </ul>
 
-<h3><a name="v32_req_modules"></a>必須 Perl モジュール</h3>
+<h3 id="v32_req_modules">必須 Perl モジュール</h3>
 
 <table class="req_table" border="0" cellpadding="0" cellspacing="0">
 <tr> <th>Module</th>       <th>Version</th> </tr>
@@ -764,7 +1470,7 @@
 </tr>
 </table>
 
-<h3><a name="v32_req_optional_mod"></a>追加の Perl モジュール</h3>
+<h3 id="v32_req_optional_mod">追加の Perl モジュール</h3>
 
 <p>以下の perl モジュールがインストールされていれば、[% terms.Bugzilla %] 
 のさまざまな機能が有効化されます:</p>
@@ -872,7 +1578,7 @@
 </tr>
 </table>
 
-<h2><a name="v32_feat"></a>新機能と改善点</h2>
+<h2 id="v32_feat">新機能と改善点</h2>
 
 <ul>
   <li><a href="#v32_feat_ui">主な UI の改善</a></li>
@@ -886,7 +1592,7 @@
   <li><a href="#v32_feat_other">他の機能追加と変更</a></li>
 </ul>
 
-<h3><a name="v32_feat_ui"></a>主な UI の改善</h3>
+<h3 id="v32_feat_ui">主な UI の改善</h3>
 
 <p>[% terms.Bugzilla %] 3.2 では NASA HCI と新しい
   <a href="http://wiki.mozilla.org/Bugzilla:UE">[% terms.Bugzilla %]
@@ -895,7 +1601,7 @@
 <p>特に、<a href="#v32_feat_skin">新スキン</a> に加え、
   [% terms.bug %] 編集フォームの内容が大幅に更新されています。</p>
 
-<h3><a name="v32_feat_skin"></a>新しい既定のスキン: Dusk</h3>
+<h3 id="v32_feat_skin">新しい既定のスキン: Dusk</h3>
 
 <p>[% terms.Bugzilla %] 3.2 では新しい "Dusk" と呼ばれるスキンを利用しています。
   これは古い既定の "Classic" スキンに比べて少しカラフルになっています。</p>
@@ -910,14 +1616,14 @@
   <a href="http://wiki.mozilla.org/Bugzilla:Addons#Skins">アドオンページ</a>
   にある追加のスキンや、自分のを作ってみてください !</p>
 
-<h3><a name="v32_feat_status"></a>カスタムステータスワークフロー</h3>
+<h3 id="v32_feat_status">カスタムステータスワークフロー</h3>
 
 <p>[% terms.Bugzilla %] でのステータスのリストやステータス間の遷移を、
   カスタマイズ可能になりました。</p>
 
 <p>特定の遷移を行う際にコメントを入力しなければならないように設定することも可能です。</p>
 
-<h3><a name="v32_feat_fields"></a>新しいカスタムフィールド型</h3>
+<h3 id="v32_feat_fields">新しいカスタムフィールド型</h3>
 
 <p>[% terms.Bugzilla %] 3.2 から3つの新しいカスタムフィールドの型が利用可能です :</p>
 
@@ -928,7 +1634,7 @@
     によるカレンダーもあります</li>
 </ul>
 
-<h3><a name="v32_feat_install"></a>より簡単なインストール</h3>
+<h3 id="v32_feat_install">より簡単なインストール</h3>
 
 <p>[% terms.Bugzilla %] に、<kbd>install-module.pl</kbd> 
   スクリプトが添付されるようになり、[% terms.Bugzilla %] に必要な Perl モジュールを、
@@ -940,7 +1646,7 @@
   <a href="[% docs_urlbase FILTER html %]api/install-module.html">ドキュメント</a>
   にも解説があります。</p>
 
-<h3><a name="v32_feat_oracle"></a>実験的な Oracle サポート</h3>
+<h3 id="v32_feat_oracle">実験的な Oracle サポート</h3>
 
 <p>[% terms.Bugzilla %] 3.2 では Oracle をデータベースに利用するための、
   実験的なサポートを含みます。[% terms.Bugzilla %] のいくつかの機能は、
@@ -956,7 +1662,7 @@
   Oracle が利用可能になった [% terms.Bugzilla %] 
   への多大な開発での貢献について感謝します。</p>
 
-<h3><a name="v32_feat_utf8"></a>UTF-8 サポートの改善</h3>
+<h3 id="v32_feat_utf8">UTF-8 サポートの改善</h3>
 
 <p>[% terms.Bugzilla %] 3.2 ではコード自体の UTF-8 サポートが強化され、
   多バイト言語での切り詰めやラッピングも改善されました。
@@ -964,13 +1670,13 @@
   [% terms.Bugzilla %] は最低限の (か少ない) カスタマイズで全ての国で
   利用可能になっています。</p>
 
-<h3><a name="v32_feat_grcons"></a>グループアイコン</h3>
+<h3 id="v32_feat_grcons">グループアイコン</h3>
 
 <p>管理者は特定のグループに所属するユーザに対して、
   コメントに表示される名前の後ろにアイコンを表示するように指定可能です。
   [% terms.bug %] 報告者の中から開発者を見分けるために便利なこともあります。</p>
 
-<h3><a name="v32_feat_other"></a>他の機能追加と変更</h3>
+<h3 id="v32_feat_other">他の機能追加と変更</h3>
 
 <p>これ以外にも細かい機能追加や、短い説明でわかる拡張があります。
   ただ、これらの中にも有用なものもあります !</p>
@@ -1136,7 +1842,7 @@
     を参照してください。</kbd>
 </ul>
 
-<h2><a name="v32_issues"></a>既知の問題点</h2>
+<h2 id="v32_issues">既知の問題点</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=423439">
@@ -1163,9 +1869,9 @@
     [%- terms.Bug %] 370370</a>: mod_perl はいまのところ Windows では動作しません。</li>
 </ul>
 
-<h2><a name="v32_upgrading"></a>古いバージョンからのアップグレード方法</h2>
+<h2 id="v32_upgrading">古いバージョンからのアップグレード方法</h2>
 
-<h3><a name="v32_upgrading_notes"></a>アップグレード用のメモ</h3>
+<h3 id="v32_upgrading_notes">アップグレード用のメモ</h3>
 
 <ul>
   <li>CVS から取得している場合、<kbd>extensions</kbd> と <kbd>skins/contrib</kbd>
@@ -1195,7 +1901,7 @@
   <a href="[% docs_urlbase FILTER html %]upgrade.html">アップグレードに関するドキュメント
   </a> を参照してアップグレードしてください。</p>
 
-<h2><a name="v32_code_changes"></a>カスタマイズに影響するコードの変更</h2>
+<h2 id="v32_code_changes">カスタマイズに影響するコードの変更</h2>
 
 <ul>
   <li><a href="#v32_code_hooks">よりよくなったフック機構!</a></li>
@@ -1204,19 +1910,19 @@
   <li><a href="#v32_code_other">その他の変更</a></li>
 </ul>
 
-<h3><a name="v32_code_hooks"></a>よりよくなったフック機構!</h3>
+<h3 id="v32_code_hooks">よりよくなったフック機構!</h3>
 
 <p>3.0 に比べて 3.2 ではよりフックできる場所が増えました。詳細に関しては、
   <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Hook.html">Bugzilla::Hook</a>
   のドキュメントを参照してください。</p>
 
-<h3><a name="v32_code_search"></a>Search.pm 再構成</h3>
+<h3 id="v32_code_search">Search.pm 再構成</h3>
 
 <p><kbd>Bugzilla/Search.pm</kbd> は大幅に書き換えられ、より簡単に読め、
   利用できるようになりました。3.0 と大部分は同じコードですが、
   移動され、単純な形に再構築されました。</p>
 
-<h3><a name="v32_code_lib"></a>lib ディレクトリ</h3>
+<h3 id="v32_code_lib">lib ディレクトリ</h3>
 
 <p><a href="#v32_feat_install">install-module.pl</a> の実装上、
   標準的なシステムパスに加えて、ローカルの <kbd>lib</kbd> ディレクトリを、
@@ -1225,7 +1931,7 @@
 <p>これは、全ての [% terms.Bugzilla %] スクリプトが、
   <code>use lib qw(. lib);</code> を先頭の行として始まることを意味します。</p>
 
-<h3><a name="v32_code_other"></a>その他の変更</h3>
+<h3 id="v32_code_other">その他の変更</h3>
 
 <ul>
   <li><code>status_descs.NEW</code> の代わりに <code>get_status('NEW')</code>
@@ -1234,7 +1940,7 @@
     コメントは削除されました。</li>
 </ul>
 
-<h1><a name="v32_previous"></a>[% terms.Bugzilla %] 3.0.x リリースノート</h1>
+<h1 id="v32_previous">[% terms.Bugzilla %] 3.0.x リリースノート</h1>
 
 (日本語注: この部分は将来的にも翻訳されません。)
 
@@ -1252,7 +1958,7 @@
   <li><a href="#v30_previous">以前のバージョンのリリースノート</a></li>
 </ul>
 
-<h2><a name="v30_introduction"></a>導入</h2>
+<h2 id="v30_introduction">導入</h2>
 
 <p>Welcome to [% terms.Bugzilla %] 3.0! It's been over eight years since
   we released [% terms.Bugzilla %] 2.0, and everything has changed since
@@ -1266,7 +1972,7 @@
   <a href="#v30_previous">previous versions</a> in between your version 
   and this one.</p>
 
-<h2><a name="v30_point"></a>3.0.x リリースでの更新</h2>
+<h2 id="v30_point">3.0.x リリースでの更新</h2>
 
 <p>This section describes what's changed in the most recent b<!-- -->ug-fix
   releases of [% terms.Bugzilla %] after 3.0. We only list the
@@ -1484,7 +2190,7 @@
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=335354">[% terms.Bug %] 335354</a>)</li>
 </ul>
 
-<h2><a name="v30_req"></a>動作環境</h2>
+<h2 id="v30_req">動作環境</h2>
 
 <p>2.22 以降の動作環境の更新は
   <span class="req_new">このように</span> 表示されます。</p>
@@ -1498,28 +2204,28 @@
 </ul>
 
 
-<h3><a name="v30_req_perl"></a>Perl</h3>
+<h3 id="v30_req_perl">Perl</h3>
 
 <ul>
   <li>Perl <span class="req_new">v<strong>5.8.0</strong></span> (Windows 以外)</li>
   <li>Perl v<strong>5.8.1</strong> (Windows)</li>
 </ul>
 
-<h3><a name="v30_req_mysql"></a>MySQL ユーザ</h3>
+<h3 id="v30_req_mysql">MySQL ユーザ</h3>
 
 <ul>
   <li>MySQL <span class="req_new">v4.1.2</span></li>
   <li><strong>perl モジュール:</strong> DBD::mysql v2.9003</li>
 </ul>
 
-<h3><a name="v30_req_pg"></a>PostgreSQL ユーザ</h3>
+<h3 id="v30_req_pg">PostgreSQL ユーザ</h3>
 
 <ul>
   <li>PostgreSQL v8.00.0000</li>
   <li><strong>perl モジュール:</strong> DBD::Pg v1.45</li>
 </ul>
 
-<h3><a name="v30_req_modules"></a>必須 Perl モジュール</h3>
+<h3 id="v30_req_modules">必須 Perl モジュール</h3>
 
 <table class="req_table" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -1554,7 +2260,7 @@
   </tr>
 </table>
 
-<h3><a name="v30_req_optional_mod"></a>追加の Perl モジュール</h3>
+<h3 id="v30_req_optional_mod">追加の Perl モジュール</h3>
 
 <p>以下の perl モジュールがインストールされていれば、[% terms.Bugzilla %] 
 のさまざまな機能が有効化されます:</p>
@@ -1656,7 +2362,7 @@
   </tr>
 </table>
 
-<h2><a name="v30_feat"></a>新機能と改善点</h2>
+<h2 id="v30_feat">新機能と改善点</h2>
 
 <ul>
   <li><a href="#v30_feat_cf">Custom Fields</a></li>
@@ -1684,7 +2390,7 @@
   <li><a href="#v30_feat_other">Other Enhancements and Changes</a></li>
 </ul>
 
-<h3><a name="v30_feat_cf"></a>Custom Fields</h3>
+<h3 id="v30_feat_cf">Custom Fields</h3>
 
 <p>[% terms.Bugzilla %] now includes very basic support for custom fields.</p>
 
@@ -1698,7 +2404,7 @@
   after a few weeks of using [% terms.Bugzilla %], only then should you
   start your custom fields.</p>
 
-<h3><a name="v30_feat_mp"></a>mod_perl Support</h3>
+<h3 id="v30_feat_mp">mod_perl Support</h3>
 
 <p>[% terms.Bugzilla %] 3.0 supports mod_perl, which allows for extremely
   enhanced page-load performance. mod_perl trades memory usage for performance,
@@ -1712,7 +2418,7 @@
   Apache, [% terms.Bugzilla %] still runs perfectly as a normal CGI
   application, as well.</p>
 
-<h3><a name="v30_feat_sq"></a>Shared Saved Searches</h3>
+<h3 id="v30_feat_sq">Shared Saved Searches</h3>
 
 <p>Users can now choose to &quot;share&quot; their saved searches
   with a certain group. That group will then be able to 
@@ -1732,7 +2438,7 @@
 <p>Users can control their shared and subscribed queries from
   the &quot;Preferences&quot; screen.</p>
 
-<h3><a name="v30_feat_afn"></a>Attachments and Flags on New 
+<h3 id="v30_feat_afn">Attachments and Flags on New 
   [% terms.Bugs %]</h3>
 
 <p>You can now add an attachment while you are filing a new 
@@ -1741,7 +2447,7 @@
 <p>You can also set flags on the [% terms.bug %] and on attachments, while
   filing a new [% terms.bug %].</p>
 
-<h3><a name="v30_feat_cr"></a>Custom Resolutions</h3>
+<h3 id="v30_feat_cr">Custom Resolutions</h3>
 
 <p>You can now customize the list of resolutions available
   in [% terms.Bugzilla %], including renaming the default resolutions.</p>
@@ -1750,7 +2456,7 @@
   and <code>MOVED</code> have a special meaning to [% terms.Bugzilla %],
   though, and cannot be renamed or deleted.</p>
 
-<h3><a name="v30_feat_ppp"></a>Per-Product Permissions</h3>
+<h3 id="v30_feat_ppp">Per-Product Permissions</h3>
 
 <p>You can now grant users <kbd>editbugs</kbd> and <kbd>canconfirm</kbd>
   for only certain products. You can also grant users <kbd>editcomponents</kbd>
@@ -1758,7 +2464,7 @@
   including adding/removing components and other product-specific
   controls.</p>
 
-<h3><a name="v30_feat_ui"></a>User Interface Improvements</h3>
+<h3 id="v30_feat_ui">User Interface Improvements</h3>
 
 <p>There has been some work on the user interface for [% terms.Bugzilla %] 3.0,
   including:</p>
@@ -1772,7 +2478,7 @@
     page) has been changed, and the attachment table has been redesigned.</li>
 </ul>
 
-<h3><a name="v30_feat_xml"></a>XML-RPC Interface</h3>
+<h3 id="v30_feat_xml">XML-RPC Interface</h3>
 
 <p>[% terms.Bugzilla %] now has a Web Services interface using the XML-RPC
   protocol. It can be accessed by external applications by going
@@ -1782,7 +2488,7 @@
   <a href="[% docs_urlbase FILTER html %]api/">[% terms.Bugzilla %] 
   API Docs</a>, in the various <kbd>Bugzilla::WebService</kbd> modules.</p>
 
-<h3><a name="v30_feat_skin"></a>Skins</h3>
+<h3 id="v30_feat_skin">Skins</h3>
 
 <p>[% terms.Bugzilla %] can have multiple &quot;skins&quot; installed,
   and users can pick between them. To write a skin, you just have to
@@ -1793,14 +2499,14 @@
   [% terms.Bugzilla %]. If you write an alternate skin, please
   let us know!</p>
 
-<h3><a name="v30_feat_sbu"></a>Unchangeable Fields Appear
+<h3 ="v30_feat_sbu">Unchangeable Fields Appear
   Unchangeable</h3>
 
 <p>As long as you are logged in, when viewing [% terms.abug %], if you 
   cannot change a field, it will not look like you can change it. That 
   is, the value will just appear as plain text.</p>
 
-<h3><a name="v30_feat_et"></a>All Emails in Templates</h3>
+<h3 id="v30_feat_et">All Emails in Templates</h3>
 
 <p>All outbound emails are now controlled by the templating system.
   What used to be the <code>passwordmail</code>, <code>whinemail</code>,
@@ -1815,7 +2521,7 @@
   who shows up in the <code>From</code> field on all emails that
   [%+ terms.Bugzilla %] sends.</p>
 
-<h3><a name="v30_feat_df"></a>No More Double-Filed [% terms.Bugs %]</h3>
+<h3 id="v30_feat_df">No More Double-Filed [% terms.Bugs %]</h3>
 
 <p>Users of [% terms.Bugzilla %] will sometimes accidentally submit 
   [% terms.abug %] twice, either by going back in their web browser, 
@@ -1828,12 +2534,12 @@
   you about what you're doing, before it actually submits the duplicate
   [%+ terms.bug %].</p>
 
-<h3><a name="v30_feat_cc"></a>Default CC List for Components</h3>
+<h3 id="v30_feat_cc">Default CC List for Components</h3>
 
 <p>You can specify a list of users who will <em>always</em> be added to
   the CC list of new [% terms.bugs %] in a component.</p>
 
-<h3><a name="v30_feat_emi"></a>File/Modify [% terms.Bugs %] By Email</h3>
+<h3 id="v30_feat_emi">File/Modify [% terms.Bugs %] By Email</h3>
 
 <p>You can now file or modify [% terms.bugs %] via email. Previous versions
   of [% terms.Bugzilla %] included this feature only as an
@@ -1843,7 +2549,7 @@
 <p>For more details see the <a href="[% docs_urlbase FILTER html %]api/email_in.html">documentation
   for email_in.pl</a>.</p>
 
-<h3><a name="v30_feat_gw"></a>Users Who Get All [% terms.Bug %] 
+<h3 id="v30_feat_gw">Users Who Get All [% terms.Bug %] 
   Notifications</h3>
 
 <p>There is now a parameter called <kbd>globalwatchers</kbd>. This
@@ -1853,7 +2559,7 @@
 <p>Group controls still apply, though, so users who can't see a [% terms.bug %]
   still won't get notifications about that [% terms.bug %].</p>
 
-<h3><a name="v30_feat_utf8"></a>Improved UTF-8 Support</h3>
+<h3 id="v30_feat_utf8">Improved UTF-8 Support</h3>
 
 <p>[% terms.Bugzilla %] users running MySQL should now have excellent
   UTF-8 support if they turn on the <kbd>utf8</kbd> parameter. (New
@@ -1861,7 +2567,7 @@
   now correctly supports searching and sorting in non-English languages,
   including multi-bytes languages such as Chinese.</p>
 
-<h3><a name="v30_feat_upda"></a>Automatic Update Notification</h3>
+<h3 id="v30_feat_upda">Automatic Update Notification</h3>
 
 <p>If you belong to the <kbd>admin</kbd> group, you will be notified
   when you log in if there is a new release of [% terms.Bugzilla %]
@@ -1874,20 +2580,20 @@
   through a proxy to access the web, you may also have to set the
   <kbd>proxy_url</kbd> parameter.</p>
 
-<h3><a name="v30_feat_welc"></a>Welcome Page for New Installs</h3>
+<h3 id="v30_feat_welc">Welcome Page for New Installs</h3>
 
 <p>When you log in for the first time on a brand-new [% terms.Bugzilla %]
   installation, you will be presented with a page that describes
   where you should go from here, and what parameters you should set.</p>
 
-<h3><a name="v30_feat_qs"></a>QuickSearch Plugin for IE7 and Firefox 2</h3>
+<h3 id="v30_feat_qs">QuickSearch Plugin for IE7 and Firefox 2</h3>
 
 <p>Firefox 2 users and Internet Explorer 7 users will be presented
   with the option to add [% terms.Bugzilla %] to their search bar.
   This uses the 
   <a href="page.cgi?id=quicksearch.html">QuickSearch syntax</a>.</p>
 
-<h3><a name="v30_feat_other"></a>Other Enhancements and Changes</h3>
+<h3 id="v30_feat_other">Other Enhancements and Changes</h3>
 
 <p>These are either minor enhancements, or enhancements that have
   very short descriptions. Some of these are very useful, though!</p>
@@ -1995,7 +2701,7 @@
     installation.</li>
 </ul>
 
-<h2><a name="v30_issues"></a>既知の問題点</h2>
+<h2 id="v30_issues">既知の問題点</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=69621">
@@ -2033,7 +2739,7 @@
     Search yourself.</li>
 </ul>
 
-<h2><a name="v30_security"></a>セキュリティー更新</h2>
+<h2 id="v30_security">セキュリティー更新</h2>
 
 <h3>3.0.6</h3>
 
@@ -2078,9 +2784,9 @@
   <a href="http://www.bugzilla.org/security/2.20.4/">セキュリティアドバイザリ</a>
   を参照してください。</p>
 
-<h2><a name="v30_upgrading"></a>旧バージョンからのアップグレード</h2>
+<h2 id="v30_upgrading">旧バージョンからのアップグレード</h2>
 
-<h3><a name="v30_upgrading_notes"></a>アップグレードユーザ用のメモ</h3>
+<h3 id="v30_upgrading_notes">アップグレードユーザ用のメモ</h3>
 
 <ul>
   <li>If you upgrade by CVS, there are several .cvsignore files
@@ -2113,7 +2819,7 @@
   <a href="[% docs_urlbase FILTER html %]upgrade.html">Upgrading 
   documentation</a> for instructions on how to upgrade.</p>
 
-<h2><a name="v30_code_changes"></a>Code Changes Which May Affect 
+<h2 ide="v30_code_changes">Code Changes Which May Affect 
   Customizations</h2>
 
 <ul>
@@ -2130,7 +2836,7 @@
   <li><a href="#v30_code_other">Other Changes</a></li>
 </ul>
 
-<h3><a name="v30_code_loc"></a><strong>Packagers:</strong> Location
+<h3 id="v30_code_loc"><strong>Packagers:</strong> Location
     Variables Have Moved</h3>
 
 <p>In previous versions of [% terms.Bugzilla %], <kbd>Bugzilla::Config</kbd>
@@ -2144,7 +2850,7 @@
   <em>absolute</em> (not relative) paths. There is already code in that
   subroutine to help you with this.</p>
 
-<h3><a name="v30_code_hooks"></a>Hooks!</h3>
+<h3 id="v30_code_hooks">Hooks!</h3>
 
 <p>[% terms.Bugzilla %] now supports a code hook mechanism. See the 
   documentation for 
@@ -2160,7 +2866,7 @@
 <p>If you need more hooks, please 
   <a href="http://www.bugzilla.org/developers/reporting_bugs.html">File a b<!-- -->ug</a>!</p>
 
-<h3><a name="v30_code_api"></a>API Documentation</h3>
+<h3 id="v30_code_api">API Documentation</h3>
 
 <p>[% terms.Bugzilla %] now ships with all of its perldoc built
   as HTML. Go ahead and read the
@@ -2168,7 +2874,7 @@
   for all of the [% terms.Bugzilla %] modules now! Even scripts like
   <kbd>checksetup.pl</kbd> have HTML documentation.</p>
 
-<h3><a name="v30_code_globals"></a>Elimination of globals.pl</h3>
+<h3 id="v30_code_globals">Elimination of globals.pl</h3>
 
 <p>The old file <kbd>globals.pl</kbd> has been eliminated.
   Its code is now in various modules. Each function went to the module
@@ -2180,7 +2886,7 @@
   the function, and that should get you the information about what
   it's called now and where it lives.</p>
 
-<h3><a name="v30_code_scope"></a>Cleaned Up Variable Scoping Issues</h3>
+<h3 id="v30_code_scope">Cleaned Up Variable Scoping Issues</h3>
 
 <p>In normal perl, you can have code like this:</p>
 <pre>my $var = 0;
@@ -2190,7 +2896,7 @@ sub y { $var++ }</pre>
   longer &quot;shared&quot; with subroutines--instead all variables
   that a subroutine needs must be declared inside the subroutine itself.</p>
 
-<h3><a name="v30_code_sql"></a>No More SendSQL</h3>
+<h3 id="v30_code_sql">No More SendSQL</h3>
 
 <p>The old <kbd>SendSQL</kbd> function and all of its companions are
   <strong>gone</strong>. Instead, we now use DBI for all database
@@ -2202,7 +2908,7 @@ sub y { $var++ }</pre>
   <a href="http://www.bugzilla.org/docs/developer.html#sql-sendreceive">Developer's
   Guide Section About DBI</a></p>
 
-<h3><a name="v30_code_auth"></a>Auth Re-write</h3>
+<h3 id="v30_code_auth">Auth Re-write</h3>
 
 <p>The <kbd>Bugzilla::Auth</kbd> family of modules have been completely
   re-written. For details on how the new structure of authentication,
@@ -2212,14 +2918,14 @@ sub y { $var++ }</pre>
 
 <p>It should be very easy to write new authentication plugins, now.</p>
 
-<h3><a name="v30_code_obj"></a>Bugzilla::Object</h3>
+<h3 id="v30_code_obj">Bugzilla::Object</h3>
 
 <p>There is a new base class for most of our objects, 
   <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Object.html">Bugzilla::Object</a>.
   It makes it really easy to create new objects based on things that are 
   in the database.</p>
 
-<h3><a name="v30_code_req"></a>Bugzilla-&gt;request-cache</h3>
+<h3 id="v30_code_req">Bugzilla-&gt;request-cache</h3>
 
 <p><kbd>Bugzilla.pm</kbd> used to cache things like the database
   connection in package-global variables (like <kbd>$_dbh</kbd>).
@@ -2234,7 +2940,7 @@ sub y { $var++ }</pre>
   that they cache, so to reset the template object, you'd do:
   <code>delete Bugzilla-&gt;request_cache-&gt;{template};</code>.</p>
 
-<h3><a name="v30_code_other"></a>Other Changes</h3>
+<h3 id="v30_code_other">Other Changes</h3>
 
 <ul>
   <li><code>checksetup.pl</code> has been completely re-written, and most
@@ -2270,7 +2976,7 @@ sub y { $var++ }</pre>
     still exists, but the file is empty.</li>
 </ul>
 
-<h2><a name="v30_previous"></a>Release Notes For Previous Versions</h2>
+<h2 id="v30_previous">Release Notes For Previous Versions</h2>
 
 <p>Release notes for versions of [% terms.Bugzilla %] for versions
   prior to 3.0 are only available in text format: 
@@ -2281,8 +2987,7 @@ sub y { $var++ }</pre>
 
 [% BLOCK db_req %]
   [% SET m = DB_MODULE.$db %]
-  <h3><a name="v34_req_[% db FILTER html %]"></a>[% m.name FILTER html %] 
-    ユーザ</h3>
+  <h3 id="v36_req_[% db FILTER html %]">[% m.name FILTER html %] ユーザ</h3>
 
   <ul>
     <li>[% m.name FILTER html %]
@@ -2318,7 +3023,7 @@ sub y { $var++ }</pre>
           [% END %]
         </td>
         [% IF include_feature %] 
-          <td>[% req.feature FILTER html %]</td>
+          <td>[% req.feature.join(', ') FILTER html %]</td>
         [% END %]
       </tr>
     [% END %]
