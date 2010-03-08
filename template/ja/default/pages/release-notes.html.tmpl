@@ -57,6 +57,49 @@
 
 <h2><a name="v34_point"></a>3.4.x リリースでの更新点</h2>
 
+<h3>3.4.6</h3>
+
+<ul>
+  <li>"等しくない"、"文字列を含まない"のような"否定的"な条件での検索の際に、
+    結果の [% terms.bug %] リストの上部に表示される検索条件の説明が、
+    肯定的な表現になっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=474738">[% terms.Bug %] 474738</a>)
+  </li>
+  <li>Internet Explorer において、RESOLVED DUPLICATE の[% terms.bug %] を
+    REOPENED に簡単に変更することが、JavaScriptのエラーのためできませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=546719">[% terms.Bug %] 546719</a>)
+  </li>
+  <li>"ブックマーク可能なテンプレート"を[% terms.bug %]登録ページのフォームを
+    事前に埋めるために利用していた場合、かつ他のフィールドの値に依存して、
+    表示される(もしくはとりえる値が制限される)カスタムフィールドを利用していた
+    場合に、そのカスタムフィールドが正常に動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=538211">[% terms.Bug %] 538211</a>)
+  </li>
+  <li>[% terms.bug %]の解決方法がFIXEDの場合にのみ表示される設定のカスタム
+    フィールドを利用している場合、[% terms.bug %]編集フォームでユーザが
+    [% terms.bug %]のステータスをRESOLVEDに設定したときにも正常に動作するように
+    なりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=520993">[% terms.Bug %] 520993</a>)
+  </li>
+  <li>ログアウトしており、かつ<kbd>request.cgi</kbd>を利用すると、
+    要請者と被要請者フィールドは<kbd>usermatching</kbd>パラメータを
+    反映しなくなりました -- 常にユーザ名全体を要求します。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=533018">[% terms.Bug %] 533018</a>)
+  </li>
+  <li>大量の文字を含む検索を行おうとした場合 (7000文字程度以上を含むURL
+    になるようなもの)、Apacheが検索結果ではなく、500エラーを返すことがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=513989">[% terms.Bug %] 513989</a>)
+  </li>
+  <li>[% terms.Bugzilla %] は、新しいフィールドをソート順に追加した際、
+    既存のソート順からフィールドを落としてしまうことがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=470214">[% terms.Bug %] 470214</a>)
+  </li>
+  <li>Atom形式の検索結果が、時々いくつかの[% terms.bugs %]において
+    報告者や担当者フィールドを含まないことがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=537834">[% terms.Bug %] 537834</a>)
+  </li>
+</ul>
+
 <h3>3.4.5</h3>
 
 <p>このリリースではひとつのセキュリティー問題への修正を含みます。詳細に関しては、
