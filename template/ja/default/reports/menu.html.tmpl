@@ -70,6 +70,9 @@
       時間ごとの任意の検索結果のプロットで、より高機能。
     </li>
   [% END %]
+  [% Hook.process('current_state') %]
 </ul>
+
+[% Hook.process('end') %]
 
 [% PROCESS global/footer.html.tmpl %]
