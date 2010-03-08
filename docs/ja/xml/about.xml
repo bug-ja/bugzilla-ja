@@ -1,6 +1,5 @@
 <!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook V4.1//EN" [
 <!ENTITY conventions SYSTEM "conventions.xml"> ] > -->
-<!-- $Id: about.xml,v 1.26 2008/04/04 06:48:18 wurblzap%gmail.com Exp $ -->
 
 <chapter id="about">
 <title>このガイドについて</title>
@@ -60,40 +59,20 @@
     <para>
       これは、バージョン &bz-ver; 向けの Bugzilla ガイドです。
       現在利用中の Bugzilla にあったバージョンになっているはずです。
-      <!-- BZ-DEVEL --> Bugzilla のバージョンと一致しているはずですが、
-      このバージョンのガイドは開発版のものです。<!-- /BZ-DEVEL --> 
     </para>
     <para>
-      最新版のこのガイドは常に <ulink url="http://www.bugzilla.org"/> から、
-      もしくは CVS 経由で <ulink url="http://www.mozilla.org/cvs.html">Mozilla 
-      CVS</ulink> 利用方法の解説を参照にチェックアウトしたツリーの、
-      <filename>mozilla/webtools/bugzilla/docs/</filename>
-      の中にあるはずです。しかしながら、利用中の Bugzilla 
+      最新版のこのガイドは常に <ulink url="http://www.bugzilla.org/docs/"/> から
+      利用可能です。しかしながら、利用中の Bugzilla 
       リリースと同じバージョンのガイドを利用すべきです。
-    </para>
-    <para>
-      Bugzilla ガイドやその一部は、
-      <ulink url="http://www.traduc.org/docs/guides/lecture/bugzilla/">フランス語</ulink> や
-      <ulink url="http://bugzilla-de.sourceforge.net/docs/html/">ドイツ語</ulink>
-      といったほかの言語でも入手可能です。
-      これらは最新版に更新されていないか古いものである可能性があります。
     </para>
     
     <para>  
-      また、Bugzilla のテンプレートローカライゼーションプロジェクトが以下の言語で存在します。
-      この中にはドキュメントの翻訳を含むものもあります。
-      <ulink url="http://sourceforge.net/projects/bugzilla-ar/">アラビア語</ulink>、
-      <ulink url="http://sourceforge.net/projects/bugzilla-be/">ベラルーシ語</ulink>、
-      <ulink url="http://openfmi.net/projects/mozilla-bg/">ブルガリア語</ulink>
-      <ulink url="http://sourceforge.net/projects/bugzilla-br/">ブラジルのポルトガル語</ulink>、
-      <ulink url="http://sourceforge.net/projects/bugzilla-cn/">中国語</ulink>、
-      <ulink url="http://sourceforge.net/projects/bugzilla-fr/">フランス語</ulink>、
-      <ulink url="http://germzilla.ganderbay.net/">ドイツ語</ulink>、
-      <ulink url="http://sourceforge.net/projects/bugzilla-it/">イタリア語</ulink>、
-      <ulink url="http://www.bugzilla.jp/about/jp.html">日本語</ulink>、
-      <ulink url="http://sourceforge.net/projects/bugzilla-kr/">韓国語</ulink>、
-      <ulink url="http://sourceforge.net/projects/bugzilla-ru/">ロシア語</ulink>、
-      <ulink url="http://sourceforge.net/projects/bugzilla-es/">スペイン語</ulink>。
+      また、Bugzilla のテンプレートローカライゼーションプロジェクトが
+      <ulink url="http://www.bugzilla.org/download/#localizations">いくつかの言語</ulink>
+      で利用可能です。また、翻訳されたドキュメントが存在する言語もあります。
+      このガイドを他の言語に翻訳することに興味のある方は、
+      <ulink url="https://wiki.mozilla.org/Bugzilla:L10n">Bugzilla L10n チーム</ulink>
+      をご覧ください。
     </para>
     
     <para>  
