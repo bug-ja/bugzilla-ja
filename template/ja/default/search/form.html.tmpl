@@ -301,7 +301,7 @@ function doOnSelectProduct(selectmode) {
       <td>
         [% INCLUDE "search/type-select.html.tmpl"
            name = "keywords_type",
-           types = ['allwords', 'anywords', 'nowords'], 
+           types = ['allwords', 'anywords', 'nowords', 'regexp', 'notregexp'],
            selected = default.keywords_type.0 %]
       </td>
       <td>
@@ -422,20 +422,14 @@ function doOnSelectProduct(selectmode) {
   </tr>
 </table>
 
-[%# *** Email Numbering Votes *** %]
+[%# *** Email Numbering *** %]
 
 <table>
   <tr>
     <td>
       <fieldset>
         <legend>
-          <strong>
-            [% IF Param('usevotes') %]
-              メールアドレス、[% terms.Bug %] 数、と投票
-            [% ELSE %]
-              メールアドレスと [% terms.Bug %] 数
-            [% END %]
-          </strong>
+          <strong>メールアドレスと [% terms.Bug %] 数</strong>
         </legend>
 
 
@@ -550,17 +544,7 @@ function doOnSelectProduct(selectmode) {
     <td></td>
     <td>(カンマ区切りリスト)</td>
   </tr>
-  [% IF Param('usevotes') %]
-    <tr>
-      <td align="right">
-        <label for="votes">[% terms.bugs %] の最低得票数</label>:
-      </td>
-      <td>
-        <input name="votes" id="votes" size="3"
-               value="[% default.votes.0 FILTER html %]">
-      </td>
-    </tr>
-  [% END %]
+  [% Hook.process('email_numbering_end') %]
 </table>
 
 

@@ -1,0 +1,215 @@
+[%# The contents of this file are subject to the Mozilla Public
+  # License Version 1.1 (the "License"); you may not use this file
+  # except in compliance with the License. You may obtain a copy of
+  # the License at http://www.mozilla.org/MPL/
+  #
+  # Software distributed under the License is distributed on an "AS
+  # IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
+  # implied. See the License for the specific language governing
+  # rights and limitations under the License.
+  #
+  # The Original Code is the Bugzilla Bug Tracking System.
+  #
+  # The Initial Developer of the Original Code is Netscape Communications
+  # Corporation. Portions created by Netscape are
+  # Copyright (C) 1998 Netscape Communications Corporation. All
+  # Rights Reserved.
+  #
+  # Contributor(s): Gervase Markham <gerv@gerv.net>
+  #                 Max Kanat-Alexander <mkanat@bugzilla.org>
+  #%]
+
+[%# This file describes both bug fields and search fields. %]
+
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% help_html = {
+
+# Note that all these keys here are in alphabetical order, though
+# search-specific fields are at the bottom.
+
+##############
+# Bug Fields #
+##############
+
+alias =>
+  "${terms.Bugzilla} のほかの場所で探し出す際や参照するための手助けになるような、
+   $terms.abug に割り当てられた短い唯一の名前です。",
+
+assigned_to =>
+  "${terms.bug} を解決する担当者です。",
+
+blocked =>
+  "この $terms.bug を修正するためには、このフィールドに含まれている $terms.bugs 
+   を修正することが必要です。",
+
+bug_file_loc =>
+  "$terms.Bugs は関連する URL をもてます - たとえば、問題が再現するウェブサイト"
+  _ "へのポインタなどです。",
+
+bug_id =>
+  "$terms.abug の数値の ID で、${terms.Bugzilla} 全体で唯一になる番号です。",
+
+bug_severity =>
+  "$terms.bug がどの程度重要であるかもしくは機能要望であるかを示します。",
+
+bug_status =>
+  "$terms.Abug はいくつかのステータスのうちのひとつをとりえます。",
+
+cc =>
+  "この $terms.bug で直接の何らかの役割を持ってはいないけれど、
+   そのプロセスに興味を持っているユーザです。",
+
+classification => 
+  "$terms.Bugs は Classification とプロダクト・コンポーネントに分類されます。
+   Classification はトップレベルの分類です。",   
+
+component => 
+  "コンポーネントは2番目のレベルのカテゴリです。それぞれ、
+   何らかのプロダクトに属しています。プロダクトを選択すればリストが限定されます。",
+
+creation_ts =>
+  "$terms.bug の登録日時です。",
+
+deadline =>
+  "$terms.bug が必ず修正されなければならない日付で、YYYY-MM-DD
+   形式で入力してください。",
+
+delta_ts =>
+  "$terms.bug が最後に更新された日付です。",
+
+dependson =>
+  "ここにリストされた $terms.bugs はこの $terms.bug が修正されるためには、
+   必ず修正されていなければならないものです。",
+
+estimated_time =>
+  "この ${terms.bug} を修正するのに必要と推定された時間です。",
+
+keywords =>
+   "タグ付けやグループ化のために、
+    事前定義されたキーワードリストから $terms.bugs に追加できます。",
+
+longdesc =>
+  "$terms.Bugs には $terms.Bugzilla ユーザがコメントをつけられます。
+   それらのコメントの文章を検索できます。",
+
+op_sys =>
+  "$terms.bug がどのオペレーティングシステムで検出されたか。",
+
+percentage_complete =>
+  "この $terms.bug 作業がどの程度完了に近いかを、
+   ${field_descs.estimated_time} と $field_descs.work_time の比較で示しています。",
+
+priority =>
+  "技術者が、$terms.bugs の順位付けをこのフィールドで行います。",
+
+# Note that this has extra text added below if useclassification is on.
+product =>
+  "$terms.Bugs はプロダクトとコンポーネントで分類されます。",
+
+qa_contact =>
+  "unconfirmed の場合は $terms.bug の確認をする責任者、
+   そして、$terms.bug が修正されればその修正を確認する責任者です。",
+
+remaining_time =>
+  "$terms.bug の修正に必要な残り時間で、
+   ${field_descs.estimated_time} から投稿された $field_descs.work_time
+   を減算することで計算しています。",
+
+rep_platform => 
+  "$terms.bug が検出されたハードウェアプラットフォームです。",
+
+reporter =>
+  "この ${terms.bug} を登録したユーザです。",
+
+resolution =>
+  "$terms.abug が解決済み状態の場合、
+   解決方法としてこれらのうちのひとつの理由が付与されます。",
+
+see_also =>
+  "ほかのサイトの $terms.bugs への参照を入力できます。
+  '参照'フィールドに $terms.abug の URL を入力することで、その $terms.bug 
+   がこれに関連していると示すことができます。
+   複数の URL をカンマで区切って一度に入力することも可能です。
+
+   <p>通常<em>ほかの</em>サイトの $terms.bugs への参照をここでは利用してください。
+   このサイトの $terms.bugs に関しては、$field_descs.dependson や
+     $field_descs.blocked フィールドを利用してください。</p>",
+
+short_desc =>
+  "$terms.bug の要約はこの $terms.bug が何であるかの短い説明です。",
+
+status_whiteboard =>
+  "それぞれの $terms.bug が単一行の自由記述の入力ボックスを持っており、
+   タグ付け、ステータス状況説明に利用可能です。",
+
+target_milestone =>
+   "ターゲットマイルストーンフィールドは、技術者がこの $terms.bug 
+    をどのバージョンで修正できるかを示すものです。",
+
+version =>
+  "バージョンフィールドでは $terms.bug が検出されたバージョンを示します。",
+
+votes =>
+  "いくつかの $terms.bugs には投票が可能で、ある一定票以上をあつめた
+   $terms.bugs に検索を限ることも可能です。",
+
+work_time =>
+  "この $terms.bug にどの程度の時間が費やされたかを示します。",
+
+##########################
+# Search-specific fields #
+##########################
+
+chfield =>
+  "ある特定の種類の変更のみを検索できます - 
+   このフィールドではどの種類の変更に興味があるかを指定できます。",
+
+# Duplicated to chfieldto below, also.
+chfieldfrom =>
+  "開始・終了日時を、YYYY-MM-DD 形式 (に必要なら 24 時間表記の HH:mm 
+   をつけて) で指定するか、1h, 2d, 3w, 4m, 5y のような相対日時
+   (それぞれ、1時間、2日、3週間、4ヶ月、5年) で指定できます。
+   0d は直前の深夜0時、0h, 0w, 0m, 0y はそれぞれ時間、週、月、年の始まりを
+   示します。",
+
+chfieldvalue =>
+  "この値は指定した期間中に変更されたフィールドを定義します。",
+
+content =>
+  "Google のような $field_descs.short_desc および $field_descs.longdesc 
+   に対する '全文検索' を行うためのフィールドです。",
+
+# Duplicated to email2 below, also.
+email1 =>
+  "全ての $terms.bug には異なった役割をもつユーザが存在します。
+   ここではどの役割でかかわっているかを指定してのユーザでの検索が可能です。",
+
+} %]
+
+[% help_html.email2 = help_html.email1 %]
+[% help_html.chfieldto = help_html.chfieldfrom %]
+[% help_html.deadlinefrom = help_html.deadline %]
+[% help_html.deadlineto = help_html.deadline %]
+
+[% help_all_note = BLOCK %]
+  <strong>注:</strong> 検索の際、オプション "All" を選択すると、
+  そのフィールドで "All" という値が選択されている [% terms.bugs %]
+  を検索します。
+[% END %]
+[% FOREACH all_field = ['op_sys', 'rep_platform'] %]
+  [% help_html.$all_field = help_html.$all_field _ ' ' _ help_all_note %]
+[% END %]
+
+[% IF Param('useclassification') %]
+  [% help_html.product = help_html.product 
+      _ " Classification を選択すればリストが限定されます。" %]
+[% END %]
+
+[% FOREACH help_field = bug_fields.keys %]
+  [% type_desc = BLOCK %]
+    [% field_descs.${help_field} FILTER html %] の型での検索も可能です。
+  [% END %]
+  [% SET type_name = help_field _ '_type' %]
+  [% help_html.$type_name = type_desc %]
+[% END %]

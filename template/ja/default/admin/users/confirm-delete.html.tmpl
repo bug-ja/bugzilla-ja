@@ -33,7 +33,6 @@
   # namedquery_group_map:     number of named queries the user has shared
   # profiles_activity:        number of changes made to other users' profiles
   # series:                   number of series the viewed user has created
-  # votes:                    number of bugs the viewed user has voted on
   # watch.watched:            number of users the viewed user is being watched
   #                           by
   # watch.watcher:            number of users the viewed user is watching
@@ -205,8 +204,8 @@
   [% END %]
 
   [% IF assignee_or_qa || cc || component_cc || email_setting || flags.requestee ||
-        namedqueries || profile_setting || quips || series || votes || watch.watched ||
-        watch.watcher || whine_events || whine_schedules %]
+        namedqueries || profile_setting || quips || series || watch.watched ||
+        watch.watcher || whine_events || whine_schedules || other_safe %]
     <div class="warningmessages">
       <p>以下の情報の削除は <b>安全</b> です。
       これにより、データに不整合は発生しません。</p>
@@ -331,19 +330,6 @@
             には作成者はなくなりますが、存在し続けます。
           </li>
         [% END %]
-        [% IF votes %]
-          <li>
-            [% otheruser.login FILTER html %] は、
-            [%+ votes %] 件の [%+ terms.bugs %] に投票しています。
-            もし、このユーザのアカウントを削除した場合、
-            [% IF votes == 1 %]
-              この票
-            [% ELSE %]
-              これらの票
-            [% END %]
-            はユーザアカウントと共に削除されます。
-          </li>
-        [% END %]
         [% IF watch.watched || watch.watcher %]
           <li>
             [% otheruser.login FILTER html %]
@@ -382,6 +368,7 @@
             whine そのものはそのまま残ります。
           </li>
         [% END %]
+        [% Hook.process('warn_safe') %]
       </ul>
     </div>
     [% IF accept_deletion %]

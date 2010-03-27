@@ -28,7 +28,13 @@
            onload = "document.getElementById('new_bugmail').disabled = true;"
            javascript_urls = [ 'js/util.js' ]
            doc_section = "custom-fields.html#add-custom-fields"
+           style_urls = ['skins/standard/admin.css']
 %]
+
+[%# set initial editability of fields such as Reverse Relationship Description %]
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function() {onChangeType(document.getElementById('type'))});
+</script>
 
 <p>
   カスタムフィールドを追加する [% terms.Bugzilla %] のインターフェースは非常に複雑です。
@@ -48,14 +54,14 @@
 </ul>
 
 <form id="add_field" action="editfields.cgi" method="GET">
-  <table border="0" cellspacing="0" cellpadding="5">
+  <table border="0" cellspacing="0" cellpadding="5" id="edit_custom_field">
     <tr>
-      <th align="right"><label for="name">名前:</label></th>
+      <th class="narrow_label"><label for="name">名前:</label></th>
       <td>
         <input type="text" id="name" name="name" value="cf_" size="40" maxlength="64">
       </td>
 
-      <th align="right">
+      <th>
         <label for="enter_bug">[% terms.bug %] 作成時に設定可能:</label>
       </th>
       <td>
@@ -64,16 +70,16 @@
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="desc">説明:</label></th>
+      <th class="narrow_label"><label for="desc">説明:</label></th>
       <td><input type="text" id="desc" name="desc" value="" size="40"></td>
 
-      <th align="right">
+      <th>
         <label for="new_bugmail">[% terms.bugs %] 作成時に [% terms.bug %] メールに表示:</label>
       </th>
       <td><input type="checkbox" id="new_bugmail" name="new_bugmail" value="1"></td>
     </tr>
     <tr>
-      <th align="right"><label for="type">型:</label></th>
+      <th class="narrow_label"><label for="type">型:</label></th>
       <td>
         <select id="type" name="type" onchange="onChangeType(this)">
           [% FOREACH type = field_types.keys %]
@@ -83,16 +89,16 @@
         </select>
       </td>
 
-      <th align="right"><label for="obsolete">用済み:</label></th>
+      <th><label for="obsolete">用済み:</label></th>
       <td><input type="checkbox" id="obsolete" name="obsolete" value="1"></td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">ソート順:</label></th>
+      <th class="narrow_label"><label for="sortkey">ソート順:</label></th>
       <td>
         <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6">
       </td>
 
-      <th align="right">
+      <th>
         <label for="visibility_field_id">特定の条件下でのみ利用可能なフィールド:</label>
       </th>
       <td>
@@ -114,7 +120,20 @@
     </tr>
 
     <tr>
-      <td colspan="2">&nbsp;</td>
+      <th class="narrow_label">
+        <label for="reverse_desc">逆向きの関係性:</label>
+      </th>
+      <td>
+        <input type="text" id="reverse_desc" name="reverse_desc" value="" size="40" disabled="disabled">
+        <br/>
+        このラベルは、この
+        [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %]
+        フィールドを持つような [% terms.bugs %] 
+        のリストに対するラベルとして利用できます。
+        たとえば、説明が"の重複"であるような場合に、逆向きの説明は
+        "この [% terms.bug %] への重複" となります。
+        このフィールドへのリストを無効化する場合は空白にしてください。
+      </td>
       <th>
         <label for="value_field_id">
           このフィールドに出現する<br>

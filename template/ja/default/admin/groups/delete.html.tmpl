@@ -59,6 +59,15 @@
      - <label><input type="checkbox" name="removeusers">このグループから全てのユーザを削除する。</label></p>
   [% END %]
 
+  [% IF group.granted_by_direct(constants.GROUP_MEMBERSHIP).size %]
+    <p><b>このグループのメンバーには以下のグループの所属者も含まれます:</b></p>
+    <ul>
+      [% FOREACH grantor = group.granted_by_direct(constants.GROUP_MEMBERSHIP) %]
+        <li>[% grantor.name FILTER html %]</li>
+      [% END %]
+    </ul>
+  [% END %]
+
   [% IF group.bugs.size %]
     <p><b>まだこのグループからのみ閲覧可能な [% terms.bug %] レポートが
     [% group.bugs.size FILTER html %] [%+ terms.bug %] 件あります。

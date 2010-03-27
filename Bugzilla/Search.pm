@@ -28,6 +28,8 @@
 #                 Joel Peshkin <bugreport@peshkin.net>
 #                 Lance Larsh <lance.larsh@oracle.com>
 #                 Jesse Clark <jjclark1982@gmail.com>
+#                 Rémi Zara <remi_zara@mac.com>
+#                 Reed Loden <reed@reedloden.com>
 
 use strict;
 
@@ -84,10 +86,8 @@ use constant SPECIAL_ORDER_JOIN => {
 # 3. title: The title of the column as displayed to users.
 # 
 # Note: There are a few hacks in the code that deviate from these definitions.
-#       In particular, when the list is sorted by the "votes" field the word 
-#       "DESC" is added to the end of the field to sort in descending order, 
-#       and the redundant short_desc column is removed when the client
-#       requests "all" columns.
+#       In particular, the redundant short_desc column is removed when the
+#       client requests "all" columns.
 #
 # This is really a constant--that is, once it's been called once, the value
 # will always be the same unless somebody adds a new custom field. But
@@ -219,8 +219,8 @@ sub init {
         type     => [FIELD_TYPE_MULTI_SELECT, FIELD_TYPE_BUG_URLS],
         obsolete => 0 });
     foreach my $field (@select_fields) {
+        next if $field->is_abnormal;
         my $name = $field->name;
-        next if $name eq 'product'; # products don't have sortkeys.
         $special_order{$name} = [ "$name.sortkey", "$name.value" ],
         $special_order_join{$name} =
            "LEFT JOIN $name ON $name.value = bugs.$name";
@@ -277,18 +277,6 @@ sub init {
     if (grep($_ eq 'flagtypes.name', @fields)) {
         push(@supptables, "LEFT JOIN flags ON flags.bug_id = bugs.bug_id AND attach_id IS NULL");
         push(@supptables, "LEFT JOIN flagtypes ON flagtypes.id = flags.type_id");
-    }
-
-    my $minvotes;
-    if (defined $params->param('votes')) {
-        my $c = trim($params->param('votes'));
-        if ($c ne "") {
-            if ($c !~ /^[0-9]*$/) {
-                ThrowUserError("illegal_at_least_x_votes",
-                                  { value => $c });
-            }
-            push(@specialchart, ["votes", "greaterthan", $c - 1]);
-        }
     }
 
     # If the user has selected all of either status or resolution, change to
@@ -613,7 +601,7 @@ sub init {
         "^long_?desc,changedafter" => \&_long_desc_changedbefore_after,
         "^content,matches" => \&_content_matches,
         "^content," => sub { ThrowUserError("search_content_without_matches"); },
-        "^(?:deadline|creation_ts|delta_ts),(?:lessthan|greaterthan|equals|notequals),(?:-|\\+)?(?:\\d+)(?:[dDwWmMyY])\$" => \&_timestamp_compare,
+        "^(?:deadline|creation_ts|delta_ts),(?:lessthan|lessthaneq|greaterthan|greaterthaneq|equals|notequals),(?:-|\\+)?(?:\\d+)(?:[dDwWmMyY])\$" => \&_timestamp_compare,
         "^commenter,(?:equals|anyexact),(%\\w+%)" => \&_commenter_exact,
         "^commenter," => \&_commenter,
         # The _ is allowed for backwards-compatibility with 3.2 and lower.
@@ -636,11 +624,12 @@ sub init {
         "^component,(?!changed)" => \&_component_nonchanged,
         "^product,(?!changed)" => \&_product_nonchanged,
         "^classification,(?!changed)" => \&_classification_nonchanged,
+        "^keywords,(?:equals|notequals|anyexact|anyword|allwords|nowords)" => \&_keywords_exact,
         "^keywords,(?!changed)" => \&_keywords_nonchanged,
         "^dependson,(?!changed)" => \&_dependson_nonchanged,
         "^blocked,(?!changed)" => \&_blocked_nonchanged,
         "^alias,(?!changed)" => \&_alias_nonchanged,
-        "^owner_idle_time,(greaterthan|lessthan)" => \&_owner_idle_time_greater_less,
+        "^owner_idle_time,(greaterthan|greaterthaneq|lessthan|lessthaneq)" => \&_owner_idle_time_greater_less,
         "^($multi_fields),(?:notequals|notregexp|notsubstring|nowords|nowordssubstr)" => \&_multiselect_negative,
         "^($multi_fields),(?:allwords|allwordssubstr|anyexact)" => \&_multiselect_multiple,
         "^($multi_fields),(?!changed)" => \&_multiselect_nonchanged,
@@ -653,8 +642,10 @@ sub init {
         ",regexp" => \&_regexp,
         ",notregexp" => \&_notregexp,
         ",lessthan" => \&_lessthan,
+        ",lessthaneq" => \&_lessthaneq,
         ",matches" => sub { ThrowUserError("search_content_without_matches"); },
         ",greaterthan" => \&_greaterthan,
+        ",greaterthaneq" => \&_greaterthaneq,
         ",anyexact" => \&_anyexact,
         ",anywordssubstr" => \&_anywordsubstr,
         ",allwordssubstr" => \&_allwordssubstr,
@@ -1593,8 +1584,12 @@ sub _percentage_complete {
         $oper = "=";
     } elsif ($$t eq "greaterthan") {
         $oper = ">";
+    } elsif ($$t eq "greaterthaneq") {
+        $oper = ">=";
     } elsif ($$t eq "lessthan") {
         $oper = "<";
+    } elsif ($$t eq "lessthaneq") {
+        $oper = "<=";
     } elsif ($$t eq "notequal") {
         $oper = "<>";
     } elsif ($$t eq "regexp") {
@@ -1865,7 +1860,7 @@ sub _classification_nonchanged {
                               $$term);
 }
 
-sub _keywords_nonchanged {
+sub _keywords_exact {
     my $self = shift;
     my %func_args = @_;
     my ($chartid, $v, $ff, $f, $t, $term, $supptables) =
@@ -1902,6 +1897,23 @@ sub _keywords_nonchanged {
         push(@$supptables, "LEFT JOIN keywords AS $table " .
                            "ON $table.bug_id = bugs.bug_id");
     }
+}
+
+sub _keywords_nonchanged {
+    my $self = shift;
+    my %func_args = @_;
+    my ($chartid, $v, $ff, $f, $t, $term, $supptables) =
+        @func_args{qw(chartid v ff f t term supptables)};
+
+    my $k_table = "keywords_$$chartid";
+    my $kd_table = "keyworddefs_$$chartid";
+    
+    push(@$supptables, "LEFT JOIN keywords AS $k_table " .
+                       "ON $k_table.bug_id = bugs.bug_id");
+    push(@$supptables, "LEFT JOIN keyworddefs AS $kd_table " .
+                       "ON $kd_table.id = $k_table.keywordid");
+    
+    $$f = "$kd_table.name";
 }
 
 sub _dependson_nonchanged {
@@ -2115,12 +2127,28 @@ sub _lessthan {
     $$term = "$$ff < $$q";
 }
 
+sub _lessthaneq {
+    my $self = shift;
+    my %func_args = @_;
+    my ($ff, $q, $term) = @func_args{qw(ff q term)};
+
+    $$term = "$$ff <= $$q";
+}
+
 sub _greaterthan {
     my $self = shift;
     my %func_args = @_;
     my ($ff, $q, $term) = @func_args{qw(ff q term)};
     
     $$term = "$$ff > $$q";
+}
+
+sub _greaterthaneq {
+    my $self = shift;
+    my %func_args = @_;
+    my ($ff, $q, $term) = @func_args{qw(ff q term)};
+    
+    $$term = "$$ff >= $$q";
 }
 
 sub _anyexact {

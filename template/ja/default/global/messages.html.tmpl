@@ -140,7 +140,7 @@
 
   [% ELSIF message_tag == "buglist_query_gone" %]
     [% title = "検索条件を破棄しました" %]
-    [% link  = "検索ページに戻る" %]
+    [% link  = "検索条件の破棄をやめる" %]
     保存された検索 <b>[% namedcmd FILTER html %]</b> を破棄しました。
 
   [% ELSIF message_tag == "buglist_sorted_by_relevance" %]

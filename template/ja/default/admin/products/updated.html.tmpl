@@ -75,34 +75,6 @@
   '[% product.default_milestone FILTER html %]' に変更されました。
   </p>
 [% END %]
-  
-[% IF changes.votesperuser.defined %]
-  <p>
-  一人当たりの最大投票数 が
-  [%+ changes.votesperuser.0 FILTER html %] から
-  [%+ product.votes_per_user FILTER html %] に変更されました。
-  </p>
-  [% checkvotes = 1 %]
-[% END %]
-
-[% IF changes.maxvotesperbug.defined %]
-  <p>
-  一つの [% terms.Bug %] あたりの一人の最大投票数 が
-  [%+ changes.maxvotesperbug.0 FILTER html %] から
-  [%+ product.max_votes_per_bug FILTER html %] に変更されました。
-  </p>
-  [% checkvotes = 1 %]
-[% END %]
-
-[% IF changes.votestoconfirm.defined %]
-  <p>
-  確認されたとみなす票数 が
-  [%+ changes.votestoconfirm.0 FILTER html %] から
-  [%+ product.votes_to_confirm FILTER html %] に変更されました。
-  </p>
-  [% checkvotes = 1 %]
-[% END %]
-
 [% IF changes.allows_unconfirmed.defined %]
   <p>
   [% IF product.allows_unconfirmed %]
@@ -121,60 +93,10 @@
   </p>
 [% END %]
 
+[% Hook.process('changes') %]
+
 [% IF !changes.keys.size %]
   <p>'[% product.name FILTER html %]' は変更されませんでした。</p>
-[% END %]
-
-[%# Note that this display of changed votes and/or confirmed bugs is
-    not very scalable. We could have a _lot_, and we just list them all.
-    One day we should limit this perhaps, or have a more scalable display %]
-
-
-[% IF checkvotes %]
-  <hr>
-
-  <p>一つの [% terms.Bug %] あたりの一人の最大投票数 に対して多すぎる投票が無いか確認しています...<br>
-  [% IF changes.too_many_votes.size %]
-    [% FOREACH detail = changes.too_many_votes %]
-      &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
-     [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> への投票が [% detail.name FILTER html %] から削除されました。<br>
-    [% END %]
-  [% ELSE %]
-    &rarr;問題ありませんでした。
-  [% END %]
-  </p>
-
-  <p>一人当たりの最大投票数 が多すぎるアカウントが無いか確認しています...<br>
-  [% IF changes.too_many_total_votes.size %]
-    [% FOREACH detail = changes.too_many_total_votes %]
-      &rarr;[% terms.bug %] <a href="show_bug.cgi?id=
-     [%- detail.id FILTER url_quote %]">
-     [%- detail.id FILTER html %]</a> への投票が [% detail.name FILTER html %] から削除されました。<br>
-    [% END %]
-  [% ELSE %]
-    &rarr;問題ありませんでした。
-  [% END %]
-  </p>
-
-  <p>投票により確認されたとみなすことができる [% terms.bugs %] が無いか確認しています...<br>
-  [% IF changes.confirmed_bugs.size %]
-    [% FOREACH id = changes.confirmed_bugs %]
-
-      [%# This is INCLUDED instead of PROCESSED to avoid variables getting
-          overwritten, which happens otherwise %]
-      [% INCLUDE bug/process/results.html.tmpl
-        type = 'votes'
-        mailrecipients = { 'changer' => user.login }
-        header_done = 1
-        id = id
-      %]
-    [% END %]
-  [% ELSE %]
-    &rarr;ありませんでした。
-  [% END %]
-  </p>
-
 [% END %]
 
 [% PROCESS admin/products/footer.html.tmpl %]

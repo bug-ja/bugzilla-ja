@@ -119,10 +119,15 @@ sub body_full {
     $params ||= {};
     my $template = Bugzilla->template_inner;
     my $body;
-    $template->process("bug/format_comment.txt.tmpl", 
-                       { comment => $self, %$params }, \$body)
-        || ThrowTemplateError($template->error());
-    $body =~ s/^X//;
+    if ($self->type) {
+        $template->process("bug/format_comment.txt.tmpl", 
+                           { comment => $self, %$params }, \$body)
+            || ThrowTemplateError($template->error());
+        $body =~ s/^X//;
+    }
+    else {
+        $body = $self->body;
+    }
     if ($params->{wrap} and !$self->already_wrapped) {
         $body = wrap_comment($body);
     }
@@ -148,7 +153,7 @@ sub set_type {
 sub _check_extra_data {
     my ($invocant, $extra_data, $type) = @_;
     $type = $invocant->type if ref $invocant;
-    if ($type == CMT_NORMAL or $type == CMT_POPULAR_VOTES) {
+    if ($type == CMT_NORMAL) {
         if (defined $extra_data) {
             ThrowCodeError('comment_extra_data_not_allowed',
                            { type => $type, extra_data => $extra_data });
@@ -187,6 +192,22 @@ sub _check_type {
         or ThrowCodeError('comment_type_invalid', { type => $original });
     return $type;
 }
+
+sub count {
+    my ($self) = @_;
+
+    return $self->{'count'} if defined $self->{'count'};
+
+    my $dbh = Bugzilla->dbh;
+    ($self->{'count'}) = $dbh->selectrow_array(
+        "SELECT COUNT(*)
+           FROM longdescs 
+          WHERE bug_id = ? 
+                AND bug_when <= ?",
+        undef, $self->bug_id, $self->creation_ts);
+
+    return --$self->{'count'};
+}   
 
 1;
 
@@ -243,6 +264,10 @@ C<0> otherwise.
 
 L<Bugzilla::User> who created the comment.
 
+=item C<count>
+
+C<int> The position this comment is located in the full list of comments for a bug starting from 0.
+
 =item C<body_full>
 
 =over
@@ -272,8 +297,6 @@ C<boolean>. C<1> if the comment should be returned word-wrapped.
 A string, the full text of the comment as it would be displayed to an end-user.
 
 =back
-
-
 
 =back
 

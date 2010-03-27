@@ -181,6 +181,8 @@ takes a C<modules> parameter, just like L</auth_login_methods>.
 
 =head2 bug_columns
 
+B<DEPRECATED> Use L</object_columns> instead.
+
 This allows you to add new fields that will show up in every L<Bugzilla::Bug>
 object. Note that you will also need to use the L</bug_fields> hook in
 conjunction with this hook to make this work.
@@ -354,6 +356,75 @@ The definition is structured as:
 
 =back
 
+=head2 bugmail_recipients
+
+This allows you to modify the list of users who are going to be receiving
+a particular bugmail. It also allows you to specify why they are receiving
+the bugmail.
+
+Users' bugmail preferences will be applied to any users that you add
+to the list. (So, for example, if you add somebody as though they were
+a CC on the bug, and their preferences state that they don't get email
+when they are a CC, they won't get email.)
+
+This hook is called before watchers or globalwatchers are added to the
+recipient list.
+
+Params:
+
+=over
+
+=item C<bug>
+
+The L<Bugzilla::Bug> that bugmail is being sent about.
+
+=item C<recipients>
+
+This is a hashref. The keys are numeric user ids from the C<profiles>
+table in the database, for each user who should be receiving this bugmail.
+The values are hashrefs. The keys in I<these> hashrefs correspond to
+the "relationship" that the user has to the bug they're being emailed
+about, and the value should always be C<1>. The "relationships"
+are described by the various C<REL_> constants in L<Bugzilla::Constants>.
+
+Here's an example of adding userid C<123> to the recipient list
+as though he were on the CC list:
+
+ $recipients->{123}->{+REL_CC} = 1
+
+(We use C<+> in front of C<REL_CC> so that Perl interprets it as a constant
+instead of as a string.)
+
+=back
+
+
+=head2 bugmail_relationships
+
+There are various sorts of "relationships" that a user can have to a bug,
+such as Assignee, CC, etc. If you want to add a new type of relationship,
+you should use this hook.
+
+Params:
+
+=over
+
+=item C<relationships>
+
+A hashref, where the keys are numbers and the values are strings.
+
+The keys represent a numeric identifier for the relationship. The
+numeric identifier should be a negative number between -1 and -127.
+The number must be unique across all extensions. (Negative numbers
+are used so as not to conflict with relationship identifiers in Bugzilla
+itself.)
+
+The value is the "name" of this relationship that will show up in email
+headers in bugmails. The "name" should be short and should contain no
+spaces.
+
+=back
+
+
 =head2 colchange_columns
 
 This happens in F<colchange.cgi> right after the list of possible display
@@ -451,6 +522,52 @@ Params:
 =item C<new_flags> - The snapshot of flag summaries after the change. Call
 C<my ($removed, $added) = diff_arrays(old_flags, new_flags)> to get the list of
 changed flags, and search for a specific condition like C<added eq 'review-'>.
+
+=back
+
+=head2 group_before_delete
+
+This happens in L<Bugzilla::Group/remove_from_db>, after we've confirmed
+that the group can be deleted, but before any rows have actually
+been removed from the database. This occurs inside a database
+transaction.
+
+Params:
+
+=over
+
+=item C<group> - The L<Bugzilla::Group> being deleted.
+
+=back
+
+=head2 group_end_of_create
+
+This happens at the end of L<Bugzilla::Group/create>, after all other
+changes are made to the database. This occurs inside a database transaction.
+
+Params:
+
+=over
+
+=item C<group> - The changed L<Bugzilla::Group> object, with all fields set
+to their updated values.
+
+=back
+
+=head2 group_end_of_update
+
+This happens at the end of L<Bugzilla::Group/update>, after all other 
+changes are made to the database. This occurs inside a database transaction.
+
+Params:
+
+=over
+
+=item C<group> - The changed L<Bugzilla::Group> object, with all fields set 
+to their updated values.
+
+=item C<changes> - The hash of changed fields. 
+C<< $changes->{$field} = [$old, $new] >>
 
 =back
 
@@ -556,6 +673,44 @@ The value being set on the object.
 
 =back
 
+=head2 object_columns
+
+This hook allows you to add new "fields" to existing Bugzilla objects,
+that correspond to columns in their tables.
+
+For example, if you added an C<example> column to the "bugs" table, you
+would have to also add an C<example> field to the C<Bugzilla::Bug> object
+in order to access that data via Bug objects.
+
+Don't do anything slow inside this hook--it's called several times on
+every page of Bugzilla.
+
+Params:
+
+=over
+
+=item C<class>
+
+The name of the class that this hook is being called on. You can check this 
+like C<< if ($class->isa('Some::Class')) >> in your code, to add new
+fields only for certain classes.
+
+=item C<columns>
+
+An arrayref. Add the string names of columns to this array to add new
+values to objects. 
+
+For example, if you add an C<example> column to a particular table
+(using L</install_update_db>), and then push the string C<example> into 
+this array for the object that uses that table, then you can access the
+information in that column via C<< $object->{example} >> on all objects
+of that type.
+
+This arrayref does not contain the standard column names--you cannot modify
+or remove standard object columns using this hook.
+
+=back
+
 =head2 object_end_of_create_validators
 
 Called at the end of L<Bugzilla::Object/run_create_validators>. You can
@@ -629,6 +784,61 @@ L<Bugzilla::Object/update> returns.
 
 =back
 
+=head2 object_update_columns
+
+If you've added fields to bugs via L</object_columns>, then this
+hook allows you to say which of those columns should be updated in the
+database when L<Bugzilla::Object/update> is called on the object.
+
+If you don't use this hook, then your custom columns won't be modified in
+the database by Bugzilla.
+
+Params:
+
+=over
+
+=item C<object>
+
+The object that is about to be updated. You should check this
+like C<< if ($object->isa('Some::Class')) >> in your code, to modify
+the "update columns" only for certain classes.
+
+=item C<columns>
+
+An arrayref. Add the string names of columns to this array to allow
+that column to be updated when C<update()> is called on the object.
+
+This arrayref does not contain the standard column names--you cannot stop
+standard columns from being updated by using this hook.
+
+=back
+
+=head2 object_validators
+
+Allows you to add new items to L<Bugzilla::Object/VALIDATORS> for
+particular classes.
+
+Params:
+
+=over
+
+=item C<class>
+
+The name of the class that C<VALIDATORS> was called on. You can check this 
+like C<< if ($class->isa('Some::Class')) >> in your code, to add
+validators only for certain classes.
+
+=item C<validators>
+
+A hashref, where the keys are database columns and the values are subroutine
+references. You can add new validators or modify existing ones. If you modify
+an existing one, you should remember to call the original validator
+inside of your modified validator. (This way, several extensions can all
+modify the same validator.)
+
+=back
+
+
 =head2 page_before_template
 
 This is a simple way to add your own pages to Bugzilla. This hooks C<page.cgi>,
@@ -670,20 +880,6 @@ Params:
 
 =back
 
-=head2 sanitycheck_check
-
-This hook allows for extra sanity checks to be added, for use by
-F<sanitycheck.cgi>.
-
-Params:
-
-=over
-
-=item C<status> - a CODEREF that allows status messages to be displayed
-to the user. (F<sanitycheck.cgi>'s C<Status>)
-
-=back
-
 =head2 product_end_of_create
 
 Called right after a new product has been created, allowing additional
@@ -696,6 +892,20 @@ Params:
 =over
 
 =item C<product> - The new L<Bugzilla::Product> object that was just created.
+
+=back
+
+=head2 sanitycheck_check
+
+This hook allows for extra sanity checks to be added, for use by
+F<sanitycheck.cgi>.
+
+Params:
+
+=over
+
+=item C<status> - a CODEREF that allows status messages to be displayed
+to the user. (F<sanitycheck.cgi>'s C<Status>)
 
 =back
 

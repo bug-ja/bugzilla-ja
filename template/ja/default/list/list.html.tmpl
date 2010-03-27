@@ -46,8 +46,10 @@
   title = title
   style = style
   atomlink = "buglist.cgi?$urlquerypart&title=$title&ctype=atom" 
-  javascript_urls = [ "js/util.js", "js/field.js", "js/yui/calendar.js" ]
-  style_urls = [ "skins/standard/buglist.css", "skins/standard/yui/calendar.css" ]
+  javascript_urls = [ "js/yui/bz_autocomplete_bundle.js", "js/util.js", 
+                      "js/field.js", "js/yui/calendar.js" ]
+  style_urls = [ "skins/standard/yui/autocomplete.css", 
+                  "skins/standard/buglist.css", "skins/standard/yui/calendar.css" ]
   doc_section = "query.html#list"
 %]
 
@@ -80,9 +82,10 @@
 [% END %]
 
 [% SET shown_types = [
-  'notequal', 'regexp', 'notregexp', 'lessthan', 'lessthaneq', 
+  'notequals', 'regexp', 'notregexp', 'lessthan', 'lessthaneq', 
   'greaterthan', 'greaterthaneq', 'changedbefore', 'changedafter', 
-  'changedfrom', 'changedto', 'changedby',
+  'changedfrom', 'changedto', 'changedby', 'notsubstring', 'nowords',
+  'nowordssubstr',
 ] %]
 <ul class="search_description">
 [% FOREACH desc_item = search_description %]

@@ -44,11 +44,12 @@
     'bug' => "$link に加えられた変更" ,
     'dupe' => "重複処理の通知が $link に加えられました" ,
     'dep' => "$link の依存関係の確認" ,
-    'votes' => "$Link は投票数によって承認されました" ,
     'created' => "$Link はデータベースに追加されました" ,
     'move' => "$Link はほかのデータベースに移動されました" ,
   }
 %]
+
+[% Hook.process('title') %]
 
 <dl>
   <dt>[% title.$type %]</dt>

@@ -76,37 +76,8 @@
       を有効にする:</label>
   </th>
   <td><input type="checkbox" id="allows_unconfirmed" name="allows_unconfirmed"
-             [% ' checked="checked"' IF product.allows_unconfirmed %]
-             [% IF Param('usevotes') %]
-               onchange="bz_toggleClass('votes_to_confirm_container', 
-                                        'bz_default_hidden')"
-             [% END %]>
-    [% IF Param('usevotes') %]
-      <span id="votes_to_confirm_container"
-            [% ' class="bz_default_hidden"' IF !product.allows_unconfirmed %]>
-        ...そして、
-        <input size="3" maxlength="5" name="votestoconfirm" id="votestoconfirm"
-               value="[% product.votes_to_confirm FILTER html %]">
-        票を得た [% terms.bugs %] を自動的に承認する。
-        (0 に設定すると [% terms.bugs %] の自動承認が無効になります。)
-      </span>
-    [% END %]
+             [% ' checked="checked"' IF product.allows_unconfirmed %]>
   </td>
 </tr>
 
-[% IF Param('usevotes') %]
-  <tr>
-    <th align="right">一人当たりの最大投票数:</th>
-    <td><input size="5" maxlength="5" name="votesperuser" id="votesperuser"
-               value="[% product.votesperuser FILTER html %]">
-    </td>
-  </tr>
-  <tr>
-    <th align="right">
-      一人が一つの [% terms.bug %] に投票可能な票数: 
-    </th>
-    <td><input size="5" maxlength="5" name="maxvotesperbug" id="maxvotesperbug"
-               value="[% product.maxvotesperbug FILTER html %]">
-    </td>
-  </tr>
-[% END %]
+[% Hook.process('rows') %]

@@ -128,7 +128,7 @@
     [% extra_class = " b_open" %]
     [% extra_args = 'onclick="return doToggle(this, event)"' %] 
   [% END %]
-  <a name="b[% bugid %]" 
+  <a id="b[% bugid %]" 
      class="b [%+ extra_class FILTER none %]"
      title="ツリーのこの部分をクリックすると閉じたり開いたりします。クリックする時に Ctrl キーを同時に押すと全てのサブツリーを同時に開いたり閉じたりします。"
      [% extra_args FILTER none %]>&nbsp;&nbsp;</a>

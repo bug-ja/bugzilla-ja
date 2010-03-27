@@ -216,10 +216,6 @@
   [% ELSIF error == "illegal_field" %]
     A legal [% field FILTER html %] was not set.
 
-  [% ELSIF error == "inactive_group" %]
-    Attempted to add [% terms.bug %] to the '[% name FILTER html %]'
-    group, which is not used for [% terms.bugs %].
-
   [% ELSIF error == "invalid_attach_id_to_obsolete" %]
      The attachment number of one of the attachments you wanted to obsolete,
      [% attach_id FILTER html %], is invalid.
@@ -374,11 +370,6 @@
     You cannot set the resolution of [% terms.abug %] to [% display_value("resolution", "MOVED") FILTER html %] without
     moving the [% terms.bug %].
 
-  [% ELSIF error == "no_open_bug_status" %]
-    [% title = "$terms.Bug Cannot Be Confirmed" %]
-    There is no valid transition from
-    [%+ display_value("bug_status", "UNCONFIRMED") FILTER html %] to an open state.
-
   [% ELSIF error == "param_invalid" %]
     [% title = "Invalid Parameter" %]
     <code>[% param FILTER html %]</code> is not a valid parameter
@@ -482,6 +473,9 @@
     [% ELSE %]
        I could not figure out what you wanted to do.
     [% END %]
+
+  [% ELSIF error == "unknown_method" %]
+    The requested method '[% method FILTER html %]' was not found.
 
   [% ELSIF error == "usage_mode_invalid" %]
     '[% invalid_usage_mode FILTER html %]' is not a valid usage mode.

@@ -267,6 +267,16 @@ function showHideStatusItems(e, dupArrayInfo) {
     // finish doing stuff based on the selection.
     if ( el ) {
         showDuplicateItem(el);
+
+        // Make sure that fields whose visibility or values are controlled
+        // by "resolution" behave properly when resolution is hidden.
+        var resolution = document.getElementById('resolution');
+        if (resolution && resolution.options[0].value != '') {
+            resolution.bz_lastSelected = resolution.selectedIndex;
+            var emptyOption = new Option('', '');
+            resolution.insertBefore(emptyOption, resolution.options[0]);
+            emptyOption.selected = true;
+        }
         YAHOO.util.Dom.addClass('resolution_settings', 'bz_default_hidden');
         if (document.getElementById('resolution_settings_warning')) {
             YAHOO.util.Dom.addClass('resolution_settings_warning',
@@ -274,18 +284,24 @@ function showHideStatusItems(e, dupArrayInfo) {
         }
         YAHOO.util.Dom.addClass('duplicate_display', 'bz_default_hidden');
 
-        if ( el.value == dupArrayInfo[1] && dupArrayInfo[0] == "is_duplicate" ) {
+
+        if ( (el.value == dupArrayInfo[1] && dupArrayInfo[0] == "is_duplicate")
+             || bz_isValueInArray(close_status_array, el.value) ) 
+        {
             YAHOO.util.Dom.removeClass('resolution_settings', 
                                        'bz_default_hidden');
             YAHOO.util.Dom.removeClass('resolution_settings_warning', 
-                                       'bz_default_hidden');  
+                                       'bz_default_hidden');
+
+            // Remove the blank option we inserted.
+            if (resolution && resolution.options[0].value == '') {
+                resolution.removeChild(resolution.options[0]);
+                resolution.selectedIndex = resolution.bz_lastSelected;
+            }
         }
-        else if ( bz_isValueInArray(close_status_array, el.value) ) {
-            // hide duplicate and show resolution
-            YAHOO.util.Dom.removeClass('resolution_settings', 
-                                       'bz_default_hidden');
-            YAHOO.util.Dom.removeClass('resolution_settings_warning', 
-                                       'bz_default_hidden');
+
+        if (resolution) {
+            bz_fireEvent(resolution, 'change');
         }
     }
 }
@@ -300,8 +316,11 @@ function showDuplicateItem(e) {
             YAHOO.util.Dom.removeClass('duplicate_settings', 
                                        'bz_default_hidden');
             YAHOO.util.Dom.addClass('dup_id_discoverable', 'bz_default_hidden');
-            dup_id.focus();
-            dup_id.select();
+            // check to make sure the field is visible or IE throws errors
+            if( ! YAHOO.util.Dom.hasClass( dup_id, 'bz_default_hidden' ) ){
+                dup_id.focus();
+                dup_id.select();
+            }
         }
         else {
             YAHOO.util.Dom.addClass('duplicate_settings', 'bz_default_hidden');
@@ -318,8 +337,9 @@ function setResolutionToDuplicate(e, duplicate_or_move_bug_status) {
     var resolution = document.getElementById('resolution');
     YAHOO.util.Dom.addClass('dup_id_discoverable', 'bz_default_hidden');
     status.value = duplicate_or_move_bug_status;
+    bz_fireEvent(status, 'change');
     resolution.value = "DUPLICATE";
-    showHideStatusItems("", ["",""]);
+    bz_fireEvent(resolution, 'change');
     YAHOO.util.Event.preventDefault(e);
 }
 
@@ -540,3 +560,74 @@ function browserCanHideOptions(aSelect) {
 }
 
 /* (end) option hiding code */
+
+/**
+ * The Autoselect
+ */
+YAHOO.bugzilla.userAutocomplete = {
+    counter : 0,
+    dataSource : null,
+    generateRequest : function ( enteredText ){ 
+      YAHOO.bugzilla.userAutocomplete.counter = 
+                                   YAHOO.bugzilla.userAutocomplete.counter + 1;
+      YAHOO.util.Connect.setDefaultPostHeader('application/json', true);
+      var json_object = {
+          method : "User.get",
+          id : YAHOO.bugzilla.userAutocomplete.counter,
+          params : [ { 
+            match : [ unescape(enteredText) ],
+            include_fields : [ "email", "real_name" ]
+          } ]
+      };
+      var stringified =  YAHOO.lang.JSON.stringify(json_object);
+      var debug = { msg: "json-rpc obj debug info", "json obj": json_object, 
+                    "param" : stringified}
+      YAHOO.bugzilla.userAutocomplete.debug_helper( debug );
+      return stringified;
+    },
+    resultListFormat : function(oResultData, enteredText, sResultMatch) {
+        return ( unescape(oResultData.real_name) + " (" +  oResultData.email + ")");
+    },
+    debug_helper : function ( ){
+        /* used to help debug any errors that might happen */
+        if( typeof(console) !== 'undefined' && console != null && arguments.length > 0 ){
+            console.log("debug helper info:", arguments);
+        }
+        return true;
+    },    
+    init_ds : function(){
+        this.dataSource = new YAHOO.util.XHRDataSource("jsonrpc.cgi");
+        this.dataSource.connMethodPost = true;
+        this.dataSource.responseSchema = {
+            resultsList : "result.users",
+            metaFields : { error: "error", jsonRpcId: "id"},
+            fields : [
+                { key : "email" },
+                { key : "real_name"}
+            ]
+        };    
+    },
+    init : function( field, container, multiple ) {
+        if( this.dataSource == null ){
+            this.init_ds();  
+        }            
+        var userAutoComp = new YAHOO.widget.AutoComplete( field, container, 
+                                this.dataSource );
+        // other stuff we might want to do with the autocomplete goes here
+        userAutoComp.generateRequest = this.generateRequest;
+        userAutoComp.formatResult = this.resultListFormat;
+        userAutoComp.doBeforeLoadData = this.debug_helper;
+        userAutoComp.minQueryLength = 3;
+        userAutoComp.autoHighlight = false;
+        // this is a throttle to determine the delay of the query from typing
+        // set this higher to cause fewer calls to the server
+        userAutoComp.queryDelay = 0.05
+        userAutoComp.useIFrame = true
+        userAutoComp.resultTypeList = false;
+        if( multiple == true ){
+            userAutoComp.delimChar = [","," "];
+        }
+        
+    }
+};
+

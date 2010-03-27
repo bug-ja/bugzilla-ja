@@ -334,7 +334,7 @@ sub queries_subscribed {
                 ON ngm.namedquery_id = lif.namedquery_id
           WHERE lif.user_id = ? 
                 AND lif.namedquery_id NOT IN ($query_id_string)
-                AND ngm.group_id IN (" . $self->groups_as_string . ")",
+                AND " . $self->groups_in_sql,
           undef, $self->id);
     require Bugzilla::Search::Saved;
     $self->{queries_subscribed} =
@@ -353,7 +353,7 @@ sub queries_available {
 
     my $avail_query_ids = Bugzilla->dbh->selectcol_arrayref(
         'SELECT namedquery_id FROM namedquery_group_map
-          WHERE group_id IN (' . $self->groups_as_string . ")
+          WHERE '  . $self->groups_in_sql . "
                 AND namedquery_id NOT IN ($query_id_string)");
     require Bugzilla::Search::Saved;
     $self->{queries_available} =
@@ -464,6 +464,14 @@ sub groups_as_string {
     return scalar(@ids) ? join(',', @ids) : '-1';
 }
 
+sub groups_in_sql {
+    my ($self, $field) = @_;
+    $field ||= 'group_id';
+    my @ids = map { $_->id } @{ $self->groups };
+    @ids = (-1) if !scalar @ids;
+    return Bugzilla->dbh->sql_in($field, \@ids);
+}
+
 sub bless_groups {
     my $self = shift;
 
@@ -524,7 +532,7 @@ sub in_group {
                               FROM group_control_map
                              WHERE product_id = ?
                                    AND $group != 0
-                                   AND group_id IN (" . $self->groups_as_string . ") " .
+                                   AND " . $self->groups_in_sql . ' ' .
                               $dbh->sql_limit(1),
                              undef, $product_id);
 
@@ -550,7 +558,7 @@ sub get_products_by_permission {
                           "SELECT DISTINCT product_id
                              FROM group_control_map
                             WHERE $group != 0
-                              AND group_id IN(" . $self->groups_as_string . ")");
+                              AND " . $self->groups_in_sql);
 
     # No need to go further if the user has no "special" privs.
     return [] unless scalar(@$product_ids);
@@ -652,12 +660,13 @@ sub visible_bugs {
         }
 
         $sth->execute(@check_ids);
+        my $use_qa_contact = Bugzilla->params->{'useqacontact'};
         while (my $row = $sth->fetchrow_arrayref) {
             my ($bug_id, $reporter, $owner, $qacontact, $reporter_access, 
                 $cclist_access, $isoncclist, $missinggroup) = @$row;
             $visible_cache->{$bug_id} ||= 
                 ((($reporter == $user_id) && $reporter_access)
-                 || (Bugzilla->params->{'useqacontact'}
+                 || ($use_qa_contact
                      && $qacontact && ($qacontact == $user_id))
                  || ($owner == $user_id)
                  || ($isoncclist && $cclist_access)
@@ -810,8 +819,8 @@ sub get_enterable_products {
 }
 
 sub can_access_product {
-    my ($self, $product_name) = @_;
-
+    my ($self, $product) = @_;
+    my $product_name = blessed($product) ? $product->name : $product;
     return scalar(grep {$_->name eq $product_name} @{$self->get_accessible_products});
 }
 
@@ -897,10 +906,9 @@ sub visible_groups_direct {
     my $sth;
    
     if (Bugzilla->params->{'usevisibilitygroups'}) {
-        my $glist = $self->groups_as_string;
         $sth = $dbh->prepare("SELECT DISTINCT grantor_id
                                  FROM group_group_map
-                                WHERE member_id IN($glist)
+                                WHERE " . $self->groups_in_sql('member_id') . "
                                   AND grant_type=" . GROUP_VISIBLE);
     }
     else {
@@ -1065,7 +1073,8 @@ sub match {
     # first try wildcards
     my $wildstr = $str;
 
-    if ($wildstr =~ s/\*/\%/g) { # don't do wildcards if no '*' in the string
+    # Do not do wildcards if there is no '*' in the string.
+    if ($wildstr =~ s/\*/\%/g && $user->id) {
         # Build the query.
         trick_taint($wildstr);
         my $query  = "SELECT DISTINCT userid FROM profiles ";
@@ -1100,7 +1109,7 @@ sub match {
     }
 
     # then try substring search
-    if (!scalar(@users) && length($str) >= 3) {
+    if (!scalar(@users) && length($str) >= 3 && $user->id) {
         trick_taint($str);
 
         my $query   = "SELECT DISTINCT userid FROM profiles ";
@@ -1185,7 +1194,9 @@ sub match_field {
     }
     $fields = $expanded_fields;
 
-    for my $field (keys %{$fields}) {
+    foreach my $field (keys %{$fields}) {
+        next unless defined $data->{$field};
+
         #Concatenate login names, so that we have a common way to handle them.
         my $raw_field;
         if (ref $data->{$field}) {
@@ -1196,25 +1207,21 @@ sub match_field {
         }
         $raw_field = clean_text($raw_field || '');
 
-        # Tolerate fields that do not exist (in case you specify
-        # e.g. the QA contact, and it's currently not in use).
-        next unless ($raw_field && $raw_field ne '');
-
-        my @queries = ();
-
         # Now we either split $raw_field by spaces/commas and put the list
         # into @queries, or in the case of fields which only accept single
         # entries, we simply use the verbatim text.
-
-        # single field
+        my @queries;
         if ($fields->{$field}->{'type'} eq 'single') {
             @queries = ($raw_field);
-
-        # multi-field
+            # We will repopulate it later if a match is found, else it must
+            # be set to an empty string so that the field remains defined.
+            $data->{$field} = '';
         }
         elsif ($fields->{$field}->{'type'} eq 'multi') {
             @queries =  split(/[\s,;]+/, $raw_field);
-
+            # We will repopulate it later if a match is found, else it must
+            # be undefined.
+            delete $data->{$field};
         }
         else {
             # bad argument
@@ -1223,6 +1230,10 @@ sub match_field {
                              function =>  'Bugzilla::User::match_field',
                            });
         }
+
+        # Tolerate fields that do not exist (in case you specify
+        # e.g. the QA contact, and it's currently not in use).
+        next unless (defined $raw_field && $raw_field ne '');
 
         my $limit = 0;
         if ($params->{'maxusermatches'}) {
@@ -1283,7 +1294,7 @@ sub match_field {
         if ($fields->{$field}->{'type'} eq 'single') {
             $data->{$field} = $logins[0] || '';
         }
-        else {
+        elsif (scalar @logins) {
             $data->{$field} = \@logins;
         }
     }
@@ -1565,7 +1576,9 @@ sub create {
     my $user = $class->SUPER::create(@_);
 
     # Turn on all email for the new user
-    foreach my $rel (RELATIONSHIPS) {
+    require Bugzilla::BugMail;
+    my %relationships = Bugzilla::BugMail::relationships();
+    foreach my $rel (keys %relationships) {
         foreach my $event (POS_EVENTS, NEG_EVENTS) {
             # These "exceptions" define the default email preferences.
             # 
@@ -1951,6 +1964,13 @@ Returns a string containing a comma-separated list of numeric group ids.  If
 the user is not a member of any groups, returns "-1". This is most often used
 within an SQL IN() function.
 
+=item C<groups_in_sql>
+
+This returns an C<IN> clause for SQL, containing either all of the groups
+the user is in, or C<-1> if the user is in no groups. This takes one
+argument--the name of the SQL field that should be on the left-hand-side
+of the C<IN> statement, which defaults to C<group_id> if not specified.
+
 =item C<in_group($group_name, $product_id)>
 
 Determines whether or not a user is in the given group by name.
@@ -2055,10 +2075,11 @@ the database again. Used mostly by L<Bugzilla::Product>.
 
  Returns:     an array of product objects.
 
-=item C<can_access_product(product_name)>
+=item C<can_access_product($product)>
 
-Returns 1 if the user can search or enter bugs into the specified product,
-and 0 if the user should not be aware of the existence of the product.
+Returns 1 if the user can search or enter bugs into the specified product
+(either a L<Bugzilla::Product> or a product name), and 0 if the user should
+not be aware of the existence of the product.
 
 =item C<get_accessible_products>
 

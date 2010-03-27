@@ -273,8 +273,6 @@ use constant ABSTRACT_SCHEMA => {
                                                   COLUMN => 'userid'}},
             status_whiteboard   => {TYPE => 'MEDIUMTEXT', NOTNULL => 1,
                                     DEFAULT => "''"},
-            votes               => {TYPE => 'INT3', NOTNULL => 1,
-                                    DEFAULT => '0'},
             # Note: keywords field is only a cache; the real data
             # comes from the keywords table
             keywords            => {TYPE => 'MEDIUMTEXT', NOTNULL => 1,
@@ -309,7 +307,6 @@ use constant ABSTRACT_SCHEMA => {
             bugs_resolution_idx       => ['resolution'],
             bugs_target_milestone_idx => ['target_milestone'],
             bugs_qa_contact_idx       => ['qa_contact'],
-            bugs_votes_idx            => ['votes'],
         ],
     },
 
@@ -355,6 +352,10 @@ use constant ABSTRACT_SCHEMA => {
                                              COLUMN =>  'id'}},
             added     => {TYPE => 'varchar(255)'},
             removed   => {TYPE => 'TINYTEXT'},
+            comment_id => {TYPE => 'INT3', 
+                           REFERENCES => { TABLE  => 'longdescs',
+                                           COLUMN => 'comment_id',
+                                           DELETE => 'CASCADE'}},
         ],
         INDEXES => [
             bugs_activity_bug_id_idx  => ['bug_id'],
@@ -427,24 +428,6 @@ use constant ABSTRACT_SCHEMA => {
         INDEXES => [
             dependencies_blocked_idx   => ['blocked'],
             dependencies_dependson_idx => ['dependson'],
-        ],
-    },
-
-    votes => {
-        FIELDS => [
-            who        => {TYPE => 'INT3', NOTNULL => 1,
-                           REFERENCES => {TABLE  => 'profiles',
-                                          COLUMN => 'userid',
-                                          DELETE => 'CASCADE'}},
-            bug_id     => {TYPE => 'INT3', NOTNULL => 1,
-                          REFERENCES  => {TABLE  =>  'bugs',
-                                          COLUMN =>  'bug_id',
-                                          DELETE => 'CASCADE'}},
-            vote_count => {TYPE => 'INT2', NOTNULL => 1},
-        ],
-        INDEXES => [
-            votes_who_idx    => ['who'],
-            votes_bug_id_idx => ['bug_id'],
         ],
     },
 
@@ -693,6 +676,7 @@ use constant ABSTRACT_SCHEMA => {
             value_field_id => {TYPE => 'INT3',
                                REFERENCES => {TABLE  => 'fielddefs',
                                               COLUMN => 'id'}},
+            reverse_desc => {TYPE => 'TINYTEXT'},
         ],
         INDEXES => [
             fielddefs_name_idx    => {FIELDS => ['name'],
@@ -1218,12 +1202,6 @@ use constant ABSTRACT_SCHEMA => {
             description       => {TYPE => 'MEDIUMTEXT'},
             isactive          => {TYPE => 'BOOLEAN', NOTNULL => 1,
                                   DEFAULT => 1},
-            votesperuser      => {TYPE => 'INT2', NOTNULL => 1,
-                                  DEFAULT => 0},
-            maxvotesperbug    => {TYPE => 'INT2', NOTNULL => 1,
-                                  DEFAULT => '10000'},
-            votestoconfirm    => {TYPE => 'INT2', NOTNULL => 1,
-                                  DEFAULT => 0},
             defaultmilestone  => {TYPE => 'varchar(20)',
                                   NOTNULL => 1, DEFAULT => "'---'"},
             allows_unconfirmed => {TYPE => 'BOOLEAN', NOTNULL => 1,
@@ -1270,7 +1248,7 @@ use constant ABSTRACT_SCHEMA => {
             creator     => {TYPE => 'INT3',
                             REFERENCES => {TABLE  => 'profiles',
                                            COLUMN => 'userid',
-                                           DELETE => 'SET NULL'}},
+                                           DELETE => 'CASCADE'}},
             category    => {TYPE => 'INT2', NOTNULL => 1,
                             REFERENCES => {TABLE  => 'series_categories',
                                            COLUMN => 'id',

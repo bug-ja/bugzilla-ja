@@ -30,9 +30,11 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  style_urls = [ 'skins/standard/create_attachment.css',
+  style_urls = [ 'skins/standard/yui/autocomplete.css',
+                 'skins/standard/create_attachment.css',
                  'skins/standard/yui/calendar.css' ]
-  javascript_urls = [ "js/attachment.js", "js/util.js", "js/yui/calendar.js",
+  javascript_urls = [ "js/yui/bz_autocomplete_bundle.js",
+                      "js/attachment.js", "js/util.js", "js/yui/calendar.js",
                       "js/field.js", "js/TUI.js" ]
   onload = 'set_assign_to();'
 %]
@@ -168,14 +170,6 @@ TUI_hide_default('expert_fields');
 -->
 </script>
 
-[% USE Bugzilla %]
-[% SET select_fields = {} %]
-[% FOREACH field = Bugzilla.get_fields(
-  { type => constants.FIELD_TYPE_SINGLE_SELECT, custom => 0 })
-%]
-  [% select_fields.${field.name} = field %]
-[% END %]
-
 <form name="Create" id="Create" method="post" action="post_bug.cgi"
       enctype="multipart/form-data">
 <input type="hidden" name="product" value="[% product.name FILTER html %]">
@@ -223,8 +217,8 @@ TUI_hide_default('expert_fields');
       コンポーネント</a>:
     </th>
     <td>
-      <select name="component" onchange="set_assign_to();" size="7"
-              aria-required="true" class="required">
+      <select name="component" id="component" onchange="set_assign_to();"
+              size="7" aria-required="true" class="required">
         [%# Build the lists of assignees and QA contacts if "usemenuforusers" is enabled. %]
         [% IF Param("usemenuforusers") %]
           [% assignees_list = user.get_userlist.clone %]
@@ -233,7 +227,13 @@ TUI_hide_default('expert_fields');
 
         [%- FOREACH c = product.components %]
           <option value="[% c.name FILTER html %]"
-            [% " selected=\"selected\"" IF c.name == default.component_ %]>
+                  id="v[% c.id FILTER html %]_component"
+            [% IF c.name == default.component_ %]
+              [%# This is for bug/field.html.tmpl, for visibility-related
+                # controls. %]
+              [% default.component_id = c.id %]
+              selected="selected"
+            [% END %]>
             [% c.name FILTER html -%]
           </option>
           [% IF Param("usemenuforusers") %]
@@ -244,6 +244,13 @@ TUI_hide_default('expert_fields');
           [% END %]
         [%- END %]
       </select>
+
+      <script type="text/javascript">
+       <!--
+         [%+ INCLUDE "bug/field-events.js.tmpl" 
+                    field = bug_fields.component %]
+       //-->
+       </script>
     </td>
 
     <td colspan="2">
@@ -275,19 +282,19 @@ TUI_hide_default('expert_fields');
     </td>
 
     [% INCLUDE bug/field.html.tmpl
-      bug = default, field = select_fields.bug_severity, editable = 1, 
+      bug = default, field = bug_fields.bug_severity, editable = 1, 
       value = default.bug_severity %]
   </tr>
 
   <tr>
     [% INCLUDE bug/field.html.tmpl
-      bug = default, field = select_fields.rep_platform, editable = 1,
+      bug = default, field = bug_fields.rep_platform, editable = 1,
       value = default.rep_platform %]
   </tr>
 
   <tr>
     [% INCLUDE bug/field.html.tmpl 
-       bug = default, field = select_fields.op_sys, editable = 1, 
+       bug = default, field = bug_fields.op_sys, editable = 1, 
        value = default.op_sys %]
   </tr>
 </tbody>
@@ -303,7 +310,7 @@ TUI_hide_default('expert_fields');
 
     [% IF Param('letsubmitterchoosepriority') %]
       [% INCLUDE bug/field.html.tmpl
-        bug = default, field = select_fields.priority, editable = 1, 
+        bug = default, field = bug_fields.priority, editable = 1, 
         value = default.priority %]
     [% ELSE %]
       <td colspan="2">&nbsp;</td>
@@ -378,6 +385,7 @@ TUI_hide_default('expert_fields');
     <th><a href="page.cgi?id=fields.html#assigned_to">担当者</a>:</th>
     <td colspan="2">
       [% INCLUDE global/userselect.html.tmpl
+         id => "assigned_to"
          name => "assigned_to"
          value => assigned_to
          disabled => assigned_to_disabled
@@ -394,6 +402,7 @@ TUI_hide_default('expert_fields');
       <th>QA コンタクト:</th>
       <td colspan="2">
       [% INCLUDE global/userselect.html.tmpl
+         id => "qa_contact"
          name => "qa_contact"
          value => qa_contact
          disabled => qa_contact_disabled
@@ -410,6 +419,7 @@ TUI_hide_default('expert_fields');
     <th>CC:</th>
     <td colspan="2">
       [% INCLUDE global/userselect.html.tmpl
+         id => "cc"
          name => "cc"
          value => cc
          disabled => cc_disabled
@@ -439,11 +449,9 @@ TUI_hide_default('expert_fields');
     </td>
   </tr>
   <tr>
-    <th>締め切り:</th>
-    <td colspan="2">
-      <input name="deadline" size="10" maxlength="10" value="[% deadline FILTER html %]">
-      <small>(YYYY-MM-DD)</small>
-    </td>
+    [% INCLUDE bug/field.html.tmpl
+      bug = default, field = bug_fields.deadline, value = deadline,
+      editable = 1, value_span = 2 %] 
   </tr>
 
   <tr>
@@ -599,7 +607,7 @@ TUI_hide_default('expert_fields');
 </tbody>
 
 <tbody class="expert_fields">
-  [% IF group.size %]
+  [% IF product.groups_available.size %]
   <tr>
     <th>&nbsp;</th>
     <td colspan="3">
@@ -615,12 +623,13 @@ TUI_hide_default('expert_fields');
       <br>
 
       <!-- Checkboxes -->
-      [% FOREACH g = group %]
-        &nbsp;&nbsp;&nbsp;&nbsp;
-        <input type="checkbox" id="bit-[% g.bit %]"
-          name="bit-[% g.bit %]" value="1"
-          [% " checked=\"checked\"" IF g.checked %]>
-          <label for="bit-[% g.bit %]">[% g.description FILTER html_light %]</label><br>
+      [% FOREACH group = product.groups_available %]
+        <input type="checkbox" id="groups_[% group.id FILTER html %]"
+               name="groups" value="[% group.name FILTER html %]"
+               [% ' checked="checked"' IF default.groups.contains(group.name)
+                                          OR group.is_default %]>
+        <label for="groups_[% group.id FILTER html %]">
+          [%- group.description FILTER html_light %]</label><br>
       [% END %]
     </td>
   </tr>
@@ -679,7 +688,7 @@ TUI_hide_default('expert_fields');
        <script type="text/javascript">
         <!--
           [%+ INCLUDE "bug/field-events.js.tmpl" 
-                     field = select_fields.bug_status %]
+                     field = bug_fields.bug_status %]
         //-->
         </script>
     [% END %]

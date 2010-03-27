@@ -35,9 +35,6 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% useqacontact = Param('useqacontact') %]
-[% usevotes = Param('usevotes') %]
-
 <p>
   "重要でない" [% terms.bugs %] への変更についての通知メールを受け取りたくない場合、
   下の設定からいくつかもしくは全ての通知メールの設定を変更することができます。
@@ -150,21 +147,28 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 [% relationships = [
     { id = constants.REL_ASSIGNEE,
       description = "担当者" },
-    { id = constants.REL_QA,
-      description = "QA コンタクト" },
     { id = constants.REL_REPORTER,
       description = "報告者" },
     { id = constants.REL_CC,
       description = "CC" },
-    { id = constants.REL_VOTER,
-      description = "投票者" },
 ] %]
+
+[% IF Param('useqacontact') %]
+  [% relationships.push({ id = constants.REL_QA, 
+                          description = "QA コンタクト" }) %]
+[% END %]
+
+
+[%# This is up here so that the "relationships" hook can modify it. %]
+[% no_added_removed = [constants.REL_REPORTER] %]
+
+[% Hook.process('relationships') %]
+
+[% num_columns = relationships.size %]
 
 <table class="bz_emailprefs" border="1">
   <tr>
-    <td colspan="[% (useqacontact AND usevotes) ? '5' : 
-                     ((useqacontact OR usevotes) ? '4' : '3') %]" 
-        align="center" width="50%">
+    <td colspan="[% num_columns FILTER html %]" align="center" width="50%">
       <b>この [% terms.bug %] との関連性:</b>
     </td>
     <td rowspan="2" width="40%">
@@ -174,8 +178,6 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 
   <tr>
     [% FOREACH relationship = relationships %]
-      [% NEXT IF (relationship.id == constants.REL_QA AND NOT useqacontact) OR
-                 (relationship.id == constants.REL_VOTER AND NOT usevotes) %]
       <th align="center" width="9%">
         [% relationship.description FILTER html %]
       </th>
@@ -186,16 +188,14 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
     [% count = loop.count() %]
     <tr class="bz_row_[% count % 2 == 1 ? "odd" : "even" %]">
       [% FOREACH relationship = relationships %]
-      [% NEXT IF (relationship.id == constants.REL_QA AND NOT useqacontact) OR
-                 (relationship.id == constants.REL_VOTER AND NOT usevotes) %]
         <td align="center">
           <input type="checkbox" 
             name="email-[% relationship.id %]-[% event.id %]"
             value="1"
             [%# The combinations don't always make sense; disable a couple %]
             [% IF event.id == constants.EVT_ADDED_REMOVED AND 
-                 (relationship.id == constants.REL_REPORTER OR
-                  relationship.id == constants.REL_VOTER) %]
+                  no_added_removed.contains(relationship.id) 
+            %]
                disabled
             [% ELSIF mail.${relationship.id}.${event.id} %]
                checked
@@ -209,8 +209,7 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
   [% END %]
   
   <tr>
-    <td colspan="[% (useqacontact AND usevotes) ? '5' : 
-                     ((useqacontact OR usevotes) ? '4' : '3') %]" 
+    <td colspan="[% num_columns FILTER html %]" 
         align="center" width="50%">
       &nbsp;
     </td>
@@ -223,8 +222,6 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
     [% count = loop.count() %]
     <tr class="bz_row_[% count % 2 == 1 ? "odd" : "even" %]">
       [% FOREACH relationship = relationships %]
-        [% NEXT IF (relationship.id == constants.REL_QA AND NOT useqacontact) OR
-                   (relationship.id == constants.REL_VOTER AND NOT usevotes) %]
         <td align="center">
           <input type="checkbox" 
             name="neg-email-[% relationship.id %]-[% event.id %]"
@@ -243,23 +240,17 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 [%# Add hidden form fields for fields not used %]
 [% FOREACH event = events %]  
   [% FOREACH relationship = relationships %]
-    [% IF (relationship.id == constants.REL_QA AND NOT useqacontact) OR
-          (relationship.id == constants.REL_VOTER AND NOT usevotes) %]
-      <input type="hidden" 
-        name="email-[% relationship.id %]-[% event.id %]"
-        value="[% mail.${relationship.id}.${event.id} ? "1" : "0" %]">
-    [% END %]
+    <input type="hidden" 
+           name="email-[% relationship.id %]-[% event.id %]"
+           value="[% mail.${relationship.id}.${event.id} ? "1" : "0" %]">
   [% END %]
 [% END %]
 
 [% FOREACH event = neg_events %]  
   [% FOREACH relationship = relationships %]
-    [% IF (relationship.id == constants.REL_QA AND NOT useqacontact) OR
-          (relationship.id == constants.REL_VOTER AND NOT usevotes) %]
-      <input type="hidden" 
-        name="neg-email-[% relationship.id %]-[% event.id %]"
-        value="[% mail.${relationship.id}.${event.id} ? "0" : "1" %]">
-    [% END %]
+    <input type="hidden" 
+           name="neg-email-[% relationship.id %]-[% event.id %]"
+          value="[% mail.${relationship.id}.${event.id} ? "0" : "1" %]">
   [% END %]
 [% END %]
 
@@ -289,11 +280,11 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 [% END %]
 </p>
 
-<p><a name="new_watched_by_you" id="new_watched_by_you">ユーザを監視リストに追加する (カンマ区切りのリスト)</a>:
+<p id="new_watched_by_you">ユーザを監視リストに追加する (カンマ区切りのリスト):
   <input size="60" name="new_watchedusers" value="">
-</p>            
+</p>
 
-<p><a name="watching_you" id="watching_you">あなたを監視しているユーザ</a>:<br>
+<p id="watching_you">あなたを監視しているユーザ:<br>
   [% IF watchers.size %]
     [% FOREACH watcher = watchers %]
       [% watcher FILTER html %] <br>

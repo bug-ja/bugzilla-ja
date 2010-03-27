@@ -42,6 +42,7 @@ use Bugzilla::Product;
 use Bugzilla::Component;
 use Bugzilla::Status;
 use Bugzilla::Mailer;
+use Bugzilla::Hook;
 
 use Date::Parse;
 use Date::Format;
@@ -53,17 +54,6 @@ use constant FORMAT_2_SIZE => [19,55];
 
 use constant BIT_DIRECT    => 1;
 use constant BIT_WATCHING  => 2;
-
-# We need these strings for the X-Bugzilla-Reasons header
-# Note: this hash uses "," rather than "=>" to avoid auto-quoting of the LHS.
-use constant REL_NAMES => {
-    REL_ASSIGNEE      , "AssignedTo", 
-    REL_REPORTER      , "Reporter",
-    REL_QA            , "QAcontact",
-    REL_CC            , "CC",
-    REL_VOTER         , "Voter",
-    REL_GLOBAL_WATCHER, "GlobalWatcher"
-};
 
 # We use this instead of format because format doesn't deal well with
 # multi-byte languages.
@@ -97,6 +87,15 @@ sub multiline_sprintf {
 
 sub three_columns {
     return multiline_sprintf(FORMAT_TRIPLE, \@_, FORMAT_3_SIZE);
+}
+
+sub relationships {
+    my $ref = RELATIONSHIPS;
+    # Clone it so that we don't modify the constant;
+    my %relationships = %$ref;
+    Bugzilla::Hook::process('bugmail_relationships', 
+                            { relationships => \%relationships });
+    return %relationships;
 }
 
 # This is a bit of a hack, basically keeping the old system()
@@ -238,7 +237,8 @@ sub Send {
     my $diffs = $dbh->selectall_arrayref(
            "SELECT profiles.login_name, profiles.realname, fielddefs.description,
                    bugs_activity.bug_when, bugs_activity.removed, 
-                   bugs_activity.added, bugs_activity.attach_id, fielddefs.name
+                   bugs_activity.added, bugs_activity.attach_id, fielddefs.name,
+                   bugs_activity.comment_id
               FROM bugs_activity
         INNER JOIN fielddefs
                 ON fielddefs.id = bugs_activity.fieldid
@@ -256,7 +256,7 @@ sub Send {
     my $fullwho;
     my @changedfields;
     foreach my $ref (@$diffs) {
-        my ($who, $whoname, $what, $when, $old, $new, $attachid, $fieldname) = (@$ref);
+        my ($who, $whoname, $what, $when, $old, $new, $attachid, $fieldname, $comment_id) = (@$ref);
         my $diffpart = {};
         if ($who ne $lastwho) {
             $lastwho = $who;
@@ -278,6 +278,12 @@ sub Send {
             ($diffpart->{'isprivate'}) = $dbh->selectrow_array(
                 'SELECT isprivate FROM attachments WHERE attach_id = ?',
                 undef, ($attachid));
+        }
+        if ($fieldname eq 'longdescs.isprivate') {
+            my $comment = Bugzilla::Comment->new($comment_id);
+            my $comment_num = $comment->count;
+            $what =~ s/^(Comment )?/Comment #$comment_num /;
+            $diffpart->{'isprivate'} = $new;
         }
         $difftext = three_columns($what, $old, $new);
         $diffpart->{'header'} = $diffheader;
@@ -371,12 +377,6 @@ sub Send {
     # the relationships in a hash. The keys are userids, the values are an
     # array of role constants.
     
-    # Voters
-    my $voters = $dbh->selectcol_arrayref(
-        "SELECT who FROM votes WHERE bug_id = ?", undef, ($id));
-        
-    $recipients{$_}->{+REL_VOTER} = BIT_DIRECT foreach (@$voters);
-
     # CCs
     $recipients{$_}->{+REL_CC} = BIT_DIRECT foreach (@ccs);
     
@@ -399,8 +399,8 @@ sub Send {
     foreach my $ref (@$diffs) {
         my ($who, $whoname, $what, $when, $old, $new) = (@$ref);
         if ($old) {
-            # You can't stop being the reporter, and mail isn't sent if you
-            # remove your vote.
+            # You can't stop being the reporter, so we don't check that
+            # relationship here.
             # Ignore people whose user account has been deleted or renamed.
             if ($what eq "CC") {
                 foreach my $cc_user (split(/[\s,]+/, $old)) {
@@ -418,6 +418,9 @@ sub Send {
             }
         }
     }
+
+    Bugzilla::Hook::process('bugmail_recipients',
+                            { bug => $bug, recipients => \%recipients });
     
     # Find all those user-watching anyone on the current list, who is not
     # on it already themselves.
@@ -453,7 +456,6 @@ sub Send {
     foreach my $user_id (keys %recipients) {
         my %rels_which_want;
         my $sent_mail = 0;
-
         my $user = new Bugzilla::User($user_id);
         # Deleted users must be excluded.
         next unless $user;
@@ -604,8 +606,9 @@ sub sendMail {
         push(@reasons_watch, $relationship) if ($bits & BIT_WATCHING);
     }
 
-    my @headerrel   = map { REL_NAMES->{$_} } @reasons;
-    my @watchingrel = map { REL_NAMES->{$_} } @reasons_watch;
+    my %relationships = relationships();
+    my @headerrel   = map { $relationships{$_} } @reasons;
+    my @watchingrel = map { $relationships{$_} } @reasons_watch;
     push(@headerrel,   'None') unless @headerrel;
     push(@watchingrel, 'None') unless @watchingrel;
     push @watchingrel, map { user_id_to_login($_) } @$watchingRef;
@@ -644,7 +647,6 @@ sub sendMail {
     my $template = Bugzilla->template_inner($user->settings->{'lang'}->{'value'});
     $template->process("email/newchangedmail.txt.tmpl", $vars, \$msg)
       || ThrowTemplateError($template->error());
-    Bugzilla->template_inner("");
 
     MessageToMTA($msg);
 

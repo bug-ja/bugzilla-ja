@@ -456,10 +456,9 @@ if ($cmdtype eq "dorem") {
         }
 
         # If we are here, then we can safely remove the saved search
-        my ($query_id) = $dbh->selectrow_array('SELECT id FROM namedqueries
-                                                    WHERE userid = ?
-                                                      AND name   = ?',
-                                                  undef, ($user->id, $qname));
+        my $query_id;
+        ($buffer, $query_id) = LookupNamedQuery(scalar $cgi->param("namedcmd"),
+                                                $user->id);
         if (!$query_id) {
             # The user has no query of this name. Play along.
         }
@@ -486,7 +485,7 @@ if ($cmdtype eq "dorem") {
         # Generate and return the UI (HTML page) from the appropriate template.
         $vars->{'message'} = "buglist_query_gone";
         $vars->{'namedcmd'} = $qname;
-        $vars->{'url'} = "query.cgi";
+        $vars->{'url'} = "buglist.cgi?newquery=" . url_quote($buffer) . "&cmdtype=doit&remtype=asnamed&newqueryname=" . url_quote($qname);
         $template->process("global/message.html.tmpl", $vars)
           || ThrowTemplateError($template->error());
         exit;
@@ -653,18 +652,6 @@ else {
 # and are hard-coded into the display templates.
 @displaycolumns = grep($_ ne 'bug_id', @displaycolumns);
 
-# Add the votes column to the list of columns to be displayed
-# in the bug list if the user is searching for bugs with a certain
-# number of votes and the votes column is not already on the list.
-
-# Some versions of perl will taint 'votes' if this is done as a single
-# statement, because the votes param is tainted at this point
-my $votes = $params->param('votes');
-$votes ||= "";
-if (trim($votes) && !grep($_ eq 'votes', @displaycolumns)) {
-    push(@displaycolumns, 'votes');
-}
-
 # Remove the timetracking columns if they are not a part of the group
 # (happens if a user had access to time tracking and it was revoked/disabled)
 if (!Bugzilla->user->is_timetracker) {
@@ -736,9 +723,11 @@ if ($format->{'extension'} eq 'atom') {
       'short_desc',
       'opendate',
       'changeddate',
+      'reporter',
       'reporter_realname',
       'priority',
       'bug_severity',
+      'assigned_to',
       'assigned_to_realname',
       'bug_status',
       'product',
@@ -806,12 +795,6 @@ if ($order) {
                 # Special handlings for certain columns
                 next if $column_name eq 'relevance' && !$fulltext;
                                 
-                # If we are sorting by votes, sort in descending order if
-                # no explicit sort order was given.
-                if ($column_name eq 'votes' && !$direction) {
-                    $direction = "DESC";
-                }
-
                 if (exists $columns->{$column_name}) {
                     $direction = " $direction" if $direction;
                     push(@order, "$column_name$direction");

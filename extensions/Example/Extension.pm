@@ -25,6 +25,7 @@ use strict;
 use base qw(Bugzilla::Extension);
 
 use Bugzilla::Constants;
+use Bugzilla::Error;
 use Bugzilla::Group;
 use Bugzilla::User;
 use Bugzilla::Util qw(diff_arrays html_quote);
@@ -34,6 +35,9 @@ use Bugzilla::Util qw(diff_arrays html_quote);
 use Bugzilla::Extension::Example::Util;
 
 use Data::Dumper;
+
+# See bugmail_relationships.
+use constant REL_EXAMPLE => -127;
 
 our $VERSION = '1.0';
 
@@ -188,6 +192,32 @@ sub buglist_columns {
     $columns->{'example'} = { 'name' => 'bugs.delta_ts' , 'title' => 'Example' };
 }
 
+sub bugmail_recipients {
+    my ($self, $args) = @_;
+    my $recipients = $args->{recipients};
+    my $bug = $args->{bug};
+
+    my $user = 
+        new Bugzilla::User({ name => Bugzilla->params->{'maintainer'} });
+
+    if ($bug->id == 1) {
+        # Uncomment the line below to add the maintainer to the recipients
+        # list of every bugmail from bug 1 as though that the maintainer
+        # were on the CC list.
+        #$recipients->{$user->id}->{+REL_CC} = 1;
+
+        # And this line adds the maintainer as though he had the "REL_EXAMPLE"
+        # relationship from the bugmail_relationships hook below.
+        #$recipients->{$user->id}->{+REL_EXAMPLE} = 1;
+    }
+}
+
+sub bugmail_relationships {
+    my ($self, $args) = @_;
+    my $relationships = $args->{relationships};
+    $relationships->{+REL_EXAMPLE} = 'Example';
+}
+
 sub colchange_columns {
     my ($self, $args) = @_;
     
@@ -246,6 +276,51 @@ sub flag_end_of_update {
     # warn $result;
 }
 
+sub group_before_delete {
+    my ($self, $args) = @_;
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+
+    my $group = $args->{'group'};
+    my $group_id = $group->id;
+    # Uncomment this line to see a line in your webserver's error log whenever
+    # you file a bug.
+    # warn "Group $group_id is about to be deleted!";
+}
+
+sub group_end_of_create {
+    my ($self, $args) = @_;
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+    my $group = $args->{'group'};
+
+    my $group_id = $group->id;
+    # Uncomment this line to see a line in your webserver's error log whenever
+    # you create a new group.
+    #warn "Group $group_id has been created!";
+}
+
+sub group_end_of_update {
+    my ($self, $args) = @_;
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+
+    my ($group, $changes) = @$args{qw(group changes)};
+
+    foreach my $field (keys %$changes) {
+        my $used_to_be = $changes->{$field}->[0];
+        my $now_it_is  = $changes->{$field}->[1];
+    }
+
+    my $group_id = $group->id;
+    my $num_changes = scalar keys %$changes;
+    my $result = 
+        "There were $num_changes changes to fields on group $group_id.";
+    # Uncomment this line to see $result in your webserver's error log whenever
+    # you update a group.
+    #warn $result;
+}
+
 sub install_before_final_checks {
     my ($self, $args) = @_;
     print "Install-before_final_checks hook\n" unless $args->{silent};
@@ -284,6 +359,15 @@ sub object_before_set {
     if ($object->isa('Bugzilla::ExampleObject')) {
         warn "The field $field is changing from " . $object->{$field} 
              . " to $value!";
+    }
+}
+
+sub object_columns {
+    my ($self, $args) = @_;
+    my ($class, $columns) = @$args{qw(class columns)};
+
+    if ($class->isa('Bugzilla::ExampleObject')) {
+        push(@$columns, 'example');
     }
 }
 
@@ -329,6 +413,54 @@ sub object_end_of_update {
             print "The name field changed from $old to $new!";
         }
     }
+}
+
+sub object_update_columns {
+    my ($self, $args) = @_;
+    my ($object, $columns) = @$args{qw(object columns)};
+
+    if ($object->isa('Bugzilla::ExampleObject')) {
+        push(@$columns, 'example');
+    }
+}
+
+sub object_validators {
+    my ($self, $args) = @_;
+    my ($class, $validators) = @$args{qw(class validators)};
+
+    if ($class->isa('Bugzilla::Bug')) {
+        # This is an example of adding a new validator.
+        # See the _check_example subroutine below.
+        $validators->{example} = \&_check_example;
+
+        # This is an example of overriding an existing validator.
+        # See the check_short_desc validator below.
+        my $original = $validators->{short_desc};
+        $validators->{short_desc} = sub { _check_short_desc($original, @_) };
+    }
+}
+
+sub _check_example {
+    my ($invocant, $value, $field) = @_;
+    warn "I was called to validate the value of $field.";
+    warn "The value of $field that I was passed in is: $value";
+
+    # Make the value always be 1.
+    my $fixed_value = 1;
+    return $fixed_value;
+}
+
+sub _check_short_desc {
+    my $original = shift;
+    my $invocant = shift;
+    my $value = $invocant->$original(@_);
+    if ($value !~ /example/i) {
+        # Uncomment this line to make Bugzilla throw an error every time
+        # you try to file a bug or update a bug without the word "example"
+        # in the summary.
+        #ThrowUserError('example_short_desc_invalid');
+    }
+    return $value;
 }
 
 sub page_before_template {

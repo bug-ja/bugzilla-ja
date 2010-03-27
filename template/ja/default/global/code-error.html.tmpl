@@ -210,10 +210,6 @@
   [% ELSIF error == "illegal_field" %]
     有効な [% field FILTER html %] が指定されていません。
 
-  [% ELSIF error == "inactive_group" %]
-    [% terms.bugs %] には利用されていない、
-    '[% name FILTER html %]' グループへの [% terms.bug %] の追加操作を行おうとしました。
-
   [% ELSIF error == "invalid_attach_id_to_obsolete" %]
     用済みにマークしようとした添付ファイルのひとつ [% attach_id FILTER html %] 
     は無効です。
@@ -369,11 +365,6 @@
     [% terms.bug %] を移動させることなく、[% terms.abug %] を [% display_value("resolution", "MOVED") FILTER html %]
     の解決方法にできません。
 
-  [% ELSIF error == "no_open_bug_status" %]
-    [% title = "$terms.Bug を承認できません" %]
-    [%+ display_value("bug_status", "UNCONFIRMED") FILTER html %]
-    から活動中のステータスへの有効な遷移が定義されていません。
-
   [% ELSIF error == "param_invalid" %]
     [% title = "無効なパラメータ" %]
     <code>[% param FILTER html %]</code> は関数 [% function FILTER html %] 
@@ -469,6 +460,9 @@
     [% ELSE %]
        あなたが何をしたいかわかりません。
     [% END %]
+
+  [% ELSIF error == "unknown_method" %]
+    要求されたメソッド '[% method FILTER html %]' が見つかりませんでした。
 
   [% ELSIF error == "usage_mode_invalid" %]
     '[% invalid_usage_mode FILTER html %]' は無効な利用方法です。

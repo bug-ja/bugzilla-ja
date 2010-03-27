@@ -90,7 +90,6 @@ use File::Basename;
     CMT_NORMAL
     CMT_DUPE_OF
     CMT_HAS_DUPE
-    CMT_POPULAR_VOTES
     CMT_MOVED_TO
     CMT_ATTACHMENT_CREATED
     CMT_ATTACHMENT_UPDATED
@@ -98,7 +97,7 @@ use File::Basename;
     THROW_ERROR
     
     RELATIONSHIPS
-    REL_ASSIGNEE REL_QA REL_REPORTER REL_CC REL_VOTER REL_GLOBAL_WATCHER
+    REL_ASSIGNEE REL_QA REL_REPORTER REL_CC REL_GLOBAL_WATCHER
     REL_ANY
     
     POS_EVENTS
@@ -129,6 +128,8 @@ use File::Basename;
     FIELD_TYPE_BUG_ID
     FIELD_TYPE_BUG_URLS
 
+    ABNORMAL_SELECTS
+
     TIMETRACKING_FIELDS
 
     USAGE_MODE_BROWSER
@@ -148,6 +149,7 @@ use File::Basename;
     DB_MODULE
     ROOT_USER
     ON_WINDOWS
+    ON_ACTIVESTATE
 
     MAX_TOKEN_AGE
     MAX_LOGINCOOKIE_AGE
@@ -178,7 +180,7 @@ use File::Basename;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "3.5.3";
+use constant BUGZILLA_VERSION => "3.7";
 
 # These are unique values that are unlikely to match a string or a number,
 # to be used in criteria for match() functions and other things. They start
@@ -280,7 +282,7 @@ use constant MAX_COMMENT_LENGTH => 65535;
 use constant CMT_NORMAL => 0;
 use constant CMT_DUPE_OF => 1;
 use constant CMT_HAS_DUPE => 2;
-use constant CMT_POPULAR_VOTES => 3;
+# Type 3 was CMT_POPULAR_VOTES, which moved to the Voting extension.
 use constant CMT_MOVED_TO => 4;
 use constant CMT_ATTACHMENT_CREATED => 5;
 use constant CMT_ATTACHMENT_UPDATED => 6;
@@ -293,11 +295,20 @@ use constant REL_ASSIGNEE           => 0;
 use constant REL_QA                 => 1;
 use constant REL_REPORTER           => 2;
 use constant REL_CC                 => 3;
-use constant REL_VOTER              => 4;
+# REL 4 was REL_VOTER, before it was moved ino an extension.
 use constant REL_GLOBAL_WATCHER     => 5;
 
-use constant RELATIONSHIPS => REL_ASSIGNEE, REL_QA, REL_REPORTER, REL_CC, 
-                              REL_VOTER, REL_GLOBAL_WATCHER;
+# We need these strings for the X-Bugzilla-Reasons header
+# Note: this hash uses "," rather than "=>" to avoid auto-quoting of the LHS.
+# This should be accessed through Bugzilla::BugMail::relationships() instead
+# of being accessed directly.
+use constant RELATIONSHIPS => {
+    REL_ASSIGNEE      , "AssignedTo",
+    REL_REPORTER      , "Reporter",
+    REL_QA            , "QAcontact",
+    REL_CC            , "CC",
+    REL_GLOBAL_WATCHER, "GlobalWatcher"
+};
                               
 # Used for global events like EVT_FLAG_REQUESTED
 use constant REL_ANY                => 100;
@@ -367,6 +378,13 @@ use constant FIELD_TYPE_TEXTAREA  => 4;
 use constant FIELD_TYPE_DATETIME  => 5;
 use constant FIELD_TYPE_BUG_ID  => 6;
 use constant FIELD_TYPE_BUG_URLS => 7;
+
+# See the POD for Bugzilla::Field/is_abnormal to see why these are listed
+# here.
+use constant ABNORMAL_SELECTS => qw(
+    product
+    component
+);
 
 # The fields from fielddefs that are blocked from non-timetracking users.
 # work_time is sometimes called actual_time.
@@ -454,6 +472,8 @@ use constant DB_MODULE => {
 
 # True if we're on Win32.
 use constant ON_WINDOWS => ($^O =~ /MSWin32/i);
+# True if we're using ActiveState Perl (as opposed to Strawberry) on Windows.
+use constant ON_ACTIVESTATE => eval { &Win32::BuildNumber };
 
 # The user who should be considered "root" when we're giving
 # instructions to Bugzilla administrators.

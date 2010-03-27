@@ -39,8 +39,6 @@ X[% comment_body %]
 *** この [% terms.bug %] は [% terms.bug %] [%+ comment.extra_data %] の重複として処理されました。 ***
 [% ELSIF comment.type == constants.CMT_HAS_DUPE %]
 *** [% terms.Bug %] [%+ comment.extra_data %] がこの [% terms.bug %] の重複と処理されました。 ***
-[% ELSIF comment.type == constants.CMT_POPULAR_VOTES %]
-*** この [% terms.bug %] は投票数によって承認されました。 ***
 [% ELSIF comment.type == constants.CMT_MOVED_TO %]
 X[% comment_body %]
 
@@ -66,5 +64,5 @@ attachment [% comment.extra_data %] へのコメント
 
 [%+ comment.body %]
 [% ELSE %]
-X[% comment_body %]
+X[% Hook.process('type') %]
 [% END %]

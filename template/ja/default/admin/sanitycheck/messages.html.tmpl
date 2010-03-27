@@ -81,12 +81,6 @@
   [% ELSIF san_tag == "bug_check_status_everconfirmed_error_text2" %]
     承認済みのステータスだが承認済みのフラグがたっていない [% terms.Bugs %]
 
-  [% ELSIF san_tag == "bug_check_votes_everconfirmed" %]
-    投票数と承認済みの確認
-
-  [% ELSIF san_tag == "bug_check_votes_everconfirmed_error_text" %]
-    承認可能な票数があるが承認されていない [% terms.Bugs %]
-
   [% ELSIF san_tag == "bug_check_control_values" %]
     group_control_map の無効値の確認
 
@@ -274,25 +268,6 @@
 
   [% ELSIF san_tag == "unsent_bugmail_fix" %]
     <a href="sanitycheck.cgi?rescanallBugMail=1">これらのメールを送信</a>
-
-  [% ELSIF san_tag == "vote_cache_rebuild_start" %]
-    OK, 投票のキャッシュを再構築中。
-
-  [% ELSIF san_tag == "vote_cache_rebuild_end" %]
-    投票のキャッシュを再構築しました。
-
-  [% ELSIF san_tag == "vote_cache_rebuild_fix" %]
-    <a href="sanitycheck.cgi?rebuildvotecache=1">
-    投票のキャッシュを再構築する</a>
-
-  [% ELSIF san_tag == "vote_cache_alert" %]
-    [% PROCESS bug_link bug_id = id %] に無効な投票のキャッシュがあります。
-
-  [% ELSIF san_tag == "vote_count_start" %]
-    キャッシュされた投票数を確認中。
-
-  [% ELSIF san_tag == "vote_count_alert" %]
-    [% terms.bug %] [%+ id FILTER html %] の投票数が無効です。
 
   [% ELSIF san_tag == "whines_obsolete_target_deletion_start" %]
     OK, whine から存在しないユーザ・グループを削除中。

@@ -19,6 +19,8 @@
   #%]
 
 [% PROCESS "global/variables.none.tmpl" %]
+[% PROCESS "global/reason-descs.none.tmpl" %]
+
 From: [% Param('mailfrom') %]
 To: [% to_user.email %]
 Subject: [[% terms.Bug %] [%+ bugid %]] [% 'New: ' IF isnew %][%+ summary %]
@@ -56,33 +58,12 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 -- [%# Protect the trailing space of the signature marker %]
 [% terms.bug %] メールの設定: [% urlbase %]userprefs.cgi?tab=email
 ------- 次の理由でこのメールを受信しています -------
-[% FOREACH relationship = reasons %]
-  [% SWITCH relationship %]
-    [% CASE constants.REL_ASSIGNEE %]
-[%+ terms.bug %] の担当者です
-    [% CASE constants.REL_REPORTER %]
-[%+ terms.bug %] の報告者です
-    [% CASE constants.REL_QA %]
-[%+ terms.bug %] の QA コンタクトです
-    [% CASE constants.REL_CC %]
-[%+ terms.bug %] の CC リストに入っています
-    [% CASE constants.REL_VOTER %]
-[%+ terms.bug %] の投票者です
-    [% CASE constants.REL_GLOBAL_WATCHER %]
-全ての [% terms.bug %] の変更を監視しています
-  [% END %]
+[% SET reason_lines = [] %]
+[% FOREACH reason = reasons %]
+  [% reason_lines.push(reason_descs.$reason) IF reason_descs.$reason %]
 [% END %]
-[% FOREACH relationship = reasons_watch %]
-  [% SWITCH relationship %]
-    [% CASE constants.REL_ASSIGNEE %]
-[%+ terms.bug %] の担当者を監視しています
-    [% CASE constants.REL_REPORTER %]
-[%+ terms.bug %] の報告者を監視しています
-    [% CASE constants.REL_QA %]
-[%+ terms.bug %] の QA コンタクトを監視しています。
-    [% CASE constants.REL_CC %]
-[%+ terms.bug %] の CC リストの誰かを監視しています
-    [% CASE constants.REL_VOTER %]
-[%+ terms.bug %] の投票者を監視しています
-  [% END %]
+[% FOREACH reason = reasons_watch %]
+  [% reason_lines.push(watch_reason_descs.$reason)
+       IF watch_reason_descs.$reason %]
 [% END %]
+[%+ reason_lines.join("\n") %]

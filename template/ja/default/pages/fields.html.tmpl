@@ -20,73 +20,80 @@
   #%]
 
 [% PROCESS "global/field-descs.none.tmpl" %]
-[% INCLUDE global/header.html.tmpl title = "$terms.Bug のライフサイクル" %]
+[% PROCESS global/header.html.tmpl 
+  title = "$terms.Bug フィールド" 
+  style_urls = ['skins/standard/page.css']
+%]
 
-<p>
-<b>ステータス</b> と <b>解決方法</b> のフィールドで [% terms.abug %]
-のライフサイクルを定義しており、これを利用して追跡できます。
-</p>
+<p>このページでは、[% terms.abug %] 
+  で表示されるさまざまなフィールドについて説明しています。</p>
 
-<a name="status"></a>
-<a name="resolution"></a>
-
-<table border="1" cellpadding="4">
-  <tr align="center" valign="top">
-    <td width="50%">
-      <h1>ステータス</h1>
+<table class="field_value_explanation">
+  <thead>
+  <tr>
+    <td id="bug_status">
+      <h2>[% field_descs.bug_status FILTER upper FILTER html %]</h2>
     </td>
 
-    <td>
-      <h1>解決方法</h1>
+    <td id="resolution">
+      <h2>[% field_descs.resolution FILTER upper FILTER html %]</h2>
     </td>
   </tr>
 
-  <tr valign="top">
-    <td><b>ステータス</b> フィールドは一般的な [% terms.bug %] の状態を示します。
-        定められたステータス繊維のみが許可されます。</td>
+  <tr>
+    <td>[% field_descs.bug_status FILTER html %] フィールドは
+      [% terms.bug %] の現在の状況を表します。
+      特定のステータス間遷移のみが許可されます。</td>
 
-    <td><b>解決方法</b> フィールドはこの [% terms.bug %] がどうなったか、
-        を示します。</td>
+    <td>[% field_descs.resolution FILTER html %] フィールドは
+      [% terms.bug %] がどのように処理されたかを表します。</td>
   </tr>
+  </thead>
 
-  <tr valign="top">
+  <tbody>
+  <tr class="header_row">
+    <td colspan="2">活動中の [% terms.Bugs %]</td>
+  </tr>
+  <tr>
     <td>
       <dl>
         <dt>
-          <b>[% display_value("bug_status", "UNCONFIRMED") FILTER html %]</b>
+          [% display_value("bug_status", "UNCONFIRMED") FILTER html %]
         </dt>
         <dd>
           この [% terms.bug %] は最近データベースに追加されました。
-          誰もまだ [% terms.bug %] が正しいものかを確認していません。
+          誰もまだ [% terms.bug %] が有効かを確認していません。
           "canconfirm" 権限を持つユーザはこの [% terms.bug %] を承認でき、
-          ステータスを [% display_value("bug_status", "NEW") FILTER html %] に変更可能です。
-          もしくは、直接解決し、[% display_value("bug_status", "RESOLVED") FILTER html %] 
+          ステータスを <b>[% display_value("bug_status", "NEW") FILTER html %]</b> に変更可能です。
+          もしくは、直接解決し、<b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 
           とすることも可能です。
         </dd>
 
         <dt>
-          <b>[% display_value("bug_status", "NEW") FILTER html %]</b>
+          [% display_value("bug_status", "NEW") FILTER html %]
         </dt>
         <dd>
-          この [% terms.bug %] は最近担当者の [% terms.bugs %] リストに追加され、
-          処理を魔っています。このステータスの [% terms.Bugs %] は承認される可能性があり、
-          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b> になるか、
-          他の誰かに渡されるか、<b>[% display_value("bug_status", "NEW") FILTER html %]</b> のままにされるか、
-          解決され <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるかでしょう。
+          この [% terms.bug %] は有効なもので最近追加されました。
+          このステータスの [%+ terms.Bugs %] は、誰かがこれについて作業を始めた時に
+          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b> 
+          となり、解決され
+          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>
+          となるでしょう。
         </dd>
 
         <dt>
-          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b>
+          [% display_value("bug_status", "ASSIGNED") FILTER html %]
         </dt>
         <dd>
-          この [% terms.bug %] は未解決ですが、ある担当者に割り当てられています。
+          この [% terms.bug %] は未解決ですが、この [% terms.bug %] 
+          について作業をしている、ある担当者に割り当てられています。
           この段階からは、[% terms.bugs %] は他の担当者に再割り当てされ、
           <b>[% display_value("bug_status", "NEW") FILTER html %]</b> となるか、
           解決され <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるでしょう。
         </dd>
 
         <dt>
-          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b>
+          [% display_value("bug_status", "REOPENED") FILTER html %]
         </dt>
         <dd>
           この [% terms.bug %] は一度解決されましたが、解決方法が正しくありませんでした。
@@ -100,23 +107,22 @@
     </td>
 
     <td>
-      <dl>
-        <dd>
-          解決していません。全ての "未解決" 状態の [% terms.bugs %] は解決方法が空白です。
-          それ以外の [% terms.bugs %] は以下の解決方法のうちの一つになります。
-        </dd>
-      </dl>
+      解決していません。全ての "未解決" 状態の [% terms.bugs %] は解決方法が空白です。
     </td>
   </tr>
 
-  <tr valign="top">
+  <tr class="header_row">
+    <td colspan="2">閉じられた [% terms.Bugs %]</td>
+  </tr>
+
+  <tr>
     <td>
       <dl>
         <dt>
-          <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>
+          [% display_value("bug_status", "RESOLVED") FILTER html %]
         </dt>
         <dd>
-          解決策がとられ、QA の確認待ちの状態です。
+          解決策が適用され、QA の確認待ちの状態です。
           この段階からは、[% terms.bugs %] は再開され
           <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> となるか、確認され
           <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b> となるか、
@@ -125,7 +131,7 @@
         </dd>
 
         <dt>
-          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b>
+          [% display_value("bug_status", "VERIFIED") FILTER html %]
         </dt>
         <dd>
           QA が [% terms.bug %] の解決方法を確認し、とられた解決方法に同意しました。
@@ -134,7 +140,7 @@
         </dd>
 
         <dt>
-          <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b>
+          [% display_value("bug_status", "CLOSED") FILTER html %]
         </dt>
         <dd>
           [% terms.bug %] は無効と考えられていますが、解決方法は正しいです。
@@ -147,37 +153,38 @@
     <td>
       <dl>
         <dt>
-          <b>[% display_value("resolution", "FIXED") FILTER html %]</b>
+          [% display_value("resolution", "FIXED") FILTER html %]
         </dt>
         <dd>
           この [% terms.bug %] の解決策はツリーにチェックインされ試験されました。
         </dd>
 
         <dt>
-          <b>[% display_value("resolution", "INVALID") FILTER html %]</b>
+          [% display_value("resolution", "INVALID") FILTER html %]
         </dt>
         <dd>
           述べられている問題は [% terms.abug %] ではありません。
         </dd>
 
         <dt>
-          <b>[% display_value("resolution", "WONTFIX") FILTER html %]</b>
+          [% display_value("resolution", "WONTFIX") FILTER html %]
         </dt>
         <dd>
           述べられている問題は [% terms.abug %] ですが修正されることはありません。
         </dd>
 
         <dt>
-         <b>[% display_value("resolution", "DUPLICATE") FILTER html %]</b>
+         [% display_value("resolution", "DUPLICATE") FILTER html %]
         </dt>
         <dd>
-          報告された問題は既存の [% terms.bug %] の重複です。
-          [% terms.abug %] を重複とする際には、重複とする先の [% terms.bug %]# 
-          が必要で、説明のフィールドに [% terms.bug %] 番号が記入されます。
+          [% terms.abug %] が
+          <b>[% display_value("resolution", "DUPLICATE") FILTER html %]</b>
+          とされた場合、どの [% terms.bug %] の重複となったかが、
+          解決方法の次に表示されます。
         </dd>
 
         <dt>
-          <b>[% display_value("resolution", "WORKSFORME") FILTER html %]</b>
+          [% display_value("resolution", "WORKSFORME") FILTER html %]
         </dt>
         <dd>
           この [% terms.bug %] を再現しようとする試みは全て失敗し、
@@ -185,137 +192,76 @@
           より情報が出てくれば、[% terms.bug %] が再開されることもあります。
         </dd>
 
-        <dt>
-          <b>[% display_value("resolution", "MOVED") FILTER html %]</b>
-        </dt>
-        <dd>
-          問題は他の [% terms.bugs %] データベースで扱われているプロダクトに関連する
-          [% terms.bugs %] です。
-          この [% terms.bug %] はそのデータベースに移動しました。
-        </dd>
+        [% IF Param('move-enabled') %]
+          <dt>
+            [% display_value("resolution", "MOVED") FILTER html %]
+          </dt>
+          <dd>
+            問題は他の [% terms.bugs %] データベースで扱われているプロダクトに関連する
+            [% terms.bugs %] です。
+            この [% terms.bug %] はそのデータベースに移動しました。
+          </dd>
+        [% END %]
       </dl>
     </td>
   </tr>
+ </tbody>
 </table>
 
-<h2><a name="importance">重要性</h2>
-[% terms.abug %] の重要性は、以下で述べる
-<a href="#priority">重要度</a> と <a href="#bug_severity">深刻度</a>
-であらわされます。
+<h2>その他のフィールド</h2>
 
-<h2><a name="priority">重要度</a></h2>
-このフィールドは重要度を示しており、どの [% terms.abug %] から修正されるべきかを示します。
-このフィールドは、プログラマやエンジニアが、
-どれから片付けるべきかを順序付けするために利用するものです。
+[% PROCESS "bug/field-help.none.tmpl" %]
 
-<h2><a name="bug_severity">深刻度</a></h2>
-[% terms.abug %] の深刻度を示します。
-
-<table>
-  <tr>
-    <th>[% display_value("bug_severity", "blocker") FILTER html %]</th>
-
-    <td>開発や試験を妨害する</td>
-  </tr>
-
-  <tr>
-    <th>[% display_value("bug_severity", "critical") FILTER html %]</th>
-
-    <td>クラッシュ、データ喪失、深刻なメモリリーク</td>
-  </tr>
-
-  <tr>
-    <th>[% display_value("bug_severity", "major") FILTER html %]</th>
-
-    <td>主要機能が動作しなくなる</td>
-  </tr>
-
-  <tr>
-    <th>[% display_value("bug_severity", "normal") FILTER html %]</th>
-
-    <td>通常の問題で、ある環境下で機能が利用できなくなる</td>
-  </tr>
-
-
-  <tr>
-    <th>[% display_value("bug_severity", "minor") FILTER html %]</th>
-
-    <td>機能の一部が利用できなくなるや、
-    簡単なワークラウンドが存在する</td>
-  </tr>
-
-  <tr>
-    <th>[% display_value("bug_severity", "trivial") FILTER html %]</th>
-
-    <td>単語のスペルミスやそろっていないテキストなどの、
-        表示上の問題</td>
-  </tr>
-
-  <tr>
-    <th>[% display_value("bug_severity", "enhancement") FILTER html %]</th>
-
-    <td>機能要望</td>
-</table>
-
-<h2><a name="rep_platform">プラットフォーム</a></h2>
-[% terms.bug %] が報告されたハードウェアプラットフォームです。
-有効なプラットフォームには以下のものなどがあります
-
-<ul>
-  <li>[% display_value("rep_platform", "All") FILTER html %] (全てのプラットフォームで再現する; クロスプラットフォーム [% terms.bug %])</li>
-
-  <li>[% display_value("rep_platform", "Macintosh") FILTER html %]</li>
-
-  <li>[% display_value("rep_platform", "PC") FILTER html %]</li>
-</ul>
-<b>注:</b> 検索の際は、<em>[% display_value("rep_platform", "All") FILTER html %]</em> ではどのプラットフォームにもあたっていない
-[% terms.bugs %] は選択されません。
-全てのプラットフォームで発生するという条件では
-[% terms.bugs %] が該当することは少ないです。
-
-<h2><a name="op_sys">OS</a></h2>
-[% terms.bug %] が報告された OS です。
-有効な OS には以下のものなどがあります。
-
-<ul>
-  <li>[% display_value("op_sys", "All") FILTER html %] (全ての OS で再現する; クロスープラットフォーム
-  [% terms.bug %])</li>
-
-  <li>Windows</li>
-
-  <li>Mac OS</li>
-
-  <li>Linux</li>
-</ul>
-ものによっては、OS でプラットフォームも決まりますが、必ずではありません。
-たとえば、Linux は PC でも Mac でもその他でも動作します。
-
-<h2><a name="assigned_to">担当者</a></h2>
-
-<p>
-これは、[% terms.bug %] を解決するのに割り当てられた担当者です。
-このフィールドが変更されるたび、ステータスが <b>[% display_value("bug_status", "NEW") FILTER html %]</b> 
-に変更され、担当者のリストで新しい [% terms.bugs %] が簡単にわかるようになっています。</p>
-
-<p>
-クエリでの既定のステータスでは [% display_value("bug_status", "NEW") FILTER html %]、
-[%+ display_value("bug_status", "ASSIGNED") FILTER html %] と [% display_value("bug_status", "REOPENED") FILTER html %]
-が選択されています。
-解決済みや確認済みの [% terms.bugs %] を検索するためには、
-ステータスフィールドを設定する必要があることを覚えておいてください。
-</p>
-
-[% IF Param("use_see_also") %]
-  <h2><a name="see_also"></a>参照先</h2>
-
-  <p>このシステムでは他のサイトの [% terms.bugs %] を参照とすることができます。
-    [% terms.bugs %] の URL を "[% terms.Bug %] URL を追加する" フィールドに入力することで、
-    その [% terms.bug %] が関連したものであると示すことができます。
-    カンマ区切りで複数の URL を入力することもできます。</p>
-
-  <p>このフィールドは <em>他の</em> サイトの [% terms.bugs %] を示すために利用すべきです。
-    このサイトの [% terms.bugs %] に関しては、"依存する" "妨害する"
-    フィールドを利用するほうが望ましいです。</p>
+[% SET field_help_map = {} %]
+[% FOREACH field = bug_fields.keys %]
+  [% SET field_desc = field_descs.$field %]
+  [% field_help_map.$field_desc = { help  => help_html.$field, 
+                                    field => field } %]
 [% END %]
 
-[% INCLUDE global/footer.html.tmpl %]
+[%# These are fields that don't need to be documented, either because
+  # they have docs somewhere else in the UI, or they don't show up on bugs. 
+  # %]
+[% SET skip_fields = [ 
+  'days_elapsed', 
+  'everconfirmed',
+  'reporter_accessible',
+  'cclist_accessible',
+  'bug_group',
+  'commenter',
+  'owner_idle_time',
+  'bug_status',
+  'resolution',
+] %]
+
+<dl class="field_descriptions">
+[% FOREACH field_desc = field_help_map.keys.sort %]
+  [% SET field = field_help_map.${field_desc}.field %]
+  [% SET field_object = bug_fields.$field %]
+
+  [% NEXT IF field_object.obsolete %]
+  [% NEXT IF !user.is_timetracker AND field_object.is_timetracking %]
+
+  [% NEXT IF field == 'status_whiteboard' AND !Param('usestatuswhiteboard') %]
+  [% NEXT IF field == 'target_milestone' AND !Param('usetargetmilestone') %]
+  [% NEXT IF field == 'alias' AND !Param('usebugaliases') %]
+
+  [%# For now we don't have help for attachment fields and so on. %]
+  [% NEXT IF field.match('\.') %]
+
+  [% NEXT IF skip_fields.contains(field) %]
+
+  <dt id="[% field FILTER html %]">[% field_desc FILTER html %]</dt>
+    <dd>
+      [% SET help_text = field_help_map.${field_desc}.help %]
+      [% IF help_text %]
+        [% help_text FILTER none %]
+      [% ELSE %]
+        この [% terms.Bugzilla %] におけるカスタムフィールド
+        [% field_types.${field_object.type} FILTER html %] です。
+      [% END %]
+    </dd>
+[% END %]
+</dl>
+
+[% PROCESS global/footer.html.tmpl %]

@@ -504,7 +504,7 @@
       it controls the visibility of the following fields:
       [%+ fields.join(', ') FILTER html %].
     [% END %]
-    [% ' and ' IF fields.size AND vals.size %]
+    [% ' Also, ' IF fields.size AND vals.size %]
     [% IF vals.size %]
       it controls the visibility of the following field values:
       <ul>
@@ -740,11 +740,6 @@
     The group [% name FILTER html %] does not exist. Please specify
     a valid group name. Create it first if necessary!
 
-  [% ELSIF error == "illegal_at_least_x_votes" %]
-    [% title = "Your Search Makes No Sense" %]
-    The <em>At least ___ votes</em> field must be a simple number. 
-    You entered <tt>[% value FILTER html %]</tt>, which isn't.
-    
   [% ELSIF error == "illegal_attachment_edit" %]
     [% title = "Unauthorized Action" %]
     You are not authorized to edit attachment [% attach_id FILTER html %].
@@ -1301,8 +1296,13 @@
     Try splitting your patch into several pieces.
 
   [% ELSIF error == "product_access_denied" %]
-    Either the product '[% product FILTER html %]' does not exist or
-    you don't have access to it.
+    Either the product 
+    [%+ IF id.defined %]
+      with the id [% id FILTER html %]
+    [% ELSE %]
+      '[% name FILTER html %]'
+    [% END %]
+    does not exist or you don't have access to it.
 
   [% ELSIF error == "product_doesnt_exist" %]
     [% title = "Specified Product Does Not Exist" %]
@@ -1312,20 +1312,6 @@
     [% title = "Illegal Group" %]
     [% group.name FILTER html %] is not an active [% terms.bug %] group
     and so you cannot edit group controls for it.
-
-  [% ELSIF error == "product_illegal_votes" %]
-    [% title = "Votes Must Be Non-negative" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    '[% votes FILTER html %]' is an invalid value for the
-    <em>
-    [% IF field == "votesperuser" %]
-      Votes Per User
-    [% ELSIF field == "maxvotesperbug" %]
-      Maximum Votes Per [% terms.Bug %]
-    [% ELSIF field == "votestoconfirm" %]
-      Votes To Confirm
-    [% END %]
-    </em> field, which should contain a non-negative number.
 
   [% ELSIF error == "product_name_already_in_use" %]
     [% title = "Product name already exists" %]
@@ -1431,8 +1417,8 @@
     [% END %]
 
     [% IF unknown.size %]
-      <p>The legal field names are
-        <a href="page.cgi?id=quicksearchhack.html">listed here</a>.</p>
+      <p>The legal field names are 
+        <a href="page.cgi?id=quicksearch.html#fields">listed here</a>.</p>
     [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
@@ -1444,6 +1430,12 @@
     [% title = "Component Needed" %]
     To file this [% terms.bug %], you must first choose a component.
     If necessary, just guess.
+
+  [% ELSIF error == "relationship_loop_single" %]
+    [% title = "Relationship Loop Detected" %]
+    [% field_descs.$field_name FILTER html %]
+    for [% terms.bug %] [%+ bug_id FILTER html %]
+    has a circular dependency on [% terms.bug %] [%+ dep_id FILTER html %].
 
   [% ELSIF error == "require_new_password" %]
     [% title = "New Password Needed" %]
@@ -1537,21 +1529,6 @@
     [% title = "User Protected" %]
     The user [% login FILTER html %] may not be impersonated by sudoers.
 
-  [% ELSIF error == "too_many_votes_for_bug" %]
-    [% title = "Illegal Vote" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    You may only use at most [% max FILTER html %] votes for a single
-    [%+ terms.bug %] in the
-    <tt>[% product FILTER html %]</tt> product, but you are trying to
-    use [% votes FILTER html %].
-
-  [% ELSIF error == "too_many_votes_for_product" %]
-    [% title = "Illegal Vote" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    You tried to use [% votes FILTER html %] votes in the
-    <tt>[% product FILTER html %]</tt> product, which exceeds the maximum of
-    [%+ max FILTER html %] votes for this product.
-
   [% ELSIF error == "token_does_not_exist" %]
     [% title = "Token Does Not Exist" %]
     The token you submitted does not exist, has expired, or has
@@ -1638,11 +1615,6 @@
     [% title = "User Not In Insidergroup" %]
     Sorry, but you are not allowed to (un)mark comments or attachments
     as private.
-
-  [% ELSIF error == "votes_must_be_nonnegative" %]
-    [% title = "Votes Must Be Non-negative" %]
-    [% admindocslinks = {'voting.html' => 'Setting up the voting feature'} %]
-    Only use non-negative numbers for your [% terms.bug %] votes.
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = "Wrong Token" %]

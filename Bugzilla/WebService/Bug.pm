@@ -32,7 +32,7 @@ use Bugzilla::WebService::Constants;
 use Bugzilla::WebService::Util qw(filter validate);
 use Bugzilla::Bug;
 use Bugzilla::BugMail;
-use Bugzilla::Util qw(trim);
+use Bugzilla::Util qw(trick_taint trim);
 use Bugzilla::Version;
 use Bugzilla::Milestone;
 use Bugzilla::Status;
@@ -386,9 +386,6 @@ sub search {
     if (my $when = delete $params->{creation_ts}) {
         $params->{WHERE}->{'creation_ts >= ?'} = $when;
     }
-    if (my $votes = delete $params->{votes}) { 
-        $params->{WHERE}->{'votes >= ?'} = $votes;
-    }
     if (my $summary = delete $params->{short_desc}) {
         my @strings = ref $summary ? @$summary : ($summary);
         my @likes = ("short_desc LIKE ?") x @strings;
@@ -422,11 +419,13 @@ sub legal_values {
     my $field = Bugzilla::Bug::FIELD_MAP->{$params->{field}} 
                 || $params->{field};
 
-    my @global_selects = Bugzilla->get_fields(
-        {type => [FIELD_TYPE_SINGLE_SELECT, FIELD_TYPE_MULTI_SELECT]});
+    my @global_selects = grep { !$_->is_abnormal }
+                         Bugzilla->get_fields({ is_select => 1 });
 
     my $values;
     if (grep($_->name eq $field, @global_selects)) {
+        # The field is a valid one.
+        trick_taint($field);
         $values = get_legal_field_values($field);
     }
     elsif (grep($_ eq $field, PRODUCT_SPECIFIC_FIELDS)) {
@@ -434,7 +433,7 @@ sub legal_values {
         defined $id || ThrowCodeError('param_required',
             { function => 'Bug.legal_values', param => 'product_id' });
         grep($_->id eq $id, @{Bugzilla->user->get_accessible_products})
-            || ThrowUserError('product_access_denied', { product => $id });
+            || ThrowUserError('product_access_denied', { id => $id });
 
         my $product = new Bugzilla::Product($id);
         my @objects;
@@ -1685,11 +1684,6 @@ C<string> The "URL" field of a bug.
 
 C<string> The Version field of a bug.
 
-=item C<votes>
-
-C<int> Searches for bugs with this many votes or greater. May not
-be an array.
-
 =item C<whiteboard>
 
 C<string> Search the "Status Whiteboard" field on bugs for a substring.
@@ -1719,6 +1713,8 @@ for that value.
 =over
 
 =item Added in Bugzilla B<3.4>.
+
+=item Searching by C<votes> was removed in Bugzilla B<3.8>.
 
 =back
 
@@ -1806,6 +1802,15 @@ don't want it to be assigned to the component owner.
 
 =item C<cc> (array) - An array of usernames to CC on this bug.
 
+=item C<groups> (array) - An array of group names to put this
+bug into. You can see valid group names on the Permissions
+tab of the Preferences screen, or, if you are an administrator,
+in the Groups control panel. Note that invalid group names or
+groups that the bug can't be restricted to are silently ignored. If
+you don't specify this argument, then a bug will be added into
+all the groups that are set as being "Default" for this product. (If
+you want to avoid that, you should specify C<groups> as an empty array.)
+
 =item C<qa_contact> (username) - If this installation has QA Contacts
 enabled, you can set the QA Contact here if you don't want to use
 the component's default QA Contact.
@@ -1870,6 +1875,10 @@ in them. The error message will have more details.
 
 =item Before B<3.0.4>, parameters marked as B<Defaulted> were actually
 B<Required>, due to a bug in Bugzilla.
+
+=item The C<groups> argument was added in Bugzilla B<3.8>. Before
+Bugzilla 3.8, bugs were only added into Mandatory groups by this
+method.
 
 =back
 

@@ -40,12 +40,10 @@
   #%]
 
 [% SET hidden = 0 %]
-[% IF field.visibility_field.defined %]
-  [% IF !bug.${field.visibility_field.name}
-         .contains(field.visibility_value.name) 
-  %]
-    [% SET hidden = 1 %]
-  [% END %]
+[% IF field.visibility_field.defined AND bug
+      AND !field.visibility_value.is_set_on_bug(bug) 
+%]
+  [% SET hidden = 1 %]
 [% END %]
 
 [% IF NOT no_tds %]
@@ -89,8 +87,7 @@
         <span>カレンダー</span>
       </button>
 
-      <div id="con_calendar_[% field.name FILTER html %]"
-           class="yui-skin-sam"></div>
+      <div id="con_calendar_[% field.name FILTER html %]"></div>
 
       <script type="text/javascript">
         createCalendar('[% field.name FILTER js %]')
@@ -101,8 +98,8 @@
                  value="[% value FILTER html %]" size="7">
         </span>
 
-        [% IF bug.${field.name} %]  
-          [% bug.${field.name} FILTER bug_link(bug.${field.name}) FILTER none %]
+        [% IF value %]  
+          [% value FILTER bug_link(value, use_alias => 1) FILTER none %]
         [% END %]
         <span id="[% field.name FILTER html %]_edit_container" class="edit_me bz_default_hidden">
           (<a href="#" id="[% field.name FILTER html %]_edit_action">edit</a>)
@@ -112,7 +109,7 @@
                           '[% field.name FILTER js %]_input_area',
                           '[% field.name FILTER js %]_edit_action',
                           '[% field.name FILTER js %]',
-                          "[% bug.${field.name} FILTER js %]");
+                          "[% value FILTER js %]");
         </script>
     [% CASE [ constants.FIELD_TYPE_SINGLE_SELECT 
               constants.FIELD_TYPE_MULTI_SELECT ] %]
@@ -138,8 +135,6 @@
             [% legal_values = field.legal_values %]
           [% END %]
           [% FOREACH legal_value = legal_values %]
-            [% SET control_value = legal_value.visibility_value %]
-            [% SET control_field = field.value_field %]
             <option value="[% legal_value.name FILTER html %]"
                     id="v[% legal_value.id FILTER html %]_
                         [%- field.name FILTER html %]"
@@ -147,10 +142,7 @@
                 # hidden %]
               [% IF value.contains(legal_value.name).size %]
                 selected="selected"
-              [% ELSIF (control_field && control_value
-                        && !bug.${control_field.name}.contains(control_value.name))
-                       || !legal_value.is_active
-              %]
+              [% ELSIF bug AND !legal_value.is_visible_on_bug(bug) %]
                 class="bz_hidden_option" disabled="disabled"
               [% END %]>
               [%- display_value(field.name, legal_value.name) FILTER html %]</option>
@@ -204,11 +196,24 @@
   <div class="uneditable_textarea">[% value FILTER wrap_comment(60)
                                             FILTER html %]</div>
 [% ELSIF field.type == constants.FIELD_TYPE_BUG_ID %]
-    [% IF bug.${field.name} %]  
-        [% bug.${field.name} FILTER bug_link(bug.${field.name}) FILTER none %]
+    [% IF value %]  
+        [% value FILTER bug_link(value, use_alias => 1) FILTER none %]
     [% END %]
 [% ELSE %]
   [% value.join(', ') FILTER html %]
 [% END %]
 [% Hook.process('end_field_column') %]
 [% '</td>' IF NOT no_tds %]
+
+[%# for reverse relationships, we show this pseudo-field after the main field %]
+[% IF bug.id && field.is_relationship %]
+    [% extra_field_item = {} %]
+    [% extra_field_item.header = field.reverse_desc _ ":" FILTER html %]
+    [% extra_field_item.data = BLOCK %]
+        [% FOREACH depbug = bug.related_bugs(field) %]
+            [% depbug.id FILTER bug_link(depbug, use_alias => 1) FILTER none %][% " " %]
+        [% END %]
+    [% END %]
+[% ELSE %]
+    [% extra_field_item = '' %]
+[% END %]

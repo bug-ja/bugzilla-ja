@@ -715,7 +715,7 @@
       以下のフィールドの表示・非表示を制御しています。
       [%+ fields.join(', ') FILTER html %].
     [% END %]
-    [% ' and ' IF fields.size AND vals.size %]
+    [% ' それに加えて ' IF fields.size AND vals.size %]
     [% IF vals.size %]
       以下のフィールド値の表示・非表示を制御しています。
       <ul>
@@ -964,11 +964,6 @@
     有効な [% jawords.group_name FILTER html %] を指定してください。
     必要なのであれば、先に作ってください。
 
-  [% ELSIF error == "illegal_at_least_x_votes" %]
-    [% title = BLOCK %] 指定された [% jawords.search_inputs FILTER html %] が無効です [% END %]
-    <em>[% jawords.search_min_votes FILTER html %]</em> のフィールドは単純な数字でなくてはいけません。
-    指定された <tt>[% value FILTER html %]</tt> は適当ではありません。
-    
   [% ELSIF error == "illegal_attachment_edit" %]
     [% title = BLOCK %] 認証されていない操作です [% END %]
     [% jawords.attachment FILTER html %] [% attach_id FILTER html %] を編集する権限がありません。
@@ -1509,8 +1504,13 @@
     パッチをいくつかに分割して試してください。
 
   [% ELSIF error == "product_access_denied" %]
-    [% jawords.product FILTER html %] '[% product FILTER html %]' は存在しないか、
-    あなたのアカウントにはアクセスする権限がありません。
+    プロダクト
+    [%+ IF id.defined %]
+      ID [% id FILTER html %]
+    [% ELSE %]
+      '[% name FILTER html %]'
+    [% END %]
+    は存在しないか、あなたのアカウントからはアクセスする権限がありません。
 
   [% ELSIF error == "product_doesnt_exist" %]
     [% title = BLOCK %] 指定された [% jawords.product FILTER html %] は存在していません [% END %]
@@ -1520,20 +1520,6 @@
     [% title = "無効なグループ" %]
     [% group.name FILTER html %] は活動中の [% terms.bug %] グループではありませんので、
     グループコントロールを編集できません。
-
-  [% ELSIF error == "product_illegal_votes" %]
-    [% title = "投票数を負にできません" %]
-    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
-    '[% votes FILTER html %]' は
-    <em>
-    [% IF field == "votesperuser" %]
-      ユーザあたりの投票数
-    [% ELSIF field == "maxvotesperbug" %]
-      [% terms.Bug %] あたりの最大投票数
-    [% ELSIF field == "votestoconfirm" %]
-      承認するための投票数
-    [% END %]
-    </em> フィールドでは無効な値です。負の数を設定できません。
 
   [% ELSIF error == "product_name_already_in_use" %]
     [% title = BLOCK %] 指定された [% jawords.product_name FILTER html %] は既に存在しています [% END %]
@@ -1639,7 +1625,7 @@
 
     [% IF unknown.size %]
       <p>有効なフィールド名は
-        <a href="page.cgi?id=quicksearchhack.html">このリスト</a>で参照できます。</p>
+        <a href="page.cgi?id=quicksearch.html#fields">このリスト</a>で参照できます。</p>
     [% END %]
 
   [% ELSIF error == "reassign_to_empty" %]
@@ -1651,6 +1637,12 @@
     [% title = BLOCK %] [% jawords.component FILTER html %] が指定されていません [% END %]
     [% terms.bug %] を新規追加する際には、[% jawords.component FILTER html %] を選択しなくてはいけません。
     どの [% jawords.component FILTER html %] が適当か判断できないのであれば、想像して決めてください。
+
+  [% ELSIF error == "relationship_loop_single" %]
+    [% title = "関連性のループが検出されました" %]
+    [% terms.bug %] [%+ bug_id FILTER html %] の
+    [% field_descs.$field_name FILTER html %]
+    に [% terms.bug %] [%+ dep_id FILTER html &] に対する依存関係のループが存在します。
 
   [% ELSIF error == "require_new_password" %]
     [% title = BLOCK %] [% jawords.account_new_password FILTER html %] が入力されていません [% END %]
@@ -1739,21 +1731,6 @@
     [% jawords.user FILTER html %] [% login FILTER html %] は
     [% jawords.sudo FILTER html %] の対象にはできません。
 
-  [% ELSIF error == "too_many_votes_for_bug" %]
-    [% title = BLOCK %] [% jawords.vote_count FILTER html %] が多すぎます [% END %]
-    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
-    <tt>[% product FILTER html %]</tt> [% jawords.product FILTER html %] では、
-    ひとつの [%+ terms.bug %] につき、
-    最高 [% max FILTER html %] 票を投じることができます。
-    しかし、[% votes FILTER html %] 票を投じようとしました。
-
-  [% ELSIF error == "too_many_votes_for_product" %]
-    [% title = BLOCK %] [% jawords.vote_count FILTER html %] が多すぎます [% END %]
-    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
-    <tt>[% product FILTER html %]</tt> [% jawords.product FILTER html %] で [% votes FILTER html %]
-    票を投じようとしましたが、この [% jawords.product FILTER html %] では最高 [%+ max FILTER html %]
-    票しか投票できません。
-
   [% ELSIF error == "token_does_not_exist" %]
     [% title = BLOCK %] 入力された [% jawords.token FILTER html %] は存在していません [% END %]
     入力された [% jawords.token FILTER html %] は存在していないか、期限切れか、既にキャンセルされています。
@@ -1837,11 +1814,6 @@
   [% ELSIF error == "user_not_insider" %]
     [% title = "このユーザは Insidergroup にいません" %]
     申し訳ありませんが、あなたはコメントや添付のプライベートフラグを変更できません。
-
-  [% ELSIF error == "votes_must_be_nonnegative" %]
-    [% title = BLOCK %] 指定された [% jawords.vote_count FILTER html %] が負の数値です [% END %]
-    [% admindocslinks = {'voting.html' => '投票機能の設定'} %]
-    [% terms.bug %] への [% jawords.vote_count FILTER html %] は '0' か 正の整数で入力してください。
 
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = BLOCK %] 無効な [% jawords.token FILTER html %] です [% END %]

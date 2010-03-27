@@ -39,8 +39,8 @@
   [% END %]
 [% ELSIF title_tag == "mid_air" %]
   [% title = "衝突発生 !" %]
-[% ELSIF title_tag == "change_votes" %]
-  [% title = "投票変更" %]
 [% END %]
+
+[% Hook.process('title') %]
 
 [% PROCESS global/header.html.tmpl %]

@@ -10,29 +10,25 @@
   #
   # The Original Code is the Bugzilla Bug Tracking System.
   #
-  # Contributor(s): N.N.
-  #                 Marc Schumann <wurblzap@gmail.com>
+  # The Initial Developer of the Original Code is Everything Solved, Inc.
+  # Portions created by the Initial Developer are Copyright (C) 2009
+  # the Initial Developer. All Rights Reserved.
+  #
+  # Contributor(s):
+  #   Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
+[% PROCESS "global/field-descs.none.tmpl" %]
 
 [% INCLUDE global/header.html.tmpl
    title  = "$terms.Bugzilla 簡易検索",
-   style  = 'ul {margin-bottom: 2ex}
-             ul li {margin-top: 2ex}
-             ul li ul li {margin-top: 0}'
+   style_urls = ['skins/standard/page.css']         
    onload = 'document.forms[\'f\'].quicksearch.focus()'
  %]
 
-<p style="font-size: 80%">
-  もし、元の
-  <a href="query.cgi">[% terms.Bugzilla %] 検索フォーム</a> に慣れているなら、
-  <a href="page.cgi?id=quicksearchhack.html">こちらのフォーム</a> の方がいいかもしれません。
-</p>
+[% USE Bugzilla %]
 
-<p>
-  検索対象のひとつ以上の単語 (もしくは単語の断片) を入力してください :
-</p>
+<p>検索対象のひとつ以上の単語 (もしくは単語の断片) を入力してください :</p>
 
 <form name="f" action="buglist.cgi" method="get"
       onsubmit="if (this.quicksearch.value == '')
@@ -44,140 +40,228 @@
 
 <h2>はじめに</h2>
 
-<ul>
-  <li>
-    これは <strong>大文字小文字を考慮しない</strong> 検索です:<br />
-    <ul>
-      <li><tt>table</tt>、 <tt>Table</tt> や <tt>TABLE</tt> は全て同じです。</li>
-    </ul>
+<ul class="qs_help">
+  <li>検索ボックスにひとつもしくは複数の単語を入力してください。
+    [%+ terms.Bugzilla %] は
+    [%+ field_descs.product FILTER html %],
+    [%+ field_descs.component FILTER html %], 
+    [%+ IF use_keywords %][%+ field_descs.keywords FILTER html %],[% END %]
+    [%+ IF Param('usebugaliases') %][% field_descs.alias FILTER html %],[% END %]
+    [%+ field_descs.short_desc FILTER html %], 
+    [%+ IF Param('usestatuswhiteboard') %][% field_descs.status_whiteboard FILTER html %],[% END %]
+    [% field_descs.longdesc FILTER html %] の各フィールドについて、
+    入力された単語に対して検索します。</li>
+
+  <li>単に<strong>数字</strong>のみを検索ボックスに入力した場合、
+    そのIDをもつ[% terms.bug %]が表示されます。
+    [% IF Param('usebugaliases') %]
+      また、[% terms.abug %] の <strong>エイリアス</strong> を入力することで、
+      その [% terms.bug %] を表示できます。
+    [% END %]
   </li>
-  <li>
-    <strong>全ての語が部分一致検索</strong>
-    される検索です。<br />
-    つまり、よりよい検索結果を得るためには、<strong>語頭</strong> のみを入力すべきかもしれません
+
+  <li>検索語を追加すれば<strong>より絞られた</strong>結果になり、
+     増えることはありません。(言い換えると、[% terms.Bugzilla %]は
+     検索条件を<em>全て</em>を満たす[% terms.bugs %]を検索し、
+     検索条件の<em>いくつか</em>を満たす[% terms.bugs %]を検索するわけではありません。)</li>
+
+  <li>検索では<strong>大文字・小文字は無視</strong>されます。
+    つまり、<kbd>table</kbd>は<kbd>Table</kbd>や<kbd>TABLE</kbd>などの
+    全てにマッチします。</li>
+
+  <li>[% terms.Bugzilla %] は単純に入力された単語を検索するだけでなく、
+    その語を<strong>含む</strong>全ての単語にもマッチします。
+    ですので、たとえば、"cat"での検索は、それを一部分に含むほかの語
+    &mdash; たとえば、"<strong>cat</strong>ch"や"certifi<strong>cat</strong>e"
+    などを含む[% terms.abug %]にも合致します。
+    ただし、[% field_descs.longdesc FILTER html %]や
+    [% field_descs.keywords FILTER html %] フィールドではこの動作はせずに、
+    &mdash; 単純に単語での検索を行います。</li>
+
+  <li>既定では、<strong>活動中の</strong> [% terms.bugs %]のみ検索されます。
+    もし、閉じられた[% terms.bugs %]をも検索したい場合は、
+    <a href="#shortcuts">高度な検索のショートカット</a> を利用してください。</li>
+
+  <li><strong>特定のフィールド</strong>のみを検索したい場合、
+    <kbd>field:value</kbd>形式を利用でき、<kbd>field</kbd>に下のほうにある
+    <a href="#fields">フィールド名</a>を入れてください。<kbd>value</kbd>
+    には、カンマ区切りで値のリストを入れることができ、それらの
+    <em>いずれか</em>の値に合致する[% terms.bugs %]が検索されます。</li>
+</ul>
+
+<p>また、<a href="#advanced">高度な機能</a>も利用可能です。</p>
+
+<h2 id="fields">検索対象のフィールド</h2>
+
+<p>これらのフィールドのどれでも<kbd>field:value</kbd>の形式で検索ボックスに
+  指定でき、検索することができます。また、省略形がひとつにしか合致しない場合は
+  フィールド名の省略形も利用可能です。
+  ですので、たとえば、<kbd>stat:NEW</kbd>は、全てのステータスが<kbd>NEW</kbd>
+  である[% terms.bugs %]を検索します。いくつかのフィールドは複数の名前を
+  持っていますので、それらのどの名前でも検索できます。</p>
+
+[% IF Bugzilla.active_custom_fields.size %]
+  [% SET first_field = Bugzilla.active_custom_fields.0 %]
+  <p>カスタムフィールドについても利用可能で、
+    その<kbd>cf_</kbd>から始まる標準的な名前に加えて、
+    <kbd>cf_</kbd>より<em>後の</em>名前については省略形として利用できます。
+    たとえば、<kbd>[% first_field.name FILTER html %]</kbd>は、
+    <kbd>[% first_field.name.replace('^cf_') FILTER html %]</kbd>
+    でも利用可能です。ただし、名前が標準的な[% terms.Bugzilla %]
+    のフィールド名と衝突する場合は、標準的なフィールド名が優先されます。</p>
+[% END %]
+
+[% SET field_table = {} %]
+[% FOREACH field = quicksearch_field_names.keys %]
+  [% description = field_descs.$field %]
+  [% field_table.$description = quicksearch_field_names.${field} %]
+[% END %]
+
+<table cellspacing="0" cellpadding="0" border="0" class="qs_fields">
+  <thead>
+    <tr>
+      <th class="field_name">フィールド</th>
+      <th class="field_nickname">検索に利用可能なフィールド名</th>
+    </tr>
+  </thead>
+  <tbody>
+    [% FOREACH desc = field_table.keys.sort %]
+      <tr>
+        <td class="field_name">[% desc FILTER html %]</td>
+        <td class="field_nickname">
+          [% FOREACH nickname = field_table.$desc %]
+            <kbd>[% nickname FILTER html %]</kbd>
+            [% ",&nbsp; " UNLESS loop.last %]
+          [% END %]
+      </tr>
+    [% END %]
+  </tbody>
+</table>
+
+<h2 id="advanced">高度な機能</h2>
+
+<ul class="qs_help">
+  <li><strong>フレーズ</strong>や空白を含む何かで検索したい場合、
+    それらを引用符で囲ってください。たとえば、<kbd>"this is a phrase"</kbd>です。
+    また、簡易検索システムで特殊文字として扱われるような文字を含む検索語
+    を利用するときにも引用符を利用できます。たとえば、<kbd>"this|thing"</kbd>
+    は単純な文字列の<em>this|thing</em>を検索します。</li>
+
+  <li>検索中には <strong>AND</strong>, <strong>NOT</strong>,
+    <strong>OR</strong> も利用可能です。
+
+    また、<kbd>-</kbd>を"NOT"の意味で、<kbd>|</kbd>を"OR"の意味で利用できます。
+    "AND"には特別な文字列はありませんが、既定で空白区切りの検索文字列は"AND"
+    で組み合わされるものとして取り扱われます。
+    たとえば:
     <ul>
       <li>
-        <tt>localiz</tt> を、<tt>localize</tt> や
-        <tt>localization</tt> の替わりに。
+        <strong>NOT</strong>:<br>
+        <kbd><strong>-</strong><em>summary:foo</em></kbd> は、
+        <kbd>foo</kbd>を要約に含まない[% terms.bugs %]を検索します。<br>
+        <kbd><em>NOT summary:foo</em></kbd> も同じ意味です。
       </li>
-     <li>
-       <tt>bookmark</tt> を、<tt>bookmarks</tt> や
-       <tt>bookmarking</tt> の替わりに。
-     </li>
-   </ul>
+      <li>
+        <strong>AND</strong>:<br>
+        <kbd><em>foo bar</em></kbd> は <kbd>foo</kbd> と <kbd>bar</kbd>
+        の両方を含む[% terms.bugs %] を検索します。<br>
+        <kbd><em>foo AND bar</em></kbd> も同じ意味です。
+      </li>
+      <li>
+        <strong>OR</strong>:<br>
+        <kbd><em>foo<strong>|</strong>bar</em></kbd> は
+        <kbd>foo</kbd> もしくは <kbd>bar</kbd>を含む[% terms.bugs %]を検索します。<br>
+        <kbd><em>foo OR bar</em></kbd> も同じ意味です。<br>
+      </li>
+    </ul>
+
+    <p>OR は AND より優先です。AND の操作は一番最後に来ます。
+      たとえば:</p>
+    <p><em><kbd>url|location bar|field -focus</kbd></em> での検索は
+      (<kbd>url</kbd> OR <kbd>location</kbd>) AND (<kbd>bar</kbd> OR 
+      <kbd>field</kbd>) AND (NOT <kbd>focus</kbd>) を意味します。</p>
   </li>
 </ul>
 
-<h2><a name="features">機能</a></h2>
+<h2 id="shortcuts">高度な検索のショートカット</h2>
 
-<ul>
-  <li>
-    論理演算子: &ldquo;<tt>-foo</tt>&rdquo;&nbsp;(NOT),
-    &ldquo;<tt>foo&nbsp;bar</tt>&rdquo;&nbsp;(AND),
-    &ldquo;<tt>foo|bar</tt>&rdquo;&nbsp;(OR).
-    <ul>
-      <li>
-        <strong>NOT</strong>:<br />
-        <tt><b>-</b><i>foo</i></tt> により
-        <tt><i>foo</i></tt> を要約に含まない [% terms.bugs %] を検索可能です。
-      </li>
-      <li>
-        <strong>AND</strong>:<br />
-        空白区切りの単語の並びは論理積になります。
-      </li>
-      <li>
-        <strong>OR</strong>:<br />
-        単語中で、"|" 区切りは並列を意味します。
-      </li>
-      <li>
-        "|" の代わりに、カンマ区切りも利用可能です。
-      </li>
-      <li>
-        OR は AND より先に評価されます。AND は最も最後に評価されます。
-      </li>
-    </ul>
-    <i>例:</i>
-    <tt>url,location bar,field -focus</tt> は
-    (<tt>url</tt> OR <tt>location</tt>) AND (<tt>bar</tt> OR <tt>field</tt>)
-    AND (NOT <tt>focus</tt>) です。
-  </li>
-  <li>
-    <tt>+foo</tt> を利用することで、
-    <strong>要約</strong> に <tt>foo</tt> が
-    <strong>部分文字列</strong> として含まれる [% terms.bugs %] を検索できます。<br/>
-    <tt>#foo</tt> を利用することで、
-    <strong>要約</strong> に <tt>foo</tt> が <strong>単語</strong> として含まれる [% terms.bugs %] 
-    が検索できます。
-    <ul>
-      <li>
-        <tt>+brow</tt> は [% terms.bugs %] 
-        <tt>Browser</tt> プロダクトのバグを全て抽出したりはしません。
-      </li>
-      <li>
-        <tt>#title</tt> は <tt>titlebar</tt> や <tt>titled</tt> を含む
-        [% terms.bugs %] は抽出しません。
-      </li>
-    </ul>
-    特殊文字 (space, comma, +, -, #, &hellip;) を含む文字列を
-    <strong>引用符にまとめる</strong> ことは可能です:
-    <ul>
-      <li>
-        <tt>"lock icon"</tt>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <strong>作業中 と 解決済 の [% terms.Bugs %]</strong>:<br />
-    初期状態では、(未解決など) 作業中の [% terms.bugs %] のみが表示されます。
-    <tt>+DUP</tt> を最初に付けることで、重複した [% terms.bugs %] を検索に含められます。
-    <tt>FIXED</tt> により解決済みの [% terms.bugs %] のみに、
-    もしくは <tt>ALL</tt> により、状態に関係なく全ての [% terms.bugs %] になります。
-    重複を検索することは、作業中の [% terms.bug %] を見つけられなかった時には推奨されます。
-    <ul>
-      <li>
-        <tt>+DUP,FIXED table border</tt>
-      </li>
-      <li>
-        <tt>ALL mouse wheel</tt>
-      </li>
-    </ul>
-  </li>
-  <li>
-    <strong>プロダクト &amp; コンポーネントに特化した検索 :<br />
-    "Foo Bar" プロダクトの [% terms.bugs %] のみを検索する場合、
-    <tt>:foo</tt> や <tt>:bar</tt> もしくは両方を検索に付け加えてください。
-    <a href="describecomponents.cgi">プロダクトやコンポーネント</a> 
-    の部分文字列を利用可能です。
-  </li>
-</ul>
+<p><a href="#fields">フィールド名</a>を特定のフィールドの検索に
+  利用するのに加えて、特定のフィールドの検索には"ショートカット"
+  として利用可能な文字や単語があります:</p>
 
-<h2>それ以外の機能</h2>
-
-<ul>
-  <li>
-    この機能を [% terms.bug %] 番号から <strong>表示する</strong> ために利用可能です。<br />
-    <ul>
-      <li><tt>12345</tt></li>
-    </ul>
-  </li>
-  <li>
-    カンマ区切りの [% terms.bug %] 番号により、[% terms.bugs %] リストが返ります。<br />
-    <ul>
-      <li><tt>12345,23456,34567</tt></li>
-    </ul>
-  </li>
-</ul>
-
-<p>
-  初期状態では、要約、キーワード、プロダクト、コンポーネント、ステータスホワイトボード、
-  が検索対象です。URL の一部などを検索したい場合、そのフィールドを含めるよう、
-  指示して下さい。
-</p>
-<hr>
-
-<p>
-  より強力な <a href="query.cgi">[% terms.Bugzilla %] 検索フォーム</a>
-  を利用することも可能です。
-</p>
+<table cellspacing="0" cellpadding="0" border="0" class="qs_fields">
+  <thead>
+    <tr>
+      <th class="field_name">フィールド</th>
+      <th class="field_nickname">ショートカット</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="field_name">[% field_descs.bug_status FILTER html %]</td>
+      <td class="field_nickname">
+        <strong>最初の単語</strong>をステータス名もしくはその省略形
+        にすると、そのステータスを持つ[% terms.bugs %]が検索できます。
+        <strong><kbd>ALL</kbd></strong>は"全てのステータス"をあらわす
+        特殊なショートカットになります。
+        <strong><kbd>OPEN</kbd></strong>は"全ての活動中のステータス"
+        を示す特殊なショートカットになります。
+      </td>
+    </tr>
+    <tr>
+      <td class="field_name">[% field_descs.resolution FILTER html %]</td>
+      <td class="field_nickname">
+        <strong>最初の単語</strong>を解決方法もしくはその省略形にすると、
+        その解決方法を持つ[% terms.bugs %]が検索できます。
+        たとえば、<kbd>FIX</kbd>を検索文字列の最初にすると、
+        <kbd>FIXED</kbd>を解決方法にもつ全ての[% terms.bugs %]を検索します。
+    </tr>
+    <tr>
+      <td class="field_name">[% field_descs.priority FILTER html %]</td>
+      <td class="field_nickname">"<strong>P1</strong>" 
+        (が検索文字列のどこにあっても) は、"一番優先度の高い[% terms.bugs %]
+        を検索する"ことになります。そして、"P2"は二番目のもの、のようになります。
+        <p>"<strong>P1-P3</strong>"を利用して検索すると、これら3つの優先度
+        をもつ全ての[% terms.bugs %]が検索できます。</p>
+      </td>
+    </tr>
+    <tr>
+      <td class="field_name">[% field_descs.assigned_to FILTER html %]</td>
+      <td class="field_nickname"><strong>@</strong><em>value</em></td>
+    </tr>
+    <tr>
+      <td class="field_name">[% field_descs.product FILTER html %] or
+        [%+ field_descs.component FILTER html %]</td>
+      <td class="field_nickname"><strong>:</strong><em>value</em></td>
+    </tr>
+    [% IF use_keywords %]
+      <tr>
+        <td class="field_name">[% field_descs.keywords FILTER html %]</td>
+        <td class="field_nickname"><strong>!</strong><em>value</em></td>
+      </tr>
+    [% END %]
+    <tr>
+      [% SET key = "flagtypes.name" %]
+      <td class="field_name">[% field_descs.$key FILTER html %]</td>
+      <td class="field_nickname">
+        <em>flag</em><strong>?</strong><em>requestee</em> (被要請者)
+      </td>
+    </tr>
+    <tr>
+      <td class="field_name">[% field_descs.longdesc FILTER html %]
+        or [% field_descs.short_desc FILTER html %]</td>
+      <td class="field_nickname">
+        <strong>#</strong><em>value</em>
+      </td>
+    </tr>
+    [% IF Param('usestatuswhiteboard') %]
+      <tr>
+        <td class="field_name">[% field_descs.short_desc FILTER html %]
+          or [% field_descs.status_whiteboard FILTER html %]</td>
+        <td class="field_nickname"><strong>[</strong><em>value</em></td>
+      </tr>
+    [% END %]
+  </tbody>
+</table>
 
 [% PROCESS global/footer.html.tmpl %]

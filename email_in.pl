@@ -47,7 +47,7 @@ use Bugzilla;
 use Bugzilla::Attachment;
 use Bugzilla::Bug;
 use Bugzilla::BugMail;
-use Bugzilla::Constants qw(USAGE_MODE_EMAIL CMT_ATTACHMENT_CREATED);
+use Bugzilla::Constants;
 use Bugzilla::Error;
 use Bugzilla::Mailer;
 use Bugzilla::Token;
@@ -144,6 +144,8 @@ sub parse_mail {
 sub post_bug {
     my ($fields) = @_;
     debug_print('Posting a new bug...');
+
+    my $user = Bugzilla->user;
 
     # Bugzilla::Bug->create throws a confusing CodeError if
     # the REQUIRED_CREATE_FIELDS are missing, but much more

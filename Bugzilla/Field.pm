@@ -101,6 +101,7 @@ use constant DB_COLUMNS => qw(
     visibility_field_id
     visibility_value_id
     value_field_id
+    reverse_desc
 );
 
 use constant REQUIRED_CREATE_FIELDS => qw(name description);
@@ -120,6 +121,7 @@ use constant VALIDATORS => {
 use constant UPDATE_VALIDATORS => {
     value_field_id      => \&_check_value_field_id,
     visibility_value_id => \&_check_control_value,
+    reverse_desc        => \&_check_reverse_desc,
 };
 
 use constant UPDATE_COLUMNS => qw(
@@ -132,6 +134,7 @@ use constant UPDATE_COLUMNS => qw(
     visibility_field_id
     visibility_value_id
     value_field_id
+    reverse_desc
 
     type
 );
@@ -180,12 +183,11 @@ use constant DEFAULT_FIELDS => (
     {name => 'priority',     desc => 'Priority',   in_new_bugmail => 1,
      type => FIELD_TYPE_SINGLE_SELECT, buglist => 1},
     {name => 'component',    desc => 'Component',  in_new_bugmail => 1,
-     buglist => 1},
+     type => FIELD_TYPE_SINGLE_SELECT, buglist => 1},
     {name => 'assigned_to',  desc => 'AssignedTo', in_new_bugmail => 1,
      buglist => 1},
     {name => 'reporter',     desc => 'ReportedBy', in_new_bugmail => 1,
      buglist => 1},
-    {name => 'votes',        desc => 'Votes',      buglist => 1},
     {name => 'qa_contact',   desc => 'QAContact',  in_new_bugmail => 1,
      buglist => 1},
     {name => 'cc',           desc => 'CC',         in_new_bugmail => 1},
@@ -217,7 +219,7 @@ use constant DEFAULT_FIELDS => (
      in_new_bugmail => 1, buglist => 1},
     {name => 'remaining_time',        desc => 'Remaining Hours', buglist => 1},
     {name => 'deadline',              desc => 'Deadline',
-     in_new_bugmail => 1, buglist => 1},
+     type => FIELD_TYPE_DATETIME, in_new_bugmail => 1, buglist => 1},
     {name => 'commenter',             desc => 'Commenter'},
     {name => 'flagtypes.name',        desc => 'Flags', buglist => 1},
     {name => 'requestees.login_name', desc => 'Flag Requestee'},
@@ -357,6 +359,22 @@ sub _check_control_value {
     return $value_obj->id;
 }
 
+sub _check_reverse_desc {
+    my ($invocant, $reverse_desc, $type) = @_;
+    
+    if (blessed $invocant) {
+        $type = $invocant->type;
+    }
+    
+    if ($type != FIELD_TYPE_BUG_ID) {
+        return undef; # store NULL for non-reversible field types
+    }
+    
+    $reverse_desc = clean_text($reverse_desc);
+    return $reverse_desc;
+}
+
+
 =pod
 
 =head2 Instance Properties
@@ -492,6 +510,28 @@ sub is_select {
             || $_[0]->type == FIELD_TYPE_MULTI_SELECT) ? 1 : 0 
 }
 
+=over
+
+=item C<is_abnormal>
+
+Most fields that have a C<SELECT> L</type> have a certain schema for
+the table that stores their values, the table has the same name as the field,
+and the field's legal values can be edited via F<editvalues.cgi>.
+
+However, some fields do not follow that pattern. Those fields are
+considered "abnormal".
+
+This method returns C<1> if the field is "abnormal", C<0> otherwise.
+
+=back
+
+=cut
+
+sub is_abnormal {
+    my $self = shift;
+    return grep($_ eq $self->name, ABNORMAL_SELECTS) ? 1 : 0;
+}
+
 sub legal_values {
     my $self = shift;
 
@@ -501,6 +541,24 @@ sub legal_values {
         $self->{'legal_values'} = \@values;
     }
     return $self->{'legal_values'};
+}
+
+=pod
+
+=over
+
+=item C<is_timetracking>
+
+True if this is a time-tracking field that should only be shown to users
+in the C<timetrackinggroup>.
+
+=back
+
+=cut
+
+sub is_timetracking {
+    my ($self) = @_;
+    return grep($_ eq $self->name, TIMETRACKING_FIELDS) ? 1 : 0;
 }
 
 =pod
@@ -615,6 +673,44 @@ sub controls_values_of {
     return $self->{controls_values_of};
 }
 
+=over
+
+=item C<is_relationship>
+
+Applies only to fields of type FIELD_TYPE_BUG_ID.
+Checks to see if a reverse relationship description has been set.
+This is the canonical condition to enable reverse link display,
+dependency tree display, and similar functionality.
+
+=back
+
+=cut
+
+sub is_relationship  {     
+    my $self = shift;
+    my $desc = $self->reverse_desc;
+    if (defined $desc && $desc ne "") {
+        return 1;
+    }
+    return 0;
+}
+
+=over
+
+=item C<reverse_desc>
+
+Applies only to fields of type FIELD_TYPE_BUG_ID.
+Describes the reverse relationship of this field.
+For example, if a BUG_ID field is called "Is a duplicate of",
+the reverse description would be "Duplicates of this bug".
+
+=back
+
+=cut
+
+sub reverse_desc { return $_[0]->{reverse_desc} }
+
+
 =pod
 
 =head2 Instance Mutators
@@ -639,6 +735,8 @@ They will throw an error if you try to set the values to something invalid.
 
 =item C<set_buglist>
 
+=item C<set_reverse_desc>
+
 =item C<set_visibility_field>
 
 =item C<set_visibility_value>
@@ -655,6 +753,7 @@ sub set_obsolete       { $_[0]->set('obsolete',    $_[1]); }
 sub set_sortkey        { $_[0]->set('sortkey',     $_[1]); }
 sub set_in_new_bugmail { $_[0]->set('mailhead',    $_[1]); }
 sub set_buglist        { $_[0]->set('buglist',     $_[1]); }
+sub set_reverse_desc    { $_[0]->set('reverse_desc', $_[1]); }
 sub set_visibility_field {
     my ($self, $value) = @_;
     $self->set('visibility_field_id', $value);
@@ -846,6 +945,12 @@ sub run_create_validators {
         $class->_check_value_field_id($params->{value_field_id},
             ($type == FIELD_TYPE_SINGLE_SELECT 
              || $type == FIELD_TYPE_MULTI_SELECT) ? 1 : 0);
+
+    $params->{reverse_desc} = $class->_check_reverse_desc(
+        $params->{reverse_desc}, $type);
+
+
+
     return $params;
 }
 
