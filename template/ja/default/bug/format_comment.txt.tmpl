@@ -36,7 +36,7 @@
   #              already_wrapped: Determines whether the comment is pre-wrapped
   #%]
 
-[% PROCESS 'global/field-descs.none.tmpl' %]
+[% PROCESS 'global/variables.none.tmpl' %]
 
 [%- IF comment.type == constants.CMT_DUPE_OF -%]
 X[% comment.body %]
@@ -52,8 +52,7 @@ X[% comment.body %]
 [%+ terms.Bug %] は [% Param("move-to-url") %] に移動しました。
 移動が成功した場合、[% comment.extra_data %] は、他のデータベースにおける
 新しい [% terms.bug %] 番号を含むメールを受け取るでしょう。
-全てうまくいけば、この [% terms.bug %] を [%+ get_status('VERIFIED') %] とし、
-新しい [% terms.bug %] へのリンクをここへ貼り付けてください。
+全てうまくいけば、新しい [% terms.bug %] へのリンクをここへ貼り付けてください。
 そうでなければ、この [% terms.bug %] を再開してください。
 [%- ELSE -%]
 X[%- comment.body %]
