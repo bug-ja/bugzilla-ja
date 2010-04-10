@@ -237,13 +237,22 @@ Params:
 
 =over
 
-=item C<bug> - The changed bug object, with all fields set to their updated
-values.
+=item C<bug> 
 
-=item C<timestamp> - The timestamp used for all updates in this transaction.
+The changed bug object, with all fields set to their updated values.
 
-=item C<changes> - The hash of changed fields. 
-C<$changes-E<gt>{field} = [old, new]>
+=item C<old_bug>
+
+A bug object pulled from the database before the fields were set to
+their updated values (so it has the old values available for each field).
+
+=item C<timestamp> 
+
+The timestamp used for all updates in this transaction.
+
+=item C<changes> 
+
+The hash of changed fields. C<< $changes->{field} = [old, new] >>
 
 =back
 
@@ -621,6 +630,25 @@ A hashref. The set of named parameters passed to C<create>.
 
 =back
 
+
+=head2 object_before_delete
+
+This happens in L<Bugzilla::Object/remove_from_db>, after we've confirmed
+that the object can be deleted, but before any rows have actually
+been removed from the database. This sometimes occurs inside a database
+transaction.
+
+Params:
+
+=over
+
+=item C<object> - The L<Bugzilla::Object> being deleted. You will probably
+want to check its type like C<< $object->isa('Some::Class') >> before doing
+anything with it.
+
+=back
+
+
 =head2 object_before_set
 
 Called during L<Bugzilla::Object/set>, before any actual work is done.
@@ -671,6 +699,34 @@ A hashref. The set of named parameters passed to C<create>, modified and
 validated by the C<VALIDATORS> specified for the object.
 
 =back
+
+
+=head2 object_end_of_set
+
+Called during L<Bugzilla::Object/set>, after all the code of the function
+has completed (so the value has been validated and the field has been set
+to the new value). You can use this to perform actions after a value is
+changed for specific fields on certain types of objects.
+
+The new value is not specifically passed to this hook because you can
+get it as C<< $object->{$field} >>.
+
+Params:
+
+=over
+
+=item C<object>
+
+The object that C<set> was called on. You will probably want to
+do something like C<< if ($object->isa('Some::Class')) >> in your code to
+limit your changes to only certain subclasses of Bugzilla::Object.
+
+=item C<field>
+
+The name of the field that was updated in the object.
+
+=back
+
 
 =head2 object_end_of_set_all
 

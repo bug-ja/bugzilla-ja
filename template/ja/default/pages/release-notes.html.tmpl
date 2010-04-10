@@ -493,6 +493,9 @@
 <h2 id="v36_code_changes">カスタマイズに影響するコードの変更</h2>
 
 <ul>
+  <li>テンプレート中での SendBugMail メソッドはなくなり、bug メールは
+    テンプレートの処理中に送信されなくなりました。その代わりに、
+    <kbd>Bugzilla::BugMail::Send</kbd> 経由で送信されます。</li>
   <li>コメントはハッシュではなく
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Comment.html">Bugzilla::Comment</a>
     オブジェクト経由で表示されるようになりました。</li>

@@ -421,9 +421,6 @@
     RADIUS 認証リクエストを準備している途中でエラーが発生しました。
     <code>[% errstr FILTER html %]</code>
 
-  [% ELSIF error == "unknown_comparison_type" %]
-    指定された比較はサポートされていません。
-
   [% ELSIF error == "request_queue_group_invalid" %]
     グループフィールド <em>[% group FILTER html %]</em> は無効です。
 

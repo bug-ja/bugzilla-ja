@@ -512,7 +512,9 @@
 
   [% ELSIF error == "comment_too_long" %]
     [% title = BLOCK %] [% jawords.bug_comment FILTER html %] が長すぎます [% END %]
-    [% jawords.bug_comment FILTER html %] は 65,535 文字以上にはできません。
+    [% jawords.bug_comment FILTER html %] は 
+    [%+ constants.MAX_COMMENT_LENGTH FILTER html %]
+    文字以上にはできません。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
     [% title = BLOCK %] 指定された classification は無効です [% END %]
@@ -1234,6 +1236,10 @@
     [% title = BLOCK %] [% jawords.account_login_name FILTER html %] を入力してください [% END %]
     [% jawords.search FILTER html %] %user% は [% jawords.account_login FILTER html %] しなければ利用できません。
     %user% はあなたの [% jawords.account_login_name FILTER html %] を参照する必要がありますが、それができません。
+
+  [% ELSIF error == "login_required" %]
+    [%# Used for non-web-based LOGIN_REQUIRED situations. %]
+    この [% terms.Bugzilla %] の部分を利用する前にログインする必要があります。
 
   [% ELSIF error == "migrate_config_created" %]
     ファイル <kbd>[% file FILTER html %]</kbd> に移行前に設定すべき項目が含まれますが、

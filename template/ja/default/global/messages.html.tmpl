@@ -183,6 +183,7 @@
         [% IF changes.sortkey.defined %]
           <li>ソートキーを '[% classification.sortkey FILTER html %]' に更新しました</li>
         [% END %]
+        [% Hook.process('classification_updated_fields') %]
       </ul>
     [% ELSE %]
       <em>[% classification.name FILTER html %]</em> は更新されませんでした。
@@ -232,6 +233,8 @@
           <li>既定の CC リストが削除されました</li>
         [% END %]
       [% END %]
+      [% Hook.process('component_updated_fields') %]
+      </ul>
     [% ELSE %]
       <em>[% comp.name FILTER html %]</em> への更新はありません。
     [% END %]

@@ -82,7 +82,7 @@
       
       <para>Perl がインストールされていないサーバは悲しいものがあります。
       インストールされておらず、OS がオフィシャルパッケージを提供していない場合、
-      <ulink url="http://www.perl.com"/> から入手してください。
+      <ulink url="http://www.perl.org"/> から入手してください。
       Bugzilla は Perl &min-perl-ver; でも動作しますが、
       最新安定版をインストールすることをお勧めします。
       </para>
@@ -2011,7 +2011,7 @@ pid-file=/home/foo/mymysql/the.pid
 
       <screen>
         <prompt>bash$</prompt>
-        <command>wget http://perl.com/CPAN/src/stable.tar.gz</command>
+        <command>wget http://perl.org/CPAN/src/stable.tar.gz</command>
         <prompt>bash$</prompt>
         <command>tar zvxf stable.tar.gz</command>
         <prompt>bash$</prompt>

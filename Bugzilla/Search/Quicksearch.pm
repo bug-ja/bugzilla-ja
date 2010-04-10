@@ -232,7 +232,7 @@ sub _bug_numbers_only {
         # List of bug numbers.
         $cgi->param('bug_id', $searchstring);
         $cgi->param('order', 'bugs.bug_id');
-        $cgi->param('bug_id_type', 'include');
+        $cgi->param('bug_id_type', 'anyexact');
     }
 }
 
@@ -485,6 +485,7 @@ sub _default_quicksearch_word {
         addChart('keywords', 'substring', $word, $negate);
     }
     
+    addChart('alias', 'substring', $word, $negate);
     addChart('short_desc', 'substring', $word, $negate);
     addChart('status_whiteboard', 'substring', $word, $negate);
     addChart('content', 'matches', $word, $negate);
@@ -569,19 +570,10 @@ sub matchPrefixes {
 sub negateComparisonType {
     my $comparisonType = shift;
 
-    if ($comparisonType eq 'substring') {
-        return 'notsubstring';
-    }
-    elsif ($comparisonType eq 'anywords') {
+    if ($comparisonType eq 'anywords') {
         return 'nowords';
     }
-    elsif ($comparisonType eq 'regexp') {
-        return 'notregexp';
-    }
-    else {
-        # Don't know how to negate that
-        ThrowCodeError('unknown_comparison_type');
-    }
+    return "not$comparisonType";
 }
 
 # Add a boolean chart

@@ -39,6 +39,7 @@ use strict;
 use lib qw(. lib);
 
 use Bugzilla;
+use Bugzilla::BugMail;
 use Bugzilla::Constants;
 use Bugzilla::Error;
 use Bugzilla::Flag; 
@@ -329,6 +330,14 @@ sub view {
 
     my $disposition = Bugzilla->params->{'allow_attachment_display'} ? 'inline' : 'attachment';
 
+    # Don't send a charset header with attachments--they might not be UTF-8.
+    # However, we do allow people to explicitly specify a charset if they
+    # want.
+    if ($contenttype !~ /\bcharset=/i) {
+        # In order to prevent Apache from adding a charset, we have to send a
+        # charset that's a single space.
+        $cgi->charset(' ');
+    }
     print $cgi->header(-type=>"$contenttype; name=\"$filename\"",
                        -content_disposition=> "$disposition; filename=\"$filename\"",
                        -content_length => $attachment->datasize);
@@ -524,14 +533,15 @@ sub insert {
   $dbh->bz_commit_transaction;
 
   # Define the variables and functions that will be passed to the UI template.
-  $vars->{'mailrecipients'} =  { 'changer' => $user->login,
-                                 'owner'   => $owner };
   $vars->{'attachment'} = $attachment;
   # We cannot reuse the $bug object as delta_ts has eventually been updated
   # since the object was created.
   $vars->{'bugs'} = [new Bugzilla::Bug($bugid)];
   $vars->{'header_done'} = 1;
   $vars->{'contenttypemethod'} = $cgi->param('contenttypemethod');
+
+  my $recipients =  { 'changer' => $user->login, 'owner' => $owner };
+  $vars->{'sent_bugmail'} = Bugzilla::BugMail::Send($bugid, $recipients);
 
   print $cgi->header();
   # Generate and return the UI (HTML page) from the appropriate template.
@@ -654,10 +664,11 @@ sub update {
     $dbh->bz_commit_transaction();
 
     # Define the variables and functions that will be passed to the UI template.
-    $vars->{'mailrecipients'} = { 'changer' => $user->login };
     $vars->{'attachment'} = $attachment;
     $vars->{'bugs'} = [$bug];
     $vars->{'header_done'} = 1;
+    $vars->{'sent_bugmail'} = 
+        Bugzilla::BugMail::Send($bug->id, { 'changer' => $user->login });
 
     print $cgi->header();
 
@@ -706,7 +717,6 @@ sub delete_attachment {
         $vars->{'attachment'} = $attachment;
         $vars->{'date'} = $date;
         $vars->{'reason'} = clean_text($cgi->param('reason') || '');
-        $vars->{'mailrecipients'} = { 'changer' => $user->login };
 
         $template->process("attachment/delete_reason.txt.tmpl", $vars, \$msg)
           || ThrowTemplateError($template->error());
@@ -729,6 +739,9 @@ sub delete_attachment {
         # Required to display the bug the deleted attachment belongs to.
         $vars->{'bugs'} = [$bug];
         $vars->{'header_done'} = 1;
+
+        $vars->{'sent_bugmail'} =
+            Bugzilla::BugMail::Send($bug->id, { 'changer' => $user->login });
 
         $template->process("attachment/updated.html.tmpl", $vars)
           || ThrowTemplateError($template->error());

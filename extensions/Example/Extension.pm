@@ -114,13 +114,16 @@ sub bug_end_of_update {
     
     # This code doesn't actually *do* anything, it's just here to show you
     # how to use this hook.
-    my ($bug, $timestamp, $changes) = @$args{qw(bug timestamp changes)};
+    my ($bug, $old_bug, $timestamp, $changes) = 
+        @$args{qw(bug old_bug timestamp changes)};
     
     foreach my $field (keys %$changes) {
         my $used_to_be = $changes->{$field}->[0];
         my $now_it_is  = $changes->{$field}->[1];
     }
-    
+
+    my $old_summary = $old_bug->short_desc;
+
     my $status_message;
     if (my $status_change = $changes->{'bug_status'}) {
         my $old_status = new Bugzilla::Status({ name => $status_change->[0] });
@@ -332,6 +335,18 @@ sub object_before_create {
     }
 }
 
+sub object_before_delete {
+    my ($self, $args) = @_;
+
+    my $object = $args->{'object'};
+
+    # Note that this is a made-up class, for this example.
+    if ($object->isa('Bugzilla::ExampleObject')) {
+        my $id = $object->id;
+        warn "An object with id $id is about to be deleted!";
+    } 
+}
+
 sub object_before_set {
     my ($self, $args) = @_;
     
@@ -356,6 +371,17 @@ sub object_end_of_create_validators {
         $object_params->{example_field} = 1;
     }
     
+}
+
+sub object_end_of_set {
+    my ($self, $args) = @_;
+
+    my ($object, $field) = @$args{qw(object field)};
+
+    # Note that this is a made-up class, for this example.
+    if ($object->isa('Bugzilla::ExampleObject')) {
+        warn "The field $field has changed to " . $object->{$field};
+    }
 }
 
 sub object_end_of_set_all {

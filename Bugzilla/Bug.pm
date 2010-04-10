@@ -867,10 +867,9 @@ sub update {
         $changes->{'dup_id'} = [$old_dup || undef, $cur_dup || undef];
     }
 
-    Bugzilla::Hook::process('bug_end_of_update', { bug       => $self,
-                                                   timestamp => $delta_ts,
-                                                   changes   => $changes,
-                                                 });
+    Bugzilla::Hook::process('bug_end_of_update', 
+        { bug => $self, timestamp => $delta_ts, changes => $changes,
+          old_bug => $old_bug });
 
     # If any change occurred, refresh the timestamp of the bug.
     if (scalar(keys %$changes) || $self->{added_comments}) {
@@ -2400,6 +2399,49 @@ sub add_see_also {
                            { url => $input, reason => 'id' });
         }
     }
+    # Google Code URLs
+    elsif ($uri->authority =~ /^code.google.com$/i) {
+        # Google Code URLs only have one form:
+        #   http(s)://code.google.com/p/PROJECT_NAME/issues/detail?id=1234
+        my $project_name;
+        if ($uri->path =~ m|^/p/([^/]+)/issues/detail$|) {
+            $project_name = $1;
+        } else {
+            ThrowUserError('bug_url_invalid', 
+                           { url => $input });
+        }
+        my $bug_id = $uri->query_param('id');
+        detaint_natural($bug_id);
+        if (!$bug_id) {
+            ThrowUserError('bug_url_invalid', 
+                           { url => $input, reason => 'id' });
+        }
+        # While Google Code URLs can be either HTTP or HTTPS,
+        # always go with the HTTP scheme, as that's the default.
+        $result = "http://code.google.com/p/" . $project_name .
+                  "/issues/detail?id=" . $bug_id;
+    }
+    # Debian BTS URLs
+    elsif ($uri->authority =~ /^bugs.debian.org$/i) {
+        # Debian BTS URLs can look like various things:
+        #   http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=1234
+        #   http://bugs.debian.org/1234
+        my $bug_id;
+        if ($uri->path =~ m|^/(\d+)$|) {
+            $bug_id = $1;
+        }
+        elsif ($uri->path =~ /bugreport\.cgi$/) {
+            $bug_id = $uri->query_param('bug');
+            detaint_natural($bug_id);
+        }
+        if (!$bug_id) {
+            ThrowUserError('bug_url_invalid',
+                           { url => $input, reason => 'id' });
+        }
+        # This is the shortest standard URL form for Debian BTS URLs,
+        # and so we reduce all URLs to this.
+        $result = "http://bugs.debian.org/" . $bug_id;
+    }
     # Bugzilla URLs
     else {
         if ($uri->path !~ /show_bug\.cgi$/) {
@@ -2689,6 +2731,7 @@ sub comments {
             $comment->{count} = $count++;
             $comment->{bug} = $self;
         }
+        Bugzilla::Comment->preload($self->{'comments'});
     }
     my @comments = @{ $self->{'comments'} };
 
