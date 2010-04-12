@@ -117,7 +117,7 @@
 <p><a href="https://wiki.mozilla.org/Bugzilla:CMU_HCI_Research_2008">
   科学的なユーザビリティー調査</a> がカーネギーメロン大学の研究者によって、
   [% terms.Bugzilla %] に関して行われました。その結果を受けて、
-  <a href="https://bugzilla.mozilla.org/showdependencytree.cgi?id=490786&hide_resolved=0">
+  <a href="https://bugzilla.mozilla.org/showdependencytree.cgi?id=490786&amp;hide_resolved=0">
   いくつかのユーザビリティー改善</a> が、調査の結果を受けて修正項目として登録されました。</p>
 
 <p>この結果、[% terms.Bugzilla %] のユーザビリティーにおいていくつかの
@@ -190,7 +190,7 @@
   きるようになりました。)SUExecサポートは、インストール中に、
   <kbd>localconfig</kbd>ファイルにオプションとして表示されます。</p>
 
-<h3 id="36_feat_mpwindows">実験的な Windows での mod_perl サポート</h3>
+<h3 id="v36_feat_mpwindows">実験的な Windows での mod_perl サポート</h3>
 
 <p>(メモリ利用量などの)大きなパフォーマンス改善を目的として、
   [% terms.Bugzilla %]をWindowsのmod_perl環境下で実行するための、
@@ -263,6 +263,12 @@
   <li><b>[% terms.Bug %] 更新:</b> "すべてのコメントを閉じる" と
     "すべてのコメントを開く" リンクがコメントリストの上でなく、
     右側に表示されるようになりました。</li>
+  <li><b>[% terms.Bug %] 更新:</b> "参照"フィールドが Google Code Issues 
+    と Debian B[% %]ug-Tracking System をサポートしました。</li>
+    URLs for Google Code Issues and the Debian B[% %]ug-Tracking System.</li>
+  <li><b>[% terms.Bug %] 更新:</b> <kbd>show_bug.cgi</kbd> のパフォーマンス
+    ([% terms.bug %] 編集フォームを表示するスクリプト) が非常に向上しました。
+    特に大量のコメントや添付を持つ [% terms.bugs %] において顕著です。</li>
 
   <li><b>添付:</b> 添付の"詳細"ページは、フィールドを編集する権限がなければ
     変更不可の状態で表示されるようになりました。</li>
@@ -273,6 +279,8 @@
   <li><b>添付:</b> コメント中の"attachment 12345"リンクをクリックしたとき、
     添付がパッチの場合にはパッチそのものでなく"差分"の表示が行われるように
     なりました。</li>
+  <li><b>添付</b>: テキストの添付について、常にブラウザに UTF-8 で添付を送信
+    するのでなく、ブラウザに文字コードの自動判別をゆだねるようになりました。</li>
   
   <li><b>検索:</b> [% terms.bug %]のフラグを検索結果のカラムに表示できるように
     なりました。</li>
@@ -360,6 +368,11 @@
   <li><b>インストール:</b> <kbd>checksetup.pl</kbd> でのアップグレードは、
     特に古いサイトにおいて<em>かなり</em>高速化されました。
     また、アップグレードでない場合でもより早くなりました。</li>
+  <li><b>インストール:</b> [% terms.Bugzilla %] を tar ボールからインストール
+    する場合、CPAN の <kbd>CGI.pm</kbd> モジュールが <kbd>lib/</kbd> ディレクトリ
+    に含まれるようになりました。システムにある Perl の中の CGI.pm を利用したい場合、
+    <kbd>CGI.pm</kbd> および <kbd>CGI/</kbd> ディレクトリを <kbd>lib/</kbd> 
+    ディレクトリから削除してください。</li>
   
   <li>グループを編集する際、他のグループ権限を持っているメンバーに自動的に
     そのグループに対しての権限が与えられるようなグループを指定できるように
@@ -445,6 +458,9 @@
     の文字を名前に含むパラメータを渡したときには無視されることになります。
     この変更はほぼカスタマイズを行っているユーザにのみ影響し、
     [% terms.Bugzilla %]のウェブサービスはこの変更にほとんど影響されません。</li>
+  <li>[% terms.Bugzilla %] の旧バージョンでは、エラーメッセージが
+    ウェブサービス経由では、折りたたまれてクライアントに送信されていました。
+    エラーメッセージは開業なしで送信されるようになりました。</li>
 </ul>
 
 <h2 id="v36_issues">既知の問題点</h2>
