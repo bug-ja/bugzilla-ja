@@ -50,7 +50,7 @@ X-Bugzilla-Changed-Fields: [% changedfields %]
 [% FOREACH comment = new_comments %]
 
 [%- IF comment.count %]
---- [% comment.author.identity %] からの [%+ comment.time FILTER time(undef, to_user.timezone) %] のコメント #[% comment.count %]  ---
+--- [% comment.author.identity %] からの [%+ comment.creation_ts FILTER time(undef, to_user.timezone) %] のコメント #[% comment.count %]  ---
 [% END %]
 [%+ comment.body_full({ is_bugmail => 1, wrap => 1 }) %]
 [% END %]
