@@ -167,8 +167,8 @@
       or your installation, just use a hook. %]
   [% UNLESS Param('shutdownhtml') %]
     [% FOREACH bz_field = bug_fields.values %]
-      [% SET field_descs.${bz_field.name} = bz_field.description
-         IF !field_descs.${bz_field.name}.defined %]
+      [% SET vars.field_descs.${bz_field.name} = bz_field.description
+         IF !vars.field_descs.${bz_field.name}.defined %]
     [% END %]
   [% END %]
 [% END %]
