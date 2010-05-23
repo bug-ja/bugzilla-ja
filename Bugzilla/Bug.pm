@@ -1549,7 +1549,9 @@ sub _check_resolution {
     ThrowUserError('resolution_not_allowed') if $self->status->is_open;
     
     # Check noresolveonopenblockers.
-    if (Bugzilla->params->{"noresolveonopenblockers"} && $resolution eq 'FIXED')
+    if (Bugzilla->params->{"noresolveonopenblockers"}
+        && $resolution eq 'FIXED'
+        && (!$self->resolution || $resolution ne $self->resolution))
     {
         my @dependencies = CountOpenDependencies($self->id);
         if (@dependencies) {
@@ -3178,7 +3180,10 @@ sub GetBugActivity {
 
         if ($activity_visible) {
             # Check for the results of an old Bugzilla data corruption bug
-            $incomplete_data = 1 if ($added =~ /^\?/ || $removed =~ /^\?/);
+            if (($added eq '?' && $removed eq '?')
+                || ($added =~ /^\? / || $removed =~ /^\? /)) {
+                $incomplete_data = 1;
+            }
 
             # An operation, done by 'who' at time 'when', has a number of
             # 'changes' associated with it.
