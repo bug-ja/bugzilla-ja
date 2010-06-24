@@ -57,6 +57,38 @@
 
 <h2><a name="v34_point"></a>3.4.x リリースでの更新点</h2>
 
+<h3>3.4.7</h3>
+
+<p>このリリースではひとつのセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.2.6/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下のようないくつかの重要な修正や変更が行われました。</p>
+
+<ul>
+  <li><kbd>show_bug.cgi</kbd> ([% terms.bug %] を表示・編集するためのページ)
+    にて、[%+ terms.abug %] に多数のコメントがある場合の表示がかなり高速化しました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=498309">[% terms.Bug %] 498309</a>)
+  </li>
+  <li><kbd>jobqueue.pl</kbd> が長期間実行され続けているときに、データベースへの接続を失い、
+    メールの送信が停止してしまう可能性がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=538705">[% terms.Bug %] 538705</a>)
+  </li>
+  <li><kbd>config.cgi</kbd> にアクセスするとき、
+    <kbd>?flags=0</kbd> をつけることでフラグに関するデータを取得しないことが可能になりました。
+    このオプションにより config.cgi の動作が高速化します。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=553267">[% terms.Bug %] 553267</a>)
+  </li>
+  <li>パスワード変更後にログインすると不可解なエラーがかえることがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=549814">[% terms.Bug %] 549814</a>)
+  </li>
+  <li>PostgreSQL を利用しているサイトにて、カスタムフィールドを削除する操作を行うと
+    クラッシュする可能性がありましたが修正されました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=557495">[% terms.Bug %] 557495</a>
+    と <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=557686">[% terms.Bug %] 557686</a>)   
+  </li>
+</ul>
+
 <h3>3.4.6</h3>
 
 <ul>
