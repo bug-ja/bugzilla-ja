@@ -120,7 +120,7 @@ if ($action eq 'add') {
 if ($action eq 'new') {
     check_token_data($token, 'add_version');
     my $version = Bugzilla::Version->create(
-        {name => $version_name, product => $product});
+        { value => $version_name, product => $product });
     delete_token($token);
 
     $vars->{'message'} = 'version_created';
@@ -219,7 +219,5 @@ if ($action eq 'update') {
     exit;
 }
 
-#
 # No valid action found
-#
-ThrowUserError('no_valid_action', {'field' => "version"});
+ThrowUserError('unknown_action', {action => $action});

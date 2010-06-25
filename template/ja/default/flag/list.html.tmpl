@@ -53,7 +53,7 @@
     [% FOREACH flag = type.flags %]
       <tr>
         <td>
-          [% flag.setter.nick FILTER html %]:
+          <span title="[% flag.setter.identity FILTER html %]">[% flag.setter.nick FILTER html %]</span>:
         </td>
         <td>
           <label title="[% type.description FILTER html %]"
@@ -64,7 +64,7 @@
           <select id="flag-[% flag.id %]" name="flag-[% flag.id %]" 
                   title="[% type.description FILTER html %]"
                   onchange="toggleRequesteeField(this);"
-                  class="flag_select">
+                  class="flag_select flag_type-[% type.id %]">
             [%# Only display statuses the user is allowed to set. %]
             [% IF user.can_request_flag(type) || flag.setter_id == user.id %]
               <option value="X"></option>
@@ -146,10 +146,18 @@
         <p><b>フラグ:</b></p>
         [% header_displayed = 1 %]
       [% END %]
-      [% flag.setter.nick FILTER html %]:
+      [% IF flag.setter.name %]
+        <span title="[% flag.setter.name FILTER html %]">[% flag.setter.nick FILTER html %]</span>:
+      [% ELSE %]
+        [% flag.setter.nick FILTER html %]:
+      [% END %]
       [%+ type.name FILTER html FILTER no_break %][% flag.status %]
       [% IF flag.requestee %]
-        ([% flag.requestee.nick FILTER html %])
+        [% IF flag.requestee.name %]
+          (<span title="[% flag.requestee.name FILTER html %]">[% flag.requestee.nick FILTER html %]</span>)
+        [% ELSE %]
+          ([% flag.requestee.nick FILTER html %])
+        [% END %]
       [% END %]<br>
     [% END %]
   [% END %]
@@ -175,7 +183,7 @@
               title="[% type.description FILTER html %]"
               [% " disabled=\"disabled\"" UNLESS (type.is_requestable && user.can_request_flag(type)) || user.can_set_flag(type) %]
               onchange="toggleRequesteeField(this);"
-              class="flag_select">
+              class="flag_select flag_type-[% type.id %]">
         <option value="X"></option>
         [% IF type.is_requestable && user.can_request_flag(type) %]
           <option value="?">?</option>

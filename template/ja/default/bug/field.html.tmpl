@@ -47,26 +47,10 @@
 [% END %]
 
 [% IF NOT no_tds %]
-  <th class="field_label [% ' bz_hidden_field' IF hidden %]"
-      id="field_label_[% field.name FILTER html %]">
-    [% IF editable %]
-      <label for="[% field.name FILTER html %]">
-    [% END %]
-      [% IF desc_url %]
-        <a href="[% desc_url FILTER html %]">
-      [% ELSIF !field.custom %]
-        <a href="page.cgi?id=fields.html#[% field.name FILTER url_quote %]">
-      [% END -%]
-        [% field_descs.${field.name} FILTER html %]:
-      [%- '</a>' IF (!field.custom || desc_url) %]
-    [% '</label>' IF editable %]
-  </th>
-[% END %]
-
-[% IF NOT no_tds %]
-<td class="field_value [% ' bz_hidden_field' IF hidden %]"
-    id="field_container_[% field.name FILTER html %]" 
-    [% " colspan=\"$value_span\"" FILTER none IF value_span %]>
+  [% PROCESS "bug/field-label.html.tmpl" %]
+  <td class="field_value [% ' bz_hidden_field' IF hidden %]"
+      id="field_container_[% field.name FILTER html %]" 
+      [% " colspan=\"$value_span\"" FILTER none IF value_span %]>
 [% END %]
 [% Hook.process('start_field_column') %]
 [% IF editable %]
@@ -75,11 +59,13 @@
         <input id="[% field.name FILTER html %]" class="text_input"
                name="[% field.name FILTER html %]"
                value="[% value FILTER html %]" size="40"
-               maxlength="[% constants.MAX_FREETEXT_LENGTH FILTER none %]">
+               maxlength="[% constants.MAX_FREETEXT_LENGTH FILTER none %]"
+               [% ' aria-required="true"' IF field.is_mandatory %]>
     [% CASE constants.FIELD_TYPE_DATETIME %]
       <input name="[% field.name FILTER html %]" size="20"
              id="[% field.name FILTER html %]"
              value="[% value FILTER html %]"
+             [% ' aria-required="true"' IF field.is_mandatory %]
              onchange="updateCalendarFromField(this)">
       <button type="button" class="calendar_button"
               id="button_calendar_[% field.name FILTER html %]"
@@ -95,7 +81,9 @@
     [% CASE constants.FIELD_TYPE_BUG_ID %]
         <span id="[% field.name FILTER html %]_input_area">
           <input name="[% field.name FILTER html %]" id="[% field.name FILTER html %]"
-                 value="[% value FILTER html %]" size="7">
+                 value="[% value FILTER html %]" size="7"
+                 [% ' aria-required="true"' IF field.is_mandatory %]>
+
         </span>
 
         [% IF value %]  
@@ -121,6 +109,7 @@
                         [% SET field_size = field.legal_values.size %]
                     [% END %]
                     size="[% field_size FILTER html %]" multiple="multiple"
+                    [% ' aria-required="true"' IF field.is_mandatory %]
                 [% END %]
                 >
           [% IF allow_dont_change %]
@@ -169,7 +158,7 @@
      [% CASE constants.FIELD_TYPE_TEXTAREA %]
        [% INCLUDE global/textarea.html.tmpl
            id = field.name name = field.name minrows = 4 maxrows = 8
-           cols = 60 defaultcontent = value %]
+           cols = 60 defaultcontent = value mandatory = field.is_mandatory %]
      [% CASE constants.FIELD_TYPE_BUG_URLS %]
        [% '<ul class="bug_urls">' IF value.size %]
        [% FOREACH url = value %]

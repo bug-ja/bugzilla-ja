@@ -37,17 +37,7 @@
 [% DEFAULT title = "Internal Error" %]
 
 [% error_message = BLOCK %]
-  [% IF    error == "action_unrecognized" %]
-    [% docslinks = {'query.html' => "Searching for $terms.bugs",
-                    'query.html#list' => "$terms.Bug lists"} %]
-    I don't recognize the value (<em>[% action FILTER html %]</em>)
-    of the <em>action</em> variable.
-  
-  [% ELSIF error == "attachment_already_obsolete" %]
-    Attachment #[% attach_id FILTER html %] ([% description FILTER html %]) 
-    is already obsolete.
-
-  [% ELSIF error == "attachment_local_storage_disabled" %]
+  [% IF error == "attachment_local_storage_disabled" %]
     [% title = "Local Storage Disabled" %]
     You cannot store attachments locally. This feature is disabled.
 
@@ -277,13 +267,6 @@
     You can't ask a specific person for
     <em>[% type.name FILTER html %]</em>.
   
-  [% ELSIF error == "flag_status_invalid" %]
-    The flag status <em>[% status FILTER html %]</em>
-    [% IF id %]
-      for flag ID #[% id FILTER html %]
-    [% END %]
-    is invalid.
-
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "Inactive Flag Type" %]
     The flag type [% type FILTER html %] is inactive and cannot be used
@@ -422,12 +405,6 @@
     An error occurred while preparing for a RADIUS authentication request:
     <code>[% errstr FILTER html %]</code>.
 
-  [% ELSIF error == "unknown_comparison_type" %]
-    Specified comparison type is not supported.
-
-  [% ELSIF error == "request_queue_group_invalid" %]
-    The group field <em>[% group FILTER html %]</em> is invalid.
-
   [% ELSIF error == "report_axis_invalid" %]
     <em>[% val FILTER html %]</em> is not a valid value for 
     [%+ IF    fld == "x" %]the horizontal axis
@@ -467,13 +444,6 @@
   [% ELSIF error == "undefined_field" %]
     Form field [% field FILTER html %] was not defined.
     
-  [% ELSIF error == "unknown_action" %]
-    [% IF action %]
-       Unknown action [% action FILTER html %]!
-    [% ELSE %]
-       I could not figure out what you wanted to do.
-    [% END %]
-
   [% ELSIF error == "unknown_method" %]
     The requested method '[% method FILTER html %]' was not found.
 
@@ -555,6 +525,9 @@
     </td>
   </tr>
 </table>
+
+<p>Traceback:</p>
+<pre>[% traceback FILTER html_linebreak %]</pre>
 
 [% IF variables %]
   <pre>

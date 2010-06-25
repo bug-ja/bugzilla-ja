@@ -24,7 +24,6 @@ our @EXPORT = qw(
     WS_ERROR_CODE
     ERROR_UNKNOWN_FATAL
     ERROR_UNKNOWN_TRANSIENT
-    ERROR_AUTH_NODATA
 
     WS_DISPATCH
 );
@@ -54,8 +53,9 @@ use constant WS_ERROR_CODE => {
     params_required             => 50,
     object_does_not_exist       => 51,
     param_must_be_numeric       => 52,
-    xmlrpc_invalid_value        => 52,
+    number_not_numeric          => 52,
     param_invalid               => 53,
+    number_too_large            => 54,
     # Bug errors usually occupy the 100-200 range.
     improper_bug_id_field_value => 100,
     bug_id_does_not_exist       => 101,
@@ -86,11 +86,15 @@ use constant WS_ERROR_CODE => {
     # Comment-related errors
     comment_is_private => 110,
     comment_id_invalid => 111,
+    comment_too_long => 114,
     # See Also errors
     bug_url_invalid => 112,
     bug_url_too_long => 112,
     # Insidergroup Errors
     user_not_insider => 113,
+    # Note: 114 is above in the Comment-related section.
+    # Bug update errors
+    illegal_change => 115,
 
     # Authentication errors are usually 300-400.
     invalid_username_or_password => 300,
@@ -98,6 +102,9 @@ use constant WS_ERROR_CODE => {
     auth_invalid_email           => 302,
     extern_id_conflict           => -303,
     auth_failure                 => 304,
+
+    # Except, historically, AUTH_NODATA, which is 410.
+    login_required               => 410,
 
     # User errors are 500-600.
     account_exists        => 500,
@@ -112,15 +119,18 @@ use constant WS_ERROR_CODE => {
     invalid_user_group    => 504,
     user_access_by_id_denied    => 505,
     user_access_by_match_denied => 505,
-    # Fatal errors (must be negative).
-    unknown_method              => -32601,
+
+    # Errors thrown by the WebService itself. The ones that are negative 
+    # conform to http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php
+    xmlrpc_invalid_value => -32600,
+    unknown_method       => -32601,
+    json_rpc_post_only   => 32610,
 };
 
 # These are the fallback defaults for errors not in ERROR_CODE.
 use constant ERROR_UNKNOWN_FATAL     => -32000;
 use constant ERROR_UNKNOWN_TRANSIENT => 32000;
 
-use constant ERROR_AUTH_NODATA   => 410;
 use constant ERROR_GENERAL       => 999;
 
 sub WS_DISPATCH {

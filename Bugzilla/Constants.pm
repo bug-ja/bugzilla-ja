@@ -128,6 +128,8 @@ use File::Basename;
     FIELD_TYPE_BUG_ID
     FIELD_TYPE_BUG_URLS
 
+    EMPTY_DATETIME_REGEX
+
     ABNORMAL_SELECTS
 
     TIMETRACKING_FIELDS
@@ -142,6 +144,8 @@ use File::Basename;
     ERROR_MODE_DIE
     ERROR_MODE_DIE_SOAP_FAULT
     ERROR_MODE_JSON_RPC
+
+    COLOR_ERROR
 
     INSTALLATION_MODE_INTERACTIVE
     INSTALLATION_MODE_NON_INTERACTIVE
@@ -173,6 +177,13 @@ use File::Basename;
 
     PASSWORD_DIGEST_ALGORITHM
     PASSWORD_SALT_LENGTH
+    
+    CGI_URI_LIMIT
+
+    PRIVILEGES_REQUIRED_NONE
+    PRIVILEGES_REQUIRED_REPORTER
+    PRIVILEGES_REQUIRED_ASSIGNEE
+    PRIVILEGES_REQUIRED_EMPOWERED
 );
 
 @Bugzilla::Constants::EXPORT_OK = qw(contenttypes);
@@ -379,6 +390,8 @@ use constant FIELD_TYPE_DATETIME  => 5;
 use constant FIELD_TYPE_BUG_ID  => 6;
 use constant FIELD_TYPE_BUG_URLS => 7;
 
+use constant EMPTY_DATETIME_REGEX => qr/^[0\-:\sA-Za-z]+$/; 
+
 # See the POD for Bugzilla::Field/is_abnormal to see why these are listed
 # here.
 use constant ABNORMAL_SELECTS => qw(
@@ -437,6 +450,9 @@ use constant ERROR_MODE_WEBPAGE        => 0;
 use constant ERROR_MODE_DIE            => 1;
 use constant ERROR_MODE_DIE_SOAP_FAULT => 2;
 use constant ERROR_MODE_JSON_RPC       => 3;
+
+# The ANSI colors of messages that command-line scripts use
+use constant COLOR_ERROR => 'red';
 
 # The various modes that checksetup.pl can run in.
 use constant INSTALLATION_MODE_INTERACTIVE => 0;
@@ -514,6 +530,20 @@ use constant PASSWORD_DIGEST_ALGORITHM => 'SHA-256';
 # How long of a salt should we use? Note that if you change this, none
 # of your users will be able to log in until they reset their passwords.
 use constant PASSWORD_SALT_LENGTH => 8;
+
+# Certain scripts redirect to GET even if the form was submitted originally
+# via POST such as buglist.cgi. This value determines whether the redirect
+# can be safely done or not based on the web server's URI length setting.
+use constant CGI_URI_LIMIT => 8000;
+
+# If the user isn't allowed to change a field, we must tell him who can.
+# We store the required permission set into the $PrivilegesRequired
+# variable which gets passed to the error template.
+
+use constant PRIVILEGES_REQUIRED_NONE      => 0;
+use constant PRIVILEGES_REQUIRED_REPORTER  => 1;
+use constant PRIVILEGES_REQUIRED_ASSIGNEE  => 2;
+use constant PRIVILEGES_REQUIRED_EMPOWERED => 3;
 
 sub bz_locations {
     # We know that Bugzilla/Constants.pm must be in %INC at this point.

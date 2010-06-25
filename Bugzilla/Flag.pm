@@ -54,6 +54,7 @@ whose names start with _ or a re specifically noted as being private.
 =cut
 
 use Scalar::Util qw(blessed);
+use Storable qw(dclone);
 
 use Bugzilla::FlagType;
 use Bugzilla::Hook;
@@ -223,26 +224,6 @@ sub bug {
 ################################
 ## Searching/Retrieving Flags ##
 ################################
-
-=pod
-
-=over
-
-=item C<has_flags>
-
-Returns 1 if at least one flag exists in the DB, else 0. This subroutine
-is mainly used to decide to display the "(My )Requests" link in the footer.
-
-=back
-
-=cut
-
-sub has_flags {
-    my $dbh = Bugzilla->dbh;
-
-    my $has_flags = $dbh->selectrow_array('SELECT 1 FROM flags ' . $dbh->sql_limit(1));
-    return $has_flags || 0;
-}
 
 =pod
 
@@ -550,6 +531,8 @@ sub retarget {
     foreach my $flagtype (@flagtypes) {
         next if !$flagtype->is_active;
         next if (!$flagtype->is_multiplicable && scalar @{$flagtype->{flags}});
+        next unless (($self->status eq '?' && $self->setter->can_request_flag($flagtype))
+                     || $self->setter->can_set_flag($flagtype));
 
         $self->{type_id} = $flagtype->id;
         delete $self->{type};
@@ -765,7 +748,7 @@ sub _check_status {
     if (!grep($status eq $_ , qw(X + - ?))
         || ($status eq '?' && $self->status ne '?' && !$self->type->is_requestable))
     {
-        ThrowCodeError('flag_status_invalid', { id     => $self->id,
+        ThrowUserError('flag_status_invalid', { id     => $self->id,
                                                 status => $status });
     }
     return $status;
@@ -1041,7 +1024,9 @@ sub _flag_types {
     }
 
     # Get all available flag types for the given product and component.
-    my $flag_types = Bugzilla::FlagType::match($vars);
+    my $cache = Bugzilla->request_cache->{flag_types_per_component}->{$vars->{target_type}} ||= {};
+    my $flag_data = $cache->{$vars->{component_id}} ||= Bugzilla::FlagType::match($vars);
+    my $flag_types = dclone($flag_data);
 
     $_->{flags} = [] foreach @$flag_types;
     my %flagtypes = map { $_->id => $_ } @$flag_types;
@@ -1051,8 +1036,7 @@ sub _flag_types {
     # or component).
     @$flags = grep { exists $flagtypes{$_->type_id} } @$flags;
     push(@{$flagtypes{$_->type_id}->{flags}}, $_) foreach @$flags;
-
-    return [sort {$a->sortkey <=> $b->sortkey || $a->name cmp $b->name} values %flagtypes];
+    return $flag_types;
 }
 
 =head1 SEE ALSO

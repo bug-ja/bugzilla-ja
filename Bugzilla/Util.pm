@@ -36,7 +36,7 @@ use base qw(Exporter);
                              html_quote url_quote xml_quote
                              css_class_quote html_light_quote url_decode
                              i_am_cgi correct_urlbase remote_ip
-                             lsearch do_ssl_redirect_if_required use_attachbase
+                             do_ssl_redirect_if_required use_attachbase
                              diff_arrays
                              trim wrap_hard wrap_comment find_wrap_point
                              format_time format_time_decimal validate_date
@@ -44,7 +44,7 @@ use base qw(Exporter);
                              file_mod_time is_7bit_clean
                              bz_crypt generate_random_password
                              validate_email_syntax clean_text
-                             get_text disable_utf8);
+                             get_text template_var disable_utf8);
 
 use Bugzilla::Constants;
 
@@ -306,18 +306,6 @@ sub use_attachbase {
             && $attachbase ne Bugzilla->params->{'sslbase'}) ? 1 : 0;
 }
 
-sub lsearch {
-    my ($list,$item) = (@_);
-    my $count = 0;
-    foreach my $i (@$list) {
-        if ($i eq $item) {
-            return $count;
-        }
-        $count++;
-    }
-    return -1;
-}
-
 sub diff_arrays {
     my ($old_ref, $new_ref) = @_;
 
@@ -437,6 +425,9 @@ sub format_time {
 
 sub datetime_from {
     my ($date, $timezone) = @_;
+
+    # In the database, this is the "0" date.
+    return undef if $date =~ /^0000/;
 
     # strptime($date) returns an empty array if $date has an invalid
     # date format.
@@ -621,6 +612,26 @@ sub get_text {
     return $message;
 }
 
+sub template_var {
+    my $name = shift;
+    my $cache = Bugzilla->request_cache->{util_template_var} ||= {};
+    my $template = Bugzilla->template_inner;
+    my $lang = $template->context->{bz_language};
+    return $cache->{$lang}->{$name} if defined $cache->{$lang};
+    my %vars;
+    # Note: If we suddenly start needing a lot of template_var variables,
+    # they should move into their own template, not field-descs.
+    my $result = $template->process('global/field-descs.none.tmpl', 
+                                    { vars => \%vars, in_template_var => 1 });
+    # Bugzilla::Error can't be "use"d in Bugzilla::Util.
+    if (!$result) {
+        require Bugzilla::Error;
+        Bugzilla::Error::ThrowTemplateError($template->error);
+    }
+    $cache->{$lang} = \%vars;
+    return $vars{$name};
+}
+
 sub disable_utf8 {
     if (Bugzilla->params->{'utf8'}) {
         binmode STDOUT, ':bytes'; # Turn off UTF8 encoding.
@@ -656,9 +667,6 @@ Bugzilla::Util - Generic utility functions for bugzilla
   # Functions that tell you about your environment
   my $is_cgi   = i_am_cgi();
   my $urlbase  = correct_urlbase();
-
-  # Functions for searching
-  $loc = lsearch(\@arr, $val);
 
   # Data manipulation
   ($removed, $added) = diff_arrays(\@old, \@new);
@@ -798,21 +806,6 @@ otherwise.
 
 =back
 
-=head2 Searching
-
-Functions for searching within a set of values.
-
-=over 4
-
-=item C<lsearch($list, $item)>
-
-Returns the position of C<$item> in C<$list>. C<$list> must be a list
-reference.
-
-If the item is not in the list, returns -1.
-
-=back
-
 =head2 Data Manipulation
 
 =over 4
@@ -901,6 +894,14 @@ It uses the F<global/message.txt.tmpl> template to return a string.
 A string.
 
 =back
+
+
+=item C<template_var>
+
+This is a method of getting the value of a variable from a template in
+Perl code. The available variables are in the C<global/field-descs.none.tmpl>
+template. Just pass in the name of the variable that you want the value of.
+
 
 =back
 

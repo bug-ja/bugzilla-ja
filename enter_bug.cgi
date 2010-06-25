@@ -200,44 +200,54 @@ sub pickplatform {
         # no choice is valid, we return "Other".
         for ($ENV{'HTTP_USER_AGENT'}) {
         #PowerPC
-            /\(.*PowerPC.*\)/i && do {@platform = "Macintosh"; last;};
-            /\(.*PPC.*\)/ && do {@platform = "Macintosh"; last;};
-            /\(.*AIX.*\)/ && do {@platform = "Macintosh"; last;};
+            /\(.*PowerPC.*\)/i && do {push @platform, ("PowerPC", "Macintosh");};
+        #AMD64, Intel x86_64
+            /\(.*amd64.*\)/ && do {push @platform, ("AMD64", "x86_64", "PC");};
+            /\(.*x86_64.*\)/ && do {push @platform, ("AMD64", "x86_64", "PC");};
+        #Intel Itanium
+            /\(.*IA64.*\)/ && do {push @platform, "IA64";};
         #Intel x86
-            /\(.*Intel.*\)/ && do {@platform = "PC"; last;};
-            /\(.*[ix0-9]86.*\)/ && do {@platform = "PC"; last;};
+            /\(.*Intel.*\)/ && do {push @platform, ("IA32", "x86", "PC");};
+            /\(.*[ix0-9]86.*\)/ && do {push @platform, ("IA32", "x86", "PC");};
         #Versions of Windows that only run on Intel x86
-            /\(.*Win(?:dows |)[39M].*\)/ && do {@platform = "PC"; last};
-            /\(.*Win(?:dows |)16.*\)/ && do {@platform = "PC"; last;};
+            /\(.*Win(?:dows |)[39M].*\)/ && do {push @platform, ("IA32", "x86", "PC");};
+            /\(.*Win(?:dows |)16.*\)/ && do {push @platform, ("IA32", "x86", "PC");};
         #Sparc
-            /\(.*sparc.*\)/ && do {@platform = "Sun"; last;};
-            /\(.*sun4.*\)/ && do {@platform = "Sun"; last;};
+            /\(.*sparc.*\)/ && do {push @platform, ("Sparc", "Sun");};
+            /\(.*sun4.*\)/ && do {push @platform, ("Sparc", "Sun");};
         #Alpha
-            /\(.*AXP.*\)/i && do {@platform = "DEC"; last;};
-            /\(.*[ _]Alpha.\D/i && do {@platform = "DEC"; last;};
-            /\(.*[ _]Alpha\)/i && do {@platform = "DEC"; last;};
+            /\(.*AXP.*\)/i && do {push @platform, ("Alpha", "DEC");};
+            /\(.*[ _]Alpha.\D/i && do {push @platform, ("Alpha", "DEC");};
+            /\(.*[ _]Alpha\)/i && do {push @platform, ("Alpha", "DEC");};
         #MIPS
-            /\(.*IRIX.*\)/i && do {@platform = "SGI"; last;};
-            /\(.*MIPS.*\)/i && do {@platform = "SGI"; last;};
+            /\(.*IRIX.*\)/i && do {push @platform, ("MIPS", "SGI");};
+            /\(.*MIPS.*\)/i && do {push @platform, ("MIPS", "SGI");};
         #68k
-            /\(.*68K.*\)/ && do {@platform = "Macintosh"; last;};
-            /\(.*680[x0]0.*\)/ && do {@platform = "Macintosh"; last;};
+            /\(.*68K.*\)/ && do {push @platform, ("68k", "Macintosh");};
+            /\(.*680[x0]0.*\)/ && do {push @platform, ("68k", "Macintosh");};
         #HP
-            /\(.*9000.*\)/ && do {@platform = "HP"; last;};
+            /\(.*9000.*\)/ && do {push @platform, ("PA-RISC", "HP");};
         #ARM
-#            /\(.*ARM.*\) && do {$platform = "ARM";};
+            /\(.*ARM.*\)/ && do {push @platform, ("ARM", "PocketPC");};
+        #PocketPC intentionally before PowerPC
+            /\(.*Windows CE.*PPC.*\)/ && do {push @platform, ("ARM", "PocketPC");};
+        #PowerPC
+            /\(.*PPC.*\)/ && do {push @platform, ("PowerPC", "Macintosh");};
+            /\(.*AIX.*\)/ && do {push @platform, ("PowerPC", "Macintosh");};
         #Stereotypical and broken
-            /\(.*Macintosh.*\)/ && do {@platform = "Macintosh"; last;};
-            /\(.*Mac OS [89].*\)/ && do {@platform = "Macintosh"; last;};
-            /\(Win.*\)/ && do {@platform = "PC"; last;};
-            /\(.*Win(?:dows[ -])NT.*\)/ && do {@platform = "PC"; last;};
-            /\(.*OSF.*\)/ && do {@platform = "DEC"; last;};
-            /\(.*HP-?UX.*\)/i && do {@platform = "HP"; last;};
-            /\(.*IRIX.*\)/i && do {@platform = "SGI"; last;};
-            /\(.*(SunOS|Solaris).*\)/ && do {@platform = "Sun"; last;};
+            /\(.*Windows CE.*\)/ && do {push @platform, ("ARM", "PocketPC");};
+            /\(.*Macintosh.*\)/ && do {push @platform, ("68k", "Macintosh");};
+            /\(.*Mac OS [89].*\)/ && do {push @platform, ("68k", "Macintosh");};
+            /\(.*Win64.*\)/ && do {push @platform, "IA64";};
+            /\(Win.*\)/ && do {push @platform, ("IA32", "x86", "PC");};
+            /\(.*Win(?:dows[ -])NT.*\)/ && do {push @platform, ("IA32", "x86", "PC");};
+            /\(.*OSF.*\)/ && do {push @platform, ("Alpha", "DEC");};
+            /\(.*HP-?UX.*\)/i && do {push @platform, ("PA-RISC", "HP");};
+            /\(.*IRIX.*\)/i && do {push @platform, ("MIPS", "SGI");};
+            /\(.*(SunOS|Solaris).*\)/ && do {push @platform, ("Sparc", "Sun");};
         #Braindead old browsers who didn't follow convention:
-            /Amiga/ && do {@platform = "Macintosh"; last;};
-            /WinMosaic/ && do {@platform = "PC"; last;};
+            /Amiga/ && do {push @platform, ("68k", "Macintosh");};
+            /WinMosaic/ && do {push @platform, ("IA32", "x86", "PC");};
         }
     }
 
@@ -258,7 +268,7 @@ sub pickos {
         # item in @os that is a valid platform choice. If
         # no choice is valid, we return "Other".
         for ($ENV{'HTTP_USER_AGENT'}) {
-            /\(.*IRIX.*\)/ && do {push @os, "IRIX"; };
+            /\(.*IRIX.*\)/ && do {push @os, "IRIX";};
             /\(.*OSF.*\)/ && do {push @os, "OSF/1";};
             /\(.*Linux.*\)/ && do {push @os, "Linux";};
             /\(.*Solaris.*\)/ && do {push @os, "Solaris";};
@@ -498,14 +508,17 @@ else {
 # parameter.
 $vars->{'version'} = [map($_->name, @{$product->versions})];
 
+my $version_cookie = $cgi->cookie("VERSION-" . $product->name);
+
 if ( ($cloned_bug_id) &&
      ($product->name eq $cloned_bug->product ) ) {
     $default{'version'} = $cloned_bug->version;
 } elsif (formvalue('version')) {
     $default{'version'} = formvalue('version');
-} elsif (defined $cgi->cookie("VERSION-" . $product->name) &&
-    lsearch($vars->{'version'}, $cgi->cookie("VERSION-" . $product->name)) != -1) {
-    $default{'version'} = $cgi->cookie("VERSION-" . $product->name);
+} elsif (defined $version_cookie
+         and grep { $_ eq $version_cookie } @{ $vars->{'version'} })
+{
+    $default{'version'} = $version_cookie;
 } else {
     $default{'version'} = $vars->{'version'}->[$#{$vars->{'version'}}];
 }
@@ -521,38 +534,39 @@ if ( Bugzilla->params->{'usetargetmilestone'} ) {
 }
 
 # Construct the list of allowable statuses.
-my $initial_statuses = Bugzilla::Status->can_change_to();
+my @statuses = @{ Bugzilla::Status->can_change_to() };
 # Exclude closed states from the UI, even if the workflow allows them.
 # The back-end code will still accept them, though.
-@$initial_statuses = grep { $_->is_open } @$initial_statuses;
+@statuses = grep { $_->is_open } @statuses;
 
-my @status = map { $_->name } @$initial_statuses;
 # UNCONFIRMED is illegal if allows_unconfirmed is false.
 if (!$product->allows_unconfirmed) {
-    @status = grep {$_ ne 'UNCONFIRMED'} @status;
+    @statuses = grep { $_->name ne 'UNCONFIRMED' } @statuses;
 }
-scalar(@status) || ThrowUserError('no_initial_bug_status');
+scalar(@statuses) || ThrowUserError('no_initial_bug_status');
 
 # If the user has no privs...
 unless ($has_editbugs || $has_canconfirm) {
     # ... use UNCONFIRMED if available, else use the first status of the list.
-    my $bug_status = (grep {$_ eq 'UNCONFIRMED'} @status) ? 'UNCONFIRMED' : $status[0];
-    @status = ($bug_status);
+    my ($unconfirmed) = grep { $_->name eq 'UNCONFIRMED' } @statuses;
+    @statuses = ($unconfirmed || $statuses[0]);
 }
 
-$vars->{'bug_status'} = \@status;
+$vars->{'bug_status'} = \@statuses;
 
 # Get the default from a template value if it is legitimate.
 # Otherwise, and only if the user has privs, set the default
 # to the first confirmed bug status on the list, if available.
 
-if (formvalue('bug_status') && (lsearch(\@status, formvalue('bug_status')) >= 0)) {
+my $picked_status = formvalue('bug_status');
+if ($picked_status and grep($_->name eq $picked_status, @statuses)) {
     $default{'bug_status'} = formvalue('bug_status');
-} elsif (scalar @status == 1) {
-    $default{'bug_status'} = $status[0];
+} elsif (scalar @statuses == 1) {
+    $default{'bug_status'} = $statuses[0]->name;
 }
 else {
-    $default{'bug_status'} = ($status[0] ne 'UNCONFIRMED') ? $status[0] : $status[1];
+    $default{'bug_status'} = ($statuses[0]->name ne 'UNCONFIRMED') 
+                             ? $statuses[0]->name : $statuses[1]->name;
 }
 
 my @groups = $cgi->param('groups');

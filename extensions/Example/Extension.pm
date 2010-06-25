@@ -29,6 +29,7 @@ use Bugzilla::Error;
 use Bugzilla::Group;
 use Bugzilla::User;
 use Bugzilla::Util qw(diff_arrays html_quote);
+use Bugzilla::Status qw(is_open_state);
 
 # This is extensions/Example/lib/Util.pm. I can load this here in my
 # Extension.pm only because I have a Config.pm.
@@ -118,13 +119,16 @@ sub bug_end_of_update {
     
     # This code doesn't actually *do* anything, it's just here to show you
     # how to use this hook.
-    my ($bug, $timestamp, $changes) = @$args{qw(bug timestamp changes)};
+    my ($bug, $old_bug, $timestamp, $changes) = 
+        @$args{qw(bug old_bug timestamp changes)};
     
     foreach my $field (keys %$changes) {
         my $used_to_be = $changes->{$field}->[0];
         my $now_it_is  = $changes->{$field}->[1];
     }
-    
+
+    my $old_summary = $old_bug->short_desc;
+
     my $status_message;
     if (my $status_change = $changes->{'bug_status'}) {
         my $old_status = new Bugzilla::Status({ name => $status_change->[0] });
@@ -350,6 +354,18 @@ sub object_before_create {
     }
 }
 
+sub object_before_delete {
+    my ($self, $args) = @_;
+
+    my $object = $args->{'object'};
+
+    # Note that this is a made-up class, for this example.
+    if ($object->isa('Bugzilla::ExampleObject')) {
+        my $id = $object->id;
+        warn "An object with id $id is about to be deleted!";
+    } 
+}
+
 sub object_before_set {
     my ($self, $args) = @_;
     
@@ -385,10 +401,21 @@ sub object_end_of_create_validators {
     
 }
 
+sub object_end_of_set {
+    my ($self, $args) = @_;
+
+    my ($object, $field) = @$args{qw(object field)};
+
+    # Note that this is a made-up class, for this example.
+    if ($object->isa('Bugzilla::ExampleObject')) {
+        warn "The field $field has changed to " . $object->{$field};
+    }
+}
+
 sub object_end_of_set_all {
     my ($self, $args) = @_;
     
-    my $object = $args->{'class'};
+    my $object = $args->{'object'};
     my $object_params = $args->{'params'};
     
     # Note that this is a made-up class, for this example.
@@ -584,6 +611,44 @@ sub template_before_process {
 
     if ($file eq 'bug/edit.html.tmpl') {
         $vars->{'viewing_the_bug_form'} = 1;
+    }
+}
+
+sub bug_check_can_change_field {
+    my ($self, $args) = @_;
+
+    my ($bug, $field, $new_value, $old_value, $priv_results)
+        = @$args{qw(bug field new_value old_value priv_results)};
+
+    my $user = Bugzilla->user;
+
+    # Disallow a bug from being reopened if currently closed unless user 
+    # is in 'admin' group
+    if ($field eq 'bug_status' && $bug->product_obj->name eq 'Example') {
+        if (!is_open_state($old_value) && is_open_state($new_value) 
+            && !$user->in_group('admin')) 
+        {
+            push(@$priv_results, PRIVILEGES_REQUIRED_EMPOWERED);
+            return;
+        }
+    }
+
+    # Disallow a bug's keywords from being edited unless user is the
+    # reporter of the bug 
+    if ($field eq 'keywords' && $bug->product_obj->name eq 'Example' 
+        && $user->login ne $bug->reporter->login) 
+    {
+        push(@$priv_results, PRIVILEGES_REQUIRED_REPORTER);
+        return;
+    }
+
+    # Allow updating of priority even if user cannot normally edit the bug 
+    # and they are in group 'engineering'
+    if ($field eq 'priority' && $bug->product_obj->name eq 'Example'
+        && $user->in_group('engineering')) 
+    {
+        push(@$priv_results, PRIVILEGES_REQUIRED_NONE);
+        return;
     }
 }
 

@@ -19,6 +19,9 @@ package Bugzilla::WebService::Server;
 use strict;
 
 use Bugzilla::Error;
+use Bugzilla::Util qw(datetime_from);
+
+use Scalar::Util qw(blessed);
 
 sub handle_login {
     my ($self, $class, $method, $full_method) = @_;
@@ -27,6 +30,29 @@ sub handle_login {
     return if ($class->login_exempt($method) 
                and !defined Bugzilla->input_params->{Bugzilla_login});
     Bugzilla->login();
+}
+
+sub datetime_format_inbound {
+    my ($self, $time) = @_;
+    
+    my $converted = datetime_from($time, Bugzilla->local_timezone);
+    $time = $converted->ymd() . ' ' . $converted->hms();
+    return $time
+}
+
+sub datetime_format_outbound {
+    my ($self, $date) = @_;
+
+    my $time = $date;
+    if (blessed($date)) {
+        # We expect this to mean we were sent a datetime object
+        $time->set_time_zone('UTC');
+    } else {
+        # We always send our time in UTC, for consistency.
+        # passed in value is likely a string, create a datetime object
+        $time = datetime_from($date, 'UTC');
+    }
+    return $time->iso8601();
 }
 
 1;

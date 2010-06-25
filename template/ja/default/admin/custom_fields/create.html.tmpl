@@ -98,6 +98,25 @@ YAHOO.util.Event.onDOMReady(function() {onChangeType(document.getElementById('ty
         <input type="text" id="sortkey" name="sortkey" size="6" maxlength="6">
       </td>
 
+      <th align="right"><label for="is_mandatory">委任済:</label></th>
+      <td><input type="checkbox" id="is_mandatory" name="is_mandatory" value="1"></td>
+    </tr>
+
+    <tr>
+      <th class="narrow_label">
+        <label for="reverse_desc">逆向きの関係性:</label>
+      </th>
+      <td>
+        <input type="text" id="reverse_desc" name="reverse_desc" value="" size="40" disabled="disabled">
+        <br/>
+        このラベルは、この
+        [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %]
+        フィールドを持つような [% terms.bugs %] 
+        のリストに対するラベルとして利用できます。
+        たとえば、説明が"の重複"であるような場合に、逆向きの説明は
+        "この [% terms.bug %] への重複" となります。
+        このフィールドへのリストを無効化する場合は空白にしてください。
+      </td>
       <th>
         <label for="visibility_field_id">特定の条件下でのみ利用可能なフィールド:</label>
       </th>
@@ -120,20 +139,7 @@ YAHOO.util.Event.onDOMReady(function() {onChangeType(document.getElementById('ty
     </tr>
 
     <tr>
-      <th class="narrow_label">
-        <label for="reverse_desc">逆向きの関係性:</label>
-      </th>
-      <td>
-        <input type="text" id="reverse_desc" name="reverse_desc" value="" size="40" disabled="disabled">
-        <br/>
-        このラベルは、この
-        [%+ field_types.${constants.FIELD_TYPE_BUG_ID} FILTER html %]
-        フィールドを持つような [% terms.bugs %] 
-        のリストに対するラベルとして利用できます。
-        たとえば、説明が"の重複"であるような場合に、逆向きの説明は
-        "この [% terms.bug %] への重複" となります。
-        このフィールドへのリストを無効化する場合は空白にしてください。
-      </td>
+      <td colspan="2">&nbsp;</td>
       <th>
         <label for="value_field_id">
           このフィールドに出現する<br>

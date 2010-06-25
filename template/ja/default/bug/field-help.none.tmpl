@@ -144,7 +144,7 @@ status_whiteboard =>
    タグ付け、ステータス状況説明に利用可能です。",
 
 target_milestone =>
-   "ターゲットマイルストーンフィールドは、技術者がこの $terms.bug 
+   "$field_descs.target_milestone フィールドは、技術者がこの $terms.bug 
     をどのバージョンで修正できるかを示すものです。",
 
 version =>
@@ -207,9 +207,24 @@ email1 =>
 [% END %]
 
 [% FOREACH help_field = bug_fields.keys %]
+
+  [%# Add help for custom fields. %]
+  [% IF !help_html.${help_field}.defined %]
+    [% SET field_type = bug_fields.${help_field}.type %]
+    [% field_type_desc = BLOCK -%]
+      [% field_types.$field_type FILTER html %]
+    [%- END %]
+    [% help_html.${help_field} = 
+      "この ${terms.Bugzilla} サイトの"
+      _  "カスタムフィールド $field_type_desc です。" %]
+  [% END %]
+
+  [%# Add help for the search types, for query.cgi. %]
   [% type_desc = BLOCK %]
     [% field_descs.${help_field} FILTER html %] の型での検索も可能です。
   [% END %]
   [% SET type_name = help_field _ '_type' %]
   [% help_html.$type_name = type_desc %]
 [% END %]
+
+[% Hook.process("end") %]

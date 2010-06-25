@@ -32,6 +32,7 @@ use File::Basename;
 use POSIX qw(setlocale LC_CTYPE);
 use Safe;
 use Scalar::Util qw(tainted);
+use Term::ANSIColor qw(colored);
 
 use base qw(Exporter);
 our @EXPORT_OK = qw(
@@ -153,7 +154,13 @@ sub extension_requirement_packages {
     # Bugzilla::Extension->load_all (because stuff has already been loaded).
     # (This matters because almost every page calls Bugzilla->feature, which
     # calls OPTIONAL_MODULES, which calls this method.)
-    if (eval { Bugzilla->extensions }) {
+    #
+    # We check if Bugzilla.pm is already loaded, instead of doing a "require",
+    # because we *do* want the code lower down to run during the Requirements
+    # phase of checksetup.pl, instead of Bugzilla->extensions, and Bugzilla.pm
+    # actually *can* be loaded during the Requirements phase if all the
+    # requirements have already been installed.
+    if ($INC{'Bugzilla.pm'}) {
         return Bugzilla->extensions;
     }
     my $packages = _cache()->{extension_requirement_packages};
@@ -259,6 +266,8 @@ sub install_string {
     die "No language defines the string '$string_id'"
         if !defined $string_template;
 
+    utf8::decode($string_template) if !utf8::is_utf8($string_template);
+
     $vars ||= {};
     my @replace_keys = keys %$vars;
     foreach my $key (@replace_keys) {
@@ -275,7 +284,7 @@ sub install_string {
         }
         $string_template =~ s/\Q##$key##\E/$replacement/g;
     }
-    
+
     return $string_template;
 }
 
@@ -408,6 +417,18 @@ sub _template_base_directories {
             push(@template_dirs, $dir);
         }
     }
+
+    # Extensions may also contain *only* templates, in which case they
+    # won't show up in extension_requirement_packages.
+    foreach my $path (_extension_paths()) {
+        next if !-d $path;
+        if (!-e "$path/Extension.pm" and !-e "$path/Config.pm"
+            and -d "$path/template") 
+        {
+            push(@template_dirs, "$path/template");
+        }
+    }
+
 
     push(@template_dirs, bz_locations()->{'templatedir'});
     return \@template_dirs;
@@ -551,7 +572,23 @@ sub get_console_locale {
 sub init_console {
     eval { ON_WINDOWS && require Win32::Console::ANSI; };
     $ENV{'ANSI_COLORS_DISABLED'} = 1 if ($@ || !-t *STDOUT);
+    $SIG{__DIE__} = \&_console_die;
     prevent_windows_dialog_boxes();
+}
+
+sub _console_die {
+    my ($message) = @_;
+    # $^S means "we are in an eval"
+    if ($^S) {
+        die $message;
+    }
+    # Remove newlines from the message before we color it, and then
+    # add them back in on display. Otherwise the ANSI escape code
+    # for resetting the color comes after the newline, and Perl thinks
+    # that it should put "at Bugzilla/Install.pm line 1234" after the
+    # message.
+    $message =~ s/\n+$//;
+    die colored($message, COLOR_ERROR) . "\n";
 }
 
 sub prevent_windows_dialog_boxes {

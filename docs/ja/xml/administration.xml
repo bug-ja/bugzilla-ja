@@ -745,23 +745,6 @@
 
           <varlistentry>
             <term>
-              sendmailnow
-            </term>
-            <listitem>
-              <para>
-                Bugzilla が 8.12 以前の Sendmail を利用している場合、
-                このオプションを無効にすることで Sendmail 
-                が実際にメールの送信を完了するのを待たなくなるのでパフォーマンスが改善します。
-                もし Sendmail 8.12 もしくはそれ以降を利用している場合は、
-                無効にしても効果はありません。Postfix など他の MTA を利用している場合は、
-                このオプションは必ず有効にしてください。
-                (Postfix が提供する sendmail 互換コマンドを利用するとしてもです。)
-              </para>
-            </listitem>
-          </varlistentry>
-
-          <varlistentry>
-            <term>
               whinedays
             </term>
             <listitem>

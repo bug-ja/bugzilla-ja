@@ -41,12 +41,13 @@
 [% END %]
 
 
-[% FOREACH query=queries %]
+[% IF queries.size %]
+  [% FOREACH query=queries %]
 
 [%+ query.title +%]
 [%+ "-" FILTER repeat(query.title.length) %]
 
- [% FOREACH bug=query.bugs %]
+  [% FOREACH bug=query.bugs %]
   [% terms.Bug +%] [%+ bug.bug_id %]:
   [%+ urlbase %]show_bug.cgi?id=[% bug.bug_id +%]
             優先度: [%+ display_value("priority", bug.priority) -%]
@@ -54,12 +55,15 @@
   プラットフォーム: [%+ display_value("rep_platform", bug.rep_platform) %]
             担当者: [%+ bug.assigned_to %]
         ステータス: [%+ display_value("bug_status", bug.bug_status) %]
-            [%- IF bug.resolution -%] 解決方法: [% display_value("resolution", bug.resolution) -%]
-                                [%- END %]
+                    [%- IF bug.resolution -%] 解決方法: [% display_value("resolution", bug.resolution) -%]
+                    [%- END %]
               要約: [% bug.short_desc %]
+
+   [% END %]
 
  [% END %]
 
+[% ELSE %]
+
+  検索条件に合致する [% terms.bugs %] が見つかりませんでした。
 [% END %]
-
-

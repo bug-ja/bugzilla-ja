@@ -76,8 +76,8 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
       [% prefname = "email-$constants.REL_ANY-$constants.EVT_FLAG_REQUESTED" %]
       <input type="checkbox" name="[% prefname %]" id="[% prefname %]" 
         value="1"
-        [% " checked" IF 
-                  mail.${constants.REL_ANY}.${constants.EVT_FLAG_REQUESTED} %]>
+        [% " checked"
+           IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_FLAG_REQUESTED} %]>
       <label for="[% prefname %]">フラグの要請があったときに通知メールを送る</label>
       <br>
     </td>
@@ -88,8 +88,8 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
       [% prefname = "email-$constants.REL_ANY-$constants.EVT_REQUESTED_FLAG" %]
       <input type="checkbox" name="[% prefname %]" id="[% prefname %]" 
         value="1"
-        [% " checked" IF 
-                  mail.${constants.REL_ANY}.${constants.EVT_REQUESTED_FLAG} %]>
+        [% " checked"
+           IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_REQUESTED_FLAG} %]>
       <label for="[% prefname %]">要請したフラグが設定されたときに通知メールを送る</label>
       <br>
     </td>
@@ -197,7 +197,7 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
                   no_added_removed.contains(relationship.id) 
             %]
                disabled
-            [% ELSIF mail.${relationship.id}.${event.id} %]
+            [% ELSIF user.mail_settings.${relationship.id}.${event.id} %]
                checked
             [% END %]>
         </td>
@@ -226,7 +226,7 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
           <input type="checkbox" 
             name="neg-email-[% relationship.id %]-[% event.id %]"
             value="1"
-            [% " checked" IF NOT mail.${relationship.id}.${event.id} %]>
+            [% " checked" IF NOT user.mail_settings.${relationship.id}.${event.id} %]>
         </td>
       [% END %]
       <td>
@@ -236,23 +236,6 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
   [% END %]
   
 </table>
-
-[%# Add hidden form fields for fields not used %]
-[% FOREACH event = events %]  
-  [% FOREACH relationship = relationships %]
-    <input type="hidden" 
-           name="email-[% relationship.id %]-[% event.id %]"
-           value="[% mail.${relationship.id}.${event.id} ? "1" : "0" %]">
-  [% END %]
-[% END %]
-
-[% FOREACH event = neg_events %]  
-  [% FOREACH relationship = relationships %]
-    <input type="hidden" 
-           name="neg-email-[% relationship.id %]-[% event.id %]"
-          value="[% mail.${relationship.id}.${event.id} ? "0" : "1" %]">
-  [% END %]
-[% END %]
 
 <hr>
 <b>ユーザの監視</b>

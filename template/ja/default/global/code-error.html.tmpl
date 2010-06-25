@@ -37,17 +37,7 @@
 [% DEFAULT title = "内部エラー" %]
 
 [% error_message = BLOCK %]
-  [% IF    error == "action_unrecognized" %]
-    [% docslinks = {'query.html' => "$terms.bugs の検索",
-                    'query.html#list' => "$terms.Bug リスト"} %]
-    <em>action</em> 変数に指定された (<em>[% action FILTER html %]</em>)
-    を認識できません。
-
-  [% ELSIF error == "attachment_already_obsolete" %]
-    添付 #[% attach_id FILTER html %] ([% description FILTER html %]) 
-    はすでに用済みにされています。
-
-  [% ELSIF error == "attachment_local_storage_disabled" %]
+  [% IF error == "attachment_local_storage_disabled" %]
     [% title = "ローカルへの保存は無効です" %]
     添付を (サーバ) ローカルに保存することはできません。この機能は無効化されています。
 
@@ -273,13 +263,6 @@
     特定の人からの
     <em>[% type.name FILTER html %]</em> の要請はできません。
  
-  [% ELSIF error == "flag_status_invalid" %]
-    [% IF id %]
-      フラグ ID #[% id FILTER html %] の
-    [% END %]
-    フラグステータス <em>[% status FILTER html %]</em>
-    は無効です。
-
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "利用されていないフラグタイプ" %]
     フラグタイプ [% type FILTER html %] は無効化されており、
@@ -412,12 +395,6 @@
     RADIUS 認証リクエストを準備している途中でエラーが発生しました。
     <code>[% errstr FILTER html %]</code>
 
-  [% ELSIF error == "unknown_comparison_type" %]
-    指定された比較はサポートされていません。
-
-  [% ELSIF error == "request_queue_group_invalid" %]
-    グループフィールド <em>[% group FILTER html %]</em> は無効です。
-
   [% ELSIF error == "report_axis_invalid" %]
     <em>[% val FILTER html %]</em> は
     [%+ IF    fld == "x" %]横軸
@@ -454,13 +431,6 @@
   [% ELSIF error == "undefined_field" %]
     フォームフィールド [% field FILTER html %] は見つかりませんでした。
  
-  [% ELSIF error == "unknown_action" %]
-    [% IF action %]
-       不明なアクション [% action FILTER html %] です
-    [% ELSE %]
-       あなたが何をしたいかわかりません。
-    [% END %]
-
   [% ELSIF error == "unknown_method" %]
     要求されたメソッド '[% method FILTER html %]' が見つかりませんでした。
 
@@ -542,6 +512,9 @@
     </td>
   </tr>
 </table>
+
+<p>トレースバック:</p>
+<pre>[% traceback FILTER html_linebreak %]</pre>
 
 [% IF variables %]
   <pre>

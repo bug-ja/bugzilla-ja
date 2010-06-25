@@ -647,7 +647,7 @@ if ($action eq 'search') {
     # Send mail about what we've done to bugs.
     # The deleted user is not notified of the changes.
     foreach (keys(%updatedbugs)) {
-        Bugzilla::BugMail::Send($_, {'changer' => $user->login} );
+        Bugzilla::BugMail::Send($_, {'changer' => $user} );
     }
 
 ###########################################################################
@@ -675,8 +675,7 @@ if ($action eq 'search') {
 
 ###########################################################################
 } else {
-    $vars->{'action'} = $action;
-    ThrowCodeError('action_unrecognized', $vars);
+    ThrowUserError('unknown_action', {action => $action});
 }
 
 exit;

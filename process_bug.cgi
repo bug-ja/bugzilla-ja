@@ -61,6 +61,7 @@ use Bugzilla::Flag;
 use Bugzilla::Status;
 use Bugzilla::Token;
 
+use List::MoreUtils qw(firstidx);
 use Storable qw(dclone);
 
 my $user = Bugzilla->login(LOGIN_REQUIRED);
@@ -78,10 +79,9 @@ my $vars = {};
 sub send_results {
     my ($bug_id, $vars) = @_;
     my $template = Bugzilla->template;
-    if (Bugzilla->usage_mode == USAGE_MODE_EMAIL) {
-         Bugzilla::BugMail::Send($bug_id, $vars->{'mailrecipients'});
-    }
-    else {
+    $vars->{'sent_bugmail'} = 
+        Bugzilla::BugMail::Send($bug_id, $vars->{'mailrecipients'});
+    if (Bugzilla->usage_mode != USAGE_MODE_EMAIL) {
         $template->process("bug/process/results.html.tmpl", $vars)
             || ThrowTemplateError($template->error());
     }
@@ -153,30 +153,33 @@ print $cgi->header() unless Bugzilla->usage_mode == USAGE_MODE_EMAIL;
 
 # Check for a mid-air collision. Currently this only works when updating
 # an individual bug.
-if (defined $cgi->param('delta_ts')
-    && $cgi->param('delta_ts') ne $first_bug->delta_ts)
+if (defined $cgi->param('delta_ts'))
 {
-    ($vars->{'operations'}) =
-        Bugzilla::Bug::GetBugActivity($first_bug->id, undef,
-                                      scalar $cgi->param('delta_ts'));
+    my $delta_ts_z = datetime_from($cgi->param('delta_ts'));
+    my $first_delta_tz_z =  datetime_from($first_bug->delta_ts);
+    if ($first_delta_tz_z ne $delta_ts_z) {
+        ($vars->{'operations'}) =
+            Bugzilla::Bug::GetBugActivity($first_bug->id, undef,
+                                          scalar $cgi->param('delta_ts'));
 
-    $vars->{'title_tag'} = "mid_air";
+        $vars->{'title_tag'} = "mid_air";
     
-    ThrowCodeError('undefined_field', { field => 'longdesclength' })
-        if !defined $cgi->param('longdesclength');
+        ThrowCodeError('undefined_field', { field => 'longdesclength' })
+            if !defined $cgi->param('longdesclength');
 
-    $vars->{'start_at'} = $cgi->param('longdesclength');
-    # Always sort midair collision comments oldest to newest,
-    # regardless of the user's personal preference.
-    $vars->{'comments'} = $first_bug->comments({ order => "oldest_to_newest" });
-    $vars->{'bug'} = $first_bug;
-    # The token contains the old delta_ts. We need a new one.
-    $cgi->param('token', issue_hash_token([$first_bug->id, $first_bug->delta_ts]));
-    
-    # Warn the user about the mid-air collision and ask them what to do.
-    $template->process("bug/process/midair.html.tmpl", $vars)
-      || ThrowTemplateError($template->error());
-    exit;
+        $vars->{'start_at'} = $cgi->param('longdesclength');
+        # Always sort midair collision comments oldest to newest,
+        # regardless of the user's personal preference.
+        $vars->{'comments'} = $first_bug->comments({ order => "oldest_to_newest" });
+        $vars->{'bug'} = $first_bug;
+
+        # The token contains the old delta_ts. We need a new one.
+        $cgi->param('token', issue_hash_token([$first_bug->id, $first_bug->delta_ts]));
+        # Warn the user about the mid-air collision and ask them what to do.
+        $template->process("bug/process/midair.html.tmpl", $vars)
+          || ThrowTemplateError($template->error());
+        exit;
+    }
 }
 
 # We couldn't do this check earlier as we first had to validate bug IDs
@@ -206,7 +209,7 @@ if (defined $cgi->param('id')) {
         if ($cgi->cookie("BUGLIST")) {
             @bug_list = split(/:/, $cgi->cookie("BUGLIST"));
         }
-        my $cur = lsearch(\@bug_list, $cgi->param('id'));
+        my $cur = firstidx { $_ eq $cgi->param('id') } @bug_list;
         if ($cur >= 0 && $cur < $#bug_list) {
             my $next_bug_id = $bug_list[$cur + 1];
             detaint_natural($next_bug_id);
@@ -252,171 +255,83 @@ if (should_set('product')) {
     }
 }
 
-# strict_isolation checks mean that we should set the groups
-# immediately after changing the product.
-foreach my $b (@bug_objects) {
-    foreach my $group (@{$b->product_obj->groups_valid}) {
-        my $gid = $group->id;
-        if (should_set("bit-$gid", 1)) {
-            # Check ! first to avoid having to check defined below.
-            if (!$cgi->param("bit-$gid")) {
-                $b->remove_group($gid);
-            }
-            # "== 1" is important because mass-change uses -1 to mean
-            # "don't change this restriction"
-            elsif ($cgi->param("bit-$gid") == 1) {
-                $b->add_group($gid);
-            }
-        }
-    }
-}
-
-# Flags should be set AFTER the bug has been moved into another product/component.
-if ($cgi->param('id')) {
-    my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi($first_bug, undef, $vars);
-    $first_bug->set_flags($flags, $new_flags);
-}
-
-if ($cgi->param('id') && (defined $cgi->param('dependson')
-                          || defined $cgi->param('blocked')) )
-{
-    $first_bug->set_dependencies(scalar $cgi->param('dependson'),
-                                 scalar $cgi->param('blocked'));
-}
-elsif (should_set('dependson') || should_set('blocked')) {
-    foreach my $bug (@bug_objects) {
-        my %temp_deps;
-        foreach my $type (qw(dependson blocked)) {
-            $temp_deps{$type} = { map { $_ => 1 } @{$bug->$type} };
-            if (should_set($type) && $cgi->param($type . '_action') =~ /^(add|remove)$/) {
-                foreach my $id (split(/[,\s]+/, $cgi->param($type))) {
-                    if ($cgi->param($type . '_action') eq 'remove') {
-                        delete $temp_deps{$type}{$id};
-                    }
-                    else {
-                        $temp_deps{$type}{$id} = 1;
-                    }
-                }
-            }
-        }
-        $bug->set_dependencies([ keys %{$temp_deps{'dependson'}} ], [ keys %{$temp_deps{'blocked'}} ]);
-    }
-}
-
-my $any_keyword_changes;
-if (defined $cgi->param('keywords')) {
-    foreach my $b (@bug_objects) {
-        my $return =
-            $b->modify_keywords(scalar $cgi->param('keywords'),
-                                scalar $cgi->param('keywordaction'));
-        $any_keyword_changes ||= $return;
-    }
-}
-
 # Component, target_milestone, and version are in here just in case
 # the 'product' field wasn't defined in the CGI. It doesn't hurt to set
 # them twice.
 my @set_fields = qw(op_sys rep_platform priority bug_severity
                     component target_milestone version
                     bug_file_loc status_whiteboard short_desc
-                    deadline remaining_time estimated_time);
+                    deadline remaining_time estimated_time
+                    work_time set_default_assignee set_default_qa_contact
+                    keywords keywordaction 
+                    cclist_accessible reporter_accessible);
 push(@set_fields, 'assigned_to') if !$cgi->param('set_default_assignee');
 push(@set_fields, 'qa_contact')  if !$cgi->param('set_default_qa_contact');
-my @custom_fields = Bugzilla->active_custom_fields;
-
-my %methods = (
-    bug_severity => 'set_severity',
-    rep_platform => 'set_platform',
-    short_desc   => 'set_summary',
-    bug_file_loc => 'set_url',
+my %field_translation = (
+    bug_severity => 'severity',
+    rep_platform => 'platform',
+    short_desc   => 'summary',
+    bug_file_loc => 'url',
+    set_default_assignee   => 'reset_assigned_to',
+    set_default_qa_contact => 'reset_qa_contact',
+    keywordaction => 'keywords_action',
 );
-foreach my $b (@bug_objects) {
-    if (should_set('comment') || $cgi->param('work_time')) {
-        # Add a comment as needed to each bug. This is done early because
-        # there are lots of things that want to check if we added a comment.
-        $b->add_comment(scalar($cgi->param('comment')),
-            { isprivate => scalar $cgi->param('commentprivacy'),
-              work_time => scalar $cgi->param('work_time') });
-    }
-    foreach my $field_name (@set_fields) {
-        if (should_set($field_name)) {
-            my $method = $methods{$field_name};
-            $method ||= "set_" . $field_name;
-            $b->$method($cgi->param($field_name));
-        }
-    }
-    $b->reset_assigned_to if $cgi->param('set_default_assignee');
-    $b->reset_qa_contact  if $cgi->param('set_default_qa_contact');
 
-    if (should_set('see_also')) {
-        my @see_also = split(',', $cgi->param('see_also'));
-        $b->add_see_also($_) foreach @see_also;
-    }
-    if (should_set('remove_see_also')) {
-        $b->remove_see_also($_) foreach $cgi->param('remove_see_also')
-    }
-
-    # And set custom fields.
-    foreach my $field (@custom_fields) {
-        my $fname = $field->name;
-        if (should_set($fname, 1)) {
-            $b->set_custom_field($field, [$cgi->param($fname)]);
-        }
+my %set_all_fields;
+foreach my $field_name (@set_fields) {
+    if (should_set($field_name, 1)) {
+        my $param_name = $field_translation{$field_name} || $field_name;
+        $set_all_fields{$param_name} = $cgi->param($field_name);
     }
 }
 
-# Certain changes can only happen on individual bugs, never on mass-changes.
-if (defined $cgi->param('id')) {
-    # Since aliases are unique (like bug numbers), they can only be changed
-    # for one bug at a time.
-    if (Bugzilla->params->{"usebugaliases"} && defined $cgi->param('alias')) {
-        $first_bug->set_alias($cgi->param('alias'));
-    }
-
-    # reporter_accessible and cclist_accessible--these are only set if
-    # the user can change them and they appear on the page.
-    if (should_set('cclist_accessible', 1)) {
-        $first_bug->set_cclist_accessible($cgi->param('cclist_accessible'))
-    }
-    if (should_set('reporter_accessible', 1)) {
-        $first_bug->set_reporter_accessible($cgi->param('reporter_accessible'))
-    }
-    
-    # You can only mark/unmark comments as private on single bugs. If
-    # you're not in the insider group, this code won't do anything.
-    foreach my $field (grep(/^defined_isprivate/, $cgi->param())) {
-        $field =~ /(\d+)$/;
-        my $comment_id = $1;
-        $first_bug->set_comment_is_private($comment_id,
-                                           $cgi->param("isprivate_$comment_id"));
+if (should_set('comment')) {
+    $set_all_fields{comment} = {
+        body       => scalar $cgi->param('comment'),
+        is_private => scalar $cgi->param('commentprivacy'),
+    };
+}
+if (should_set('see_also')) {
+    $set_all_fields{'see_also'}->{add} = 
+        [split(/[\s,]+/, $cgi->param('see_also'))];
+}
+if (should_set('remove_see_also')) {
+    $set_all_fields{'see_also'}->{remove} = [$cgi->param('remove_see_also')];
+}
+foreach my $dep_field (qw(dependson blocked)) {
+    if (should_set($dep_field)) {
+        if (my $dep_action = $cgi->param("${dep_field}_action")) {
+            $set_all_fields{$dep_field}->{$dep_action} =
+                [split(/\s,/, $cgi->param($dep_field))];
+        }
+        else {
+            $set_all_fields{$dep_field}->{set} = $cgi->param($dep_field);
+        }
     }
 }
-
-# We need to check the addresses involved in a CC change before we touch 
-# any bugs. What we'll do here is formulate the CC data into two arrays of
-# users involved in this CC change.  Then those arrays can be used later 
-# on for the actual change.
+# Formulate the CC data into two arrays of users involved in this CC change.
 my (@cc_add, @cc_remove);
 if (defined $cgi->param('newcc')
-    || defined $cgi->param('addselfcc')
-    || defined $cgi->param('removecc')
-    || defined $cgi->param('masscc')) {
-        
+    or defined $cgi->param('addselfcc')
+    or defined $cgi->param('removecc')
+    or defined $cgi->param('masscc')) 
+{
+
     # If masscc is defined, then we came from buglist and need to either add or
-    # remove cc's... otherwise, we came from bugform and may need to do both.
+    # remove cc's... otherwise, we came from show_bug and may need to do both.
     my ($cc_add, $cc_remove) = "";
     if (defined $cgi->param('masscc')) {
         if ($cgi->param('ccaction') eq 'add') {
-            $cc_add = join(' ',$cgi->param('masscc'));
+            $cc_add = $cgi->param('masscc');
         } elsif ($cgi->param('ccaction') eq 'remove') {
-            $cc_remove = join(' ',$cgi->param('masscc'));
+            $cc_remove = $cgi->param('masscc');
         }
     } else {
-        $cc_add = join(' ',$cgi->param('newcc'));
+        $cc_add = $cgi->param('newcc');
         # We came from bug_form which uses a select box to determine what cc's
         # need to be removed...
-        if (defined $cgi->param('removecc') && $cgi->param('cc')) {
-            $cc_remove = join (",", $cgi->param('cc'));
+        if ($cgi->param('removecc') && $cgi->param('cc')) {
+            $cc_remove = join(",", $cgi->param('cc'));
         }
     }
 
@@ -425,10 +340,69 @@ if (defined $cgi->param('newcc')
 
     push(@cc_remove, split(/[\s,]+/, $cc_remove)) if $cc_remove;
 }
+$set_all_fields{cc} = { add => \@cc_add, remove => \@cc_remove };
+
+# Fields that can only be set on one bug at a time.
+if (defined $cgi->param('id')) {
+    # Since aliases are unique (like bug numbers), they can only be changed
+    # for one bug at a time.
+    if (Bugzilla->params->{"usebugaliases"} && defined $cgi->param('alias')) {
+        $set_all_fields{alias} = $cgi->param('alias');
+    }
+}
+
+my %is_private;
+foreach my $field (grep(/^defined_isprivate/, $cgi->param())) {
+    $field =~ /(\d+)$/;
+    my $comment_id = $1;
+    $is_private{$comment_id} = $cgi->param("isprivate_$comment_id");
+}
+$set_all_fields{comment_is_private} = \%is_private;
+
+my %groups = ( add => [], remove => [] );
+my %checked_bit; # Used to avoid adding groups twice (defined_ + actual bit-)
+foreach my $param_name (grep(/bit-\d+$/, $cgi->param())) {
+    $param_name =~ /bit-(\d+)$/;
+    my $gid = $1;
+    next if $checked_bit{$gid};
+    my $bit_param = "bit-$gid";
+    if (should_set($bit_param, 1)) {
+        # Check ! first to avoid having to check defined below.
+        if (!$cgi->param($bit_param)) {
+            push(@{ $groups{remove} }, $gid);
+        }
+        # "== 1" is important because mass-change uses -1 to mean
+        # "don't change this restriction"
+        elsif ($cgi->param($bit_param) == 1) {
+            push(@{ $groups{add} }, $gid);
+        }
+    }
+    $checked_bit{$gid} = 1;
+}
+$set_all_fields{groups} = \%groups;
+
+my @custom_fields = Bugzilla->active_custom_fields;
+foreach my $field (@custom_fields) {
+    my $fname = $field->name;
+    if (should_set($fname, 1)) {
+        $set_all_fields{$fname} = [$cgi->param($fname)];
+    }
+}
 
 foreach my $b (@bug_objects) {
-    $b->remove_cc($_) foreach @cc_remove;
-    $b->add_cc($_) foreach @cc_add;
+    $b->set_all(\%set_all_fields);
+}
+
+if (defined $cgi->param('id')) {
+    # Flags should be set AFTER the bug has been moved into another
+    # product/component. The structure of flags code doesn't currently
+    # allow them to be set using set_all.
+    my ($flags, $new_flags) = Bugzilla::Flag->extract_flags_from_cgi(
+        $first_bug, undef, $vars);
+    $first_bug->set_flags($flags, $new_flags);
+}
+
+foreach my $b (@bug_objects) {
     # Theoretically you could move a product without ever specifying
     # a new assignee or qa_contact, or adding/removing any CCs. So,
     # we have to check that the current assignee, qa, and CCs are still
@@ -466,7 +440,7 @@ if ($move_action eq Bugzilla->params->{'move-button-text'}) {
 
     # Now send emails.
     foreach my $bug (@bug_objects) {
-        $vars->{'mailrecipients'} = { 'changer' => $user->login };
+        $vars->{'mailrecipients'} = { 'changer' => $user };
         $vars->{'id'} = $bug->id;
         $vars->{'type'} = "move";
         send_results($bug->id, $vars);
@@ -586,7 +560,7 @@ foreach my $bug (@bug_objects) {
         cc        => [split(/[\s,]+/, $old_cc)],
         owner     => $old_own,
         qacontact => $old_qa,
-        changer   => Bugzilla->user->login };
+        changer   => Bugzilla->user };
 
     $vars->{'id'} = $bug->id;
     $vars->{'type'} = "bug";
@@ -599,7 +573,7 @@ foreach my $bug (@bug_objects) {
     # other bug of any changes to that bug.
     my $new_dup_id = $changes->{'dup_id'} ? $changes->{'dup_id'}->[1] : undef;
     if ($new_dup_id) {
-        $vars->{'mailrecipients'} = { 'changer' => Bugzilla->user->login }; 
+        $vars->{'mailrecipients'} = { 'changer' => Bugzilla->user }; 
 
         $vars->{'id'} = $new_dup_id;
         $vars->{'type'} = "dupe";
@@ -611,7 +585,7 @@ foreach my $bug (@bug_objects) {
 
     my %all_dep_changes = (%notify_deps, %changed_deps);
     foreach my $id (sort { $a <=> $b } (keys %all_dep_changes)) {
-        $vars->{'mailrecipients'} = { 'changer' => Bugzilla->user->login };
+        $vars->{'mailrecipients'} = { 'changer' => Bugzilla->user };
         $vars->{'id'} = $id;
         $vars->{'type'} = "dep";
 

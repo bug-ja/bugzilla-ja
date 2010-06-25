@@ -31,6 +31,8 @@ use base qw(Exporter);
 use Bugzilla::Constants;
 use Bugzilla::WebService::Constants;
 use Bugzilla::Util;
+
+use Carp;
 use Date::Format;
 
 # We cannot use $^S to detect if we are in an eval(), because mod_perl
@@ -50,6 +52,12 @@ sub _throw_error {
     $vars ||= {};
 
     $vars->{error} = $error;
+    # Don't show function arguments, in case they contain confidential data.
+    local $Carp::MaxArgNums = -1;
+    # Don't show the error as coming from Bugzilla::Error, show it as coming
+    # from the caller.
+    local $Carp::CarpInternal{'Bugzilla::Error'} = 1; 
+    $vars->{traceback} = Carp::longmess();
 
     # Make sure any transaction is rolled back (if supported).
     # If we are within an eval(), do not roll back transactions as we are
@@ -127,9 +135,12 @@ sub _throw_error {
                                      message => $message,
                                      id      => $server->{_bz_request_id},
                                      version => $server->version);
-                # We die with no message. JSON::RPC checks raise_error before
+                # Most JSON-RPC Throw*Error calls happen within an eval inside
+                # of JSON::RPC. So, in that circumstance, instead of exiting,
+                # we die with no message. JSON::RPC checks raise_error before
                 # it checks $@, so it returns the proper error.
-                die;
+                die if _in_eval();
+                $server->response($server->error_response_header);
             }
         }
     }

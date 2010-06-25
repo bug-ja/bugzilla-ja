@@ -118,7 +118,7 @@
 <p>A <a href="https://wiki.mozilla.org/Bugzilla:CMU_HCI_Research_2008">scientific
   usability study</a> was done on [% terms.Bugzilla %] by researchers
   from Carnegie-Mellon University. As a result of this study,
-  <a href="https://bugzilla.mozilla.org/showdependencytree.cgi?id=490786&hide_resolved=0">several
+  <a href="https://bugzilla.mozilla.org/showdependencytree.cgi?id=490786&amp;hide_resolved=0">several
   usability issues</a> were prioritized to be fixed, based on specific data
   from the study.</p>
 
@@ -199,7 +199,7 @@
   on shared hosting). SUExec support shows up as an option
   in the <kbd>localconfig</kbd> file during installation.</p>
 
-<h3 id="36_feat_mpwindows">Experimental mod_perl Support on Windows</h3>
+<h3 id="v36_feat_mpwindows">Experimental mod_perl Support on Windows</h3>
 
 <p>There is now experimental support for running [% terms.Bugzilla %]
   under mod_perl on Windows, for a significant performance enhancement
@@ -276,6 +276,12 @@
   <li><b>[% terms.Bug %] Editing:</b> The "Collapse All Comments"
     and "Expand All Comments" links now appear to the right of the
     comment list instead of above it.</li>
+  <li><b>[% terms.Bug %] Editing:</b> The See Also field now supports
+    URLs for Google Code Issues and the Debian B[% %]ug-Tracking System.</li>
+  <li><b>[% terms.Bug %] Editing:</b> There have been significant performance
+    improvements in <kbd>show_bug.cgi</kbd> (the script that displays the
+    [% terms.bug %]-editing form), particularly for [% terms.bugs %] that
+    have lots of comments or attachments.</li>
 
   <li><b>Attachments:</b> The "Details" page of an attachment
     now displays itself as uneditable if you can't edit the fields
@@ -288,6 +294,9 @@
   <li><b>Attachments:</b> When you click on an "attachment 12345" link
     in a comment, if the attachment is a patch, you will now see the
     formatted "Diff" view instead of the raw patch.</li>
+  <li><b>Attachments</b>: For text attachments, we now let the browser 
+    auto-detect the character encoding, instead of forcing the browser to
+    always assume the attachment is in UTF-8.</li>
   
   <li><b>Search:</b> You can now display [% terms.bug %] flags as a column
     in search results.</li>
@@ -384,6 +393,11 @@
     faster at upgrading installations, particularly older installations.
     Also, it's been made faster to run for the case where it's not
     doing an upgrade.</li>
+  <li><b>Installation:</b> If you install [% terms.Bugzilla %] using the
+    tarball, the <kbd>CGI.pm</kbd> module from CPAN is now included in
+    the <kbd>lib/</kbd> dir. If you would rather use the CGI.pm from your
+    global Perl installation, you can delete <kbd>CGI.pm</kbd> and the
+    <kbd>CGI</kbd> directory from the <kbd>lib/</kbd> directory.</li>
   
   <li>When editing a group, you can now specify that members of a group
     are allowed to grant others membership in that group itself.</li>
@@ -472,6 +486,9 @@
     that parameter will be ignored. Mostly this just affects
     customizers--[% terms.Bugzilla %]'s WebService is not functionally
     affected by these changes.</li>
+  <li>In previous versions of [% terms.Bugzilla %], error messages were
+    sent word-wrapped to the client, from the WebService. Error messages
+    are now sent as one unbroken line.</li>
 </ul>
 
 <h2 id="v36_issues">Outstanding Issues</h2>
@@ -523,6 +540,9 @@
 <h2 id="v36_code_changes">Code Changes Which May Affect Customizations</h2>
 
 <ul>
+  <li>There is no longer a SendBugMail method in the templates, and bugmail
+    is no longer sent by processing a template. Instead, it is sent
+    by using <kbd>Bugzilla::BugMail::Send</kbd>.</li>
   <li>Comments are now represented as a
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Comment.html">Bugzilla::Comment</a>
     object instead of just being hashes.</li>
@@ -577,6 +597,52 @@
   Foundation</a>.</p>
 
 <h2 id="v34_point">Updates In This 3.4.x Release</h2>
+
+<h3>3.4.6</h3>
+
+<ul>
+  <li>When doing a search that involves "not equals" or "does not contain the
+    string" or similar "negative" search types, the search description that
+    appears at the top of the resulting [% terms.bug %] list will indicate
+    that the search was of that type.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=474738">[% terms.Bug %] 474738</a>)
+  </li>
+  <li>In Internet Explorer, users couldn't easily mark a RESOLVED DUPLICATE
+    [%+ terms.bug %] as REOPENED, due to a JavaScript error.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=546719">[% terms.Bug %] 546719</a>)
+  </li>
+  <li>If you use a "bookmarkable template" to pre-fill forms on
+    the [% terms.bug %]-filing page, and you have custom fields
+    that are only supposed to appear (or only supposed to have certain
+    values) based on the values of other fields, those custom fields will
+    now work properly.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=538211">[% terms.Bug %] 538211</a>)
+  </li>
+  <li>If you have a custom field that's only supposed to appear when
+    a [% terms.bug %]'s resolution is FIXED, it will now behave properly
+    on the [% terms.bug %]-editing form when a user sets the [% terms.bug %]'s
+    status to RESOLVED.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=520993">[% terms.Bug %] 520993</a>)
+  </li>
+  <li>If you are logged-out and using <kbd>request.cgi</kbd>, the Requester
+    and Requestee fields no longer respect the <kbd>usermatching</kbd>
+    parameter--they always require full usernames.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=533018">[% terms.Bug %] 533018</a>)
+  </li>
+  <li>If you tried to do a search with too many terms (resulting in a URL
+    that was longer than about 7000 characters), Apache would return a 
+    500 error instead of your search results.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=513989">[% terms.Bug %] 513989</a>)
+  </li>
+  <li>[% terms.Bugzilla %] would sometimes lose fields from your sort order
+    when you added new fields to your sort order.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=470214">[% terms.Bug %] 470214</a>)
+  </li>
+  <li>The Atom format of search results would sometimes be missing the
+    Reporter or Assignee field for some [% terms.bugs %].
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=537834">[% terms.Bug %] 537834</a>)
+  </li>
+</ul>
 
 <h3>3.4.5</h3>
 

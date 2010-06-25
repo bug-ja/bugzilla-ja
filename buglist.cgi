@@ -85,9 +85,11 @@ if (grep { $_ =~ /^cmd\-/ } $cgi->param()) {
 #
 if ($cgi->request_method() eq 'POST') {
     $cgi->clean_search_url();
-
-    print $cgi->redirect(-url => $cgi->self_url());
-    exit;
+    my $uri_length = length($cgi->self_url());
+    if ($uri_length < CGI_URI_LIMIT) {
+        print $cgi->redirect(-url => $cgi->self_url());
+        exit;
+    }
 }
 
 # Determine whether this is a quicksearch query.
@@ -509,7 +511,7 @@ elsif (($cmdtype eq "doit") && defined $cgi->param('remtype')) {
             # We add or remove bugs based on the action choosen.
             my $action = trim($cgi->param('action') || '');
             $action =~ /^(add|remove)$/
-              || ThrowCodeError('unknown_action', {'action' => $action});
+              || ThrowUserError('unknown_action', {action => $action});
 
             # If we are removing bugs, then we must have an existing
             # saved search selected.
@@ -681,7 +683,7 @@ my @selectcolumns = ("bug_id", "bug_severity", "priority", "bug_status",
                      "resolution", "product");
 
 # remaining and actual_time are required for percentage_complete calculation:
-if (lsearch(\@displaycolumns, "percentage_complete") >= 0) {
+if (grep { $_ eq "percentage_complete" } @displaycolumns) {
     push (@selectcolumns, "remaining_time");
     push (@selectcolumns, "actual_time");
 }
@@ -904,12 +906,12 @@ $buglist_sth->execute();
 # of Perl records.
 
 # If we're doing time tracking, then keep totals for all bugs.
-my $percentage_complete = lsearch(\@displaycolumns, 'percentage_complete') >= 0;
-my $estimated_time      = lsearch(\@displaycolumns, 'estimated_time') >= 0;
-my $remaining_time    = ((lsearch(\@displaycolumns, 'remaining_time') >= 0)
-                         || $percentage_complete);
-my $actual_time       = ((lsearch(\@displaycolumns, 'actual_time') >= 0)
-                         || $percentage_complete);
+my $percentage_complete = grep($_ eq 'percentage_complete', @displaycolumns);
+my $estimated_time      = grep($_ eq 'estimated_time', @displaycolumns);
+my $remaining_time      = grep($_ eq 'remaining_time', @displaycolumns)
+                            || $percentage_complete;
+my $actual_time         = grep($_ eq 'actual_time', @displaycolumns)
+                            || $percentage_complete;
 
 my $time_info = { 'estimated_time' => 0,
                   'remaining_time' => 0,
@@ -1161,6 +1163,9 @@ if ($dotweak && scalar @bugs) {
 # the "Remember search as" field.
 $vars->{'defaultsavename'} = $cgi->param('query_based_on');
 
+# If we did a quick search then redisplay the previously entered search 
+# string in the text field.
+$vars->{'quicksearch'} = $searchstring;
 
 ################################################################################
 # HTTP Header Generation

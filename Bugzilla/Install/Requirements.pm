@@ -137,6 +137,11 @@ sub REQUIRED_MODULES {
         module  => 'URI',
         version => 0
     },
+    {
+        package => 'List-MoreUtils',
+        module  => 'List::MoreUtils',
+        version => 0
+    },
     );
 
     my $extra_modules = _get_extension_requirements('REQUIRED_MODULES');
@@ -425,8 +430,11 @@ sub print_module_instructions {
             if (vers_cmp($perl_ver, '5.10') > -1) {
                 $url_to_theory58S = 'http://cpan.uwinnipeg.ca/PPMPackages/10xx/';
             }
-            print colored(install_string('ppm_repo_add', 
-                                 { theory_url => $url_to_theory58S }), 'red');
+            print colored(
+                install_string('ppm_repo_add', 
+                               { theory_url => $url_to_theory58S }),
+                COLOR_ERROR);
+
             # ActivePerls older than revision 819 require an additional command.
             if (ON_ACTIVESTATE < 819) {
                 print install_string('ppm_repo_up');
@@ -459,7 +467,7 @@ sub print_module_instructions {
     }
 
     if (my @missing = @{$check_results->{missing}}) {
-        print colored(install_string('commands_required'), 'red') . "\n";
+        print colored(install_string('commands_required'), COLOR_ERROR), "\n";
         foreach my $package (@missing) {
             my $command = install_command($package);
             print "    $command\n";
@@ -472,7 +480,8 @@ sub print_module_instructions {
         print install_string('install_all', { perl => $^X });
     }
     if (!$check_results->{pass}) {
-        print colored(install_string('installation_failed'), 'red') . "\n\n";
+        print colored(install_string('installation_failed'), COLOR_ERROR),
+              "\n\n";
     }
 }
 
@@ -529,14 +538,19 @@ sub have_vers {
 
     eval "require $module;";
 
-    # VERSION is provided by UNIVERSAL::
-    my $vnum = eval { $module->VERSION } || -1;
+    # VERSION is provided by UNIVERSAL::, and can be called even if
+    # the module isn't loaded.
+    my $vnum = $module->VERSION || -1;
 
     # CGI's versioning scheme went 2.75, 2.751, 2.752, 2.753, 2.76
     # That breaks the standard version tests, so we need to manually correct
     # the version
     if ($module eq 'CGI' && $vnum =~ /(2\.7\d)(\d+)/) {
         $vnum = $1 . "." . $2;
+    }
+    # CPAN did a similar thing, where it has versions like 1.9304.
+    if ($module eq 'CPAN' and $vnum =~ /^(\d\.\d{2})\d{2}$/) {
+        $vnum = $1;
     }
 
     my $vstr;
@@ -565,7 +579,7 @@ sub have_vers {
         $ok = "$ok:" if $ok;
         my $str = sprintf "%s %19s %-9s $ok $vstr $black_string\n",
                     install_string('checking_for'), $package, "($want_string)";
-        print $vok ? $str : colored($str, 'red');
+        print $vok ? $str : colored($str, COLOR_ERROR);
     }
     
     return $vok ? 1 : 0;

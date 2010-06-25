@@ -55,6 +55,7 @@ use File::Find;
 use File::Path qw(rmtree mkpath);
 use File::Spec;
 use IO::Dir;
+use List::MoreUtils qw(firstidx);
 use Scalar::Util qw(blessed);
 
 use base qw(Template);
@@ -236,7 +237,7 @@ sub quoteUrls {
     # we have to do this in one pattern, and so this is semi-messy.
     # Also, we can't use $bug_re?$comment_re? because that will match the
     # empty string
-    my $bug_word = get_text('term', { term => 'bug' });
+    my $bug_word = template_var('terms')->{bug};
     my $bug_re = qr/\Q$bug_word\E\s*\#?\s*(\d+)/i;
     my $comment_re = qr/comment\s*\#?\s*(\d+)/i;
     $text =~ s~\b($bug_re(?:\s*,?\s*$comment_re)?|$comment_re)
@@ -350,7 +351,7 @@ sub get_bug_link {
     $title = html_quote(clean_text($title));
 
     my $linkval = "show_bug.cgi?id=" . $bug->id;
-    if ($options->{comment_num}) {
+    if (defined $options->{comment_num}) {
         $linkval .= "#c" . $options->{comment_num};
     }
     return qq{$pre<a href="$linkval" title="$title">$link_text</a>$post};
@@ -368,6 +369,9 @@ $Template::Directive::WHILE_MAX = 1000000;
 # Use the Toolkit Template's Stash module to add utility pseudo-methods
 # to template variables.
 use Template::Stash;
+
+# Allow keys to start with an underscore or a dot.
+$Template::Stash::PRIVATE = undef;
 
 # Add "contains***" methods to list variables that search for one or more 
 # items in a list and return boolean values representing whether or not 
@@ -399,14 +403,6 @@ $Template::Stash::LIST_OPS->{ clone } =
 $Template::Stash::SCALAR_OPS->{ 0 } = 
   sub {
       return $_[0];
-  };
-
-# Add a "substr" method to the Template Toolkit's "scalar" object
-# that returns a substring of a string.
-$Template::Stash::SCALAR_OPS->{ substr } = 
-  sub {
-      my ($scalar, $offset, $length) = @_;
-      return substr($scalar, $offset, $length);
   };
 
 # Add a "truncate" method to the Template Toolkit's "scalar" object
@@ -536,6 +532,7 @@ sub create {
             # See bugs 4928, 22983 and 32000 for more details
             html_linebreak => sub {
                 my ($var) = @_;
+                $var = html_quote($var);
                 $var =~ s/\r\n/\&#013;/g;
                 $var =~ s/\n\r/\&#013;/g;
                 $var =~ s/\r/\&#013;/g;
@@ -680,10 +677,18 @@ sub create {
                 $var =~ s/\&gt;/>/g;
                 $var =~ s/\&quot;/\"/g;
                 $var =~ s/\&amp;/\&/g;
-                # Now remove extra whitespace, and wrap it to 72 characters.
+                # Now remove extra whitespace...
                 my $collapse_filter = $Template::Filters::FILTERS->{collapse};
                 $var = $collapse_filter->($var);
-                $var = wrap_comment($var, 72);
+                # And if we're not in the WebService, wrap the message.
+                # (Wrapping the message in the WebService is unnecessary
+                # and causes awkward things like \n's appearing in error
+                # messages in JSON-RPC.)
+                unless (Bugzilla->usage_mode == USAGE_MODE_JSON
+                        or Bugzilla->usage_mode == USAGE_MODE_XMLRPC)
+                {
+                    $var = wrap_comment($var, 72);
+                }
                 return $var;
             },
 
@@ -713,7 +718,10 @@ sub create {
             'time2str' => \&Date::Format::time2str,
 
             # Generic linear search function
-            'lsearch' => \&Bugzilla::Util::lsearch,
+            'lsearch' => sub {
+                my ($array, $item) = @_;
+                return firstidx { $_ eq $item } @$array;
+            },
 
             # Currently logged in user, if any
             # If an sudo session is in progress, this is the user we're faking
@@ -730,13 +738,6 @@ sub create {
             # If an sudo session is in progress, this is the user who
             # started the session.
             'sudoer' => sub { return Bugzilla->sudoer; },
-
-            # SendBugMail - sends mail about a bug, using Bugzilla::BugMail.pm
-            'SendBugMail' => sub {
-                my ($id, $mailrecipients) = (@_);
-                require Bugzilla::BugMail;
-                Bugzilla::BugMail::Send($id, $mailrecipients);
-            },
 
             # Allow templates to access the "corect" URLBase value
             'urlbase' => sub { return Bugzilla::Util::correct_urlbase(); },
@@ -773,6 +774,11 @@ sub create {
             },
 
             'feature_enabled' => sub { return Bugzilla->feature(@_); },
+
+            # field_descs can be somewhat slow to generate, so we generate
+            # it only once per-language no matter how many times
+            # $template->process() is called.
+            'field_descs' => sub { return template_var('field_descs') },
 
             'install_string' => \&Bugzilla::Install::Util::install_string,
 

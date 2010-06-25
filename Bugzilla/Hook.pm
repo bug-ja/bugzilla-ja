@@ -77,6 +77,9 @@ subroutine to invoke any extension code if installed.
 
 The implementation of extensions is described in L<Bugzilla::Extension>.
 
+There is sample code for every hook in the Example extension, located in
+F<extensions/Example/Extension.pm>.
+
 =head2 How Hooks Work
 
 When a hook named C<HOOK_NAME> is run, Bugzilla looks through all
@@ -236,13 +239,82 @@ Params:
 
 =over
 
-=item C<bug> - The changed bug object, with all fields set to their updated
-values.
+=item C<bug> 
 
-=item C<timestamp> - The timestamp used for all updates in this transaction.
+The changed bug object, with all fields set to their updated values.
 
-=item C<changes> - The hash of changed fields. 
-C<$changes-E<gt>{field} = [old, new]>
+=item C<old_bug>
+
+A bug object pulled from the database before the fields were set to
+their updated values (so it has the old values available for each field).
+
+=item C<timestamp> 
+
+The timestamp used for all updates in this transaction.
+
+=item C<changes> 
+
+The hash of changed fields. C<< $changes->{field} = [old, new] >>
+
+=back
+
+=head2 bug_check_can_change_field
+
+This hook controls what fields users are allowed to change. You can add code here for 
+site-specific policy changes and other customizations. This hook is only
+executed if the field's new and old values differ. Any denies take priority over any allows. 
+So, if another extension denies a change but yours allows the change, the other extension's 
+deny will override your extension's allow.
+
+Params:
+
+=over
+
+=item C<bug>
+
+L<Bugzilla::Bug> - The current bug object that this field is changing on.
+
+=item C<field>
+
+The name (from the C<fielddefs> table) of the field that we are checking.
+
+=item C<new_value>
+
+The new value that the field is being changed to.
+
+=item C<old_value>
+
+The old value that the field is being changed from.
+
+=item C<priv_results>
+
+C<array> - This is how you explicitly allow or deny a change. You should only
+push something into this array if you want to explicitly allow or explicitly
+deny the change, and thus skip all other permission checks that would otherwise
+happen after this hook is called. If you don't care about the field change,
+then don't push anything into the array.
+
+The pushed value should be a choice from the following constants:
+
+=over
+
+=item C<PRIVILEGES_REQUIRED_NONE>
+
+No privileges required. This explicitly B<allows> a change.
+
+=item C<PRIVILEGES_REQUIRED_REPORTER>
+
+User is not the reporter, assignee or an empowered user, so B<deny>.
+
+=item C<PRIVILEGES_REQUIRED_ASSIGNEE>
+
+User is not the assignee or an empowered user, so B<deny>.
+
+=item C<PRIVILEGES_REQUIRED_EMPOWERED>
+
+User is not a sufficiently empowered user, so B<deny>.
+
+=back
 
 =back
 
@@ -424,21 +496,6 @@ spaces.
 
 =back
 
-
-=head2 colchange_columns
-
-This happens in F<colchange.cgi> right after the list of possible display
-columns have been defined and gives you the opportunity to add additional
-display columns to the list of selectable columns.
-
-Params:
-
-=over
-
-=item C<columns> - An arrayref containing an array of column IDs.  Any IDs
-added by this hook must have been defined in the the L</buglist_columns> hook.
-
-=back
 
 =head2 config_add_panels
 
@@ -647,6 +704,25 @@ A hashref. The set of named parameters passed to C<create>.
 
 =back
 
+
+=head2 object_before_delete
+
+This happens in L<Bugzilla::Object/remove_from_db>, after we've confirmed
+that the object can be deleted, but before any rows have actually
+been removed from the database. This sometimes occurs inside a database
+transaction.
+
+Params:
+
+=over
+
+=item C<object> - The L<Bugzilla::Object> being deleted. You will probably
+want to check its type like C<< $object->isa('Some::Class') >> before doing
+anything with it.
+
+=back
+
+
 =head2 object_before_set
 
 Called during L<Bugzilla::Object/set>, before any actual work is done.
@@ -735,6 +811,34 @@ A hashref. The set of named parameters passed to C<create>, modified and
 validated by the C<VALIDATORS> specified for the object.
 
 =back
+
+
+=head2 object_end_of_set
+
+Called during L<Bugzilla::Object/set>, after all the code of the function
+has completed (so the value has been validated and the field has been set
+to the new value). You can use this to perform actions after a value is
+changed for specific fields on certain types of objects.
+
+The new value is not specifically passed to this hook because you can
+get it as C<< $object->{$field} >>.
+
+Params:
+
+=over
+
+=item C<object>
+
+The object that C<set> was called on. You will probably want to
+do something like C<< if ($object->isa('Some::Class')) >> in your code to
+limit your changes to only certain subclasses of Bugzilla::Object.
+
+=item C<field>
+
+The name of the field that was updated in the object.
+
+=back
+
 
 =head2 object_end_of_set_all
 

@@ -27,7 +27,10 @@ use base qw(Bugzilla::Object);
 use Bugzilla::Attachment;
 use Bugzilla::Constants;
 use Bugzilla::Error;
+use Bugzilla::User;
 use Bugzilla::Util;
+
+use Scalar::Util qw(blessed);
 
 ###############################
 ####    Initialization     ####
@@ -56,11 +59,12 @@ use constant ID_FIELD => 'comment_id';
 use constant LIST_ORDER => 'bug_when';
 
 use constant VALIDATORS => {
+    extra_data => \&_check_extra_data,
     type => \&_check_type,
 };
 
-use constant UPDATE_VALIDATORS => {
-    extra_data => \&_check_extra_data,
+use constant VALIDATOR_DEPENDENCIES => {
+    extra_data => ['type'],
 };
 
 #########################
@@ -72,6 +76,18 @@ sub update {
     my $changes = $self->SUPER::update(@_);
     $self->bug->_sync_fulltext();
     return $changes;
+}
+
+# Speeds up displays of comment lists by loading all ->author objects
+# at once for a whole list.
+sub preload {
+    my ($class, $comments) = @_;
+    my %user_ids = map { $_->{who} => 1 } @$comments;
+    my $users = Bugzilla::User->new_from_list([keys %user_ids]);
+    my %user_map = map { $_->id => $_ } @$users;
+    foreach my $comment (@$comments) {
+        $comment->{author} = $user_map{$comment->{who}};
+    }
 }
 
 ###############################
@@ -141,9 +157,8 @@ sub body_full {
 sub set_extra_data { $_[0]->set('extra_data', $_[1]); }
 
 sub set_type {
-    my ($self, $type, $extra_data) = @_;
+    my ($self, $type) = @_;
     $self->set('type', $type);
-    $self->set_extra_data($extra_data);
 }
 
 ##############
@@ -151,8 +166,9 @@ sub set_type {
 ##############
 
 sub _check_extra_data {
-    my ($invocant, $extra_data, $type) = @_;
-    $type = $invocant->type if ref $invocant;
+    my ($invocant, $extra_data, undef, $params) = @_;
+    my $type = blessed($invocant) ? $invocant->type : $params->{type};
+
     if ($type == CMT_NORMAL) {
         if (defined $extra_data) {
             ThrowCodeError('comment_extra_data_not_allowed',

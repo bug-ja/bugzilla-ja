@@ -254,12 +254,7 @@
   <dt id="[% field FILTER html %]">[% field_desc FILTER html %]</dt>
     <dd>
       [% SET help_text = field_help_map.${field_desc}.help %]
-      [% IF help_text %]
-        [% help_text FILTER none %]
-      [% ELSE %]
-        この [% terms.Bugzilla %] におけるカスタムフィールド
-        [% field_types.${field_object.type} FILTER html %] です。
-      [% END %]
+      [% help_text FILTER none %]
     </dd>
 [% END %]
 </dl>

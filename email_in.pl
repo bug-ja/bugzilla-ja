@@ -243,7 +243,8 @@ sub handle_attachments {
         # and this is our first attachment, then we make the comment an 
         # "attachment created" comment.
         if ($comment and !$comment->type and !$update_comment) {
-            $comment->set_type(CMT_ATTACHMENT_CREATED, $obj->id);
+            $comment->set_all({ type       => CMT_ATTACHMENT_CREATED, 
+                                extra_data => $obj->id });
             $update_comment = 1;
         }
         else {
@@ -421,7 +422,7 @@ handle_attachments($bug, $attachments, $comment);
 # to wait for $bug->update() to be fully used in email_in.pl first. So
 # currently, process_bug.cgi does the mail sending for bugs, and this does
 # any mail sending for attachments after the first one.
-Bugzilla::BugMail::Send($bug->id, { changer => Bugzilla->user->login });
+Bugzilla::BugMail::Send($bug->id, { changer => Bugzilla->user });
 debug_print("Sent bugmail");
 
 
@@ -536,8 +537,6 @@ not send you anything.
 If any part of your request fails, all of it will fail. No partial
 changes will happen.
 
-There is no attachment support yet.
-
 =head1 CAUTION
 
 The script does not do any validation that the user is who they say
@@ -547,10 +546,6 @@ the message is actually coming from who it says it's coming from,
 and only allow access to the inbound email system from people you trust.
 
 =head1 LIMITATIONS
-
-Note that the email interface has the same limitations as the
-normal Bugzilla interface. So, for example, you cannot reassign
-a bug and change its status at the same time.
 
 The email interface only accepts emails that are correctly formatted
 per RFC2822. If you send it an incorrectly formatted message, it

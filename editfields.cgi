@@ -64,11 +64,12 @@ elsif ($action eq 'new') {
         enter_bug   => scalar $cgi->param('enter_bug'),
         obsolete    => scalar $cgi->param('obsolete'),
         custom      => 1,
-        buglist     => (scalar $cgi->param('type') == FIELD_TYPE_MULTI_SELECT ? 0 : 1),
+        buglist     => 1,
         visibility_field_id => scalar $cgi->param('visibility_field_id'),
         visibility_value_id => scalar $cgi->param('visibility_value_id'),
         value_field_id => scalar $cgi->param('value_field_id'),
         reverse_desc => scalar $cgi->param('reverse_desc'),
+        is_mandatory => scalar $cgi->param('is_mandatory'),
     });
 
     delete_token($token);
@@ -111,6 +112,7 @@ elsif ($action eq 'update') {
     $field->set_in_new_bugmail($cgi->param('new_bugmail'));
     $field->set_enter_bug($cgi->param('enter_bug'));
     $field->set_obsolete($cgi->param('obsolete'));
+    $field->set_is_mandatory($cgi->param('is_mandatory'));
     $field->set_visibility_field($cgi->param('visibility_field_id'));
     $field->set_visibility_value($cgi->param('visibility_value_id'));
     $field->set_value_field($cgi->param('value_field_id'));
@@ -169,5 +171,5 @@ elsif ($action eq 'delete') {
         || ThrowTemplateError($template->error());
 }
 else {
-    ThrowUserError('no_valid_action', {'field' => 'custom_field'});
+    ThrowUserError('unknown_action', {action => $action});
 }

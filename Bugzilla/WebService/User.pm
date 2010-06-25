@@ -36,6 +36,10 @@ use constant LOGIN_EXEMPT => {
     offer_account_by_email => 1,
 };
 
+use constant READ_ONLY => qw(
+    get
+);
+
 ##############
 # User Login #
 ##############
@@ -370,7 +374,7 @@ An account with that email address already exists in Bugzilla.
 
 =item C<create> 
 
-B<EXPERIMENTAL>
+B<STABLE>
 
 =over
 
@@ -439,7 +443,7 @@ password is under three characters.)
 
 =item C<get> 
 
-B<UNSTABLE>
+B<STABLE>
 
 =over
 

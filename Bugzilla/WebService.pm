@@ -19,7 +19,8 @@
 # actual RPC server, see Bugzilla::WebService::Server and its subclasses.
 package Bugzilla::WebService;
 use strict;
-use Date::Parse;
+use Bugzilla::WebService::Server;
+
 use XMLRPC::Lite;
 
 # Used by the JSON-RPC server to convert incoming date fields apprpriately.
@@ -27,6 +28,10 @@ use constant DATE_FIELDS => {};
 
 # For some methods, we shouldn't call Bugzilla->login before we call them
 use constant LOGIN_EXEMPT => { };
+
+# Used to allow methods to be called in the JSON-RPC WebService via GET.
+# Methods that can modify data MUST not be listed here.
+use constant READ_ONLY => ();
 
 sub login_exempt {
     my ($class, $method) = @_;
@@ -36,23 +41,20 @@ sub login_exempt {
 sub type {
     my ($self, $type, $value) = @_;
     if ($type eq 'dateTime') {
-        $value = datetime_format($value);
+        $value = $self->datetime_format_outbound($value);
     }
     return XMLRPC::Data->type($type)->value($value);
 }
 
-sub datetime_format {
-    my ($date_string) = @_;
-
-    my $time = str2time($date_string);
-    my ($sec, $min, $hour, $mday, $mon, $year) = localtime $time;
-    # This format string was stolen from SOAP::Utils->format_datetime,
-    # which doesn't work but which has almost the right format string.
-    my $iso_datetime = sprintf('%d%02d%02dT%02d:%02d:%02d',
-        $year + 1900, $mon + 1, $mday, $hour, $min, $sec);
-    return $iso_datetime;
+# This is the XML-RPC implementation, see the README in Bugzilla/WebService/.
+# Our "base" implementation is in Bugzilla::WebService::Server.
+sub datetime_format_outbound {
+    my $self = shift;
+    my $value = Bugzilla::WebService::Server->datetime_format_outbound(@_);
+    # XML-RPC uses an ISO-8601 format that doesn't have any hyphens.
+    $value =~ s/-//g;
+    return $value;
 }
-
 
 1;
 

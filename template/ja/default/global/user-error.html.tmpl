@@ -512,7 +512,8 @@
 
   [% ELSIF error == "comment_too_long" %]
     [% title = BLOCK %] [% jawords.bug_comment FILTER html %] が長すぎます [% END %]
-    [% jawords.bug_comment FILTER html %] は 65,535 文字以上にはできません。
+    [% jawords.bug_comment FILTER html %] は 
+    [%+ constants.MAX_COMMENT_LENGTH FILTER html %] 文字以上にはできません。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
     [% title = BLOCK %] 指定された classification は無効です [% END %]
@@ -731,7 +732,7 @@
   [% ELSIF error == "fieldvalue_is_default" %]
     [% title = BLOCK %] 指定されたフィールド値は既定値です [% END %]
     '[% value.name FILTER html %]' はフィールド '[% field.description FILTER html %]'
-    の既定値ですので削除できません。
+    の既定値ですので削除もしくは無効化できません。
     [% IF user.in_group('tweakparams') %]
       先に既定値を
       <a href="editparams.cgi?section=bugfields#
@@ -752,7 +753,7 @@
   [% ELSIF error == "fieldvalue_not_deletable" %]
     [% title = BLOCK %] 指定されたフィールド値は削除できません [% END %]
     フィールド '[% field.description FILTER html %]' で特別な役割を持っているため、
-    フィールド値 '[% value.name FILTER html %]' を削除できません。
+    フィールド値 '[% value.name FILTER html %]' を削除もしくは無効化できません。
 
   [% ELSIF error == "fieldvalue_not_specified" %]
     [% title = BLOCK %] フィールド値が指定されていません [% END %]
@@ -843,6 +844,14 @@
     [% jawords.flag_request_target FILTER html %] を他の [% jawords.user FILTER html %] にするか、
     [% jawords.user FILTER html %] を [% jawords.group FILTER html %] に追加するように
     [% jawords.admin_administrator FILTER html %] に依頼してください。
+
+  [% ELSIF error == "flag_status_invalid" %]
+    [% title = "フラグステータスが無効" %]
+    [% IF id %]
+      フラグ ID #[% id FILTER html %] の
+    [% END %]
+    フラグステータス <em>[% status FILTER html %]</em>
+    は無効です。
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.bug_cc_list FILTER html %] が適当ではありません [% END %]
@@ -998,9 +1007,9 @@
       <em>[% newvalue.join(', ') FILTER html %]</em> へ
     [% END %]
     変更しようとしましたが、
-    [% IF privs < 3 %]
+    [% IF privs < constants.PRIVILEGES_REQUIRED_EMPOWERED %]
       [% terms.bug %] の担当者
-      [% IF privs < 2 %] もしくは [% jawords.bug_reporter FILTER html %] [% END%]
+      [% IF privs < constants.PRIVILEGES_REQUIRED_ASSIGNEE %] もしくは報告者 [% END %]
       もしくは
     [% END %]
     権限を持つ [% jawords.user FILTER html %] のみがフィールドを変更できます。
@@ -1195,9 +1204,24 @@
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分間ロックされます。
     [% END %]
 
+  [% ELSIF error == "json_rpc_get_method_required" %]
+    JSON-RPC を GET で利用する場合、'method' パラメータを必ず指定する必要があります。
+    [%+ docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html
+    にある解説を参照してください。
+
+  [% ELSIF error == "json_rpc_invalid_params" %]
+    'params' の値を有効な JSON としてパースできませんでした。
+    エラー: [% err_msg FILTER html %]
+    値: [% params FILTER html %]
+
+  [% ELSIF error == "json_rpc_invalid_callback" %]
+    'callback' パラメータに '[% callback FILTER html %]' を利用できません。
+    セキュリティー的な理由で、文字、数字、<code>[]._</code> のみが
+    'callback' パラメータでは許可されています。
+
   [% ELSIF error == "json_rpc_post_only" %]
     セキュリティー上の問題から、POST HTTP メソッドを利用するには、
-    JSON-RPC を利用する必要があります。
+    '[% method FILTER html %]' を利用する必要があります。
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は既に存在しています [% END %]
@@ -1229,6 +1253,10 @@
     [% title = BLOCK %] [% jawords.account_login_name FILTER html %] を入力してください [% END %]
     [% jawords.search FILTER html %] %user% は [% jawords.account_login FILTER html %] しなければ利用できません。
     %user% はあなたの [% jawords.account_login_name FILTER html %] を参照する必要がありますが、それができません。
+
+  [% ELSIF error == "login_required" %]
+    [%# ウェブベースでない LOGIN_REQUIRED に対してのエラーメッセージです %]
+    [% terms.Bugzilla %] のこの部分を利用するにはログインが必要です。
 
   [% ELSIF error == "migrate_config_created" %]
     ファイル <kbd>[% file FILTER html %]</kbd> に移行前に設定すべき項目が含まれますが、
@@ -1436,10 +1464,6 @@
     入力する [% terms.bugs %] に対する [% jawords.product FILTER html %] が定義されていないか、
     あなたのアカウントにはアクセスする権限がありません。
 
-  [% ELSIF error == "no_valid_action" %]
-    [% title = BLOCK %] 有効な動作が指定されていません [% END %]
-    [% field_descs.$field FILTER html %] を編集できません: 有効な動作が指定されていません
-
   [% ELSIF error == "number_not_numeric" %]
     [% title = BLOCK %] 数値が必要です [% END %]
     The value '[% num FILTER html %]' in the 
@@ -1644,9 +1668,16 @@
     [% field_descs.$field_name FILTER html %]
     に [% terms.bug %] [%+ dep_id FILTER html &] に対する依存関係のループが存在します。
 
+  [% ELSIF error == "request_queue_group_invalid" %]
+    グループフィールド <em>[% group FILTER html %]</em> は無効です。
+
   [% ELSIF error == "require_new_password" %]
     [% title = BLOCK %] [% jawords.account_new_password FILTER html %] が入力されていません [% END %]
     [% jawords.account_password FILTER html %] を変更する際には [% jawords.account_new_password FILTER html %] は必須項目です。
+
+  [% ELSIF error == "required_field" %]
+    [% title = "フィールドに値を設定してください" %]
+    '[% field_descs.${field.name} FILTER html %]' には値が設定されている必要があります。
 
   [% ELSIF error == "require_summary" %]
     [% title = BLOCK %] [% jawords.bug_summary FILTER html %] が入力されていません [% END %]
@@ -1745,6 +1776,13 @@
     用の [% jawords.token FILTER html %] を再申請されましたが、前回の申請の直後には受け付けることができません。
     しばらく待ってから再申請してください。
 
+  [% ELSIF error == "unknown_action" %]
+    [% IF action %]
+       [% action FILTER html %] という操作は存在しません!
+    [% ELSE %]
+       あなたが何をしたいのかわかりません。
+    [% END %]
+  
   [% ELSIF error == "unknown_keyword" %]
     [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は存在していません [% END %]
     <code>[% keyword FILTER html %]</code> は登録された [% jawords.keyword FILTER html %] ではありません。

@@ -48,6 +48,16 @@ use constant DATE_FIELDS => {
     search   => ['last_change_time', 'creation_time'],
 };
 
+use constant READ_ONLY => qw(
+    attachments
+    comments
+    fields
+    get
+    history
+    legal_values
+    search
+);
+
 ######################################################
 # Add aliases here for old method name compatibility #
 ######################################################
@@ -79,29 +89,31 @@ sub fields {
         my $names = $params->{names};
         foreach my $field_name (@$names) {
             my $loop_field = Bugzilla::Field->check($field_name);
-            push(@fields, $loop_field); 
+            # Don't push in duplicate fields if we also asked for this field
+            # in "ids".
+            if (!grep($_->id == $loop_field->id, @fields)) {
+                push(@fields, $loop_field);
+            }
         }
     }
 
-    if (!defined $params->{ids}
-        and !defined $params->{names})
-    {
-        @fields = @{Bugzilla::Field->match({obsolete => 0})};
+    if (!defined $params->{ids} and !defined $params->{names}) {
+        @fields = Bugzilla->get_fields({ obsolete => 0 });
     }
 
     my @fields_out;
     foreach my $field (@fields) {
         my $visibility_field = $field->visibility_field 
                                ? $field->visibility_field->name : undef;
-        my $visibility_value = $field->visibility_value 
-                               ? $field->visibility_value->name : undef;
+        my $vis_value = $field->visibility_value; 
         my $value_field = $field->value_field
                           ? $field->value_field->name : undef;
 
-        my @values;
+        my (@values, $has_values);
         if ( ($field->is_select and $field->name ne 'product')
              or grep($_ eq $field->name, PRODUCT_SPECIFIC_FIELDS))
         {
+             $has_values = 1;
              @values = @{ $self->_legal_field_values({ field => $field }) };
         }
 
@@ -109,7 +121,7 @@ sub fields {
              $value_field = 'product';
         }
 
-        push (@fields_out, filter $params, {
+        my %field_data = (
            id                => $self->type('int', $field->id),
            type              => $self->type('int', $field->type),
            is_custom         => $self->type('boolean', $field->custom),
@@ -117,10 +129,16 @@ sub fields {
            display_name      => $self->type('string', $field->description),
            is_on_bug_entry   => $self->type('boolean', $field->enter_bug),
            visibility_field  => $self->type('string', $visibility_field),
-           visibility_values => [$self->type('string', $visibility_value)],
-           value_field       => $self->type('string', $value_field),
-           values            => \@values,
-        });
+           visibility_values => [
+               defined $vis_value ? $self->type('string', $vis_value->name)
+                                  : ()
+           ],
+        );
+        if ($has_values) {
+           $field_data{value_field} = $self->type('string', $value_field);
+           $field_data{values}      = \@values;
+        };
+        push(@fields_out, filter $params, \%field_data);
     }
 
     return { fields => \@fields_out };
@@ -181,6 +199,7 @@ sub _legal_field_values {
                is_open       => $self->type('boolean', $status->is_open),
                sortkey       => $self->type('int', $status->sortkey),
                can_change_to => \@can_change_to,
+               visibility_values => [],
             });
         }
     }
@@ -188,13 +207,14 @@ sub _legal_field_values {
     else {
         my @values = Bugzilla::Field::Choice->type($field)->get_all();
         foreach my $value (@values) {
-            my $visibility_value = $value->visibility_value;
-            my $vis_val_name = $visibility_value ? $visibility_value->name
-                                                 : undef;
+            my $vis_val = $value->visibility_value;
             push(@result, {
                 name              => $self->type('string', $value->name),
                 sortkey           => $self->type('int'   , $value->sortkey),
-                visibility_values => [$self->type('string', $vis_val_name)],
+                visibility_values => [
+                    defined $vis_val ? $self->type('string', $vis_val->name) 
+                                     : ()
+                ],
             });
         }
     }
@@ -410,7 +430,7 @@ sub create {
     Bugzilla->login(LOGIN_REQUIRED);
     $params = Bugzilla::Bug::map_fields($params);
     my $bug = Bugzilla::Bug->create($params);
-    Bugzilla::BugMail::Send($bug->bug_id, { changer => $bug->reporter->login });
+    Bugzilla::BugMail::Send($bug->bug_id, { changer => $bug->reporter });
     return { id => $self->type('int', $bug->bug_id) };
 }
 
@@ -500,7 +520,7 @@ sub add_comment {
     $dbh->bz_commit_transaction();
     
     # Send mail.
-    Bugzilla::BugMail::Send($bug->bug_id, { changer => Bugzilla->user->login });
+    Bugzilla::BugMail::Send($bug->bug_id, { changer => Bugzilla->user });
     
     return { id => $self->type('int', $new_comment_id) };
 }
@@ -546,7 +566,7 @@ sub update_see_also {
             $changes{$bug->id}->{see_also} = { added => [], removed => [] };
         }
 
-        Bugzilla::BugMail::Send($bug->id, { changer => $user->login });
+        Bugzilla::BugMail::Send($bug->id, { changer => $user });
     }
 
     return { changes => \%changes };
@@ -588,9 +608,7 @@ sub attachments {
             $self->_attachment_to_hash($attach, $params);
     }
 
-    $bugs{attachments} = \%attachments;
-
-    return { bugs => \%bugs };
+    return { bugs => \%bugs, attachments => \%attachments };
 }
 
 ##############################
@@ -1087,7 +1105,7 @@ private attachments.
 
 =item C<comments>
 
-B<UNSTABLE>
+B<STABLE>
 
 =over
 
@@ -1225,7 +1243,7 @@ that id.
 
 =item C<get> 
 
-B<EXPERIMENTAL>
+B<STABLE>
 
 =over
 
@@ -1252,7 +1270,7 @@ Note that it's possible for aliases to be disabled in Bugzilla, in which
 case you will be told that you have specified an invalid bug_id if you
 try to specify an alias. (It will be error 100.)
 
-=item C<permissive> B<UNSTABLE>
+=item C<permissive> B<EXPERIMENTAL>
 
 C<boolean> Normally, if you request any inaccessible or invalid bug ids,
 Bug.get will throw an error. If this parameter is True, instead of throwing an
@@ -1301,11 +1319,13 @@ isn't a duplicate of any bug, this will be an empty int.
 
 C<int> The numeric bug_id of this bug.
 
-=item internals B<UNSTABLE>
+=item internals B<DEPRECATED>
 
 A hash. The internals of a L<Bugzilla::Bug> object. This is extremely
 unstable, and you should only rely on this if you absolutely have to. The
 structure of the hash may even change between point releases of Bugzilla.
+
+This will be disappearing in a future version of Bugzilla.
 
 =item is_open 
 
@@ -1341,7 +1361,7 @@ C<string> The summary of this bug.
 
 =back
 
-=item C<faults> B<UNSTABLE>
+=item C<faults> B<EXPERIMENTAL>
 
 An array of hashes that contains invalid bug ids with error messages
 returned for them. Each hash contains the following items:
@@ -1433,7 +1453,7 @@ in Bugzilla B<3.4>:
 
 =item C<history> 
 
-B<UNSTABLE>
+B<EXPERIMENTAL>
 
 =over
 
@@ -1730,7 +1750,7 @@ for that value.
 
 =item C<create> 
 
-B<EXPERIMENTAL>
+B<STABLE>
 
 =over
 
@@ -1886,7 +1906,7 @@ method.
 
 =item C<add_comment> 
 
-B<EXPERIMENTAL>
+B<STABLE>
 
 =over
 
@@ -1923,6 +1943,11 @@ A hash with one element, C<id> whose value is the id of the newly-created commen
 
 =over
 
+=item 54 (Hours Worked Too Large)
+
+You specified a C<work_time> larger than the maximum allowed value of
+C<99999.99>.
+
 =item 100 (Invalid Bug Alias) 
 
 If you specified an alias and either: (a) the Bugzilla you're querying
@@ -1939,6 +1964,11 @@ You did not have the necessary rights to edit the bug.
 =item 113 (Can't Make Private Comments)
 
 You tried to add a private comment, but don't have the necessary rights.
+
+=item 114 (Comment Too Long)
+
+You tried to add a comment longer than the maximum allowed length
+(65,535 characters).
 
 =back
 
@@ -1957,6 +1987,9 @@ but can't, in Bugzilla B<3.4>.
 C<private>, and you can still call it C<private> for backwards-compatibility
 purposes if you wish.
 
+=item Before Bugzilla B<3.6>, error 54 and error 114 had a generic error
+code of 32000.
+
 =back
 
 =back
@@ -1964,7 +1997,7 @@ purposes if you wish.
 
 =item C<update_see_also>
 
-B<UNSTABLE>
+B<EXPERIMENTAL>
 
 =over
 
@@ -2055,6 +2088,11 @@ You did not have the necessary rights to edit the bug.
 
 One of the URLs you provided did not look like a valid bug URL.
 
+=item 115 (See Also Edit Denied)
+
+You did not have the necessary rights to edit the See Also field for
+this bug.
+
 =back
 
 =item B<History>
@@ -2062,6 +2100,8 @@ One of the URLs you provided did not look like a valid bug URL.
 =over
 
 =item Added in Bugzilla B<3.4>.
+
+=item Before Bugzilla B<3.6>, error 115 had a generic error code of 32000.
 
 =back
 

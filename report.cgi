@@ -289,7 +289,7 @@ elsif ($action eq "plot") {
     $vars->{'data'} = \@image_data;
 }
 else {
-    ThrowCodeError("unknown_action", {action => $cgi->param('action')});
+    ThrowUserError('unknown_action', {action => $action});
 }
 
 my $format = $template->get_format("reports/report", $formatparam,
@@ -349,7 +349,9 @@ sub get_names {
         # the normal order.
         #
         # This is O(n^2) but it shouldn't matter for short lists.
-        @sorted = map {lsearch(\@unsorted, $_) == -1 ? () : $_} @{$field_list};
+        foreach my $item (@$field_list) {
+            push(@sorted, $item) if grep { $_ eq $item } @unsorted;
+        }
     }  
     elsif ($isnumeric) {
         # It's not a field we are preserving the order of, so sort it 

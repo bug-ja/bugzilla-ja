@@ -115,7 +115,7 @@ sub canonicalise_query {
     my @parameters;
     foreach my $key (sort($self->param())) {
         # Leave this key out if it's in the exclude list
-        next if lsearch(\@exclude, $key) != -1;
+        next if grep { $_ eq $key } @exclude;
 
         # Remove the Boolean Charts for standard query.cgi fields
         # They are listed in the query URL already
@@ -327,6 +327,14 @@ sub _fix_utf8 {
     # The is_utf8 is here in case CGI gets smart about utf8 someday.
     utf8::decode($input) if defined $input && !utf8::is_utf8($input);
     return $input;
+}
+
+sub should_set {
+    my ($self, $param) = @_;
+    my $set = (defined $self->param($param) 
+               or defined $self->param("defined_$param"))
+              ? 1 : 0;
+    return $set;
 }
 
 # The various parts of Bugzilla which create cookies don't want to have to

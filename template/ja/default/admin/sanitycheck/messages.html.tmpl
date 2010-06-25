@@ -222,24 +222,6 @@
   [% ELSIF san_tag == "keyword_check_duplicated_ids" %]
     重複したキーワード IDs が [% PROCESS bug_link bug_id = id %] で見つかりました。
 
-  [% ELSIF san_tag == "keyword_cache_start" %]
-    キーワードのキャッシュを確認中。
-
-  [% ELSIF san_tag == "keyword_cache_alert" %]
-    [% badbugs.size FILTER none %] [%+ terms.bugs %] 
-    が無効なキーワードキャッシュを持っています。
-    : [% INCLUDE bug_list badbugs = badbugs %]
-
-  [% ELSIF san_tag == "keyword_cache_fixing" %]
-    OK, キーワードキャッシュを修復しています。
-
-  [% ELSIF san_tag == "keyword_cache_fixed" %]
-    キーワードキャッシュが修復されました。
-
-  [% ELSIF san_tag == "keyword_cache_rebuild" %]
-    <a href="sanitycheck.cgi?rebuildkeywordcache=1">
-    キーワードキャッシュの再構築を行う。</a>.
-
   [% ELSIF san_tag == "profile_login_start" %]
     ログイン中のプロファイルの確認中。
 

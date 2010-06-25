@@ -28,7 +28,7 @@
 #                 Joel Peshkin <bugreport@peshkin.net>
 #                 Lance Larsh <lance.larsh@oracle.com>
 #                 Jesse Clark <jjclark1982@gmail.com>
-#                 Rémi Zara <remi_zara@mac.com>
+#                 RÃ©mi Zara <remi_zara@mac.com>
 #                 Reed Loden <reed@reedloden.com>
 
 use strict;
@@ -126,6 +126,8 @@ sub COLUMNS {
 
         'flagtypes.name' => $dbh->sql_group_concat('DISTINCT '
                             . $dbh->sql_string_concat('flagtypes.name', 'flags.status'), "', '"),
+
+        'keywords' => $dbh->sql_group_concat('DISTINCT keyworddefs.name', "', '"),
     );
 
     # Backward-compatibility for old field names. Goes new_name => old_name.
@@ -162,8 +164,18 @@ sub COLUMNS {
     foreach my $field (Bugzilla->get_fields({ obsolete => 0, buglist => 1 })) {
         my $id = $field->name;
         $id = $old_names{$id} if exists $old_names{$id};
-        my $sql = 'bugs.' . $field->name;
-        $sql = $special_sql{$id} if exists $special_sql{$id};
+        my $sql;
+        if (exists $special_sql{$id}) {
+            $sql = $special_sql{$id};
+        }
+        elsif ($field->type == FIELD_TYPE_MULTI_SELECT) {
+            $sql = $dbh->sql_group_concat(
+                'DISTINCT map_bug_' . $field->name . '.value',
+                $dbh->quote(', '));
+        }
+        else {
+            $sql = 'bugs.' . $field->name;
+        }
         $columns{$id} = { name => $sql, title => $field->description };
     }
 
@@ -273,10 +285,21 @@ sub init {
         push(@supptables, "LEFT JOIN longdescs AS ldtime " .
                           "ON ldtime.bug_id = bugs.bug_id");
     }
+    foreach my $field (@multi_select_fields) {
+        my $field_name = $field->name;
+        next if !grep($_ eq $field_name, @fields);
+        push(@supptables, "LEFT JOIN bug_$field_name AS map_bug_$field_name"
+                          . " ON map_bug_$field_name.bug_id = bugs.bug_id");
+    }
 
     if (grep($_ eq 'flagtypes.name', @fields)) {
         push(@supptables, "LEFT JOIN flags ON flags.bug_id = bugs.bug_id AND attach_id IS NULL");
         push(@supptables, "LEFT JOIN flagtypes ON flagtypes.id = flags.type_id");
+    }
+
+    if (grep($_ eq 'keywords', @fields)) {
+        push(@supptables, "LEFT JOIN keywords ON keywords.bug_id = bugs.bug_id");
+        push(@supptables, "LEFT JOIN keyworddefs ON keyworddefs.id = keywords.keywordid");
     }
 
     # If the user has selected all of either status or resolution, change to
@@ -289,7 +312,14 @@ sub init {
         my @legal_statuses =
           map {$_->name} @{Bugzilla::Field->new({name => 'bug_status'})->legal_values};
 
-        if (scalar(@bug_statuses) == scalar(@legal_statuses)
+        # Filter out any statuses that have been removed completely that are still 
+        # being used by the client
+        my @valid_statuses;
+        foreach my $status (@bug_statuses) {
+            push(@valid_statuses, $status) if grep($_ eq $status, @legal_statuses);
+        }
+        
+        if (scalar(@valid_statuses) == scalar(@legal_statuses)
             || $bug_statuses[0] eq "__all__")
         {
             $params->delete('bug_status');
@@ -301,6 +331,9 @@ sub init {
         elsif ($bug_statuses[0] eq "__closed__") {
             $params->param('bug_status', grep(!is_open_state($_), 
                                               @legal_statuses));
+        }
+        else {
+            $params->param('bug_status', @valid_statuses);
         }
     }
     
@@ -375,8 +408,8 @@ sub init {
         }
     }
 
-    my $chfieldfrom = trim(lc($params->param('chfieldfrom'))) || '';
-    my $chfieldto = trim(lc($params->param('chfieldto'))) || '';
+    my $chfieldfrom = trim(lc($params->param('chfieldfrom') || ''));
+    my $chfieldto = trim(lc($params->param('chfieldto') || ''));
     $chfieldfrom = '' if ($chfieldfrom eq 'now');
     $chfieldto = '' if ($chfieldto eq 'now');
     my @chfield = $params->param('chfield');
@@ -549,9 +582,6 @@ sub init {
         if (defined $params->param($f)) {
             my $s = trim($params->param($f));
             if ($s ne "") {
-                my $n = $f;
-                my $q = $dbh->quote($s);
-                trick_taint($q);
                 my $type = $params->param($f . "_type");
                 push(@specialchart, [$f, $type, $s]);
             }
@@ -599,7 +629,7 @@ sub init {
         "^long_?desc,changedby" => \&_long_desc_changedby,
         "^long_?desc,changedbefore" => \&_long_desc_changedbefore_after,
         "^long_?desc,changedafter" => \&_long_desc_changedbefore_after,
-        "^content,matches" => \&_content_matches,
+        "^content,(?:not)?matches" => \&_content_matches,
         "^content," => sub { ThrowUserError("search_content_without_matches"); },
         "^(?:deadline|creation_ts|delta_ts),(?:lessthan|lessthaneq|greaterthan|greaterthaneq|equals|notequals),(?:-|\\+)?(?:\\d+)(?:[dDwWmMyY])\$" => \&_timestamp_compare,
         "^commenter,(?:equals|anyexact),(%\\w+%)" => \&_commenter_exact,
@@ -644,6 +674,7 @@ sub init {
         ",lessthan" => \&_lessthan,
         ",lessthaneq" => \&_lessthaneq,
         ",matches" => sub { ThrowUserError("search_content_without_matches"); },
+        ",notmatches" => sub { ThrowUserError("search_content_without_matches"); },
         ",greaterthan" => \&_greaterthan,
         ",greaterthaneq" => \&_greaterthaneq,
         ",anyexact" => \&_anyexact,
@@ -943,7 +974,7 @@ sub init {
         # These fields never go into the GROUP BY (bug_id goes in
         # explicitly, below).
         next if (grep($_ eq $field, EMPTY_COLUMN, 
-                      qw(bug_id actual_time percentage_complete flagtypes.name)));
+                      qw(bug_id actual_time percentage_complete flagtypes.name keywords)));
         my $col = COLUMNS->{$field}->{name};
         push(@groupby, $col) if !grep($_ eq $col, @groupby);
     }
@@ -1032,6 +1063,7 @@ sub GetByWordList {
     my ($field, $strs) = (@_);
     my @list;
     my $dbh = Bugzilla->dbh;
+    return [] unless defined $strs;
 
     foreach my $w (split(/[\s,]+/, $strs)) {
         my $word = $w;
@@ -1168,8 +1200,7 @@ sub BuildOrderBy {
 sub split_order_term {
     my $fragment = shift;
     $fragment =~ /^(.+?)(?:\s+(ASC|DESC))?$/i;
-    my ($column_name, $direction) = (lc($1), uc($2));
-    $direction ||= "";
+    my ($column_name, $direction) = (lc($1), uc($2 || ''));
     return wantarray ? ($column_name, $direction) : $column_name;
 }
 
@@ -1403,8 +1434,8 @@ sub _long_desc_changedbefore_after {
 sub _content_matches {
     my $self = shift;
     my %func_args = @_;
-    my ($chartid, $supptables, $term, $groupby, $fields, $v) =
-        @func_args{qw(chartid supptables term groupby fields v)};
+    my ($chartid, $supptables, $term, $groupby, $fields, $t, $v) =
+        @func_args{qw(chartid supptables term groupby fields t v)};
     my $dbh = Bugzilla->dbh;
     
     # "content" is an alias for columns containing text for which we
@@ -1431,19 +1462,21 @@ sub _content_matches {
 
     # The term to use in the WHERE clause.
     $$term = "$term1 > 0 OR $term2 > 0";
+    if ($$t =~ /not/i) {
+        $$term = "NOT($$term)";
+    }
     
     # In order to sort by relevance (in case the user requests it),
     # we SELECT the relevance value so we can add it to the ORDER BY
     # clause. Every time a new fulltext chart isadded, this adds more 
-    # terms to the relevance sql. (That doesn't make sense in
-    # "NOT" charts, but Bugzilla never uses those with fulltext
-    # by default.)
+    # terms to the relevance sql.
     #
     # We build the relevance SQL by modifying the COLUMNS list directly,
     # which is kind of a hack but works.
     my $current = COLUMNS->{'relevance'}->{name};
     $current = $current ? "$current + " : '';
-    my $select_term = "($current$rterm1 + $rterm2)";
+    # For NOT searches, we just add 0 to the relevance.
+    my $select_term = $$t =~ /not/ ? 0 : "($current$rterm1 + $rterm2)";
     COLUMNS->{'relevance'}->{name} = $select_term;
 }
 
@@ -1670,9 +1703,9 @@ sub _attach_data_thedata {
     my $atable = "attachments_$$chartid";
     my $dtable = "attachdata_$$chartid";
     my $extra = $self->{'user'}->is_insider ? "" : "AND $atable.isprivate = 0";
-    push(@$supptables, "INNER JOIN attachments AS $atable " .
+    push(@$supptables, "LEFT JOIN attachments AS $atable " .
                        "ON bugs.bug_id = $atable.bug_id $extra");
-    push(@$supptables, "INNER JOIN attach_data AS $dtable " .
+    push(@$supptables, "LEFT JOIN attach_data AS $dtable " .
                        "ON $dtable.id = $atable.attach_id");
     $$f = "$dtable.thedata";
 }
@@ -1685,7 +1718,7 @@ sub _attachments_submitter {
     
     my $atable = "map_attachment_submitter_$$chartid";
     my $extra = $self->{'user'}->is_insider ? "" : "AND $atable.isprivate = 0";
-    push(@$supptables, "INNER JOIN attachments AS $atable " .
+    push(@$supptables, "LEFT JOIN attachments AS $atable " .
                        "ON bugs.bug_id = $atable.bug_id $extra");
     push(@$supptables, "LEFT JOIN profiles AS attachers_$$chartid " .
                        "ON $atable.submitter_id = attachers_$$chartid.userid");
@@ -1701,7 +1734,7 @@ sub _attachments {
     
     my $table = "attachments_$$chartid";
     my $extra = $self->{'user'}->is_insider ? "" : "AND $table.isprivate = 0";
-    push(@$supptables, "INNER JOIN attachments AS $table " .
+    push(@$supptables, "LEFT JOIN attachments AS $table " .
                        "ON bugs.bug_id = $table.bug_id $extra");
     $$f =~ m/^attachments\.(.*)$/;
     my $field = $1;
@@ -1749,12 +1782,19 @@ sub _flagtypes_name {
     # Add the flags and flagtypes tables to the query.  We do 
     # a left join here so bugs without any flags still match 
     # negative conditions (f.e. "flag isn't review+").
+    my $attachments = "attachments_$$chartid";
+    my $extra = $self->{'user'}->is_insider ? "" : "AND $attachments.isprivate = 0";
+    push(@$supptables, "LEFT JOIN attachments AS $attachments " .
+                       "ON bugs.bug_id = $attachments.bug_id $extra");
     my $flags = "flags_$$chartid";
     push(@$supptables, "LEFT JOIN flags AS $flags " . 
                        "ON bugs.bug_id = $flags.bug_id ");
     my $flagtypes = "flagtypes_$$chartid";
     push(@$supptables, "LEFT JOIN flagtypes AS $flagtypes " . 
                        "ON $flags.type_id = $flagtypes.id");
+    push(@$supptables, "LEFT JOIN flags AS $flags " .
+                       "ON $flags.attach_id = $attachments.attach_id " .
+                       "OR $flags.attach_id IS NULL");
     
     # Generate the condition by running the operator-specific
     # function. Afterwards the condition resides in the global $term
@@ -1784,11 +1824,19 @@ sub _requestees_login_name {
     my %func_args = @_;
     my ($f, $chartid, $supptables) = @func_args{qw(f chartid supptables)};
     
+    my $attachments = "attachments_$$chartid";
+    my $extra = $self->{'user'}->is_insider ? "" : "AND $attachments.isprivate = 0";
+    push(@$supptables, "LEFT JOIN attachments AS $attachments " .
+                       "ON bugs.bug_id = $attachments.bug_id $extra");
     my $flags = "flags_$$chartid";
     push(@$supptables, "LEFT JOIN flags AS $flags " .
                        "ON bugs.bug_id = $flags.bug_id ");
     push(@$supptables, "LEFT JOIN profiles AS requestees_$$chartid " .
                        "ON $flags.requestee_id = requestees_$$chartid.userid");
+    push(@$supptables, "LEFT JOIN flags AS $flags " .
+                       "ON $flags.attach_id = $attachments.attach_id " .
+                       "OR $flags.attach_id IS NULL");
+
     $$f = "requestees_$$chartid.login_name";
 }
 
@@ -1796,12 +1844,20 @@ sub _setters_login_name {
     my $self = shift;
     my %func_args = @_;
     my ($f, $chartid, $supptables) = @func_args{qw(f chartid supptables)};
-    
+
+    my $attachments = "attachments_$$chartid";
+    my $extra = $self->{'user'}->is_insider ? "" : "AND $attachments.isprivate = 0";
+    push(@$supptables, "LEFT JOIN attachments AS $attachments " .
+                       "ON bugs.bug_id = $attachments.bug_id $extra");
     my $flags = "flags_$$chartid";
     push(@$supptables, "LEFT JOIN flags AS $flags " .
                        "ON bugs.bug_id = $flags.bug_id ");
     push(@$supptables, "LEFT JOIN profiles AS setters_$$chartid " .
                        "ON $flags.setter_id = setters_$$chartid.userid");
+    push(@$supptables, "LEFT JOIN flags AS $flags " .
+                       "ON $flags.attach_id = $attachments.attach_id " .
+                       "OR $flags.attach_id IS NULL");
+
     $$f = "setters_$$chartid.login_name";
 }
 

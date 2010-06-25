@@ -23,80 +23,6 @@
 
 [% PROCESS global/variables.none.tmpl %]
 
-[% field_descs = { "[Bug creation]"          => "[$terms.Bug 作成]",
-                   "actual_time"             => "作業済時間",
-                   "alias"                   => "エイリアス",
-                   "assigned_to"             => "担当者",
-                   "attach_data.thedata"     => "添付データ",
-                   "attachments.description" => "添付の説明",
-                   "attachments.filename"    => "添付のファイル名",
-                   "attachments.mimetype"    => "添付のmime型",
-                   "attachments.ispatch"     => "添付はパッチ",
-                   "attachments.isobsolete"  => "添付は用済み",
-                   "attachments.isprivate"   => "添付はプライベート",
-                   "attachments.isurl"       => "添付 URL",
-                   "attachments.submitter"   => "添付作成者",
-                   "blocked"                 => "妨害",
-                   "bug_file_loc"            => "URL",
-                   "bug_group"               => "グループ",
-                   "bug_id"                  => "$terms.Bug ID",
-                   "bug_severity"            => "深刻度",
-                   "bug_status"              => "ステータス",
-                   "changeddate"             => "変更された",
-                   "cc"                      => "CC",
-                   "classification"          => "Classification",
-                   "cclist_accessible"       => "CC リストが存在",
-                   "commenter"               => "コメントした人",
-                   "component_id"            => "コンポーネント ID",
-                   "component"               => "コンポーネント",
-                   "content"                 => "中身",
-                   "creation_ts"             => "作成日",
-                   "deadline"                => "締め切り",
-                   "delta_ts"                => "変更された",
-                   "dependson"               => "依存",
-                   "dup_id"                  => "重複",
-                   "estimated_time"          => "初期想定時間",
-                   "everconfirmed"           => "confirm されたか",
-                   "flagtypes.name"          => "フラグ",
-                   "keywords"                => "キーワード",
-                   "longdesc"                => "コメント",
-                   "longdescs.isprivate"     => "コメントはプライベート",
-                   "newcc"                   => "CC",
-                   "op_sys"                  => "OS",
-                   "opendate"                => "作成日",
-                   "owner_idle_time"         => "担当者の変更からの時間",
-                   "percentage_complete"     => "%完了",
-                   "priority"                => "重要度",
-                   "product_id"              => "プロダクト ID",
-                   "product"                 => "プロダクト",
-                   "qa_contact"              => "QA コンタクト",
-                   "remaining_time"          => "時間残り",
-                   "rep_platform"            => "ハードウェア",
-                   "reporter"                => "報告者",
-                   "reporter_accessible"     => "報告者が閲覧可能",
-                   "requestees.login_name"   => "フラグ要請者",
-                   "resolution"              => "解決方法",
-                   "see_also"                => "参照",
-                   "setters.login_name"      => "フラグ適用者",
-                   "setting"                 => "設定",
-                   "settings"                => "設定",
-                   "short_desc"              => "要約",
-                   "status_whiteboard"       => "ホワイトボード",
-                   "target_milestone"        => "ターゲットマイルストーン",
-                   "version"                 => "バージョン",
-                   "work_time"               => "作業時間"} %]
-
-[%# Also include any custom fields or fields which don't have a
-    Description here, by copying their Description from the
-    database. If you want to override this for your language
-    or your installation, just use a hook. %]
-[% UNLESS Param('shutdownhtml') %]
-  [% FOREACH bz_field = bug_fields.values %]
-    [% SET field_descs.${bz_field.name} = bz_field.description
-       IF !field_descs.${bz_field.name}.defined %]
-  [% END %]
-[% END %]
-
 [% SET search_descs = {
   "noop"           => "---",
   "equals"         => "と等しい",
@@ -123,6 +49,7 @@
   "changedto"      => "へ更新",
   "changedby"      => "により更新",
   "matches"        => "一致",
+  "notmatches"     => "一致しない",
 } %]
 
 [% field_types = { ${constants.FIELD_TYPE_UNKNOWN}       => "未知",
@@ -161,5 +88,88 @@
     [% value_name FILTER none %]
   [% END %]
 [% END %][% END %]
+
+[% IF in_template_var %]
+  [% vars.terms = terms %]
+
+  [%# field_descs is loaded as a global template variable and cached
+    # across all templates--see VARIABLES in Bugzilla/Template.pm.
+    #%]
+  [% vars.field_descs = {
+    "[Bug creation]"          => "[$terms.Bug 作成]",
+    "actual_time"             => "作業済時間",
+    "alias"                   => "エイリアス",
+    "assigned_to"             => "担当者",
+    "attach_data.thedata"     => "添付データ",
+    "attachments.description" => "添付の説明",
+    "attachments.filename"    => "添付のファイル名",
+    "attachments.mimetype"    => "添付のmime型",
+    "attachments.ispatch"     => "添付はパッチ",
+    "attachments.isobsolete"  => "添付は用済み",
+    "attachments.isprivate"   => "添付はプライベート",
+    "attachments.isurl"       => "添付 URL",
+    "attachments.submitter"   => "添付作成者",
+    "blocked"                 => "妨害",
+    "bug_file_loc"            => "URL",
+    "bug_group"               => "グループ",
+    "bug_id"                  => "$terms.Bug ID",
+    "bug_severity"            => "深刻度",
+    "bug_status"              => "ステータス",
+    "changeddate"             => "変更された",
+    "cc"                      => "CC",
+    "classification"          => "Classification",
+    "cclist_accessible"       => "CC リストが存在",
+    "commenter"               => "コメントした人",
+    "component_id"            => "コンポーネント ID",
+    "component"               => "コンポーネント",
+    "content"                 => "中身",
+    "creation_ts"             => "作成日",
+    "deadline"                => "締め切り",
+    "delta_ts"                => "変更された",
+    "dependson"               => "依存",
+    "dup_id"                  => "重複",
+    "estimated_time"          => "初期想定時間",
+    "everconfirmed"           => "confirm されたか",
+    "flagtypes.name"          => "フラグ",
+    "keywords"                => "キーワード",
+    "longdesc"                => "コメント",
+    "longdescs.isprivate"     => "コメントはプライベート",
+    "newcc"                   => "CC",
+    "op_sys"                  => "OS",
+    "opendate"                => "作成日",
+    "owner_idle_time"         => "担当者の変更からの時間",
+    "percentage_complete"     => "%完了",
+    "priority"                => "重要度",
+    "product_id"              => "プロダクト ID",
+    "product"                 => "プロダクト",
+    "qa_contact"              => "QA コンタクト",
+    "remaining_time"          => "時間残り",
+    "rep_platform"            => "ハードウェア",
+    "reporter"                => "報告者",
+    "reporter_accessible"     => "報告者が閲覧可能",
+    "requestees.login_name"   => "フラグ要請者",
+    "resolution"              => "解決方法",
+    "see_also"                => "参照",
+    "setters.login_name"      => "フラグ適用者",
+    "setting"                 => "設定",
+    "settings"                => "設定",
+    "short_desc"              => "要約",
+    "status_whiteboard"       => "ホワイトボード",
+    "target_milestone"        => "ターゲットマイルストーン",
+    "version"                 => "バージョン",
+    "work_time"               => "作業時間",
+  } %]
+
+  [%# Also include any custom fields or fields which don't have a
+      Description here, by copying their Description from the
+      database. If you want to override this for your language
+      or your installation, just use a hook. %]
+  [% UNLESS Param('shutdownhtml') %]
+    [% FOREACH bz_field = bug_fields.values %]
+      [% SET vars.field_descs.${bz_field.name} = bz_field.description
+         IF !vars.field_descs.${bz_field.name}.defined %]
+    [% END %]
+  [% END %]
+[% END %]
 
 [% Hook.process("end") %]

@@ -183,6 +183,7 @@
         [% IF changes.sortkey.defined %]
           <li>ソートキーを '[% classification.sortkey FILTER html %]' に更新しました</li>
         [% END %]
+        [% Hook.process('classification_updated_fields') %]
       </ul>
     [% ELSE %]
       <em>[% classification.name FILTER html %]</em> は更新されませんでした。
@@ -232,6 +233,8 @@
           <li>既定の CC リストが削除されました</li>
         [% END %]
       [% END %]
+      [% Hook.process('component_updated_fields') %]
+      </ul>
     [% ELSE %]
       <em>[% comp.name FILTER html %]</em> への更新はありません。
     [% END %]
@@ -446,10 +449,6 @@
   [% ELSIF message_tag == "keyword_deleted" %]
     [% title = "キーワード削除" %]
     <em>[% keyword.name FILTER html %]</em> キーワードが削除されました。
-    <b>キーワード編集完了後、
-    <a href="sanitycheck.cgi?rebuildkeywordcache=1">キーワードキャッシュの再構築</a></b>
-    が必要になります。([% terms.Bugzilla %] の大規模サイトでは、
-    それなりの時間かかります。)
 
   [% ELSIF message_tag == "keyword_updated" %]
     [% title = "キーワード更新" %]
@@ -458,13 +457,7 @@
       :
       <ul>
         [% IF changes.name.defined %]
-          <li>
-            キーワードは <em>[% keyword.name FILTER html %]</em> に改名されました。
-            <b>キーワード編集完了後、
-            <a href="sanitycheck.cgi?rebuildkeywordcache=1">キーワードキャッシュの再構築
-            </a></b> が必要となります。 ([% terms.Bugzilla %] の大規模サイトでは、
-            数分かかる場合があります。)
-          </li>
+          <li>キーワードは <em>[% keyword.name FILTER html %]</em> に改名されました。</li>
         [% END %]
         [% IF changes.description.defined %]
           <li>説明が <em>[% keyword.description FILTER html %]</em> になりました。</li>
