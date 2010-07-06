@@ -145,8 +145,6 @@
       delete
     [% ELSIF action == "edit" %]
       add, modify or delete
-    [% ELSIF action == "move" %]
-      move
     [% ELSIF action == "run" %]
       run
     [% ELSIF action == "schedule" %]
@@ -155,6 +153,8 @@
       use
     [% ELSIF action == "approve" %]
       approve
+    [% ELSE %]
+      [% Hook.process('auth_failure_action') %]
     [% END %]
 
     [% IF object == "administrative_pages" %]
@@ -1164,11 +1164,6 @@
     A valid resolution is required to mark [% terms.bugs %] as
     [%+ status FILTER upper FILTER html %].
 
-  [% ELSIF error == "move_bugs_disabled" %]
-    [% title = BLOCK %][% terms.Bug %] Moving Disabled[% END %]
-    Sorry, [% terms.bug %] moving has been disabled. If you need
-    to move [% terms.abug %], please contact [% Param("maintainer") %].
-
   [% ELSIF error == "missing_subcategory" %]
     [% title = "Missing Subcategory" %]
     You did not specify a subcategory for this series.
@@ -1186,6 +1181,10 @@
       Please contact [% Param("maintainer") %] and ask them
       to add a version to this product.
     [% END %]
+
+  [% ELSIF error == "multiple_alias_not_allowed" %]
+    You cannot set aliases when modifying multiple [% terms.bugs %]
+    at once.
 
   [% ELSIF error == "need_quip" %]
     [% title = "Quip Required" %]
@@ -1783,6 +1782,8 @@
     group
   [% ELSIF class == "Bugzilla::Product" %]
     product
+  [% ELSIF class == "Bugzilla::Search::Recent" %]
+    recent search
   [% ELSIF class == "Bugzilla::Search::Saved" %]
     saved search
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]

@@ -30,12 +30,11 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  style_urls = [ 'skins/standard/yui/autocomplete.css',
-                 'skins/standard/attachment.css',
-                 'skins/standard/yui/calendar.css' ]
-  javascript_urls = [ "js/yui/bz_autocomplete_bundle.js",
-                      "js/attachment.js", "js/util.js", "js/yui/calendar.js",
-                      "js/field.js", "js/TUI.js" ]
+  yui = [ 'autocomplete', 'calendar', 'datatable' ]
+  style_urls = [ 'skins/standard/attachment.css',
+                 'skins/standard/enter_bug.css' ]
+  javascript_urls = [ "js/attachment.js", "js/util.js",
+                      "js/field.js", "js/TUI.js", "js/bug.js" ]
   onload = 'set_assign_to();'
 %]
 
@@ -171,7 +170,7 @@ TUI_hide_default('expert_fields');
 </script>
 
 <form name="Create" id="Create" method="post" action="post_bug.cgi"
-      enctype="multipart/form-data">
+      class="enter_bug_form" enctype="multipart/form-data">
 <input type="hidden" name="product" value="[% product.name FILTER html %]">
 <input type="hidden" name="token" value="[% token FILTER html %]">
 
@@ -509,14 +508,49 @@ TUI_hide_default('expert_fields');
     <td colspan="3">
       <input name="short_desc" size="70" value="[% short_desc FILTER html %]"
              maxlength="255" spellcheck="true" aria-required="true"
-             class="required">
+             class="required" id="short_desc">
     </td>
    </tr>
   </tr>
 
+  [% IF feature_enabled('jsonrpc') AND !cloned_bug_id %]
+    <tr id="possible_duplicates_container" class="bz_default_hidden">
+      <th>重複の<br />可能性:</th>
+      <td colspan="3">
+        <div id="possible_duplicates"></div>
+        <script type="text/javascript">
+          var dt_columns = [ 
+              { key: "id", label: "[% field_descs.bug_id FILTER js %]",
+                formatter: YAHOO.bugzilla.dupTable.formatBugLink },
+              { key: "summary", 
+                label: "[% field_descs.short_desc FILTER js %]" },
+              { key: "status",
+                label: "[% field_descs.bug_status FILTER js %]",
+                formatter: YAHOO.bugzilla.dupTable.formatStatus },
+              { key: "update_token", label: '',
+                formatter: YAHOO.bugzilla.dupTable.formatCcButton }
+          ];
+          YAHOO.bugzilla.dupTable.addCcMessage = "CC リストに自分を追加する";
+          YAHOO.bugzilla.dupTable.init({
+            container: 'possible_duplicates',
+            columns: dt_columns,
+            product_name: '[% product.name FILTER js %]',
+            summary_field: 'short_desc',
+            options: {
+              MSG_LOADING: '重複の可能性を検索中',
+              MSG_EMPTY:   '重複の可能性は発見されませんでした',
+              SUMMARY:     '重複の可能性が発見されました'
+            },
+          });
+        </script>
+      </td>
+    </tr>
+  [% END %]
+
   <tr>
     <th>説明:</th>
     <td colspan="3">
+
       [% defaultcontent = BLOCK %]
         [% IF cloned_bug_id %]
 +++ この [% terms.bug %] は [% terms.Bug %] #[% cloned_bug_id %] のクローンとして作成されました +++

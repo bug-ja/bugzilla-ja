@@ -58,6 +58,7 @@ END
     feature_inbound_email     => 'システム向け Email',
     feature_jobqueue          => 'メールキュー',
     feature_jsonrpc           => 'JSON-RPC インターフェース',
+    feature_jsonrpc_faster    => 'JSON-RPC の高速化',
     feature_new_charts        => '新形式のチャート',
     feature_old_charts        => '旧形式のチャート',
     feature_mod_perl          => 'mod_perl',

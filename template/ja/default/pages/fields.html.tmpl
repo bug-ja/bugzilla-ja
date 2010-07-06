@@ -191,17 +191,6 @@
           コードからも述べられた動作が起こる原因が判明しませんでした。
           より情報が出てくれば、[% terms.bug %] が再開されることもあります。
         </dd>
-
-        [% IF Param('move-enabled') %]
-          <dt>
-            [% display_value("resolution", "MOVED") FILTER html %]
-          </dt>
-          <dd>
-            問題は他の [% terms.bugs %] データベースで扱われているプロダクトに関連する
-            [% terms.bugs %] です。
-            この [% terms.bug %] はそのデータベースに移動しました。
-          </dd>
-        [% END %]
       </dl>
     </td>
   </tr>

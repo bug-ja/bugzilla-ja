@@ -74,7 +74,7 @@ sub parse_mail {
     debug_print('Parsing Email');
     $input_email = Email::MIME->new($mail_text);
     
-    my %fields;
+    my %fields = %{ $switch{'default'} || {} };
 
     my $summary = $input_email->header('Subject');
     if ($summary =~ /\[\S+ (\d+)\](.*)/i) {
@@ -136,6 +136,11 @@ sub parse_mail {
     }
     $fields{'comment'} = $comment;
 
+    my %override = %{ $switch{'override'} || {} };
+    foreach my $key (keys %override) {
+        $fields{$key} = $override{$key};
+    }
+
     debug_print("Parsed Fields:\n" . Dumper(\%fields), 2);
 
     return \%fields;
@@ -146,13 +151,6 @@ sub post_bug {
     debug_print('Posting a new bug...');
 
     my $user = Bugzilla->user;
-
-    # Bugzilla::Bug->create throws a confusing CodeError if
-    # the REQUIRED_CREATE_FIELDS are missing, but much more
-    # sensible errors if the fields exist but are just undef.
-    foreach my $field (Bugzilla::Bug::REQUIRED_CREATE_FIELDS) {
-        $fields->{$field} = undef if !exists $fields->{$field};
-    }
 
     my ($retval, $non_conclusive_fields) =
       Bugzilla::User::match_field({
@@ -383,7 +381,7 @@ sub die_handler {
 
 $SIG{__DIE__} = \&die_handler;
 
-GetOptions(\%switch, 'help|h', 'verbose|v+');
+GetOptions(\%switch, 'help|h', 'verbose|v+', 'default=s%', 'override=s%');
 $switch{'verbose'} ||= 0;
 
 # Print the help message if that switch was selected.
@@ -434,13 +432,22 @@ email_in.pl - The Bugzilla Inbound Email Interface
 
 =head1 SYNOPSIS
 
- ./email_in.pl [-vvv] < email.txt
+./email_in.pl [-vvv] [--default name=value] [--override name=value] < email.txt
 
- Reads an email on STDIN (the standard input).
+Reads an email on STDIN (the standard input).
 
-  Options:
-    --verbose (-v) - Make the script print more to STDERR.
-                     Specify multiple times to print even more.
+Options:
+
+   --verbose (-v)        - Make the script print more to STDERR.
+                           Specify multiple times to print even more.
+
+   --default name=value  - Specify defaults for field values, like
+                           product=TestProduct. Can be specified multiple
+                           times to specify defaults for multiple fields.
+
+   --override name=value - Override field values specified in the email,
+                           like product=TestProduct. Can be specified
+                           multiple times to override multiple fields.
 
 =head1 DESCRIPTION
 

@@ -344,9 +344,10 @@
   [% ELSIF error == "need_quipid" %]
     有効な quipid が必要です。
 
-  [% ELSIF error == "no_manual_moved" %]
-    [% terms.bug %] を移動させることなく、[% terms.abug %] を [% display_value("resolution", "MOVED") FILTER html %]
-    の解決方法にできません。
+  [% ELSIF error == "object_dep_sort_loop" %]
+    '[%+ field FILTER html %]' の VALIDATOR_DEPENDENCIES にループが検出されました。
+    これらが検出したフィールドです: 
+    [%+ considered.join(', ') FILTER html %]
 
   [% ELSIF error == "param_invalid" %]
     [% title = "無効なパラメータ" %]

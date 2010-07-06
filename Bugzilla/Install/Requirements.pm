@@ -66,12 +66,9 @@ sub REQUIRED_MODULES {
     {
         package => 'CGI.pm',
         module  => 'CGI',
-        # Perl 5.10 requires CGI 3.33 due to a taint issue when
-        # uploading attachments, see bug 416382.
-        # Require CGI 3.21 for -httponly support, see bug 368502.
-        version => (vers_cmp($perl_ver, '5.10') > -1) ? '3.33' : '3.21',
-        # CGI::Carp in 3.46 and 3.47 breaks Template Toolkit
-        blacklist => ['^3\.46$', '^3\.47$'],
+        # 3.49 fixes a problem with operating Bugzilla behind a proxy.
+        # (bug 509303)
+        version => '3.49',
     },
     {
         package => 'Digest-SHA',
@@ -140,7 +137,7 @@ sub REQUIRED_MODULES {
     {
         package => 'List-MoreUtils',
         module  => 'List::MoreUtils',
-        version => 0
+        version => 0.22,
     },
     );
 
@@ -240,6 +237,13 @@ sub OPTIONAL_MODULES {
         module  => 'JSON::RPC',
         version => 0,
         feature => ['jsonrpc'],
+    },
+    {
+        package => 'JSON-XS',
+        module  => 'JSON::XS',
+        # 2.0 is the first version that will work with JSON::RPC.
+        version => '2.0',
+        feature => ['jsonrpc_faster'],
     },
     {
         package => 'Test-Taint',

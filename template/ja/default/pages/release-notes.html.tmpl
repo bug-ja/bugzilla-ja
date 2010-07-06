@@ -27,6 +27,7 @@
 
 <ul class="bz_toc">
   <li><a href="#v36_introduction">導入</a></li>
+  <li><a href="#v36_point">3.6.x リリースでの更新点</a></li>
   <li><a href="#v36_req">動作環境</a></li>
   <li><a href="#v36_feat">新機能と改善点</a></li>
   <li><a href="#v36_issues">既知の問題点</a></li>
@@ -56,6 +57,50 @@
   the <a href="http://www.ibm.com/linux/ltc/">IBM Linux Technology Center</a>,
   <a href="http://www.redhat.com/">Red Hat</a>, そして
   <a href="http://www.novell.com/">Novell</a>に。</p>
+
+<h2 id="v36_point">3.6.x リリースでの更新点</h2>
+
+<h3>3.6.1</h3>
+
+<p>このリリースではふたつのセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.2.6/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下のようないくつかの重要な修正や変更が行われました。</p>
+
+<ul>
+  <li>"表示カラム変更" ページがたまに結果を HTML でなくプレーンテキストで返すことが
+    ありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=376044">[% terms.Bug %] 376044</a>)
+  </li>
+  <li>コードに変更がなくテンプレートのみの拡張が動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=562551">[% terms.Bug %] 562551</a>)
+  </li>
+  <li><kbd>install-module.pl</kbd> が修正され、新旧両方のバージョンの Perl 
+    環境でモジュールを正常にインストールできるようになりました。
+     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=560318">[% terms.Bug %] 560318</a>
+     と <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=560330">[% terms.Bug %] 560330</a>)
+  </li>
+  <li>Oracle 環境において 3.4 から 3.6 へのアップグレードが可能になりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=561379">[% terms.Bug %] 561379</a>)
+  </li>
+  <li>(フィールド値の管理者パネルを利用して) フィールド値の名前を編集する際に、
+    フィールドの既定値に設定されている値を編集することができませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=561296">[% terms.Bug %] 561296</a>)
+  </li>
+  <li><kbd>noresolveonopenblockers</kbd> パラメータを設定している場合、
+    [% terms.bugs %] が FIXED かつ一つ以上の活動中の妨害バグが居る際に、
+    編集することができませんでした。
+    (このパラメータは [% terms.bugs %] を FIXED に <em>変更</em> 
+    する事を防ぐために導入されており、すでに FIXED の [% terms.bugs %] 
+    を意図したものではありませんでした。)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=565314">[% terms.Bug %] 565314</a>)
+  </li>
+  <li>Perl 5.12 環境でのいくつかの細かな問題が修正されました。(大半が Perl 5.12 
+    が投げる警告です。) これにより [% terms.Bugzilla %] は Perl 5.12 
+    をサポートするようになりました。</li>
+</ul>
+
 
 <h2 id="v36_req">動作環境</h2>
 

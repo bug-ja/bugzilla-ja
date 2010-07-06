@@ -39,14 +39,6 @@ X[% comment_body %]
 *** この [% terms.bug %] は [% terms.bug %] [%+ comment.extra_data %] の重複として処理されました。 ***
 [% ELSIF comment.type == constants.CMT_HAS_DUPE %]
 *** [% terms.Bug %] [%+ comment.extra_data %] がこの [% terms.bug %] の重複と処理されました。 ***
-[% ELSIF comment.type == constants.CMT_MOVED_TO %]
-X[% comment_body %]
-
-[%+ terms.Bug %] は [% Param("move-to-url") %] に移動しました。
-移動が成功した場合、[% comment.extra_data %] は、他のデータベースにおける
-新しい [% terms.bug %] 番号を含むメールを受け取るでしょう。
-全てうまくいけば、新しい [% terms.bug %] へのリンクをここへ貼り付けてください。
-そうでなければ、この [% terms.bug %] を再開してください。
 [% ELSIF comment.type == constants.CMT_ATTACHMENT_CREATED %]
 attachment [% comment.extra_data %] を追加
 [% IF is_bugmail %]

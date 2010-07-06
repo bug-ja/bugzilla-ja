@@ -412,8 +412,6 @@
       削除
     [% ELSIF action == "edit" %]
       追加、編集、削除
-    [% ELSIF action == "move" %]
-      移動
     [% ELSIF action == "run" %]
       実行
     [% ELSIF action == "schedule" %]
@@ -422,6 +420,8 @@
       利用
     [% ELSIF action == "approve" %]
       承認
+    [% ELSE %]
+      [% Hook.process('auth_failure_action') %]
     [% END %]
 
     は許可されていません。
@@ -1378,11 +1378,6 @@
     [% terms.bugs %] を [%+ status FILTER upper FILTER html %]
     として処理するには有効な [% jawords.bug_resolution FILTER html %] が必要です。
 
-  [% ELSIF error == "move_bugs_disabled" %]
-    [% title = BLOCK %][% jawords.bug_move FILTER html %] は無効化されています[% END %]
-    [% jawords.bug_move FILTER html %] は無効化されています。
-    この操作が必要な場合は、[% Param("maintainer") %] に連絡してください。
-
   [% ELSIF error == "missing_subcategory" %]
     [% title = BLOCK %] [% jawords.report_sub_category FILTER html %] が指定されていません [% END %]
     この [% jawords.report_series FILTER html %] に [% jawords.report_sub_category FILTER html %] が指定されていません。
@@ -1398,6 +1393,10 @@
     [% ELSE %]
       [% Param("maintainer") %] に連絡し、この [% jawords.product FILTER html %] に [% jawords.version FILTER html %] を追加するように要請してください。
     [% END %]
+
+  [% ELSIF error == "multiple_alias_not_allowed" %]
+    複数の [% terms.bugs %] を同時に更新しようとする際には、
+    エイリアスは設定できません。
 
   [% ELSIF error == "need_quip" %]
     [% title = BLOCK %] [% jawords.quip FILTER html %] が入力されていません [% END %]
@@ -1984,6 +1983,8 @@
     グループ
   [% ELSIF class == "Bugzilla::Product" %]
     プロダクト
+  [% ELSIF class == "Bugzilla::Search::Recent" %]
+    最近の検索
   [% ELSIF class == "Bugzilla::Search::Saved" %]
     保存された検索
   [% ELSIF ( matches = class.match('^Bugzilla::Field::Choice::(.+)') ) %]

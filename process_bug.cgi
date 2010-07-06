@@ -75,19 +75,6 @@ my $vars = {};
 # Subroutines
 ######################################################################
 
-# Used to send email when an update is done.
-sub send_results {
-    my ($bug_id, $vars) = @_;
-    my $template = Bugzilla->template;
-    $vars->{'sent_bugmail'} = 
-        Bugzilla::BugMail::Send($bug_id, $vars->{'mailrecipients'});
-    if (Bugzilla->usage_mode != USAGE_MODE_EMAIL) {
-        $template->process("bug/process/results.html.tmpl", $vars)
-            || ThrowTemplateError($template->error());
-    }
-    $vars->{'header_done'} = 1;
-}
-
 # Tells us whether or not a field should be changed by process_bug.
 sub should_set {
     # check_defined is used for fields where there's another field
@@ -214,7 +201,7 @@ if (defined $cgi->param('id')) {
             my $next_bug_id = $bug_list[$cur + 1];
             detaint_natural($next_bug_id);
             if ($next_bug_id and $user->can_see_bug($next_bug_id)) {
-                # We create an object here so that send_results can use it
+                # We create an object here so that $bug->send_changes can use it
                 # when displaying the header.
                 $vars->{'bug'} = new Bugzilla::Bug($next_bug_id);
             }
@@ -239,22 +226,6 @@ foreach my $bug (@bug_objects) {
     }
 }
 
-# For security purposes, and because lots of other checks depend on it,
-# we set the product first before anything else.
-my $product_change; # Used only for strict_isolation checks, right now.
-if (should_set('product')) {
-    foreach my $b (@bug_objects) {
-        my $changed = $b->set_product(scalar $cgi->param('product'),
-            { component        => scalar $cgi->param('component'),
-              version          => scalar $cgi->param('version'),
-              target_milestone => scalar $cgi->param('target_milestone'),
-              change_confirmed => scalar $cgi->param('confirm_product_change'),
-              other_bugs => \@bug_objects,
-            });
-        $product_change ||= $changed;
-    }
-}
-
 # Component, target_milestone, and version are in here just in case
 # the 'product' field wasn't defined in the CGI. It doesn't hurt to set
 # them twice.
@@ -263,8 +234,9 @@ my @set_fields = qw(op_sys rep_platform priority bug_severity
                     bug_file_loc status_whiteboard short_desc
                     deadline remaining_time estimated_time
                     work_time set_default_assignee set_default_qa_contact
-                    keywords keywordaction 
-                    cclist_accessible reporter_accessible);
+                    cclist_accessible reporter_accessible 
+                    product confirm_product_change
+                    bug_status resolution dup_id);
 push(@set_fields, 'assigned_to') if !$cgi->param('set_default_assignee');
 push(@set_fields, 'qa_contact')  if !$cgi->param('set_default_qa_contact');
 my %field_translation = (
@@ -274,10 +246,10 @@ my %field_translation = (
     bug_file_loc => 'url',
     set_default_assignee   => 'reset_assigned_to',
     set_default_qa_contact => 'reset_qa_contact',
-    keywordaction => 'keywords_action',
+    confirm_product_change => 'product_change_confirmed',
 );
 
-my %set_all_fields;
+my %set_all_fields = ( other_bugs => \@bug_objects );
 foreach my $field_name (@set_fields) {
     if (should_set($field_name, 1)) {
         my $param_name = $field_translation{$field_name} || $field_name;
@@ -285,6 +257,12 @@ foreach my $field_name (@set_fields) {
     }
 }
 
+if (should_set('keywords')) {
+    my $action = $cgi->param('keywordaction');
+    $action = 'remove' if $action eq 'delete';
+    $action = 'set'    if $action eq 'makeexact';
+    $set_all_fields{keywords}->{$action} = $cgi->param('keywords');
+}
 if (should_set('comment')) {
     $set_all_fields{comment} = {
         body       => scalar $cgi->param('comment'),
@@ -402,131 +380,14 @@ if (defined $cgi->param('id')) {
     $first_bug->set_flags($flags, $new_flags);
 }
 
-foreach my $b (@bug_objects) {
-    # Theoretically you could move a product without ever specifying
-    # a new assignee or qa_contact, or adding/removing any CCs. So,
-    # we have to check that the current assignee, qa, and CCs are still
-    # valid if we've switched products, under strict_isolation. We can only
-    # do that here. There ought to be some better way to do this,
-    # architecturally, but I haven't come up with it.
-    if ($product_change) {
-        $b->_check_strict_isolation();
-    }
-}
-
-my $move_action = $cgi->param('action') || '';
-if ($move_action eq Bugzilla->params->{'move-button-text'}) {
-    Bugzilla->params->{'move-enabled'} || ThrowUserError("move_bugs_disabled");
-
-    $user->is_mover || ThrowUserError("auth_failure", {action => 'move',
-                                                       object => 'bugs'});
-
-    $dbh->bz_start_transaction();
-
-    # First update all moved bugs.
-    foreach my $bug (@bug_objects) {
-        $bug->add_comment('', { type => CMT_MOVED_TO, extra_data => $user->login });
-    }
-    # Don't export the new status and resolution. We want the current ones.
-    local $Storable::forgive_me = 1;
-    my $bugs = dclone(\@bug_objects);
-
-    my $new_status = Bugzilla->params->{'duplicate_or_move_bug_status'};
-    foreach my $bug (@bug_objects) {
-        $bug->set_status($new_status, {resolution => 'MOVED', moving => 1});
-    }
-    $_->update() foreach @bug_objects;
-    $dbh->bz_commit_transaction();
-
-    # Now send emails.
-    foreach my $bug (@bug_objects) {
-        $vars->{'mailrecipients'} = { 'changer' => $user };
-        $vars->{'id'} = $bug->id;
-        $vars->{'type'} = "move";
-        send_results($bug->id, $vars);
-    }
-    # Prepare and send all data about these bugs to the new database
-    my $to = Bugzilla->params->{'move-to-address'};
-    $to =~ s/@/\@/;
-    my $from = Bugzilla->params->{'moved-from-address'};
-    $from =~ s/@/\@/;
-    my $msg = "To: $to\n";
-    $msg .= "From: Bugzilla <" . $from . ">\n";
-    $msg .= "Subject: Moving bug(s) " . join(', ', map($_->id, @bug_objects))
-            . "\n\n";
-
-    my @fieldlist = (Bugzilla::Bug->fields, 'group', 'long_desc',
-                     'attachment', 'attachmentdata');
-    my %displayfields;
-    foreach (@fieldlist) {
-        $displayfields{$_} = 1;
-    }
-
-    $template->process("bug/show.xml.tmpl", { bugs => $bugs,
-                                              displayfields => \%displayfields,
-                                            }, \$msg)
-      || ThrowTemplateError($template->error());
-
-    $msg .= "\n";
-    MessageToMTA($msg);
-
-    # End the response page.
-    unless (Bugzilla->usage_mode == USAGE_MODE_EMAIL) {
-        $template->process("bug/navigate.html.tmpl", $vars)
-            || ThrowTemplateError($template->error());
-        $template->process("global/footer.html.tmpl", $vars)
-            || ThrowTemplateError($template->error());
-    }
-    exit;
-}
-
-
-# You cannot mark bugs as duplicates when changing several bugs at once
-# (because currently there is no way to check for duplicate loops in that
-# situation).
-if (!$cgi->param('id') && $cgi->param('dup_id')) {
-    ThrowUserError('dupe_not_allowed');
-}
-
-# Set the status, resolution, and dupe_of (if needed). This has to be done
-# down here, because the validity of status changes depends on other fields,
-# such as Target Milestone.
-foreach my $b (@bug_objects) {
-    if (should_set('bug_status')) {
-        $b->set_status(
-            scalar $cgi->param('bug_status'),
-            {resolution =>  scalar $cgi->param('resolution'),
-                dupe_of => scalar $cgi->param('dup_id')}
-            );
-    }
-    elsif (should_set('resolution')) {
-       $b->set_resolution(scalar $cgi->param('resolution'), 
-                          {dupe_of => scalar $cgi->param('dup_id')});
-    }
-    elsif (should_set('dup_id')) {
-        $b->set_dup_id(scalar $cgi->param('dup_id'));
-    }
-}
-
 ##############################
 # Do Actual Database Updates #
 ##############################
 foreach my $bug (@bug_objects) {
-    $dbh->bz_start_transaction();
+    my $changes = $bug->update();
 
-    my $timestamp = $dbh->selectrow_array(q{SELECT LOCALTIMESTAMP(0)});
-    my $changes = $bug->update($timestamp);
-
-    my %notify_deps;
     if ($changes->{'bug_status'}) {
-        my ($old_status, $new_status) = @{ $changes->{'bug_status'} };
-        
-        # If this bug has changed from opened to closed or vice-versa,
-        # then all of the bugs we block need to be notified.
-        if (is_open_state($old_status) ne is_open_state($new_status)) {
-            $notify_deps{$_} = 1 foreach (@{$bug->blocked});
-        }
-        
+        my $new_status = $changes->{'bug_status'}->[1];
         # We may have zeroed the remaining time, if we moved into a closed
         # status, so we should inform the user about that.
         if (!is_open_state($new_status) && $changes->{'remaining_time'}) {
@@ -535,66 +396,7 @@ foreach my $bug (@bug_objects) {
         }
     }
 
-    # To get a list of all changed dependencies, convert the "changes" arrays
-    # into a long string, then collapse that string into unique numbers in
-    # a hash.
-    my $all_changed_deps = join(', ', @{ $changes->{'dependson'} || [] });
-    $all_changed_deps = join(', ', @{ $changes->{'blocked'} || [] },
-                                   $all_changed_deps);
-    my %changed_deps = map { $_ => 1 } split(', ', $all_changed_deps);
-    # When clearning one field (say, blocks) and filling in the other
-    # (say, dependson), an empty string can get into the hash and cause
-    # an error later.
-    delete $changed_deps{''};
-
-    $dbh->bz_commit_transaction();
-
-    ###############
-    # Send Emails #
-    ###############
-
-    my $old_qa  = $changes->{'qa_contact'}  ? $changes->{'qa_contact'}->[0] : '';
-    my $old_own = $changes->{'assigned_to'} ? $changes->{'assigned_to'}->[0] : '';
-    my $old_cc  = $changes->{cc}            ? $changes->{cc}->[0] : '';
-    $vars->{'mailrecipients'} = {
-        cc        => [split(/[\s,]+/, $old_cc)],
-        owner     => $old_own,
-        qacontact => $old_qa,
-        changer   => Bugzilla->user };
-
-    $vars->{'id'} = $bug->id;
-    $vars->{'type'} = "bug";
-    
-    # Let the user know the bug was changed and who did and didn't
-    # receive email about the change.
-    send_results($bug->id, $vars);
- 
-    # If the bug was marked as a duplicate, we need to notify users on the
-    # other bug of any changes to that bug.
-    my $new_dup_id = $changes->{'dup_id'} ? $changes->{'dup_id'}->[1] : undef;
-    if ($new_dup_id) {
-        $vars->{'mailrecipients'} = { 'changer' => Bugzilla->user }; 
-
-        $vars->{'id'} = $new_dup_id;
-        $vars->{'type'} = "dupe";
-        
-        # Let the user know a duplication notation was added to the 
-        # original bug.
-        send_results($new_dup_id, $vars);
-    }
-
-    my %all_dep_changes = (%notify_deps, %changed_deps);
-    foreach my $id (sort { $a <=> $b } (keys %all_dep_changes)) {
-        $vars->{'mailrecipients'} = { 'changer' => Bugzilla->user };
-        $vars->{'id'} = $id;
-        $vars->{'type'} = "dep";
-
-        # Let the user (if he is able to see the bug) know we checked to
-        # see if we should email notice of this change to users with a 
-        # relationship to the dependent bug and who did and didn't 
-        # receive email about it.
-        send_results($id, $vars);
-    }
+    $bug->send_changes($changes, $vars);
 }
 
 if (Bugzilla->usage_mode == USAGE_MODE_EMAIL) {
