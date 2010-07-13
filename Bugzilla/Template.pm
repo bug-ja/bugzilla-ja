@@ -44,6 +44,7 @@ use Bugzilla::Keyword;
 use Bugzilla::Util;
 use Bugzilla::User;
 use Bugzilla::Error;
+use Bugzilla::Search;
 use Bugzilla::Status;
 use Bugzilla::Token;
 
@@ -379,14 +380,22 @@ $Template::Stash::PRIVATE = undef;
 $Template::Stash::LIST_OPS->{ contains } =
   sub {
       my ($list, $item) = @_;
-      return grep($_ eq $item, @$list);
+      if (ref $item && $item->isa('Bugzilla::Object')) {
+          return grep($_->id == $item->id, @$list);
+      } else {
+          return grep($_ eq $item, @$list);
+      }
   };
 
 $Template::Stash::LIST_OPS->{ containsany } =
   sub {
       my ($list, $items) = @_;
       foreach my $item (@$items) { 
-          return 1 if grep($_ eq $item, @$list);
+          if (ref $item && $item->isa('Bugzilla::Object')) {
+              return 1 if grep($_->id == $item->id, @$list);
+          } else {
+              return 1 if grep($_ eq $item, @$list);
+          }
       }
       return 0;
   };
@@ -764,6 +773,9 @@ sub create {
             # Whether or not keywords are enabled, in this Bugzilla.
             'use_keywords' => sub { return Bugzilla::Keyword->any_exist; },
 
+            # All the keywords.
+            'all_keywords' => sub { return Bugzilla::Keyword->get_all(); },
+
             'feature_enabled' => sub { return Bugzilla->feature(@_); },
 
             # field_descs can be somewhat slow to generate, so we generate
@@ -772,6 +784,8 @@ sub create {
             'field_descs' => sub { return template_var('field_descs') },
 
             'install_string' => \&Bugzilla::Install::Util::install_string,
+
+            'report_columns' => \&Bugzilla::Search::REPORT_COLUMNS,
 
             # These don't work as normal constants.
             DB_MODULE        => \&Bugzilla::Constants::DB_MODULE,

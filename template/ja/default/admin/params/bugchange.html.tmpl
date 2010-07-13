@@ -23,6 +23,10 @@
    desc = "$terms.bug 変更ポリシーの設定"
 %]
 
+[% PROCESS "global/field-descs.none.tmpl" %]
+
+[% accept_status = display_value('bug_status', 'IN_PROGRESS') FILTER html %]
+
 [% param_descs = {
   duplicate_or_move_bug_status => "$terms.abug を重複とするや、他のサイトへ移動するときに、" _
                                   "ここで設定した $terms.bug ステータスを適用します。",
@@ -38,7 +42,12 @@
                                  "マイルストーンが設定されます。",
 
   musthavemilestoneonaccept => "ターゲットマイルストーンを利用している場合、" _
-                               "${terms.bug} を担当する時にマイルストーンを設定しなくてはいけないようにしますか ?",
+                               "${terms.bug} を担当する時にマイルストー
+                               ンを設定しなくてはいけないようにしますか ?",
+  musthavemilestoneonaccept => 
+    "${field_descs.target_milestone} を利用している場合、${terms.abug} のステータスを"
+    _ "${accept_status} に変更するときにマイルストーンを設定しなくてはいけないように"
+    _ "しますか？",
 
   commentonchange_resolution => "有効なら、$terms.bug の解決方法を変更するときに、" _
                                 "短いコメントを入力しなければならなくなります。",

@@ -709,6 +709,9 @@
     システムにとって望ましいことを確認してください。不要な書き込み権限は削除して
     ください。
 
+  [% ELSIF message_tag == "install_workflow_init" %]
+    既定のステータスワークフローを設定中です。。。
+
   [% ELSIF message_tag == "product_created" %]
     [% title = "プロダクト作成完了" %]
     プロダクト <em>[% product.name FILTER html %]</em> の作成を完了しました。

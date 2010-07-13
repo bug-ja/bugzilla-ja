@@ -931,7 +931,7 @@
 
   [% ELSIF error == "group_change_denied" %]
     [% title = BLOCK %] グループを追加、または削除できません [% END %]
-    [% jawords.group FILTER html %] ID [% group_id FILTER html %] を
+    '[% group.name FILTER html %]' グループを
     [% terms.bug %] [%+ bug.id FILTER html %]
     から削除しようとしましたが、あなたはこの権限を持っていません。
 
@@ -947,14 +947,14 @@
     を参照するように [% jawords.param FILTER html %] を変更してください。
 
   [% ELSIF error == "group_invalid_removal" %]
-    [% jawords.group FILTER html %] ID [% group_id FILTER html %] から
+    '[% group.name FILTER html %]' グループから
     [% terms.bug %] [%+ bug.id FILTER html %] を削除しようとしましたが、
     [% jawords.product FILTER html %] '[% product FILTER html %]' の [% terms.bugs FILTER html %]
     はその [% jawords.group FILTER html %] から削除できません。
 
   [% ELSIF error == "group_invalid_restriction" %]
     [% terms.bug %] [%+ bug.id FILTER html %] を
-    [% jawords.group FILTER html %] ID [% group_id FILTER html %] に制限しようとしましたが、
+    '[% group.name FILTER html %]' グループに制限しようとしましたが、
     '[% product FILTER html %]' [% jawords.product FILTER html %] の [% terms.bugs FILTER html %]
     を指定された [% jawords.group FILTER html %] に制限することはできません。
 

@@ -64,44 +64,32 @@
           この [% terms.bug %] は最近データベースに追加されました。
           誰もまだ [% terms.bug %] が有効かを確認していません。
           "canconfirm" 権限を持つユーザはこの [% terms.bug %] を承認でき、
-          ステータスを <b>[% display_value("bug_status", "NEW") FILTER html %]</b> に変更可能です。
+          ステータスを <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b> に変更可能です。
           もしくは、直接解決し、<b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> 
           とすることも可能です。
         </dd>
 
         <dt>
-          [% display_value("bug_status", "NEW") FILTER html %]
+          [% display_value("bug_status", "CONFIRMED") FILTER html %]
         </dt>
         <dd>
           この [% terms.bug %] は有効なもので最近追加されました。
           このステータスの [%+ terms.Bugs %] は、誰かがこれについて作業を始めた時に
-          <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b> 
+          <b>[% display_value("bug_status", "IN_PROGRESS") FILTER html %]</b> 
           となり、解決され
           <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b>
           となるでしょう。
         </dd>
 
         <dt>
-          [% display_value("bug_status", "ASSIGNED") FILTER html %]
+          [% display_value("bug_status", "IN_PROGRESS") FILTER html %]
         </dt>
         <dd>
           この [% terms.bug %] は未解決ですが、この [% terms.bug %] 
           について作業をしている、ある担当者に割り当てられています。
           この段階からは、[% terms.bugs %] は他の担当者に再割り当てされ、
-          <b>[% display_value("bug_status", "NEW") FILTER html %]</b> となるか、
+          <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b> となるか、
           解決され <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるでしょう。
-        </dd>
-
-        <dt>
-          [% display_value("bug_status", "REOPENED") FILTER html %]
-        </dt>
-        <dd>
-          この [% terms.bug %] は一度解決されましたが、解決方法が正しくありませんでした。
-          たとえば、<b>[% display_value("resolution", "WORKSFORME") FILTER html %]</b> [% terms.bug %]
-          がより詳細な情報が得られ、再現するようになれば
-          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> となるでしょう。
-          この段階からは、[% terms.bugs %] は <b>[% display_value("bug_status", "ASSIGNED") FILTER html %]</b> 
-          となるか、<b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるでしょう。
         </dd>
       </dl>
     </td>
@@ -123,11 +111,9 @@
         </dt>
         <dd>
           解決策が適用され、QA の確認待ちの状態です。
-          この段階からは、[% terms.bugs %] は再開され
-          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> となるか、確認され
-          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b> となるか、
-          問題がなくなり閉じられて <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b>
-          となるかでしょう。
+          この段階からは、[% terms.bugs %] は再開され活動中の状態になるか、確認され
+          QA による確認の後に
+          <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b> となるかでしょう。
         </dd>
 
         <dt>
@@ -135,17 +121,7 @@
         </dt>
         <dd>
           QA が [% terms.bug %] の解決方法を確認し、とられた解決方法に同意しました。
-          [% terms.Bugs %] は、報告対象のプロダクトが提供されている間はこのステータスで、
-          それ以後は <b>[% display_value("bug_status", "CLOSED") FILTER html %]</b> となるでしょう。
-        </dd>
-
-        <dt>
-          [% display_value("bug_status", "CLOSED") FILTER html %]
-        </dt>
-        <dd>
-          [% terms.bug %] は無効と考えられていますが、解決方法は正しいです。
-          作業したい [% terms.bugs %] があれば、まず
-          <b>[% display_value("bug_status", "REOPENED") FILTER html %]</b> する必要があります。
+          これが [% terms.bugs %] にとっての最後のステータスとなります。
         </dd>
       </dl>
     </td>

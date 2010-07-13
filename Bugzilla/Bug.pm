@@ -286,6 +286,21 @@ use constant REQUIRED_FIELD_MAP => {
     component_id => 'component',
 };
 
+# Target Milestone is here because it has a default that the validator
+# creates (product.defaultmilestone) that is different from the database
+# default.
+#
+# CC is here because it is a separate table, and has a validator-created
+# default of the component initialcc.
+#
+# QA Contact is allowed to be NULL in the database, so it wouldn't normally
+# be caught by _required_create_fields. However, it always has to be validated,
+# because it has a default of the component.defaultqacontact.
+#
+# Groups are in a separate table, but must always be validated so that
+# mandatory groups get set on bugs.
+use constant EXTRA_REQUIRED_FIELDS => qw(target_milestone cc qa_contact groups);
+
 #####################################################################
 
 sub new {
@@ -1323,7 +1338,10 @@ sub _check_bug_status {
         
     }
     
-    if (ref $invocant && $new_status->name eq 'ASSIGNED'
+    if (ref $invocant 
+        && ($new_status->name eq 'IN_PROGRESS'
+            # Backwards-compat for the old default workflow.
+            or $new_status->name eq 'ASSIGNED')
         && Bugzilla->params->{"usetargetmilestone"}
         && Bugzilla->params->{"musthavemilestoneonaccept"}
         # musthavemilestoneonaccept applies only if at least two
@@ -2682,8 +2700,7 @@ sub add_group {
     my ($self, $group) = @_;
     # Invalid ids are silently ignored. (We can't tell people whether
     # or not a group exists.)
-    $group = new Bugzilla::Group($group) unless ref $group;
-    return unless $group;
+    $group = Bugzilla::Group->check($group) if !blessed $group;
 
     return if !$group->is_active or !$group->is_bug_group;
 
@@ -2691,7 +2708,7 @@ sub add_group {
     # to this group by the current user.
     $self->product_obj->group_is_settable($group)
          || ThrowUserError('group_invalid_restriction',
-                { product => $self->product, group_id => $group->id,
+                { product => $self->product, group => $group,
                   bug => $self });
 
     # OtherControl people can add groups only during a product change,
@@ -2702,7 +2719,7 @@ sub add_group {
             || $controls->{othercontrol} == CONTROLMAPNA)
         {
             ThrowUserError('group_change_denied',
-                           { bug => $self, group_id => $group->id });
+                           { bug => $self, group => $group });
         }
     }
 
@@ -2714,8 +2731,7 @@ sub add_group {
 
 sub remove_group {
     my ($self, $group) = @_;
-    $group = new Bugzilla::Group($group) unless ref $group;
-    return unless $group;
+    $group = Bugzilla::Group->check($group) if !blessed $group;
     
     # First, check if this is a valid group for this product.
     # You can *always* remove a group that is not valid for this product
@@ -2731,7 +2747,7 @@ sub remove_group {
         # Nobody can ever remove a Mandatory group.
         if ($controls->{membercontrol} == CONTROLMAPMANDATORY) {
             ThrowUserError('group_invalid_removal',
-                { product => $self->product, group_id => $group->id,
+                { product => $self->product, group => $group,
                   bug => $self });
         }
 
@@ -2743,7 +2759,7 @@ sub remove_group {
                 || $controls->{othercontrol} == CONTROLMAPNA)
             {
                 ThrowUserError('group_change_denied',
-                               { bug => $self, group_id => $group->id });
+                               { bug => $self, group => $group });
             }
         }
     }
@@ -3417,9 +3433,13 @@ sub choices {
     if (!grep($_->name eq $self->product_obj->name, @products)) {
         unshift(@products, $self->product_obj);
     }
+    my %class_ids = map { $_->classification_id => 1 } @products;
+    my $classifications = 
+        Bugzilla::Classification->new_from_list([keys %class_ids]);
 
     my %choices = (
         bug_status => $self->statuses_available,
+        classification => $classifications,
         product    => \@products,
         component  => $self->product_obj->components,
         version    => $self->product_obj->versions,

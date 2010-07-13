@@ -55,6 +55,8 @@ use Bugzilla::Keyword;
 use Date::Format;
 use Date::Parse;
 
+use Storable qw(dclone);
+
 # If you specify a search type in the boolean charts, this describes
 # which operator maps to which internal function here.
 use constant OPERATORS => {
@@ -100,6 +102,9 @@ use constant OPERATOR_FIELD_OVERRIDE => {
     },
     commenter => {
         _default => \&_commenter,
+    },
+    reporter => {
+        _non_changed => \&_assigned_to_reporter_nonchanged,
     },
     'requestees.login_name' => {
         _default => \&_requestees_login_name,
@@ -150,12 +155,17 @@ use constant OPERATOR_FIELD_OVERRIDE => {
     },
     keywords => {
         equals       => \&_keywords_exact,
-        notequals    => \&_keywords_exact,
         anyexact     => \&_keywords_exact,
         anyword      => \&_keywords_exact,
         allwords     => \&_keywords_exact,
-        nowords      => \&_keywords_exact,
-        _non_changed => \&_keywords_nonchanged,
+
+        notequals     => \&_multiselect_negative,
+        notregexp     => \&_multiselect_negative,
+        notsubstring  => \&_multiselect_negative,
+        nowords       => \&_multiselect_negative,
+        nowordssubstr => \&_multiselect_negative,
+
+        _non_changed  => \&_keywords_nonchanged,
     },
     'flagtypes.name' => {
         _default => \&_flagtypes_name,
@@ -360,6 +370,32 @@ sub COLUMNS {
 
     $cache->{search_columns} = \%columns;
     return $cache->{search_columns};
+}
+
+sub REPORT_COLUMNS {
+    my $columns = dclone(COLUMNS);
+    # There's no reason to support reporting on unique fields.
+    # Also, some other fields don't make very good reporting axises,
+    # or simply don't work with the current reporting system.
+    my @no_report_columns = 
+        qw(bug_id alias short_short_desc opendate changeddate
+           flagtypes.name keywords relevance);
+
+    # Multi-select fields are not currently supported.
+    my @multi_selects = Bugzilla->get_fields(
+        { obsolete => 0, type => FIELD_TYPE_MULTI_SELECT });
+    push(@no_report_columns, map { $_->name } @multi_selects);
+
+    # If you're not a time-tracker, you can't use time-tracking
+    # columns.
+    if (!Bugzilla->user->is_timetracker) {
+        push(@no_report_columns, TIMETRACKING_FIELDS);
+    }
+
+    foreach my $name (@no_report_columns) {
+        delete $columns->{$name};
+    }
+    return $columns;
 }
 
 # Create a new Search
@@ -2021,7 +2057,7 @@ sub _keywords_exact {
     my %func_args = @_;
     my ($chartid, $v, $ff, $f, $t, $term, $supptables) =
         @func_args{qw(chartid v ff f t term supptables)};
-    
+
     my @list;
     my $table = "keywords_$$chartid";
     foreach my $value (split(/[\s,]+/, $$v)) {
@@ -2171,8 +2207,16 @@ sub _multiselect_negative {
         nowordssubstr => 'anywordssubstr',
     );
 
-    my $table = "bug_$$f";
-    $$ff = "$table.value";
+    my $table;
+    if ($$f eq 'keywords') {
+        $table = "keywords LEFT JOIN keyworddefs"
+                 . " ON keywords.keywordid = keyworddefs.id";
+        $$ff = "keyworddefs.name";
+    }
+    else {
+        $table = "bug_$$f";
+        $$ff = "$table.value";
+    }
     
     $$t = $map{$$t};
     $self->_do_operator_function(\%func_args);

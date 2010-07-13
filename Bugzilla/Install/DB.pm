@@ -530,7 +530,7 @@ sub update_table_definitions {
     _fix_uppercase_index_names();
 
     # 2007-05-17 LpSolit@gmail.com - Bug 344965
-    _initialize_workflow($old_params);
+    _initialize_workflow_for_upgrade($old_params);
 
     # 2007-08-08 LpSolit@gmail.com - Bug 332149
     $dbh->bz_add_column('groups', 'icon_url', {TYPE => 'TINYTEXT'});
@@ -624,6 +624,11 @@ sub update_table_definitions {
                           { TYPE => 'MEDIUMTEXT', NOTNULL => 1 }, '');
     $dbh->bz_alter_column('products', 'description',
                           { TYPE => 'MEDIUMTEXT', NOTNULL => 1 }, '');
+
+    # Change the default of allows_unconfirmed to TRUE as part
+    # of the new workflow.
+    $dbh->bz_alter_column('products', 'allows_unconfirmed',
+        { TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'TRUE' });
 
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #
@@ -2919,9 +2924,11 @@ sub _fix_uppercase_index_names {
     }
 }
 
-sub _initialize_workflow {
+sub _initialize_workflow_for_upgrade {
     my $old_params = shift;
     my $dbh = Bugzilla->dbh;
+
+    my $had_is_open = $dbh->bz_column_info('bug_status', 'is_open');
 
     $dbh->bz_add_column('bug_status', 'is_open',
                         {TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'TRUE'});
@@ -2955,6 +2962,10 @@ sub _initialize_workflow {
                   join(', ', @closed_statuses) . ')');
     }
 
+    # We only populate the workflow here if we're upgrading from a version
+    # before 3.2.
+    return if $had_is_open;
+
     # Populate the status_workflow table. We do nothing if the table already
     # has entries. If all bug status transitions have been deleted, the
     # workflow will be restored to its default schema.
@@ -2974,7 +2985,7 @@ sub _initialize_workflow {
         # confirmed bugs, so we use this parameter here.
         my $reassign = $old_params->{'commentonreassign'} || 0;
 
-        # This is the default workflow.
+        # This is the default workflow for upgrading installations.
         my @workflow = ([undef, 'UNCONFIRMED', $create],
                         [undef, 'NEW', $create],
                         [undef, 'ASSIGNED', $create],

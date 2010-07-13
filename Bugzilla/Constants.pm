@@ -128,6 +128,7 @@ use File::Basename;
     FIELD_TYPE_DATETIME
     FIELD_TYPE_BUG_ID
     FIELD_TYPE_BUG_URLS
+    FIELD_TYPE_KEYWORDS
 
     EMPTY_DATETIME_REGEX
 
@@ -160,6 +161,7 @@ use File::Basename;
     MAX_LOGINCOOKIE_AGE
     MAX_LOGIN_ATTEMPTS
     LOGIN_LOCKOUT_INTERVAL
+    MAX_STS_AGE
 
     SAFE_PROTOCOLS
     LEGAL_CONTENT_TYPES
@@ -193,7 +195,7 @@ use File::Basename;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "3.7.1";
+use constant BUGZILLA_VERSION => "3.7.2";
 
 # These are unique values that are unlikely to match a string or a number,
 # to be used in criteria for match() functions and other things. They start
@@ -394,12 +396,14 @@ use constant FIELD_TYPE_TEXTAREA  => 4;
 use constant FIELD_TYPE_DATETIME  => 5;
 use constant FIELD_TYPE_BUG_ID  => 6;
 use constant FIELD_TYPE_BUG_URLS => 7;
+use constant FIELD_TYPE_KEYWORDS => 8;
 
 use constant EMPTY_DATETIME_REGEX => qr/^[0\-:\sA-Za-z]+$/; 
 
 # See the POD for Bugzilla::Field/is_abnormal to see why these are listed
 # here.
 use constant ABNORMAL_SELECTS => qw(
+    classification
     product
     component
 );
@@ -420,6 +424,10 @@ use constant MAX_LOGIN_ATTEMPTS => 5;
 # If the maximum login attempts occur during this many minutes, the
 # account is locked.
 use constant LOGIN_LOCKOUT_INTERVAL => 30;
+
+# The maximum number of seconds the Strict-Transport-Security header
+# will remain valid. Default is one week.
+use constant MAX_STS_AGE => 604800;
 
 # Protocols which are considered as safe.
 use constant SAFE_PROTOCOLS => ('afs', 'cid', 'ftp', 'gopher', 'http', 'https',

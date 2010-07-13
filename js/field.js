@@ -16,6 +16,7 @@
  *
  * Contributor(s): Max Kanat-Alexander <mkanat@bugzilla.org>
  *                 Guy Pyrzak <guy.pyrzak@gmail.com>
+ *                 Reed Loden <reed@reedloden.com>
  */
 
 /* This library assumes that the needed YUI libraries have been loaded 
@@ -374,6 +375,20 @@ function updateCommentTagControl(checkbox, form) {
 }
 
 /**
+ * Reset the value of the classification field and fire an event change
+ * on it.  Called when the product changes, in case the classification
+ * field (which is hidden) controls the visibility of any other fields.
+ */
+function setClassification() {
+    var classification = document.getElementById('classification');
+    var product = document.getElementById('product');
+    var selected_product = product.value; 
+    var select_classification = all_classifications[selected_product];
+    classification.value = select_classification;
+    bz_fireEvent(classification, 'change');
+}
+
+/**
  * Says that a field should only be displayed when another field has
  * a certain value. May only be called after the controller has already
  * been added to the DOM.
@@ -621,8 +636,8 @@ YAHOO.bugzilla.userAutocomplete = {
         userAutoComp.autoHighlight = false;
         // this is a throttle to determine the delay of the query from typing
         // set this higher to cause fewer calls to the server
-        userAutoComp.queryDelay = 0.05
-        userAutoComp.useIFrame = true
+        userAutoComp.queryDelay = 0.05;
+        userAutoComp.useIFrame = true;
         userAutoComp.resultTypeList = false;
         if( multiple == true ){
             userAutoComp.delimChar = [","," "];
@@ -631,3 +646,32 @@ YAHOO.bugzilla.userAutocomplete = {
     }
 };
 
+YAHOO.bugzilla.keywordAutocomplete = {
+    dataSource : null,
+    init_ds : function(){
+        this.dataSource = new YAHOO.util.LocalDataSource( YAHOO.bugzilla.keyword_array );
+    },
+    init : function( field, container ) {
+        if( this.dataSource == null ){
+            this.init_ds();
+        }
+        var keywordAutoComp = new YAHOO.widget.AutoComplete(field, container, this.dataSource);
+        keywordAutoComp.maxResultsDisplayed = YAHOO.bugzilla.keyword_array.length;
+        keywordAutoComp.minQueryLength = 0;
+        keywordAutoComp.useIFrame = true;
+        keywordAutoComp.delimChar = [","," "];
+        keywordAutoComp.resultTypeList = false;
+        keywordAutoComp.queryDelay = 0;
+        /*  Causes all the possibilities in the keyword to appear when a user 
+         *  focuses on the textbox 
+         */
+        keywordAutoComp.textboxFocusEvent.subscribe( function(){
+            var sInputValue = YAHOO.util.Dom.get('keywords').value;
+            if( sInputValue.length === 0 ){
+                this.sendQuery(sInputValue);
+                this.collapseContainer();
+                this.expandContainer();
+            }
+        });
+    }
+};

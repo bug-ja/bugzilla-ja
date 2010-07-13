@@ -30,8 +30,8 @@ X-Bugzilla-Type: whine
 ひとつ以上の [% terms.bugs %] が要対応状態になっています。
 ([% urlbase %])
 
-これらの [% terms.bugs %] は [% display_value("bug_status", "NEW") %] か
-[%= display_value("bug_status", "REOPENED") %] 状態で、[% Param("whinedays") %] 日以上対応されていません。
+これらの [% terms.bugs %] は [% display_value("bug_status", "CONFIRMED") %] 状態で、
+[% Param("whinedays") %] 日以上対応されていません。
 これらについて対応し、初期処理を行ってください。
 
 通常、これは以下のどれかを行うこととなります。
@@ -42,17 +42,17 @@ X-Bugzilla-Type: whine
     ヒント: 誰に割り振ればいいかわからなければ、コンポーネントが正しいかを確認し、
     "既定の担当者に戻す" を選択してください。
 (3) [% terms.bug %] が自分のものであると判断したが、すぐに解決できない場合、
-    [% get_status("ASSIGNED") %] にすることで [% terms.bug %] を受け入れてください。
+    [% get_status("IN_PROGRESS") %] にすることで [% terms.bug %] を受け入れてください。
 
-全ての [% display_value("bug_status", "NEW") %]/[% display_value("bug_status", "REOPENED") %] [%+ terms.bugs %] のリストを見るには、
+全ての [% display_value("bug_status", "CONFIRMED") %] [%+ terms.bugs %] のリストを見るには、
 以下の URL を開いてください。(必要ならブックマークしてください。)
 
- [% urlbase %]buglist.cgi?bug_status=NEW&bug_status=REOPENED&assigned_to=[% email %]
+ [% urlbase %]buglist.cgi?bug_status=CONFIRMED&assigned_to=[% email %]
 
 もしくは、一般的な検索が以下からできます。
 [%+ urlbase %]query.cgi
 
-一番下に、あなたの [% display_value("bug_status", "NEW") %] [%+ terms.bugs %] になっている全ての
+一番下に、あなたの [% display_value("bug_status", "CONFIRMED") %] [%+ terms.bugs %] になっている全ての
 [% Param("whinedays") %] 日以上対応されていない [% terms.bug %] への個別のリンクをリスト
 します。
 

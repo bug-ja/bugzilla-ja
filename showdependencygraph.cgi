@@ -29,6 +29,7 @@ use File::Temp;
 
 use Bugzilla;
 use Bugzilla::Constants;
+use Bugzilla::Install::Filesystem;
 use Bugzilla::Util;
 use Bugzilla::Error;
 use Bugzilla::Bug;
@@ -114,7 +115,13 @@ if (!defined $cgi->param('id') && $display ne 'doall') {
 
 my ($fh, $filename) = File::Temp::tempfile("XXXXXXXXXX",
                                            SUFFIX => '.dot',
-                                           DIR => $webdotdir);
+                                           DIR => $webdotdir,
+                                           UNLINK => 1);
+
+chmod Bugzilla::Install::Filesystem::CGI_WRITE, $filename
+    or warn install_string('chmod_failed', { path => $filename,
+                                             error => $! });
+
 my $urlbase = Bugzilla->params->{'urlbase'};
 
 print $fh "digraph G {";
@@ -192,9 +199,6 @@ my $sth = $dbh->prepare(
 foreach my $k (keys(%seen)) {
     # Retrieve bug information from the database
     my ($stat, $resolution, $summary) = $dbh->selectrow_array($sth, undef, $k);
-    $stat ||= 'NEW';
-    $resolution ||= '';
-    $summary ||= '';
 
     # Resolution and summary are shown only if user can see the bug
     if (!Bugzilla->user->can_see_bug($k)) {
@@ -244,8 +248,6 @@ foreach my $k (keys(%seen)) {
 print $fh "}\n";
 close $fh;
 
-chmod 0777, $filename;
-
 my $webdotbase = Bugzilla->params->{'webdotbase'};
 
 if ($webdotbase =~ /^https?:/) {
@@ -263,13 +265,18 @@ if ($webdotbase =~ /^https?:/) {
     my ($pngfh, $pngfilename) = File::Temp::tempfile("XXXXXXXXXX",
                                                      SUFFIX => '.png',
                                                      DIR => $webdotdir);
+
+    chmod Bugzilla::Install::Filesystem::WS_SERVE, $pngfilename
+        or warn install_string('chmod_failed', { path => $pngfilename,
+                                                 error => $! });
+
     binmode $pngfh;
     open(DOT, "\"$webdotbase\" -Tpng $filename|");
     binmode DOT;
     print $pngfh $_ while <DOT>;
     close DOT;
     close $pngfh;
-    
+
     # On Windows $pngfilename will contain \ instead of /
     $pngfilename =~ s|\\|/|g if ON_WINDOWS;
 
@@ -287,12 +294,18 @@ if ($webdotbase =~ /^https?:/) {
     my ($mapfh, $mapfilename) = File::Temp::tempfile("XXXXXXXXXX",
                                                      SUFFIX => '.map',
                                                      DIR => $webdotdir);
+
+    chmod Bugzilla::Install::Filesystem::WS_SERVE, $mapfilename
+        or warn install_string('chmod_failed', { path => $mapfilename,
+                                                 error => $! });
+
     binmode $mapfh;
     open(DOT, "\"$webdotbase\" -Tismap $filename|");
     binmode DOT;
     print $mapfh $_ while <DOT>;
     close DOT;
     close $mapfh;
+
     $vars->{'image_map'} = CreateImagemap($mapfilename);
 }
 

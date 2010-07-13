@@ -275,14 +275,21 @@ sub multipart_start {
 sub header {
     my $self = shift;
 
+    # If there's only one parameter, then it's a Content-Type.
+    if (scalar(@_) == 1) {
+        # Since we're adding parameters below, we have to name it.
+        unshift(@_, '-type' => shift(@_));
+    }
+
     # Add the cookies in if we have any
     if (scalar(@{$self->{Bugzilla_cookie_list}})) {
-        if (scalar(@_) == 1) {
-            # if there's only one parameter, then it's a Content-Type.
-            # Since we're adding parameters we have to name it.
-            unshift(@_, '-type' => shift(@_));
-        }
         unshift(@_, '-cookie' => $self->{Bugzilla_cookie_list});
+    }
+
+    # Add Strict-Transport-Security (STS) header if this response
+    # is over SSL and ssl_redirect is enabled.
+    if ($self->https && Bugzilla->params->{'ssl_redirect'}) {
+        unshift(@_, '-strict-transport-security' => 'max-age=' . MAX_STS_AGE);
     }
 
     return $self->SUPER::header(@_) || "";

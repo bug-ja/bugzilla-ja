@@ -749,7 +749,7 @@
             </term>
             <listitem>
               <para>
-                このパラメータは新しいバグが、何日 NEW もしくは REOPENED 
+                このパラメータは新しいバグが、何日 CONFIRMED
                 状態のままになっている場合に通知を送るかの設定です。
                 もしこの機能を利用しない場合、インストールの開設の中にある
                 cron job の設定を行わないか、この値を "0" にしてください。
@@ -1198,7 +1198,7 @@
     <para>
     Buzilla のさまざまな設定はプロダクトごとに行えるようになっています。
     ユーザが行使できる <quote>投票</quote> 数もプロダクトごとに設定可能ですし、
-    UNCONFIRMED ステータスから NEW 
+    UNCONFIRMED ステータスから CONFIRMED 
     ステータスに自動的に移動するのに必要な投票数も同様です。
     </para>
 
@@ -2508,7 +2508,7 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     This allows developers to gauge
     user need for a particular enhancement or bugfix. By allowing bugs with
     a certain number of votes to automatically move from "UNCONFIRMED" to
-    "NEW", users of the bug system can help high-priority bugs garner
+    "CONFIRMED", users of the bug system can help high-priority bugs garner
     attention so they don't sit for a long time awaiting triage.</para>
 
     <para>To modify Voting settings:</para>
@@ -2537,7 +2537,7 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
         <para><emphasis>Number of votes a bug in this product needs to
         automatically get out of the UNCONFIRMED state</emphasis>: 
         Setting this field to "0" disables the automatic move of
-        bugs from UNCONFIRMED to NEW. 
+        bugs from UNCONFIRMED to CONFIRMED. 
         </para>
       </listitem>
 

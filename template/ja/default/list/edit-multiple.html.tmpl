@@ -19,6 +19,7 @@
   #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #                 Frederic Buclin <LpSolit@gmail.com>
   #                 Guy Pyrzak <guy.pyrzak@gmail.com>
+  #                 Reed Loden <reed@reedloden.com>
   #%]
 
 [% PROCESS global/variables.none.tmpl %]
@@ -172,7 +173,7 @@
            id => "assigned_to"
            name => "assigned_to"
            value => dontchange
-           size => 32
+           size => 40
       %]
       <input type="checkbox" id="set_default_assignee" name="set_default_assignee" value="1">
       <label for="set_default_assignee">既定の担当者に戻す</label>
@@ -187,7 +188,7 @@
              id => "qa_contact"
              name => "qa_contact"
              value => dontchange
-             size => 32
+             size => 40
         %]
         <input type="checkbox" id="set_default_qa_contact" name="set_default_qa_contact" value="1">
         <label for="set_default_qa_contact">既定の QA コンタクトに戻す</label>
@@ -199,7 +200,13 @@
 
     <th><label for="masscc">CC:</label></th>
     <td colspan="3">
-      <input id="masscc" name="masscc" size="32">
+      [% INCLUDE global/userselect.html.tmpl
+           id => "masscc"
+           name => "masscc"
+           value => ""
+           size => 40
+           multiple => 5
+      %]
       <select name="ccaction">
         <option value="add">CC に追加する</option>
         <option value="remove">CC から削除する</option>
@@ -211,17 +218,19 @@
   [% IF use_keywords %]
     <tr>
 
-      <th>
-        <label for="keywords">
-          <a href="describekeywords.cgi">キーワード</a>:
-        </label>
-      </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.keywords, editable = 1
+         desc_url = "describekeywords.cgi"
+      %]
       <td colspan="3">
-        <input id="keywords" name="keywords" size="32">
+        [% INCLUDE bug/field.html.tmpl
+           field = bug_fields.keywords, editable = 1, value = keywords
+           no_tds = 1
+        %]
         <select name="keywordaction">
           <option value="add">キーワードを追加する</option>
-          <option value="delete">キーワードを削除する</option>
-          <option value="makeexact">このリストのキーワードのみを設定する</option>
+          <option value="remove">キーワードを削除する</option>
+          <option value="set">このリストのキーワードのみを設定する</option>
         </select>
       </td>
 
@@ -235,7 +244,7 @@
       </label>
     </th>
     <td colspan="3">
-      <input id="dependson" name="dependson" size="32">
+      <input id="dependson" name="dependson" size="40">
       <select name="dependson_action">
           <option value="add">これらの ID を追加</option>
           <option value="remove">これらの ID を削除</option>
@@ -250,7 +259,7 @@
       </label>
     </th>
     <td colspan="3">
-      <input id="blocked" name="blocked" size="32">
+      <input id="blocked" name="blocked" size="40">
       <select name="blocked_action">
           <option value="add">これらの ID を追加</option>
           <option value="remove">これらの ID を削除</option>
@@ -309,10 +318,18 @@
 
 [% IF groups.size > 0 %]
 
+  <script type="text/javascript">
+    function turn_off(myself, id) {
+        var other_checkbox = document.getElementById(id);
+        if (myself.checked && other_checkbox) {
+            other_checkbox.checked = false;
+        }
+    }
+  </script>
+
   <b>グループ:</b><br>
   <table border="1">
     <tr>
-      <th>この<br>グループ<br>制限を変更<br>しない</th>
       <th>この<br>グループ<br>から [% terms.bugs %] を<br>除く</th>
       <th>この<br>グループ<br>に [% terms.bugs %] を<br>追加する</th>
       <th>グループ名:</th>
@@ -321,14 +338,17 @@
     [% FOREACH group = groups %]
     <tr>
       <td align="center">
-        <input type="radio" name="bit-[% group.id %]" value="-1" checked="checked">
-      </td>
-      <td align="center">
-        <input type="radio" name="bit-[% group.id %]" value="0">
+        <input type="checkbox" name="defined_groups" 
+               id="defined_group_[% group.id %]"
+               value="[% group.name FILTER html %]"
+               onchange="turn_off(this, 'group_[% group.id %]')">
       </td>
       [% IF group.is_active %]
         <td align="center">
-          <input type="radio" name="bit-[% group.id %]" value="1">
+          <input type="checkbox" name="groups" 
+                 id="group_[% group.id FILTER html %]"
+                 value="[% group.name FILTER html %]"
+                 onchange="turn_off(this, 'defined_group_[% group.id %]')">
         </td>
       [% ELSE %]
         <td>&nbsp;</td>
