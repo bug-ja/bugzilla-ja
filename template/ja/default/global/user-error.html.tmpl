@@ -1665,7 +1665,7 @@
     [% title = "関連性のループが検出されました" %]
     [% terms.bug %] [%+ bug_id FILTER html %] の
     [% field_descs.$field_name FILTER html %]
-    に [% terms.bug %] [%+ dep_id FILTER html &] に対する依存関係のループが存在します。
+    に [% terms.bug %] [%+ dep_id FILTER html %] に対する依存関係のループが存在します。
 
   [% ELSIF error == "request_queue_group_invalid" %]
     グループフィールド <em>[% group FILTER html %]</em> は無効です。
