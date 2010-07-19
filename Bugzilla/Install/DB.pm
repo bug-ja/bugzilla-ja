@@ -2928,8 +2928,6 @@ sub _initialize_workflow_for_upgrade {
     my $old_params = shift;
     my $dbh = Bugzilla->dbh;
 
-    my $had_is_open = $dbh->bz_column_info('bug_status', 'is_open');
-
     $dbh->bz_add_column('bug_status', 'is_open',
                         {TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'TRUE'});
 
@@ -2963,8 +2961,10 @@ sub _initialize_workflow_for_upgrade {
     }
 
     # We only populate the workflow here if we're upgrading from a version
-    # before 3.2.
-    return if $had_is_open;
+    # before 4.0 (which is where init_workflow was added).
+    my $new_exists = $dbh->selectrow_array(
+         'SELECT 1 FROM bug_status WHERE value = ?', undef, 'NEW');
+    return if !$new_exists;
 
     # Populate the status_workflow table. We do nothing if the table already
     # has entries. If all bug status transitions have been deleted, the
@@ -3198,8 +3198,8 @@ sub _populate_bugs_fulltext {
             q{INSERT INTO bugs_fulltext (bug_id, short_desc, comments, 
                                          comments_noprivate)
                    SELECT bugs.bug_id, bugs.short_desc, }
-                 . $dbh->sql_group_concat('longdescs.thetext', $newline)
-          . ', ' . $dbh->sql_group_concat('nopriv.thetext',    $newline) .
+                 . $dbh->sql_group_concat('longdescs.thetext', $newline, 0)
+          . ', ' . $dbh->sql_group_concat('nopriv.thetext',    $newline, 0) .
                  qq{ FROM bugs 
                           LEFT JOIN longdescs
                                  ON bugs.bug_id = longdescs.bug_id

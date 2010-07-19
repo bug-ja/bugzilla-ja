@@ -315,8 +315,8 @@ TUI_hide_default('information_query');
     <div id="people_query_controller" class="arrow">&#9660;</div>
     <a href="javascript:TUI_toggle_class('people_query')">ユーザによる検索</a>
     <span>検索結果をユーザと [% terms.abug %] とのかかわり 
-      (ie. [% field_descs.assigned_to FILTER html %],
-      [% field_descs.reporter FILTER html  %], [% field_descs.commenter FILTER html %],
+      (例: [% field_descs.assigned_to FILTER html %],
+      [%+ field_descs.reporter FILTER html  %], [% field_descs.commenter FILTER html %],
       など) で制限する
     </span>
   </div>

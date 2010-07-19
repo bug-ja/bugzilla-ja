@@ -98,13 +98,13 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
       <p class="notice">
         このメッセージは管理者権限を持つログインユーザにのみ表示されます。
         このメッセージの表示に関しては、
-      <a href="editparams.cgi?section=general#upgrade_notification">パラメータ</a> 
+      <a href="editparams.cgi?section=general#upgrade_notification_desc">パラメータ</a> 
         ページから設定できます。</p>
     [% ELSIF release.error == "cannot_download" %]
       <p>ローカルに XML ファイル '[% release.xml_file FILTER html %]' を作成できません。
       ウェブサーバの設定を見直して、ディレクトリに書き込み可能でサーバからウェブに接続可能かを確認してください。
       プロキシの内部にあるサーバの場合は、
-      <a href="editparams.cgi?section=core#proxy_url">proxy_url</a> パラメータが正しいか確認してください。</p>
+      <a href="editparams.cgi?section=advanced#proxy_url_desc">proxy_url</a> パラメータが正しいか確認してください。</p>
     [% ELSIF release.error == "no_update" %]
       <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' をアップデートできません。
       ウェブサーバがこのファイルを編集できることを確認してください。</p>
@@ -116,7 +116,7 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
       ファイルを消去し、このページを再読み込みしてください。</p>
     [% ELSIF release.error == "unknown_parameter" %]
       <p>'[% Param("upgrade_notification") FILTER html %]' は有効な通知の設定ではありません。
-      <a href="editparams.cgi?section=core#upgrade_notification">パラメータ</a> 
+      <a href="editparams.cgi?section=general#upgrade_notification_desc">パラメータ</a> 
       設定ページから確認してください。</p>
     [% END %]
   </div>

@@ -25,6 +25,7 @@ use lib qw(. lib);
 
 use Bugzilla;
 use Bugzilla::Config qw(:admin);
+use Bugzilla::Search::Saved;
 use Bugzilla::Status;
 
 my $confirmed   = new Bugzilla::Status({ name => 'CONFIRMED' });
@@ -54,16 +55,21 @@ END
 getc;
 
 my $dbh = Bugzilla->dbh;
-my %translation = (
-    NEW      => 'CONFIRMED',
-    ASSIGNED => 'IN_PROGRESS',
-    REOPENED => 'CONFIRMED',
-    CLOSED   => 'VERIFIED',
+# This is an array instead of a hash so that we can be sure that
+# the translation happens in the right order. In particular, we
+# want NEW to be renamed to CONFIRMED, instead of having REOPENED
+# be the one that gets renamed.
+my @translation = (
+    [NEW      => 'CONFIRMED'],
+    [ASSIGNED => 'IN_PROGRESS'],
+    [REOPENED => 'CONFIRMED'],
+    [CLOSED   => 'VERIFIED'],
 );
 
 my $status_field = Bugzilla::Field->check('bug_status');
 $dbh->bz_start_transaction();
-while (my ($from, $to) = each %translation) {
+foreach my $pair (@translation) {
+    my ($from, $to) = @$pair;
     print "Converting $from to $to...\n";
     $dbh->do('UPDATE bugs SET bug_status = ? WHERE bug_status = ?',
              undef, $to, $from);
@@ -74,7 +80,7 @@ while (my ($from, $to) = each %translation) {
     }
 
     foreach my $what (qw(added removed)) {
-        $dbh->do("UPDATE bugs_activity SET $what = ? 
+        $dbh->do("UPDATE bugs_activity SET $what = ?
                    WHERE fieldid = ? AND $what = ?",
                  undef, $to, $status_field->id, $from);
     }
@@ -94,6 +100,10 @@ while (my ($from, $to) = each %translation) {
         $dbh->do('UPDATE bug_status SET value = ? WHERE value = ?',
                  undef, $to, $from);
     }
+
+    Bugzilla::Search::Saved->rename_field_value('bug_status', $from, $to);
+    Bugzilla::Series->Bugzilla::Search::Saved::rename_field_value('bug_status',
+        $from, $to);
 }
 
 $dbh->bz_commit_transaction();

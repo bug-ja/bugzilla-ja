@@ -1535,10 +1535,6 @@
     [% END %]
     は存在しないか、あなたのアカウントからはアクセスする権限がありません。
 
-  [% ELSIF error == "product_doesnt_exist" %]
-    [% title = BLOCK %] 指定された [% jawords.product FILTER html %] は存在していません [% END %]
-    [% jawords.product FILTER html %] '[% product FILTER html %]' は存在していません。
-
   [% ELSIF error == "product_illegal_group" %]
     [% title = "無効なグループ" %]
     [% group.name FILTER html %] は活動中の [% terms.bug %] グループではありませんので、
@@ -1606,16 +1602,6 @@
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
                          'versions.html' => 'バージョンの管理'} %]
     新規プロダクトには有効なバージョンを追加する必要があります。
-
-  [% ELSIF error == "product_not_specified" %]
-    [% title = BLOCK %] [% jawords.product FILTER html %] が指定されていません [% END %]
-    [% admindocslinks = {'products.html'   => 'プロダクトの管理',
-                         'components.html' => 'コンポーネントの管理',
-                         'milestones.html' => 'マイルストーンの管理',
-                         'versions.html'   => 'バージョンの管理'} %]
-    [% jawords.component FILTER html %]、[% jawords.milestone FILTER html %]、
-    [% jawords.version FILTER html %]、もしくは [% jawords.product FILTER html %] を編集しようとしましたが、
-    [% jawords.product FILTER html %] が指定されていません。
 
   [% ELSIF error == "query_name_exists" %]
     [% title = BLOCK %] 指定された [% jawords.search_name FILTER html %] は既に利用されています [% END %]

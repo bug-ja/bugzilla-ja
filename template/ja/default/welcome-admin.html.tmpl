@@ -41,35 +41,35 @@
   以下のようなこのサイトで重要なパラメータのすべてを設定する必要があります。</p>
 
   <ul>
-    <li><a href="editparams.cgi?section=core#urlbase">urlbase</a>, 
+    <li><a href="editparams.cgi?section=core#urlbase_desc">urlbase</a>, 
     このサイトの URL で、メールの URL 表示などで利用されます。
     (あなたがこの画面を見ている理由のひとつで、このパラメータが設定されなければ、
     この画面を何度も見ることになります。)</li>
 
-    <li><a href="editparams.cgi?section=core#cookiepath">cookiepath</a> 
+    <li><a href="editparams.cgi?section=core#cookiepath_desc">cookiepath</a> 
     このサイトのクッキーを正しくブラウザに取り扱わせるために重要です。</li>
 
-    <li><a href="editparams.cgi?section=general#maintainer">maintainer</a>, 
+    <li><a href="editparams.cgi?section=general#maintainer_desc">maintainer</a>, 
     異常動作の時にメンテナンスを行う担当者の連絡先です。</li>
   </ul>
 
   <p>次のパラメータも重要になりえます:</p>
 
   <ul>
-    <li><a href="editparams.cgi?section=auth#requirelogin">requirelogin</a>, 
+    <li><a href="editparams.cgi?section=auth#requirelogin_desc">requirelogin</a>, 
     有効にすると、アカウントをもっていないユーザからサイトを保護できます。
     言い換えると、有効なアカウントで認証されていないユーザは、
     まったくデータを見ることができなくなります。
     データを保護しておきたい場合にこの機能が有用です。</li>
 
-    <li><a href="editparams.cgi?section=auth#createemailregexp">createemailregexp</a>
+    <li><a href="editparams.cgi?section=auth#createemailregexp_desc">createemailregexp</a>
     は、このサイトでアカウントを作成可能なユーザを定義します。".*" (既定値) に設定すると、
     どのメールアドレスでも利用可能になります。"@mycompany.com$" に設定すると、
     @mycompany.com にアカウントのあるユーザのみが作成可能になります。空白にすると、
     ユーザは自分でアカウントを作成できず、管理者のみが作成可能となります。
     このサイトを保護したい場合、このパラメータを既定値以外に変更すべきです。</li>
 
-    <li><a href="editparams.cgi?section=mta#mail_delivery_method">mail_delivery_method</a>
+    <li><a href="editparams.cgi?section=mta#mail_delivery_method_desc">mail_delivery_method</a>
     は、sendmail や SMTP といった、メールを送信する方式を設定します。
     メールを利用する場合、このパラメータを正しく設定する必要があります。</li>
   </ul>

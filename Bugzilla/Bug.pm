@@ -266,6 +266,7 @@ use constant MAX_LINE_LENGTH => 254;
 # use.)
 use constant FIELD_MAP => {
     creation_time    => 'creation_ts',
+    creator          => 'reporter',
     description      => 'comment',
     id               => 'bug_id',
     last_change_time => 'delta_ts',
@@ -1648,10 +1649,8 @@ sub _check_product {
     }
     # Check that the product exists and that the user
     # is allowed to enter bugs into this product.
-    Bugzilla->user->can_enter_product($name, THROW_ERROR);
-    # can_enter_product already does everything that check_product
-    # would do for us, so we don't need to use it.
-    return new Bugzilla::Product({ name => $name });
+    my $product = Bugzilla->user->can_enter_product($name, THROW_ERROR);
+    return $product;
 }
 
 sub _check_priority {
@@ -3202,6 +3201,17 @@ sub comments {
         @comments = grep { datetime_from($_->creation_ts) <= $to } @comments;
     }
     return \@comments;
+}
+
+# This is needed by xt/search.t.
+sub percentage_complete {
+    my $self = shift;
+    return undef if $self->{'error'} || !Bugzilla->user->is_timetracker;
+    my $remaining = $self->remaining_time;
+    my $actual    = $self->actual_time;
+    my $total = $remaining + $actual;
+    return undef if $total == 0;
+    return 100 * ($actual / $total);
 }
 
 sub product {
