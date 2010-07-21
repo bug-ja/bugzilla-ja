@@ -424,12 +424,6 @@ dl dl > dt {
     padding-left: 1em;
 }
 
-/* For bug fields */
-.uneditable_textarea {
-    width: 30em;
-    font-size: medium;
-}
-
 div.user_match {
     margin-bottom: 1em;
 }
@@ -462,6 +456,10 @@ div.user_match {
     }
 }
 
+/**************/
+/* Bug Fields */
+/**************/
+
 .field_label {
     text-align: right;
     vertical-align: top;
@@ -473,6 +471,16 @@ div.user_match {
 .field_value, form#Create th, form#Create td {
     vertical-align: top;
 }
+.field_value .text_input {
+  width: 100%;
+  min-width: 25em;
+}
+
+.uneditable_textarea {
+    width: 30em;
+    font-size: medium;
+}
+
 th.required:before {
     content: "* ";
 }
@@ -504,6 +512,43 @@ input.required, select.required, span.required_explanation {
     list-style-type: none;
 }
 
+/* custom styles for inline instances of autocomplete input fields */
+.yui-skin-sam .yui-ac-input { position:static !important; 
+                              vertical-align:middle !important;
+                              width:auto !important; }
+.yui-skin-sam .yui-ac-container { left:0px !important; }
+.yui-skin-sam .yui-ac { display: inline-block; }
+
+#keyword_container {
+    padding-bottom: 2em;
+    padding-top: .2em;
+}
+
+#keyword_container .yui-ac-content {
+    max-height: 19em;
+    overflow: auto;
+    overflow-x: hidden;
+    margin-left: -1px;
+}
+
+/*******************/
+/* Form Validation */
+/*******************/
+
+.validation_error_text {
+    font-size: 120%;
+    color: #152446;
+    font-weight: bold;
+}
+
+.validation_error_field {
+    border: 2px solid #152446;
+}
+
+/*****************/
+/* colchange.cgi */
+/*****************/
+
 .image_button {
     background-repeat: no-repeat;
     background-position: center center;
@@ -525,23 +570,4 @@ input.required, select.required, span.required_explanation {
 
 #down_button {
     background-image: url(global/down.png);
-}
-
-/* custom styles for inline instances of autocomplete input fields */
-.yui-skin-sam .yui-ac-input { position:static !important; 
-                              vertical-align:middle !important;
-                              width:auto !important; }
-.yui-skin-sam .yui-ac-container { left:0px !important; }
-.yui-skin-sam .yui-ac { display: inline-block; }
-
-#keyword_container {
-    padding-bottom: 2em;
-    padding-top: .2em;
-}
-
-#keyword_container .yui-ac-content {
-    max-height: 19em;
-    overflow: auto;
-    overflow-x: hidden;
-    margin-left: -1px;
 }

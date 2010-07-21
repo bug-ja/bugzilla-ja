@@ -264,7 +264,13 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 </p>
 
 <p id="new_watched_by_you">ユーザを監視リストに追加する (カンマ区切りのリスト):
-  <input size="60" name="new_watchedusers" value="">
+  [% INCLUDE global/userselect.html.tmpl
+     id => "new_watchedusers"
+     name => "new_watchedusers"
+     value => ""
+     size => 60
+     multiple => 5
+  %]
 </p>
 
 <p id="watching_you">あなたを監視しているユーザ:<br>

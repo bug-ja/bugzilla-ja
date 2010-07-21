@@ -46,6 +46,7 @@ our @EXPORT = qw(
     OR_BROKEN
     OR_SKIP
     SKIP_FIELDS
+    SUBSTR_NO_FIELD_ADD
     SUBSTR_SIZE
     TESTS
     TESTS_PER_RUN
@@ -156,21 +157,34 @@ use constant USER_FIELDS => qw(
 );
 
 # For the "substr"-type searches, how short of a substring should
-# we use?
+# we use? The goal is to be shorter than the full string, but
+# long enough to still be globally unique.
 use constant SUBSTR_SIZE => 20;
 # However, for some fields, we use a different size.
 use constant FIELD_SUBSTR_SIZE => {
-    alias => 12,
-    bug_file_loc => 30,
+    alias => 11,
     # Just the month and day.
     deadline => -5,
     creation_ts => -8,
     delta_ts => -8,
+    percentage_complete => 7,
     work_time => 3,
     remaining_time => 3,
-    see_also => 30,
-    target_milestone => 12,
+    target_milestone => 15,
+    longdesc => 25,
+    # Just the hour and minute.
+    FIELD_TYPE_DATETIME, -5,
 };
+
+# For most fields, we add the length of the name of the field plus
+# the SUBSTR_SIZE specified above to determine how large of a substring
+# we're going to use. However, for some fields, it doesn't make sense to
+# add in their field name this way.
+use constant SUBSTR_NO_FIELD_ADD => FIELD_TYPE_DATETIME, qw(
+    target_milestone remaining_time percentage_complete work_time
+    attachments.mimetype attachments.submitter attachments.filename
+    attachments.description flagtypes.name
+);
 
 ################
 # Known Broken #
@@ -505,9 +519,9 @@ use constant KNOWN_BROKEN => {
         CHANGED_VALUE_BROKEN,
         # All fields should have a way to search for "changing
         # from a blank value" probably.
-        blocked   => { contains => [1] },
-        dependson => { contains => [1] },
-        FIELD_TYPE_BUG_ID, { contains => [1] },
+        blocked   => { contains => [3,4,5] },
+        dependson => { contains => [2,4,5] },
+        FIELD_TYPE_BUG_ID, { contains => [5] },
     },
     # changeto doesn't find work_time changes (probably due to decimal/string
     # stuff). Same for remaining_time and estimated_time.
@@ -799,7 +813,7 @@ use constant TESTS => {
               reporter_accessible      => { value => 1, contains => [1] },
               'longdescs.isprivate'    => { value => 1, contains => [1] },
               everconfirmed            => { value => 1, contains => [1] },
-              dependson => { contains => [1,3] },
+              dependson => { value => '<3>', contains => [1,3] },
               blocked   => { contains => [1,2] },
               GREATERTHAN_OVERRIDE,
           }
@@ -822,7 +836,11 @@ use constant TESTS => {
     allwordssubstr => [
         { contains => [1], value => '<1>',
           override => { MULTI_BOOLEAN_OVERRIDE } },
-        { contains => [], value => '<1>,<2>' },
+        { contains => [], value => '<1>,<2>',
+          override => {
+              dependson => { value => '<1-id> <3-id>', contains => [] },
+          }
+        },
     ],
     nowordssubstr => [
         { contains => [2,3,4,5], value => '<1>',
@@ -855,7 +873,11 @@ use constant TESTS => {
     allwords => [
         { contains => [1], value => '<1>',
           override => { MULTI_BOOLEAN_OVERRIDE } },
-        { contains => [], value => '<1> <2>' },
+        { contains => [], value => '<1> <2>',
+          override => {
+            dependson => { contains => [], value => '<2-id> <3-id>' }
+          }
+        },
     ],
     nowords => [
         { contains => [2,3,4,5], value => '<1>',
@@ -895,18 +917,25 @@ use constant TESTS => {
               # in the bugs_activity table, so they won't ever match.
               blocked   => { contains => [] },
               dependson => { contains => [] },
-          } 
+          }
         },
     ],
     changedfrom => [
         { contains => [1], value => '<1>',
           override => {
               CHANGED_OVERRIDE,
+              # The test never changes an already-set dependency field, but
+              # we *can* attempt to test searching against an empty value,
+              # which should get us some bugs.
+              blocked   => { value => '', contains => [1,2] },
+              dependson => { value => '', contains => [1,3] },
+              FIELD_TYPE_BUG_ID, { value => '', contains => [1,2,3,4] },
               # longdesc changedfrom doesn't make any sense.
               longdesc => { contains => [] },
               # Nor does creation_ts changedfrom.
               creation_ts => { contains => [] },
               'attach_data.thedata' => { contains => [] },
+              bug_id => { value => '<1-id>', contains => [] },
           },
         },
     ],

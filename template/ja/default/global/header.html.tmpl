@@ -273,8 +273,18 @@
             },
 
             string: {
+                [%# Please keep these in alphabetical order. %]
+
                 attach_desc_required:
-                    '添付の説明を入力する必要があります。'
+                    '添付の説明を入力する必要があります。',
+                component_required:
+                    '[% terms.bug %] のコンポーネントを選択する必要があります。',
+                description_required:
+                    '[% terms.bug %] の説明を入力する必要があります。',
+                short_desc_required:
+                    '[% terms.bug %] の要約を入力する必要があります。',
+                version_required:
+                    '[% terms.bug %] のバージョンを選択する必要があります。',
             }
         };
         [% IF javascript %]

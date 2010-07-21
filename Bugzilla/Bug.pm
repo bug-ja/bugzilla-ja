@@ -50,7 +50,7 @@ use Bugzilla::Status;
 use Bugzilla::Comment;
 
 use List::MoreUtils qw(firstidx uniq);
-use List::Util qw(min first);
+use List::Util qw(min max first);
 use Storable qw(dclone);
 use URI;
 use URI::QueryParam;
@@ -265,9 +265,14 @@ use constant MAX_LINE_LENGTH => 254;
 # of Bugzilla. (These are the field names that the WebService and email_in.pl
 # use.)
 use constant FIELD_MAP => {
+    blocks           => 'blocked',
+    is_confirmed     => 'everconfirmed',
+    cc_accessible    => 'cclist_accessible',
     creation_time    => 'creation_ts',
     creator          => 'reporter',
     description      => 'comment',
+    depends_on       => 'dependson',
+    dupe_of          => 'dup_id',
     id               => 'bug_id',
     last_change_time => 'delta_ts',
     platform         => 'rep_platform',
@@ -2623,7 +2628,7 @@ sub add_comment {
     # later in set_all. But if they haven't, this keeps remaining_time
     # up-to-date.
     if ($params->{work_time}) {
-        $self->set_remaining_time($self->remaining_time - $params->{work_time});
+        $self->set_remaining_time(max($self->remaining_time - $params->{work_time}, 0));
     }
 
     # So we really want to comment. Make sure we are allowed to do so.
@@ -3707,11 +3712,17 @@ sub LogActivityEntry {
 # Convert WebService API and email_in.pl field names to internal DB field
 # names.
 sub map_fields {
-    my ($params) = @_; 
+    my ($params, $except) = @_; 
 
     my %field_values;
     foreach my $field (keys %$params) {
-        my $field_name = FIELD_MAP->{$field} || $field;
+        my $field_name;
+        if ($except->{$field}) {
+           $field_name = $field;
+        }
+        else {
+            $field_name = FIELD_MAP->{$field} || $field;
+        }
         $field_values{$field_name} = $params->{$field};
     }
 

@@ -141,6 +141,10 @@
       ユーザのメールアドレスを含むような環境変数の名前を設定する必要があります。
     [% END %]
 
+  [% ELSIF error == "extension_disabled" %]
+    [% title = "拡張機能は無効です" %]
+    拡張機能 '[% name FILTER html %]' が無効なのでこのページにアクセスできません。
+
   [% ELSIF error == "extension_must_be_subclass" %]
     <code>[% filename FILTER html %]</code> の
     <code>[% package FILTER html %]</code> は

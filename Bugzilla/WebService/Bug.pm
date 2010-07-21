@@ -47,6 +47,11 @@ use constant PRODUCT_SPECIFIC_FIELDS => qw(version target_milestone component);
 use constant DATE_FIELDS => {
     comments => ['new_since'],
     search   => ['last_change_time', 'creation_time'],
+    update   => ['deadline'],
+};
+
+use constant BASE64_FIELDS => {
+    add_attachment => ['data'],
 };
 
 use constant READ_ONLY => qw(
@@ -448,6 +453,93 @@ sub possible_duplicates {
     return { bugs => \@hashes };
 }
 
+sub update {
+    my ($self, $params) = validate(@_, 'ids');
+
+    my $user = Bugzilla->login(LOGIN_REQUIRED);
+    my $dbh = Bugzilla->dbh;
+
+    $params = Bugzilla::Bug::map_fields($params, { summary => 1 });
+
+    my $ids = delete $params->{ids};
+    defined $ids || ThrowCodeError('param_required', { param => 'ids' });
+
+    my @bugs = map { Bugzilla::Bug->check($_) } @$ids;
+
+    my %values = %$params;
+    $values{other_bugs} = \@bugs;
+
+    if (exists $values{comment} and exists $values{comment}{comment}) {
+        $values{comment}{body} = delete $values{comment}{comment};
+    }
+
+    # Prevent bugs that could be triggered by specifying fields that
+    # have valid "set_" functions in Bugzilla::Bug, but shouldn't be
+    # called using those field names.
+    delete $values{dependencies};
+    delete $values{flags};
+
+    foreach my $bug (@bugs) {
+        if (!$user->can_edit_product($bug->product_obj->id) ) {
+            ThrowUserError("product_edit_denied",
+                          { product => $bug->product });
+        }
+
+        $bug->set_all(\%values);
+    }
+
+    my %all_changes;
+    $dbh->bz_start_transaction();
+    foreach my $bug (@bugs) {
+        $all_changes{$bug->id} = $bug->update();
+    }
+    $dbh->bz_commit_transaction();
+    
+    foreach my $bug (@bugs) {
+        $bug->send_changes($all_changes{$bug->id});
+    }
+
+    my %api_name = reverse %{ Bugzilla::Bug::FIELD_MAP() };
+    # This doesn't normally belong in FIELD_MAP, but we do want to translate
+    # "bug_group" back into "groups".
+    $api_name{'bug_group'} = 'groups';
+
+    my @result;
+    foreach my $bug (@bugs) {
+        my %hash = (
+            id               => $self->type('int', $bug->id),
+            last_change_time => $self->type('dateTime', $bug->delta_ts),
+            changes          => {},
+        );
+
+        # alias is returned in case users pass a mixture of ids and aliases,
+        # so that they can know which set of changes relates to which value
+        # they passed.
+        if (Bugzilla->params->{'usebugaliases'}) {
+            $hash{alias} = $self->type('string', $bug->alias);
+        }
+        else {
+            # For API reasons, we always want the alias field to appear, we
+            # just don't want it to have a value if aliases are turned off.
+            $hash{alias} = $self->type('string', '');
+        }
+
+        my %changes = %{ $all_changes{$bug->id} };
+        foreach my $field (keys %changes) {
+            my $change = $changes{$field};
+            my $api_field = $api_name{$field} || $field;
+            $hash{changes}->{$api_field} = {
+                removed => $self->type('string', $change->[0]),
+                added   => $self->type('string', $change->[1]) 
+            };
+        }
+
+        push(@result, \%hash);
+    }
+
+    return { bugs => \@result };
+}
+
 sub create {
     my ($self, $params) = @_;
     Bugzilla->login(LOGIN_REQUIRED);
@@ -502,6 +594,53 @@ sub legal_values {
     }
 
     return { values => \@result };
+}
+
+sub add_attachment {
+    my ($self, $params) = validate(@_, 'ids');
+    my $dbh = Bugzilla->dbh;
+
+    Bugzilla->login(LOGIN_REQUIRED);
+    defined $params->{ids}
+        || ThrowCodeError('param_required', { param => 'ids' });
+    defined $params->{data}
+        || ThrowCodeError('param_required', { param => 'data' });
+
+    my @bugs = map { Bugzilla::Bug->check($_) } @{ $params->{ids} };
+    foreach my $bug (@bugs) {
+        Bugzilla->user->can_edit_product($bug->product_id)
+          || ThrowUserError("product_edit_denied", {product => $bug->product});
+    }
+
+    my @created;
+    $dbh->bz_start_transaction();
+    foreach my $bug (@bugs) {
+        my $attachment = Bugzilla::Attachment->create({
+            bug         => $bug,
+            data        => $params->{data},
+            description => $params->{summary},
+            filename    => $params->{file_name},
+            mimetype    => $params->{content_type},
+            ispatch     => $params->{is_patch},
+            isprivate   => $params->{is_private},
+            isurl       => $params->{is_url},
+        });
+        my $comment = $params->{comment} || '';
+        $attachment->bug->add_comment($comment, 
+            { isprivate  => $attachment->isprivate,
+              type       => CMT_ATTACHMENT_CREATED,
+              extra_data => $attachment->id });
+        push(@created, $attachment);
+    }
+    $_->bug->update($_->attached) foreach @created;
+    $dbh->bz_commit_transaction();
+
+    $_->send_changes() foreach @bugs;
+
+    my %attachments = map { $_->id => $self->_attachment_to_hash($_, $params) }
+                          @created;
+
+    return { attachments => \%attachments };
 }
 
 sub add_comment {
@@ -702,6 +841,7 @@ sub _attachment_to_hash {
         id               => $self->type('int', $attach->id),
         bug_id           => $self->type('int', $attach->bug->id),
         file_name        => $self->type('string', $attach->filename),
+        summary          => $self->type('string', $attach->description),
         description      => $self->type('string', $attach->description),
         content_type     => $self->type('string', $attach->contenttype),
         is_private       => $self->type('int', $attach->isprivate),
@@ -1070,9 +1210,13 @@ C<int> The numeric id of the bug that the attachment is attached to.
 
 C<string> The file name of the attachment.
 
-=item C<description>
+=item C<summary>
 
-C<string> The description for the attachment.
+C<string> A short string describing the attachment.
+
+Also returned as C<description>, for backwards-compatibility with older
+Bugzillas. (However, this backwards-compatibility will go away in Bugzilla
+5.0.)
 
 =item C<content_type>
 
@@ -1131,6 +1275,9 @@ private attachments.
 
 =item In Bugzilla B<4.0>, the C<attacher> return value was renamed to
 C<creator>.
+
+=item In Bugzilla B<4.0>, the C<description> return value was renamed to
+C<summary>.
 
 =back
 
@@ -1955,6 +2102,120 @@ method.
 
 =back
 
+
+=item C<add_attachment>
+
+B<UNSTABLE>
+
+=over
+
+=item B<Description>
+
+This allows you to add an attachment to a bug in Bugzilla.
+
+=item B<Params>
+
+=over
+
+=item C<ids>
+
+B<Required> C<array> An array of ints and/or strings--the ids
+or aliases of bugs that you want to add this attachment to.
+The same attachment and comment will be added to all
+these bugs.
+
+=item C<data>
+
+B<Required> C<base64> The content of the attachment.
+
+=item C<file_name>
+
+B<Required> C<string> The "file name" that will be displayed
+in the UI for this attachment.
+
+=item C<summary>
+
+B<Required> C<string> A short string describing the
+attachment.
+
+=item C<content_type>
+
+B<Required> C<string> The MIME type of the attachment, like
+C<text/plain> or C<image/png>.
+
+=item C<comment>
+
+C<string> A comment to add along with this attachment.
+
+=item C<is_patch>
+
+C<boolean> True if Bugzilla should treat this attachment as a patch.
+If you specify this, the C<content_type> should be C<text/plain>.
+(Future versions of Bugzilla will force the C<content_type> setting
+to C<text/plain> for patches and you will not have to specify it manually.)
+
+Defaults to False if not specified.
+
+=item C<is_private>
+
+C<boolean> True if the attachment should be private (restricted
+to the "insidergroup"), False if the attachment should be public.
+
+Defaults to False if not specified.
+
+=item C<is_url>
+
+C<boolean> True if the attachment is just a URL, pointing to data elsewhere.
+If so, the C<data> item should just contain the URL.
+
+Defaults to False if not specified.
+
+=back
+
+=item B<Returns>
+
+A single item C<attachments>, which contains the created
+attachments in the same format as the C<attachments> return
+value from L</attachments>.
+
+=item B<Errors>
+
+This method can throw all the same errors as L</get>, plus:
+
+=over
+
+=item 600 (Attachment Too Large)
+
+You tried to attach a file that was larger than Bugzilla will accept.
+
+=item 601 (Invalid MIME Type)
+
+You specified a C<content_type> argument that was blank, not a valid
+MIME type, or not a MIME type that Bugzilla accepts for attachments.
+
+=item 602 (Illegal URL)
+
+You specified C<is_url> as True, but the data that you attempted
+to attach was not a valid URL.
+
+=item 603 (File Name Not Specified)
+
+You did not specify a valid for the C<file_name> argument.
+
+=item 604 (Summary Required)
+
+You did not specify a value for the C<summary> argument.
+
+=item 605 (URL Attaching Disabled)
+
+You attempted to attach a URL, setting C<is_url> to True,
+but this Bugzilla does not support attaching URLs.
+
+=back
+
+=back
+
+
 =item C<add_comment> 
 
 B<STABLE>
@@ -2040,6 +2301,398 @@ purposes if you wish.
 
 =item Before Bugzilla B<3.6>, error 54 and error 114 had a generic error
 code of 32000.
+
+=back
+
+=back
+
+
+=item C<update>
+
+B<UNSTABLE>
+
+=over
+
+=item B<Description>
+
+Allows you to update the fields of a bug. Automatically sends emails
+out about the changes.
+
+=item B<Params>
+
+=over
+
+=item C<ids>
+
+Array of C<int>s or C<string>s. The ids or aliases of the bugs that
+you want to modify.
+
+=back
+
+B<Note>: All following fields specify the values you want to set on the
+bugs you are updating.
+
+=over
+
+=item C<alias>
+
+(string) The alias of the bug. You can only set this if you are modifying 
+a single bug. If there is more than one bug specified in C<ids>, passing in
+a value for C<alias> will cause an error to be thrown.
+
+=item C<assigned_to>
+
+C<string> The full login name of the user this bug is assigned to.
+
+=item C<blocks>
+
+=item C<depends_on>
+
+C<hash> These specify the bugs that this bug blocks or depends on,
+respectively. To set these, you should pass a hash as the value. The hash
+may contain the following fields:
+
+=over
+
+=item C<add> An array of C<int>s. Bug ids to add to this field.
+
+=item C<remove> An array of C<int>s. Bug ids to remove from this field.
+If the bug ids are not already in the field, they will be ignored.
+
+=item C<set> An array of C<int>s. An exact set of bug ids to set this
+field to, overriding the current value. If you specify C<set>, then C<add>
+and  C<remove> will be ignored.
+
+=back
+
+=item C<cc>
+
+C<hash> The users on the cc list. To modify this field, pass a hash, which
+may have the following fields:
+
+=over
+
+=item C<add> Array of C<string>s. User names to add to the CC list.
+They must be full user names, and an error will be thrown if you pass
+in an invalid user name.
+
+=item C<remove> Array of C<string>s. User names to remove from the CC
+list. They must be full user names, and an error will be thrown if you
+pass in an invalid user name.
+
+=back
+
+=item C<cc_accessible>
+
+C<boolean> Whether or not users in the CC list are allowed to access
+the bug, even if they aren't in a group that can normally access the bug.
+
+=item C<comment>
+
+C<hash>. A comment on the change. The hash may contain the following fields:
+
+=over
+
+=item C<body> C<string> The actual text of the comment.
+B<Note>: For compatibility with the parameters to L</add_comment>,
+you can also call this field C<comment>, if you want.
+
+=item C<is_private> C<boolean> Whether the comment is private or not.
+If you try to make a comment private and you don't have the permission
+to, an error will be thrown.
+
+=back
+
+=item C<comment_is_private>
+
+C<hash> This is how you update the privacy of comments that are already
+on a bug. This is a hash, where the keys are the C<int> id of comments (not
+their count on a bug, like #1, #2, #3, but their globally-unique id,
+as returned by L</comments>) and the value is a C<boolean> which specifies
+whether that comment should become private (C<true>) or public (C<false>).
+
+The comment ids must be valid for the bug being updated. Thus, it is not
+practical to use this while updating multiple bugs at once, as a single
+comment id will never be valid on multiple bugs.
+
+=item C<component>
+
+C<string> The Component the bug is in.
+
+=item C<deadline>
+
+C<dateTime> The Deadline field--a date specifying when the bug must
+be completed by. The time specified is ignored--only the date is
+significant.
+
+=item C<dupe_of>
+
+C<int> The bug that this bug is a duplicate of. If you want to mark
+a bug as a duplicate, the safest thing to do is to set this value
+and I<not> set the C<status> or C<resolution> fields. They will
+automatically be set by Bugzilla to the appropriate values for
+duplicate bugs.
+
+=item C<estimated_time>
+
+C<double> The total estimate of time required to fix the bug, in hours.
+This is the I<total> estimate, not the amount of time remaining to fix it.
+
+=item C<groups>
+
+C<hash> The groups a bug is in. To modify this field, pass a hash, which
+may have the following fields:
+
+=over
+
+=item C<add> Array of C<string>s. The names of groups to add. Passing
+in an invalid group name or a group that you cannot add to this bug will
+cause an error to be thrown.
+
+=item C<remove> Array of C<string>s. The names of groups to remove. Passing
+in an invalid group name or a group that you cannot remove from this bug
+will cause an error to be thrown.
+
+=back
+
+=item C<keywords>
+
+C<hash> Keywords on the bug. To modify this field, pass a hash, which
+may have the following fields:
+
+=over
+
+=item C<add> An array of C<strings>s. The names of keywords to add to
+the field on the bug. Passing something that isn't a valid keyword name
+will cause an error to be thrown. 
+
+=item C<remove> An array of C<string>s. The names of keywords to remove
+from the field on the bug. Passing something that isn't a valid keyword
+name will cause an error to be thrown.
+
+=item C<set> An array of C<strings>s. An exact set of keywords to set the
+field to, on the bug. Passing something that isn't a valid keyword name
+will cause an error to be thrown. Specifying C<set> overrides C<add> and
+C<remove>.
+
+=back
+
+=item C<op_sys>
+
+C<string> The Operating System ("OS") field on the bug.
+
+=item C<platform>
+
+C<string> The Platform or "Hardware" field on the bug.
+
+=item C<priority>
+
+C<string> The Priority field on the bug.
+
+=item C<product>
+
+C<string> The name of the product that the bug is in. If you change
+this, you will probably also want to change C<target_milestone>,
+C<version>, and C<component>, since those have different legal
+values in every product. 
+
+If you cannot change the C<target_milestone> field, it will be reset to
+the default for the product, when you move a bug to a new product.
+
+You may also wish to add or remove groups, as which groups are
+valid on a bug depends on the product. Groups that are not valid
+in the new product will be automatically removed, and groups which
+are mandatory in the new product will be automaticaly added, but no
+other automatic group changes will be done.
+
+Note that users can only move a bug into a product if they would
+normally have permission to file new bugs in that product.
+
+=item C<qa_contact>
+
+C<string> The full login name of the bug's QA Contact.
+
+=item C<reporter_accessible>
+
+C<boolean> Whether or not the bug's reporter is allowed to access
+the bug, even if he or she isn't in a group that can normally access
+the bug.
+
+=item C<remaining_time>
+
+C<double> How much work time is remaining to fix the bug, in hours.
+If you set C<work_time> but don't explicitly set C<remaining_time>,
+then the C<work_time> will be deducted from the bug's C<remaining_time>.
+
+=item C<reset_assigned_to>
+
+C<boolean> If true, the C<assigned_to> field will be reset to the
+default for the component that the bug is in. (If you have set the
+component at the same time as using this, then the component used
+will be the new component, not the old one.)
+
+=item C<reset_qa_contact>
+
+C<boolean> If true, the C<qa_contact> field will be reset  to the
+default for the component that the bug is in. (If you have set the
+component at the same time as using this, then the component used
+will be the new component, not the old one.)
+
+=item C<resolution>
+
+C<string> The current resolution. May only be set if you are closing
+a bug or if you are modifying an already-closed bug. Attempting to set
+the resolution to I<any> value (even an empty or null string) on an
+open bug will cause an error to be thrown.
+
+If you change the C<status> field to an open status, the resolution
+field will automatically be cleared, so you don't have to clear it
+manually.
+
+=item C<see_also>
+
+C<hash> The See Also field on a bug, specifying URLs to bugs in other
+bug trackers. To modify this field, pass a hash, which may have the
+following fields:
+
+=over
+
+=item C<add> An array of C<strings>s. URLs to add to the field.
+Each URL must be a valid URL to a bug-tracker, or an error will
+be thrown.
+
+=item C<remove> An array of C<string>s. URLs to remove from the field.
+Invalid URLs will be ignored.
+
+=back
+
+=item C<severity>
+
+C<string> The Severity field of a bug.
+
+=item C<status>
+
+C<string> The status you want to change the bug to. Note that if
+a bug is changing from open to closed, you should also specify
+a C<resolution>.
+
+=item C<summary>
+
+C<string> The Summary field of the bug.
+
+=item C<target_milestone>
+
+C<string> The bug's Target Milestone.
+
+=item C<url>
+
+C<string> The "URL" field of a bug.
+
+=item C<version>
+
+C<string> The bug's Version field.
+
+=item C<whiteboard>
+
+C<string> The Status Whiteboard field of a bug.
+
+=item C<work_time>
+
+C<double> The number of hours worked on this bug as part of this change.
+If you set C<work_time> but don't explicitly set C<remaining_time>,
+then the C<work_time> will be deducted from the bug's C<remaining_time>.
+
+=back
+
+You can also set the value of any custom field by passing its name as
+a parameter, and the value to set the field to. For multiple-selection
+fields, the value should be an array of strings.
+
+=item B<Returns>
+
+A C<hash> with a single field, "bugs". This points to an array of hashes
+with the following fields:
+
+=over
+
+=item C<id>
+
+C<int> The id of the bug that was updated.
+
+=item C<alias>
+
+C<string> The alias of the bug that was updated, if aliases are enabled and
+this bug has an alias.
+
+=item C<last_change_time>
+
+C<dateTime> The exact time that this update was done at, for this bug.
+If no update was done (that is, no fields had their values changed and
+no comment was added) then this will instead be the last time the bug
+was updated.
+
+=item C<changes>
+
+C<hash> The changes that were actually done on this bug. The keys are
+the names of the fields that were changed, and the values are a hash
+with two keys:
+
+=over
+
+=item C<added> (C<string>) The values that were added to this field,
+possibly a comma-and-space-separated list if multiple values were added.
+
+=item C<removed> (C<string>) The values that were removed from this
+field, possibly a comma-and-space-separated list if multiple values were
+removed.
+
+=back
+
+=back
+
+Here's an example of what a return value might look like:
+
+ { 
+   bugs => [
+     {
+       id    => 123,
+       alias => 'foo',
+       last_change_time => '2010-01-01T12:34:56',
+       changes => {
+         status => {
+           removed => 'NEW',
+           added   => 'ASSIGNED'
+         },
+         keywords => {
+           removed => 'bar',
+           added   => 'qux, quo, qui', 
+         }
+       },
+     }
+   ]
+ }
+
+=item B<Errors>
+
+This function can throw all of the errors that L</get> can throw, plus:
+
+=over
+
+=item 103 (Invalid Alias)
+
+Either you tried to set an alias when changing multiple bugs at once,
+or the alias you specified is invalid for some reason.
+
+=back
+
+FIXME: Plus a whole load of other errors that we haven't documented yet,
+which we won't even know about until after we do QA for 4.0.
+
+=item B<History>
+
+=over
+
+=item Added in Bugzilla B<4.0>.
 
 =back
 
