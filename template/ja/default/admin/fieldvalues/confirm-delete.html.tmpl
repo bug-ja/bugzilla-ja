@@ -62,7 +62,7 @@
 
 [% IF value.is_default || value.bug_count || (value_count == 1)
       || value.controls_visibility_of_fields.size
-      || value.controlled_values.size 
+      || value.controlled_values_array.size 
 %]
 
   <p>申し訳ありませんが、下記の理由により、
@@ -120,7 +120,7 @@
       </li>
     [% END %]
 
-    [% IF value.controlled_values.size %]
+    [% IF value.controlled_values_array.size %]
       <li>この値は次の他のフィールドの値を表示するかどうかを制御しています:<br>
        [% FOREACH field_name = value.controlled_values.keys %]
          [% FOREACH controlled = value.controlled_values.${field_name} %]

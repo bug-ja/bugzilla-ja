@@ -45,6 +45,7 @@ use Bugzilla::DB::Schema;
 
 use List::Util qw(max);
 use Storable qw(dclone);
+use Text::ParseWords qw(shellwords);
 
 #####################################################################
 # Constants
@@ -362,8 +363,9 @@ sub sql_fulltext_search {
     # make the string lowercase to do case insensitive search
     my $lower_text = lc($text);
 
-    # split the text we search for into separate words
-    my @words = split(/\s+/, $lower_text);
+    # split the text we're searching for into separate words, understanding
+    # quotes.
+    my @words = shellwords($lower_text);
 
     # surround the words with wildcards and SQL quotes so we can use them
     # in LIKE search clauses
@@ -745,8 +747,14 @@ sub bz_drop_fk {
         print get_text('install_fk_drop',
                        { table => $table, column => $column, fk => $def })
             . "\n" if Bugzilla->usage_mode == USAGE_MODE_CMDLINE;
-        my @sql = $self->_bz_real_schema->get_drop_fk_sql($table,$column,$def);
-        $self->do($_) foreach @sql;
+        my @statements = 
+            $self->_bz_real_schema->get_drop_fk_sql($table,$column,$def);
+        foreach my $sql (@statements) {
+            # Because this is a deletion, we don't want to die hard if
+            # we fail because of some local customization. If something
+            # is already gone, that's fine with us!
+            eval { $self->do($sql); } or warn "Failed SQL: [$sql] Error: $@";
+        }
         delete $col_def->{REFERENCES};
         $self->_bz_real_schema->set_column($table, $column, $col_def);
         $self->_bz_store_real_schema;
