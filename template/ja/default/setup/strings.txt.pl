@@ -68,6 +68,8 @@ END
     feature_updates           => 'システム更新通知',
     feature_xmlrpc            => 'XML-RPC インターフェース',
 
+    file_remove => '##name## を削除中...',
+    file_rename => '##from## から ##to## に名前変更中...',
     header => "* これは perl ##perl_ver## で動作中の Bugzilla ##bz_ver## です\n"
             . "* ##os_name## ##os_ver## で起動中です",
     install_all => <<EOT,

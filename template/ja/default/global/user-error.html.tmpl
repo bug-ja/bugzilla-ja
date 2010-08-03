@@ -421,7 +421,7 @@
     [% ELSIF action == "approve" %]
       承認
     [% ELSE %]
-      [% Hook.process('auth_failure_action') %]
+      [%+ Hook.process('auth_failure_action') %]
     [% END %]
 
     は許可されていません。
@@ -1221,7 +1221,7 @@
 
   [% ELSIF error == "json_rpc_post_only" %]
     セキュリティー上の問題から、POST HTTP メソッドを利用するには、
-    '[% method FILTER html %]' を利用する必要があります。
+    '[% method FILTER html %]' のみが利用できます。
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は既に存在しています [% END %]
