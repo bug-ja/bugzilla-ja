@@ -176,7 +176,8 @@
           #%]
         var BUGZILLA = {
             param: {
-                cookiepath: '[% Param('cookiepath') FILTER js %]'
+                cookiepath: '[% Param('cookiepath') FILTER js %]',
+                maxusermatches: [% Param('maxusermatches') FILTER js %]
             },
 
             string: {
@@ -191,7 +192,7 @@
                 short_desc_required:
                     'You must enter a Summary for this [% terms.bug %].',
                 version_required:
-                    'You must select a Version for this [% terms.bug %].',
+                    'You must select a Version for this [% terms.bug %].'
             }
         };
         [% IF javascript %]

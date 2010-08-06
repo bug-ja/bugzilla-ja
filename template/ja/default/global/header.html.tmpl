@@ -177,7 +177,8 @@
           #%]
         var BUGZILLA = {
             param: {
-                cookiepath: '[% Param('cookiepath') FILTER js %]'
+                cookiepath: '[% Param('cookiepath') FILTER js %]',
+                maxusermatches: [% Param('maxusermatches') FILTER js %]
             },
 
             string: {
@@ -192,7 +193,7 @@
                 short_desc_required:
                     '[% terms.bug %] の要約を入力する必要があります。',
                 version_required:
-                    '[% terms.bug %] のバージョンを選択する必要があります。',
+                    '[% terms.bug %] のバージョンを選択する必要があります。'
             }
         };
         [% IF javascript %]

@@ -983,7 +983,9 @@ sub update {
           old_bug => $old_bug });
 
     # If any change occurred, refresh the timestamp of the bug.
-    if (scalar(keys %$changes) || $self->{added_comments}) {
+    if (scalar(keys %$changes) || $self->{added_comments}
+        || $self->{comment_isprivate})
+    {
         $dbh->do('UPDATE bugs SET delta_ts = ? WHERE bug_id = ?',
                  undef, ($delta_ts, $self->id));
         $self->{delta_ts} = $delta_ts;
@@ -996,7 +998,8 @@ sub update {
     # back, this change will *not* be rolled back. As we expect rollbacks
     # to be extremely rare, that is OK for us.
     $self->_sync_fulltext()
-        if $self->{added_comments} || $changes->{short_desc};
+        if $self->{added_comments} || $changes->{short_desc}
+           || $self->{comment_isprivate};
 
     # Remove obsolete internal variables.
     delete $self->{'_old_assigned_to'};
@@ -3725,12 +3728,6 @@ sub map_fields {
         }
         $field_values{$field_name} = $params->{$field};
     }
-
-    # This protects the WebService Bug.search method.
-    unless (Bugzilla->user->is_timetracker) {
-        delete @field_values{qw(estimated_time remaining_time deadline)};
-    }
-    
     return \%field_values;
 }
 

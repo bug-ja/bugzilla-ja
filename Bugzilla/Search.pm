@@ -564,7 +564,8 @@ sub init {
     }
 
     foreach my $field ($params->param()) {
-        if (grep { $_->name eq $field } @legal_fields) {
+        my ($field_obj) = grep { $_->name eq $field } @legal_fields;
+        if ($field_obj) {
             my $type = $params->param("${field}_type");
             my @values = $params->param($field);
             if (!$type) {
@@ -577,7 +578,10 @@ sub init {
             }
             $type = 'matches' if $field eq 'content';
             my $send_value = join(',', @values);
-            if ($type eq 'anyexact') {
+            if ( $type eq 'anyexact'
+                 and ($field_obj->is_select or $field eq 'version'
+                      or $field eq 'target_milestone') )
+            {
                 $send_value = \@values;
             }
             push(@specialchart, [$field, $type, $send_value]);
@@ -1455,7 +1459,8 @@ sub _contact_exact_group {
     $$v =~ /\%group\.([^%]+)%/;
     my $group = $1;
     my $groupid = Bugzilla::Group::ValidateGroupName( $group, ($user));
-    $groupid || ThrowUserError('invalid_group_name',{name => $group});
+    ($groupid && $user->in_group_id($groupid))
+      || ThrowUserError('invalid_group_name',{name => $group});
     my @childgroups = @{Bugzilla::Group->flatten_group_membership($groupid)};
     my $table = "user_group_map_$$chartid";
     push (@$supptables, "LEFT JOIN user_group_map AS $table " .
@@ -1521,7 +1526,8 @@ sub _cc_exact_group {
     $$v =~ m/%group\.([^%]+)%/;
     my $group = $1;
     my $groupid = Bugzilla::Group::ValidateGroupName( $group, ($user));
-    $groupid || ThrowUserError('invalid_group_name',{name => $group});
+    ($groupid && $user->in_group_id($groupid))
+      || ThrowUserError('invalid_group_name',{name => $group});
     my @childgroups = @{Bugzilla::Group->flatten_group_membership($groupid)};
     my $chartseq = $$chartid;
     if ($$chartid eq "") {
