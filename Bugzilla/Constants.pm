@@ -144,11 +144,13 @@ use File::Basename;
 
     MAX_TOKEN_AGE
     MAX_LOGINCOOKIE_AGE
+    MAX_SUDO_TOKEN_AGE
 
     SAFE_PROTOCOLS
 
     MIN_SMALLINT
     MAX_SMALLINT
+    MAX_INT_32
 
     MAX_LEN_QUERY_NAME
     MAX_CLASSIFICATION_SIZE
@@ -170,7 +172,7 @@ use File::Basename;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "3.4.7+";
+use constant BUGZILLA_VERSION => "3.4.8";
 
 # These are unique values that are unlikely to match a string or a number,
 # to be used in criteria for match() functions and other things. They start
@@ -371,6 +373,8 @@ use constant FIELD_TYPE_BUG_URLS => 7;
 use constant MAX_TOKEN_AGE => 3;
 # How many days a logincookie will remain valid if not used.
 use constant MAX_LOGINCOOKIE_AGE => 30;
+# How many seconds (default is 6 hours) a sudo cookie remains valid.
+use constant MAX_SUDO_TOKEN_AGE => 21600;
 
 # Protocols which are considered as safe.
 use constant SAFE_PROTOCOLS => ('afs', 'cid', 'ftp', 'gopher', 'http', 'https',
@@ -430,6 +434,7 @@ use constant ON_WINDOWS => ($^O =~ /MSWin32/i);
 
 use constant MIN_SMALLINT => -32768;
 use constant MAX_SMALLINT => 32767;
+use constant MAX_INT_32 => 2147483647;
 
 # The longest that a saved search name can be.
 use constant MAX_LEN_QUERY_NAME => 64;

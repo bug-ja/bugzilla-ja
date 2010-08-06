@@ -1694,6 +1694,22 @@
       [% END %]
     [% END %]
 
+  [% ELSIF error == "sudo_invalid_cookie" %]
+    [% title = "無効な Sudo クッキー" %]
+    あなたの sudo 用クッキーは無効です。有効期限が切れたか、
+    sudo セッションを正しく開始しませんでした。ページを更新するか、他のページを
+    読み込んでから作業を再開してください。
+
+  [% ELSIF error == "sudo_illegal_action" %]
+    [% title = "アカウント上書きが認証されませんでした" %]
+    [% IF NOT sudoer.in_group("bz_sudoers") %]
+      ユーザを上書きする許可がありません。
+    [% ELSIF target_user AND target_user.in_group("bz_sudo_protect") %]
+      [% target_user.identity FILTER html %] の権限をとる許可がありません。
+    [% ELSE %]
+      なろうとした対象のユーザが存在しません。
+    [% END %]
+
   [% ELSIF error == "sudo_in_progress" %]
     [% title = BLOCK %] [% jawords.session FILTER html %] を実行中です [% END %]
     [% jawords.sudo_session FILTER html %]
