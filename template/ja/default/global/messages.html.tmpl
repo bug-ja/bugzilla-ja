@@ -146,10 +146,6 @@
   [% ELSIF message_tag == "buglist_sorted_by_relevance" %]
     リストの [% terms.Bugs %] は関連性でソートされます。
     最も関連する [% terms.bugs %] が最上部に表示されます。
-    [% IF bugs.size == constants.FULLTEXT_BUGLIST_LIMIT %]
-      最も関連する [% constants.FULLTEXT_BUGLIST_LIMIT FILTER html %]
-      個の [% terms.bugs %] のみが表示されます。
-    [% END %]
 
   [% ELSIF message_tag == "change_columns" %]
     [% title = "カラム変更" %]
