@@ -138,7 +138,7 @@
   <tr>
     <td>
       [% IF product.versions.size > 0 %]
-        <a href="editversions.cgi?product=[%- product.name FILTER url_quote %]">
+        <a href="editversions.cgi?product=[%- product.name FILTER uri %]">
           バージョン:
         </a>
       [% ELSE %]

@@ -104,11 +104,11 @@
         [% format FILTER uri %]&amp;ctype=png&amp;action=plot&amp;
         [% IF tbl_field %]
           [% IF tbl != "-total-" %]
-            [% tbl_field FILTER uri %]=[% tbl FILTER url_quote %]&amp;
+            [% tbl_field FILTER uri %]=[% tbl FILTER uri %]&amp;
           [% ELSE %]
             [% FOREACH tblname = tbl_names %]
               [% IF tblname != "-total-" %]
-                [% tbl_field FILTER uri %]=[% tblname FILTER url_quote %]&amp;
+                [% tbl_field FILTER uri %]=[% tblname FILTER uri %]&amp;
               [% END %]
             [% END %]
           [% END %]
