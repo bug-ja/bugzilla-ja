@@ -58,16 +58,21 @@
 
   allow_attachment_deletion => "有効なら、管理者が添付ファイルを削除できます。",
 
-  allow_attach_url => "有効なら、添付の作成時に URL を指定して作成し、URL そのものを添付" _
-                      "として取り扱うことが可能になります。",
-
-  maxattachmentsize => "添付ファイルの最大サイズ (kB) です。$terms.Bugzilla は" _
-                       "このサイズ以上のパッチを受け付けなくなります。" _
-                       "0 に設定すると ${terms.bugs} にファイルを添付できなくなります。",
+  maxattachmentsize => "データベースに保存する添付ファイルの最大サイズ (kB) です。" _
+                       "これ以上のサイズのファイルを ${terms.abug} に添付しようとした場合、" _
+                       "$terms.Bugzilla は<a href='#maxlocalattachment'><tt>maxlocalattachment</tt> " _
+                       "パラメータ</a> をウェブサーバのローカルにファイルを保存するか" _
+                       "を決定するために調べます。両方の制限を超えている場合、" _
+                       "添付は拒否されます。" _
+                       "両方のパラメータを 0 に設定すると ${terms.bugs} にファイルを添付できなくなります。",
 
   maxlocalattachment => "ユーザが '巨大ファイル' と指定し、サーバのローカルに保存される" _
                         "添付ファイルの最大サイズ (MB) です。" _
                         "0 にすると、添付ファイルは一切ローカルに保存されません。",
+  maxlocalattachment => "ウェブサーバのローカルに保存する添付ファイルの最大サイズ (kB) " _
+                        "です。<a href='#maxattachmentsize'><tt>maxattachmentsize</tt> " _
+                        "パラメータ</a> 以下に設定すると" _
+                        "サーバのローカルには一切保存されなくなります。" 
 
 }
 %]

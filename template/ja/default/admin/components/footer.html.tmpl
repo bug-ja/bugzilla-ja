@@ -32,7 +32,7 @@
   コンポーネント <a 
   title="コンポーネント '[% comp.name FILTER html %]' の編集"
   href="editcomponents.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]&amp;component=[% comp.name FILTER url_quote %]">
+  [%- product.name FILTER uri %]&amp;component=[% comp.name FILTER uri %]">
    '[% comp.name FILTER html %]'</a> 
   を編集する。
 [% END %]
@@ -41,14 +41,14 @@
 プロダクト <a 
   title="プロダクト '[% product.name FILTER html %]' のコンポーネントを選択して編集"
   href="editcomponents.cgi?product=
-  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+  [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a>
   の他のコンポーネントを編集する。
 [% END %]
 
 プロダクト <a 
   title="プロダクト '[% product.name FILTER html %]' の編集"
   href="editproducts.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+  [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a>
   を編集する。
 
 </p>

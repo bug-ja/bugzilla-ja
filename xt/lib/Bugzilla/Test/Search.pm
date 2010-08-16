@@ -99,7 +99,9 @@ sub num_tests {
                      ? ($top_combinations * $all_combinations) : 0;
     # And AND tests, which means we run 2x $join_tests;
     $join_tests = $join_tests * 2;
-    my $operator_field_tests = ($top_combinations + $join_tests) * TESTS_PER_RUN;
+    # Also, because of NOT tests, we run 2x $top_combinations.
+    my $basic_tests = $top_combinations * 2;
+    my $operator_field_tests = ($basic_tests + $join_tests) * TESTS_PER_RUN;
 
     # Then we test each field/operator combination for SQL injection.
     my @injection_values = INJECTION_TESTS;
@@ -147,7 +149,7 @@ sub all_fields {
     my $self = shift;
     if (not $self->{all_fields}) {
         $self->_create_custom_fields();
-        my @fields = Bugzilla->get_fields;
+        my @fields = @{ Bugzilla->fields };
         @fields = sort { $a->name cmp $b->name } @fields;
         $self->{all_fields} = \@fields;
     }
@@ -302,7 +304,7 @@ sub create_keyword {
 
 sub create_user {
     my ($prefix) = @_;
-    my $user_name = $prefix . '-' . random(10) . "@" . random(10)
+    my $user_name = $prefix . '-' . random(15) . "@" . random(12)
                     . "." . random(3);
     my $user_realname = $prefix . '-' . random();
     my $user = Bugzilla::User->create({
@@ -374,7 +376,7 @@ sub _create_field_values {
     $values{'keywords'} = create_keyword($number)->name;
 
     foreach my $field qw(assigned_to qa_contact reporter cc) {
-        $values{$field} = create_user("$number-$field-")->login;
+        $values{$field} = create_user("$number-$field")->login;
     }
 
     my $classification = Bugzilla::Classification->create(
@@ -415,7 +417,7 @@ sub _create_field_values {
         # "short_desc" as a word and matches it in every bug.
         my $value = "$number-$field" . random();
         if ($field eq 'bug_file_loc' or $field eq 'see_also') {
-            $value = "http://$value" . random(3)
+            $value = "http://$value-" . random(3)
                      . "/show_bug.cgi?id=$number";
         }
         $values{$field} = $value;
@@ -439,8 +441,8 @@ sub _create_field_values {
                                . ' ' . random();
 
     my @flags;
-    my $setter = create_user("$number-setter");
-    my $requestee = create_user("$number-requestee");
+    my $setter = create_user("$number-setters.login_name");
+    my $requestee = create_user("$number-requestees.login_name");
     $values{set_flags} = _create_flags($number, $setter, $requestee);
 
     my $month = $for_create ? "12" : "02";
@@ -604,12 +606,12 @@ sub _create_one_bug {
     # All the bugs are created with everconfirmed = 0.
     $params{bug_status} = 'UNCONFIRMED';
     my $bug = Bugzilla::Bug->create(\%params);
-
+    
     # These are necessary for the changedfrom tests.
     my $extra_values = $self->_extra_bug_create_values->{$number};
-    foreach my $field qw(comments remaining_time flags percentage_complete
+    foreach my $field qw(comments remaining_time percentage_complete
                          keyword_objects everconfirmed dependson blocked
-                         groups_in)
+                         groups_in classification)
     {
         $extra_values->{$field} = $bug->$field;
     }
@@ -705,6 +707,7 @@ sub _create_one_bug {
         $bug->set_flags([], $flags);
         $timestamp->set(second => $number);
         $bug->update($timestamp->ymd . ' ' . $timestamp->hms);
+        $extra_values->{flags} = $bug->flags;
         
         # It's not generally safe to do update() multiple times on
         # the same Bug object.

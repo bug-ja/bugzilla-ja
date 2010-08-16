@@ -31,6 +31,7 @@ use Bugzilla::Constants;
 
 our @EXPORT = qw(
     ATTACHMENT_FIELDS
+    BROKEN_NOT
     COLUMN_TRANSLATION
     COMMENT_FIELDS
     CUSTOM_FIELDS
@@ -45,7 +46,9 @@ our @EXPORT = qw(
     NUM_SEARCH_TESTS
     OR_BROKEN
     OR_SKIP
+    PG_BROKEN
     SKIP_FIELDS
+    SUBSTR_NO_FIELD_ADD
     SUBSTR_SIZE
     TESTS
     TESTS_PER_RUN
@@ -125,13 +128,8 @@ use constant FLAG_FIELDS => {
 # These are fields that we don't test. Test::More will mark these
 # "TODO & SKIP", and not run tests for them at all.
 #
-# attachments.isurl can't easily be supported by us, but it's basically
-# identical to isprivate and isobsolete for searching, so that's not a big
-# loss.
-#
 # We don't support days_elapsed or owner_idle_time yet.
 use constant SKIP_FIELDS => qw(
-    attachments.isurl
     owner_idle_time
     days_elapsed
 );
@@ -156,21 +154,34 @@ use constant USER_FIELDS => qw(
 );
 
 # For the "substr"-type searches, how short of a substring should
-# we use?
+# we use? The goal is to be shorter than the full string, but
+# long enough to still be globally unique.
 use constant SUBSTR_SIZE => 20;
 # However, for some fields, we use a different size.
 use constant FIELD_SUBSTR_SIZE => {
-    alias => 12,
-    bug_file_loc => 30,
+    alias => 11,
     # Just the month and day.
     deadline => -5,
     creation_ts => -8,
     delta_ts => -8,
+    percentage_complete => 7,
     work_time => 3,
     remaining_time => 3,
-    see_also => 30,
-    target_milestone => 12,
+    target_milestone => 15,
+    longdesc => 25,
+    # Just the hour and minute.
+    FIELD_TYPE_DATETIME, -5,
 };
+
+# For most fields, we add the length of the name of the field plus
+# the SUBSTR_SIZE specified above to determine how large of a substring
+# we're going to use. However, for some fields, it doesn't make sense to
+# add in their field name this way.
+use constant SUBSTR_NO_FIELD_ADD => FIELD_TYPE_DATETIME, qw(
+    target_milestone remaining_time percentage_complete work_time
+    attachments.mimetype attachments.submitter attachments.filename
+    attachments.description flagtypes.name
+);
 
 ################
 # Known Broken #
@@ -178,22 +189,6 @@ use constant FIELD_SUBSTR_SIZE => {
 
 # See the KNOWN_BROKEN constant for a general description of these
 # "_BROKEN" constants.
-
-# Search.pm currently enforces "this must be a 0 or 1" in situations
-# where it should not, with two of the attachment booleans.
-use constant ATTACHMENT_BOOLEANS_SEARCH_BROKEN => (
-    'attachments.ispatch'    => { search => 1 },
-    'attachments.isobsolete' => { search => 1 },
-);
-
-# Sometimes the search for attachment booleans works, but then contains
-# the wrong results, because it does not contain bugs that fully lack
-# attachments.
-use constant ATTACHMENT_BOOLEANS_CONTAINS_BROKEN => (
-    'attachments.isobsolete'  => { contains => [5] },
-    'attachments.ispatch'     => { contains => [5] },
-    'attachments.isprivate'   => { contains => [5] },
-);
 
 # Certain fields fail all the "negative" search tests:
 #
@@ -223,23 +218,20 @@ use constant ATTACHMENT_BOOLEANS_CONTAINS_BROKEN => (
 #
 # requestees.login_name doesn't find bugs that fully lack requestees.
 use constant NEGATIVE_BROKEN => (
-    ATTACHMENT_BOOLEANS_CONTAINS_BROKEN,
+    'attachments.isobsolete'  => { contains => [5] },
+    'attachments.ispatch'     => { contains => [5] },
+    'attachments.isprivate'   => { contains => [5] },
     'attach_data.thedata'     => { contains => [5] },
     'attachments.description' => { contains => [5] },
     'attachments.filename'    => { contains => [5] },
     'attachments.mimetype'    => { contains => [5] },
-    'attachments.submitter'   => { contains => [5] },
     blocked      => { contains => [3,4,5] },
     bug_file_loc => { contains => [5] },
     bug_group    => { contains => [1,5] },
-    cc           => { contains => [1,5] },
     deadline     => { contains => [5] },
     dependson    => { contains => [2,4,5] },
     longdesc     => { contains => [1] },
     'longdescs.isprivate'   => { contains => [1] },
-    percentage_complete     => { contains => [1] },
-    'requestees.login_name' => { contains => [3,4,5] },
-    'setters.login_name'    => { contains => [5] },
     work_time               => { contains => [1] },
     # Custom fields are busted because they can be NULL.
     FIELD_TYPE_FREETEXT, { contains => [5] },
@@ -271,22 +263,18 @@ use constant GREATERTHAN_BROKEN => (
 # allwordssubstr work_time only matches against a single comment,
 # instead of matching against all comments on a bug. Same is true
 # for the other longdesc fields, cc, keywords, and bug_group.
-#
-# percentage_complete just drops in 0=0 for the term.
 use constant ALLWORDS_BROKEN => (
-    ATTACHMENT_BOOLEANS_SEARCH_BROKEN,
     bug_group => { contains => [1] },
     cc        => { contains => [1] },
     keywords  => { contains => [1] },
     longdesc  => { contains => [1] },
     work_time => { contains => [1] },
-    percentage_complete => { contains => [2,3,4,5] },
 );
 
 # nowords and nowordssubstr have these broken tests in common.
 #
 # flagtypes.name doesn't match bugs without flags.
-# cc, longdescs.isprivate, and bug_group actually work properly in
+# longdescs.isprivate, and bug_group actually work properly in
 # terms of excluding bug 1 (since we exclude all values in the search,
 # on our test), but still fail at including bug 5.
 # The longdesc* and work_time fields, coincidentally, work completely
@@ -295,7 +283,6 @@ use constant NOWORDS_BROKEN => (
     NEGATIVE_BROKEN,
     'flagtypes.name' => { contains => [5] },
     bug_group        => { contains => [5] },
-    cc               => { contains => [5] },
     longdesc         => {},
     work_time        => {},
     'longdescs.isprivate' => {},
@@ -306,7 +293,7 @@ use constant NOWORDS_BROKEN => (
 use constant CHANGED_BROKEN => (
     classification => { contains => [1] },
     commenter => { contains => [1] },
-    percentage_complete     => { contains => [2,3,4,5] },
+    percentage_complete     => { contains => [1] },
     'requestees.login_name' => { contains => [1] },
     'setters.login_name'    => { contains => [1] },
     delta_ts                => { contains => [1] },
@@ -346,28 +333,9 @@ use constant CHANGED_VALUE_BROKEN => (
 # while the other fails. In this case, we have a special override for
 # "operator-value", which uniquely identifies tests.
 use constant KNOWN_BROKEN => {
-    notequals => { NEGATIVE_BROKEN },
-    # percentage_complete substring matches every bug, regardless of
-    # its percentage_complete value.
-    substring => {
-        percentage_complete => { contains => [2,3,4,5] },
-    },
-    casesubstring => {
-        percentage_complete => { contains => [2,3,4,5] },
-    },
+    notequals    => { NEGATIVE_BROKEN },
     notsubstring => { NEGATIVE_BROKEN },
-
-    # Attachment noolean fields don't work with regexes, right now,
-    # because they throw an error that regexes are not valid booleans.
-    'regexp-^1-' => { ATTACHMENT_BOOLEANS_SEARCH_BROKEN },
- 
-    # percentage_complete notregexp fails to match bugs that
-    # fully lack hours worked.
-    notregexp => {
-        NEGATIVE_BROKEN,
-        percentage_complete => { contains => [5] },
-    },
-    'notregexp-^1-' => { ATTACHMENT_BOOLEANS_SEARCH_BROKEN },
+    notregexp    => { NEGATIVE_BROKEN },
 
     # percentage_complete doesn't match bugs with 0 hours worked or remaining.
     #
@@ -376,19 +344,13 @@ use constant KNOWN_BROKEN => {
     # also broken in this way, but all our comments come from the same user.) 
     # Also, the attachments ones don't find bugs that have no attachments 
     # at all (which might be OK?).
-    #
-    # attachments.isprivate lessthan doesn't find bugs without attachments.
     lessthan   => {
-        ATTACHMENT_BOOLEANS_SEARCH_BROKEN,
-        'attachments.isprivate' => { contains => [5] },
         'longdescs.isprivate'   => { contains => [1] },
-        percentage_complete => { contains => [5] }, 
         work_time => { contains => [1,2,3,4] },
     },
     # The lessthaneq tests are broken for the same reasons, but they work
     # slightly differently so they have a different set of broken tests.
     lessthaneq => {
-        ATTACHMENT_BOOLEANS_CONTAINS_BROKEN,
         'longdescs.isprivate' => { contains => [1] },
         work_time => { contains => [2,3,4] },
     },
@@ -401,35 +363,19 @@ use constant KNOWN_BROKEN => {
         percentage_complete => { contains => [2] },
     },
 
-    # percentage_complete just throws 0=0 into the search term, returning
-    # all bugs.
+    # percentage_complete doesn't do a numeric comparison, so
+    # it doesn't find decimal values.
     anyexact => {
-        ATTACHMENT_BOOLEANS_SEARCH_BROKEN,
-        percentage_complete => { contains => [3,4,5] },
-    },
-    # bug_group anywordssubstr returns all our bugs. Not sure why.
-    anywordssubstr => {
-        ATTACHMENT_BOOLEANS_SEARCH_BROKEN,
-        percentage_complete => { contains => [3,4,5] },
-        bug_group => { contains => [3,4,5] },
+        percentage_complete => { contains => [2] },
     },
 
     'allwordssubstr-<1>' => { ALLWORDS_BROKEN },
-    'allwordssubstr-<1>,<2>' => {
-        ATTACHMENT_BOOLEANS_SEARCH_BROKEN,
-        percentage_complete => { contains => [1,2,3,4,5] },
-    },
     # flagtypes.name does not work here, probably because they all try to
     # match against a single flag.
     # Same for attach_data.thedata.
     'allwords-<1>' => {
         ALLWORDS_BROKEN,
-        'attach_data.thedata' => { contains => [1] },
         'flagtypes.name' => { contains => [1] },
-    },
-    'allwords-<1> <2>' => {
-        ATTACHMENT_BOOLEANS_SEARCH_BROKEN,
-        percentage_complete => { contains => [1,2,3,4,5] },
     },
 
     nowordssubstr => { NOWORDS_BROKEN },
@@ -438,24 +384,16 @@ use constant KNOWN_BROKEN => {
     # attachments.
     nowords => {
         NOWORDS_BROKEN,
-        'attach_data.thedata' => { contains => [1,5] },
     },
 
     # anywords searches don't work on decimal values.
-    # bug_group anywords returns all bugs.
     # attach_data doesn't work (perhaps because it's the entire
     # data, or some problem with the regex?).
     anywords => {
-        ATTACHMENT_BOOLEANS_SEARCH_BROKEN,
-        'attach_data.thedata' => { contains => [1] },
-        bug_group => { contains => [2,3,4,5] },
-        percentage_complete => { contains => [2,3,4,5] },
         work_time => { contains => [1] },
     },
     'anywords-<1> <2>' => {
-        bug_group => { contains => [3,4,5] },
-        percentage_complete => { contains => [3,4,5] },
-        'attach_data.thedata' => { contains => [1,2] },
+        percentage_complete => { contains => [2] },
         work_time => { contains => [1,2] },
     },
 
@@ -481,14 +419,7 @@ use constant KNOWN_BROKEN => {
     'changedbefore' => {
         CHANGED_BROKEN,
         'attach_data.thedata' => { contains => [1] },
-        creation_ts => { contains => [1,5] },
-        # attachments.* finds values where the date matches exactly.
-        'attachments.description' => { contains => [2] },
-        'attachments.filename'    => { contains => [2] },
-        'attachments.isobsolete'  => { contains => [2] },
-        'attachments.ispatch'     => { contains => [2] },
-        'attachments.isprivate'   => { contains => [2] },
-        'attachments.mimetype'    => { contains => [2] },
+        creation_ts => { contains => [1,2,5] },
     },
     'changedafter' => {
         'attach_data.thedata' => { contains => [2,3,4] },
@@ -496,7 +427,7 @@ use constant KNOWN_BROKEN => {
         commenter   => { contains => [2,3,4] },
         creation_ts => { contains => [2,3,4] },
         delta_ts    => { contains => [2,3,4] },
-        percentage_complete     => { contains => [1,5] },
+        percentage_complete => { contains => [2,3,4] },
         'requestees.login_name' => { contains => [2,3,4] },
         'setters.login_name'    => { contains => [2,3,4] },
     },
@@ -505,9 +436,9 @@ use constant KNOWN_BROKEN => {
         CHANGED_VALUE_BROKEN,
         # All fields should have a way to search for "changing
         # from a blank value" probably.
-        blocked   => { contains => [1] },
-        dependson => { contains => [1] },
-        FIELD_TYPE_BUG_ID, { contains => [1] },
+        blocked   => { contains => [3,4,5] },
+        dependson => { contains => [2,4,5] },
+        FIELD_TYPE_BUG_ID, { contains => [5] },
     },
     # changeto doesn't find work_time changes (probably due to decimal/string
     # stuff). Same for remaining_time and estimated_time.
@@ -538,6 +469,281 @@ use constant KNOWN_BROKEN => {
     },
 };
 
+# This tracks things that are broken in different ways on Pg compared to
+# MySQL. Actually, in some of these cases, Pg is behaving correctly
+# where MySQL isn't, but the result is still a bit surprising to the user.
+use constant PG_BROKEN => {
+    'attach_data.thedata' => {
+        notregexp => { contains => [5] },
+        nowords   => { contains => [5] },
+    },
+    percentage_complete => {
+        'allwordssubstr-<1>' => { contains => [3] },
+        anywordssubstr  => { contains => [2,3] },
+        casesubstring   => { contains => [3] },
+        'notregexp-<1>' => { contains => [3] },
+        notsubstring    => { contains => [3] },
+        nowordssubstr   => { contains => [3] },
+        'regexp-<1>'    => { contains => [3] },
+        substring       => { contains => [3] },
+    },
+};
+
+###################
+# Broken NotTests #
+###################
+
+# These are fields that are broken in the same way for pretty much every
+# NOT test that is broken.
+use constant COMMON_BROKEN_NOT => (
+    "attach_data.thedata"     => { contains => [5] },
+    "attachments.description" => { contains => [5] },
+    "attachments.filename"    => { contains => [5] },
+    "attachments.isobsolete"  => { contains => [5] },
+    "attachments.ispatch"     => { contains => [5] },
+    "attachments.isprivate"   => { contains => [5] },
+    "attachments.mimetype"    => { contains => [5] },
+    "bug_file_loc"            => { contains => [5] },
+    "deadline"                => { contains => [5] },
+    "flagtypes.name"          => { contains => [5] },
+    "keywords"                => { contains => [5] },
+    "longdescs.isprivate"     => { contains => [1] },
+    "percentage_complete"     => { contains => [1 .. 5] },
+    "see_also"                => { contains => [5] },
+    FIELD_TYPE_BUG_ID,           { contains => [5] },
+    FIELD_TYPE_DATETIME,         { contains => [5] },
+    FIELD_TYPE_FREETEXT,         { contains => [5] },
+    FIELD_TYPE_MULTI_SELECT,     { contains => [1, 5] },
+    FIELD_TYPE_TEXTAREA,         { contains => [5] },
+);
+
+# Common BROKEN_NOT values for the changed* fields.
+use constant CHANGED_BROKEN_NOT => (
+    "attach_data.thedata"   => { contains => [1] },
+    "classification"        => { contains => [1] },
+    "commenter"             => { contains => [1] },
+    "delta_ts"              => { contains => [1] },
+    "percentage_complete"   => { contains => [1] },
+    "requestees.login_name" => { contains => [1] },
+    "setters.login_name"    => { contains => [1] },
+    "work_time"             => { contains => [1] },    
+);
+
+# For changedfrom and changedto.
+use constant CHANGED_FROM_TO_BROKEN_NOT => (
+    "bug_group" => { contains => [1] },
+    "cc" => { contains => [1] },
+    "cf_multi_select" => { contains => [1] },
+    "estimated_time" => { contains => [1] },
+    "flagtypes.name" => { contains => [1] },
+    "keywords" => { contains => [1] },    
+);
+
+# Common broken tests for the "not" or "no" operators.
+use constant NEGATIVE_BROKEN_NOT => (
+    "blocked"             => { contains => [3, 4, 5] },
+    "bug_group"           => { contains => [5] },
+    "dependson"           => { contains => [2, 4, 5] },
+    "flagtypes.name"      => { contains => [1 .. 5] },
+    "percentage_complete" => { contains => [1 .. 5] },    
+);
+
+# These are field/operator combinations that are broken when run under NOT().
+use constant BROKEN_NOT => {
+    allwords       => {
+        COMMON_BROKEN_NOT,
+        cc => { contains => [1] },
+        bug_group => { contains => [1] },
+        "flagtypes.name"      => { contains => [1,5] },
+        keywords => { contains => [1,5] },
+        longdesc => { contains => [1] },
+        'see_also' => { },
+        work_time => { contains => [1] },
+        FIELD_TYPE_MULTI_SELECT, { },
+    },
+    'allwords-<1> <2>' => {
+        'attach_data.thedata' => { contains => [5] },
+        bug_group => { },
+        cc => { },
+        'flagtypes.name'      => { contains => [5] },
+        'keywords'            => { contains => [5] },
+        'longdesc' => { },
+        'longdescs.isprivate' => { },
+        work_time => { },
+    },
+    allwordssubstr => {
+        COMMON_BROKEN_NOT,
+        bug_group => { contains => [1] },
+        cc => { contains => [1] },
+        keywords => { contains => [1,5] },
+        longdesc => { contains => [1] },
+        see_also => { },
+        work_time => { contains => [1] },
+        FIELD_TYPE_MULTI_SELECT, { },
+    },
+    'allwordssubstr-<1>,<2>' => {
+        bug_group => { },
+        cc => { },
+        FIELD_TYPE_MULTI_SELECT, { },
+        keywords => { contains => [5] },
+        "longdesc" => { },
+        "longdescs.isprivate" => { },
+        "see_also" => { },
+        "work_time" => { },
+    },
+    anyexact => {
+        COMMON_BROKEN_NOT,
+        "flagtypes.name" => { contains => [1, 2, 5] },
+        "longdesc"       => { contains => [1, 2] },
+        "work_time"      => { contains => [1, 2] }
+    },
+    'anyexact-<1>, <2>' => {
+        bug_group => { contains => [1] },
+        percentage_complete => { contains => [1,3,4,5] },
+        keywords => { contains => [1,5] },
+        see_also => { },
+        FIELD_TYPE_MULTI_SELECT, { },
+    },
+    anywords => {
+        COMMON_BROKEN_NOT,
+        "work_time"           => { contains => [1, 2] },
+        "work_time"           => { contains => [1] },
+        FIELD_TYPE_MULTI_SELECT, { contains => [5] },
+    },
+    'anywords-<1> <2>' => {
+        'attach_data.thedata' => { contains => [5] },
+        "percentage_complete" => { contains => [1,3,4,5] },
+        work_time => { contains => [1,2] },
+    },
+    anywordssubstr => {
+        COMMON_BROKEN_NOT,
+        "work_time" => { contains => [1, 2] },
+    },
+    'anywordssubstr-<1> <2>' => {
+        percentage_complete => { contains => [1,2,3,4,5] },
+        FIELD_TYPE_MULTI_SELECT, { contains => [5] },
+    },
+    casesubstring => {
+        COMMON_BROKEN_NOT,
+        bug_group => { contains => [1] },
+        keywords  => { contains => [1,5] },
+        longdesc  => { contains => [1] },
+        work_time => { contains => [1] }   ,
+        FIELD_TYPE_MULTI_SELECT, { contains => [1,5] },
+    },
+    'casesubstring-<1>-lc' => {
+        bug_group => { },
+        keywords => { contains => [5] },
+        longdesc => { },
+        FIELD_TYPE_MULTI_SELECT, { contains => [5] },
+    },
+    changedafter => {
+        "attach_data.thedata"   => { contains => [2, 3, 4] },
+        "classification"        => { contains => [2, 3, 4] },
+        "commenter"             => { contains => [2, 3, 4] },
+        "creation_ts"           => { contains => [2, 3, 4] },
+        "delta_ts"              => { contains => [2, 3, 4] },
+        "percentage_complete"   => { contains => [2, 3, 4] },
+        "requestees.login_name" => { contains => [2, 3, 4] },
+        "setters.login_name"    => { contains => [2, 3, 4] },
+    },
+    changedbefore=> {
+        CHANGED_BROKEN_NOT,
+        creation_ts => { contains => [1, 2, 5] },
+        work_time   => { }
+    },
+    changedby => {
+        CHANGED_BROKEN_NOT,
+        creation_ts => { contains => [1] },
+    },
+    changedfrom => {
+        CHANGED_BROKEN_NOT,
+        CHANGED_FROM_TO_BROKEN_NOT,
+        'attach_data.thedata' => { },
+        blocked         => { contains => [1, 2] },
+        dependson       => { contains => [1, 3] },
+        longdesc        => { },
+        FIELD_TYPE_BUG_ID, { contains => [1 .. 4] },
+        
+    },
+    changedto => {
+        CHANGED_BROKEN_NOT,
+        CHANGED_FROM_TO_BROKEN_NOT,
+        longdesc => { contains => [1] },
+        "remaining_time" => { contains => [1] },
+    },
+    equals => {
+        COMMON_BROKEN_NOT,
+        bug_group => { contains => [1] },
+        "flagtypes.name" => { contains => [1, 5] },
+        keywords  => { contains => [1,5] },
+        longdesc  => { contains => [1] },
+        work_time => { contains => [1] }
+    },
+    greaterthan => {
+        COMMON_BROKEN_NOT,
+        cc        => { contains => [1] },
+        work_time => { contains => [2, 3, 4] },
+        FIELD_TYPE_MULTI_SELECT, { contains => [5] },
+    },
+    greaterthaneq => {
+        COMMON_BROKEN_NOT,
+        cc               => { contains => [1] },
+        "flagtypes.name" => { contains => [2, 5] },
+        "work_time"      => { contains => [2, 3, 4] },
+        percentage_complete => { contains => [1,3,4,5] },,
+        FIELD_TYPE_MULTI_SELECT, { contains => [5] },
+    },
+    lessthan => {
+        COMMON_BROKEN_NOT,
+        longdesc => { contains => [1] },
+        'longdescs.isprivate' => { },
+    },
+    'lessthan-2' => {
+        bug_group => { contains => [1] },
+        keywords  => { contains => [1,5] },
+    },
+    lessthaneq => {
+        COMMON_BROKEN_NOT,
+        bug_group => { contains => [1] },
+        keywords  => { contains => [1,5] },
+        longdesc  => { contains => [1] },
+        'longdescs.isprivate' => { },
+    },
+    notequals      => { NEGATIVE_BROKEN_NOT },
+    notregexp      => { NEGATIVE_BROKEN_NOT },
+    notsubstring   => { NEGATIVE_BROKEN_NOT },
+    nowords        => {
+        NEGATIVE_BROKEN_NOT,
+        "work_time"           => { contains => [2, 3, 4] },
+        "flagtypes.name" => { },
+    },
+    nowordssubstr  => {
+        NEGATIVE_BROKEN_NOT,
+        "attach_data.thedata" => { },
+        "flagtypes.name" => { },
+        "work_time"           => { contains => [2, 3, 4] },
+    },
+    regexp         => {
+        COMMON_BROKEN_NOT,
+        bug_group => { contains => [1] },
+        "flagtypes.name" => { contains => [1,5] },
+        keywords  => { contains => [1,5] },
+        longdesc  => { contains => [1] },
+        work_time => { contains => [1] },
+    },
+    'regexp-^1-' => {
+        "flagtypes.name" => { contains => [5] },
+    },
+    substring      => {
+        COMMON_BROKEN_NOT,
+        bug_group => { contains => [1] },
+        keywords  => { contains => [1,5] },
+        longdesc  => { contains => [1] },
+        work_time => { contains => [1] },
+    },
+};
+
 #############
 # Overrides #
 #############
@@ -552,11 +758,13 @@ use constant REGEX_OVERRIDE => {
     blocked   => { value => '^<1>$' },
     dependson => { value => '^<1>$' },
     bug_id    => { value => '^<1>$' },
-    'attachments.isprivate' => { value => '^1' },
-    cclist_accessible       => { value => '^1' },
-    reporter_accessible     => { value => '^1' },
-    everconfirmed           => { value => '^1' },
-    'longdescs.isprivate'   => { value => '^1' },
+    'attachments.isobsolete' => { value => '^1'},
+    'attachments.ispatch'    => { value => '^1'},
+    'attachments.isprivate'  => { value => '^1' },
+    cclist_accessible        => { value => '^1' },
+    reporter_accessible      => { value => '^1' },
+    everconfirmed            => { value => '^1' },
+    'longdescs.isprivate'    => { value => '^1' },
     creation_ts => { value => '^2037-01-01' },
     delta_ts    => { value => '^2037-01-01' },
     deadline    => { value => '^2037-02-01' },
@@ -734,11 +942,13 @@ use constant TESTS => {
               blocked   => { value => '<4-id>', contains => [1,2] },
               dependson => { value => '<3-id>', contains => [1,3] },
               bug_id    => { value => '<2-id>' },
-              'attachments.isprivate' => { value => 1, contains => [2,3,4,5] },
-              cclist_accessible       => { value => 1, contains => [2,3,4,5] },
-              reporter_accessible     => { value => 1, contains => [2,3,4,5] },
-              'longdescs.isprivate'   => { value => 1, contains => [2,3,4,5] },
-              everconfirmed           => { value => 1, contains => [2,3,4,5] },
+              'attachments.isprivate'  => { value => 1, contains => [2,3,4] },
+              'attachments.isobsolete' => { value => 1, contains => [2,3,4] },
+              'attachments.ispatch'    => { value => 1, contains => [2,3,4] },
+              cclist_accessible        => { value => 1, contains => [2,3,4,5] },
+              reporter_accessible      => { value => 1, contains => [2,3,4,5] },
+              'longdescs.isprivate'    => { value => 1, contains => [2,3,4,5] },
+              everconfirmed            => { value => 1, contains => [2,3,4,5] },
               creation_ts => { value => '2037-01-02', contains => [1,5] },
               delta_ts    => { value => '2037-01-02', contains => [1,5] },
               deadline    => { value => '2037-02-02' },
@@ -755,9 +965,9 @@ use constant TESTS => {
     lessthaneq => [
         { contains => [1], value => '<1>',
           override => {
-              'attachments.ispatch'    => { value => 0, contains => [2,3,4,5] },
-              'attachments.isobsolete' => { value => 0, contains => [2,3,4,5] },
-              'attachments.isprivate'  => { value => 0, contains => [2,3,4,5] },
+              'attachments.isobsolete' => { value => 0, contains => [2,3,4] },
+              'attachments.ispatch'    => { value => 0, contains => [2,3,4] },
+              'attachments.isprivate'  => { value => 0, contains => [2,3,4] },
               cclist_accessible        => { value => 0, contains => [2,3,4,5] },
               reporter_accessible      => { value => 0, contains => [2,3,4,5] },
               'longdescs.isprivate'    => { value => 0, contains => [2,3,4,5] },
@@ -768,6 +978,7 @@ use constant TESTS => {
               delta_ts       => { contains => [1,5] },
               remaining_time => { contains => [1,5] },
               longdesc       => { contains => [1,5] },
+              percentage_complete => { contains => [1,5] },
               work_time => { value => 1, contains => [1,5] },
               LESSTHAN_OVERRIDE,
           },
@@ -785,6 +996,7 @@ use constant TESTS => {
               reporter_accessible      => { value => 0, contains => [1] },
               'longdescs.isprivate'    => { value => 0, contains => [1] },
               everconfirmed            => { value => 0, contains => [1] },
+              'flagtypes.name'         => { value => 2, contains => [2,3,4] },
               GREATERTHAN_OVERRIDE,
           },
         },
@@ -799,7 +1011,7 @@ use constant TESTS => {
               reporter_accessible      => { value => 1, contains => [1] },
               'longdescs.isprivate'    => { value => 1, contains => [1] },
               everconfirmed            => { value => 1, contains => [1] },
-              dependson => { contains => [1,3] },
+              dependson => { value => '<3>', contains => [1,3] },
               blocked   => { contains => [1,2] },
               GREATERTHAN_OVERRIDE,
           }
@@ -812,7 +1024,7 @@ use constant TESTS => {
         { contains => [2,3,4,5], value => '<1>' },
     ],
     anyexact => [
-        { contains => [1,2], value => '<1>,<2>', 
+        { contains => [1,2], value => '<1>, <2>', 
           override => { ANY_OVERRIDE } },
     ],
     anywordssubstr => [
@@ -822,7 +1034,11 @@ use constant TESTS => {
     allwordssubstr => [
         { contains => [1], value => '<1>',
           override => { MULTI_BOOLEAN_OVERRIDE } },
-        { contains => [], value => '<1>,<2>' },
+        { contains => [], value => '<1>,<2>',
+          override => {
+              dependson => { value => '<1-id> <3-id>', contains => [] },
+          }
+        },
     ],
     nowordssubstr => [
         { contains => [2,3,4,5], value => '<1>',
@@ -855,7 +1071,11 @@ use constant TESTS => {
     allwords => [
         { contains => [1], value => '<1>',
           override => { MULTI_BOOLEAN_OVERRIDE } },
-        { contains => [], value => '<1> <2>' },
+        { contains => [], value => '<1> <2>',
+          override => {
+            dependson => { contains => [], value => '<2-id> <3-id>' }
+          }
+        },
     ],
     nowords => [
         { contains => [2,3,4,5], value => '<1>',
@@ -872,18 +1092,18 @@ use constant TESTS => {
     ],
 
     changedbefore => [
-        { contains => [1], value => '<2-delta>',
+        { contains => [1], value => '<1-delta>',
           override => {
               CHANGED_OVERRIDE,
-              creation_ts => { contains => [1,5] },
+              creation_ts => { contains => [1,2,5] },
               blocked   => { contains => [1,2] },
               dependson => { contains => [1,3] },
-              longdesc => { contains => [1,2,5] },
+              longdesc => { contains => [1,5] },
           }
         },
     ],
     changedafter => [
-        { contains => [2,3,4], value => '<1-delta>',
+        { contains => [2,3,4], value => '<2-delta>',
           override => { 
               CHANGED_OVERRIDE,
               creation_ts => { contains => [2,3,4] },
@@ -895,18 +1115,25 @@ use constant TESTS => {
               # in the bugs_activity table, so they won't ever match.
               blocked   => { contains => [] },
               dependson => { contains => [] },
-          } 
+          }
         },
     ],
     changedfrom => [
         { contains => [1], value => '<1>',
           override => {
               CHANGED_OVERRIDE,
+              # The test never changes an already-set dependency field, but
+              # we *can* attempt to test searching against an empty value,
+              # which should get us some bugs.
+              blocked   => { value => '', contains => [1,2] },
+              dependson => { value => '', contains => [1,3] },
+              FIELD_TYPE_BUG_ID, { value => '', contains => [1,2,3,4] },
               # longdesc changedfrom doesn't make any sense.
               longdesc => { contains => [] },
               # Nor does creation_ts changedfrom.
               creation_ts => { contains => [] },
               'attach_data.thedata' => { contains => [] },
+              bug_id => { value => '<1-id>', contains => [] },
           },
         },
     ],
@@ -936,13 +1163,28 @@ use constant TESTS => {
 # operator_ok overrides the "brokenness" of certain operators, so that they
 # are always OK for that field/operator combination.
 use constant INJECTION_BROKEN_FIELD => {
-    'attachments.isobsolete' => { search => 1 },
-    'attachments.ispatch'    => { search => 1 },
-    owner_idle_time => {
-        sql_error => qr/bugs\.owner_idle_time.+where clause/,
-        operator_ok => [qw(changedfrom changedto greaterthan greaterthaneq
-                           lessthan lessthaneq)]
-    },
+    # Pg can't run injection tests against integer or date fields. See bug 577557.
+    'attachments.isobsolete' => { db_skip => ['Pg'] },
+    'attachments.ispatch'    => { db_skip => ['Pg'] },
+    'attachments.isprivate'  => { db_skip => ['Pg'] },
+    blocked                  => { db_skip => ['Pg'] },
+    bug_id                   => { db_skip => ['Pg'] },
+    cclist_accessible        => { db_skip => ['Pg'] },
+    creation_ts              => { db_skip => ['Pg'] },
+    days_elapsed             => { db_skip => ['Pg'] },
+    dependson                => { db_skip => ['Pg'] },
+    deadline                 => { db_skip => ['Pg'] },
+    delta_ts                 => { db_skip => ['Pg'] },
+    estimated_time           => { db_skip => ['Pg'] },
+    everconfirmed            => { db_skip => ['Pg'] },
+    'longdescs.isprivate'    => { db_skip => ['Pg'] },
+    percentage_complete      => { db_skip => ['Pg'] },
+    remaining_time           => { db_skip => ['Pg'] },
+    reporter_accessible      => { db_skip => ['Pg'] },
+    work_time                => { db_skip => ['Pg'] },
+    FIELD_TYPE_BUG_ID,          { db_skip => ['Pg'] },
+    FIELD_TYPE_DATETIME,        { db_skip => ['Pg'] },
+    owner_idle_time => { search => 1 },
     keywords => {
         search => 1,
         operator_ok => [qw(allwordssubstr anywordssubstr casesubstring
@@ -957,9 +1199,9 @@ use constant INJECTION_BROKEN_FIELD => {
 # search => 1 means the Bugzilla::Search creation fails, but
 # field_ok contains fields that it does actually succeed for.
 use constant INJECTION_BROKEN_OPERATOR => {
-    changedafter  => { search => 1, field_ok => ['percentage_complete'] },
-    changedbefore => { search => 1, field_ok => ['percentage_complete'] },
-    changedby     => { search => 1, field_ok => ['percentage_complete'] },
+    changedafter  => { search => 1 },
+    changedbefore => { search => 1 },
+    changedby     => { search => 1 },
 };
 
 # Tests run by Bugzilla::Test::Search::InjectionTest.

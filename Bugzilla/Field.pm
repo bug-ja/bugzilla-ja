@@ -214,9 +214,9 @@ use constant DEFAULT_FIELDS => (
     {name => 'target_milestone',      desc => 'Target Milestone',
      buglist => 1},
     {name => 'creation_ts',           desc => 'Creation date',
-     in_new_bugmail => 1, buglist => 1},
+     buglist => 1},
     {name => 'delta_ts',              desc => 'Last changed date',
-     in_new_bugmail => 1, buglist => 1},
+     buglist => 1},
     {name => 'longdesc',              desc => 'Comment'},
     {name => 'longdescs.isprivate',   desc => 'Comment is private'},
     {name => 'alias',                 desc => 'Alias', buglist => 1},
@@ -238,7 +238,6 @@ use constant DEFAULT_FIELDS => (
      buglist => 1},
     {name => 'content',               desc => 'Content'},
     {name => 'attach_data.thedata',   desc => 'Attachment data'},
-    {name => 'attachments.isurl',     desc => 'Attachment is a URL'},
     {name => "owner_idle_time",       desc => "Time Since Assignee Touched"},
     {name => 'see_also',              desc => "See Also",
      type => FIELD_TYPE_BUG_URLS},
@@ -544,7 +543,7 @@ This method returns C<1> if the field is "abnormal", C<0> otherwise.
 
 sub is_abnormal {
     my $self = shift;
-    return grep($_ eq $self->name, ABNORMAL_SELECTS) ? 1 : 0;
+    return ABNORMAL_SELECTS->{$self->name} ? 1 : 0;
 }
 
 sub legal_values {

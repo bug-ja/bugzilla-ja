@@ -68,19 +68,17 @@
             <span class="bz_edit">(<a href="javascript:toggle_attachment_details_visibility()">編集</a>)</span>
           [% END %]
         </div>
-        [% IF NOT attachment.isurl %]
-          <div class="details">
-            [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %]) 
-            [% IF attachment.datasize %]
-              [%+ attachment.datasize FILTER unitconvert %]
-            [% ELSE %]
-              <em>削除済</em>
-            [% END %] [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %] による添付
-            [% IF attachment.isprivate %]
-              <span class="bz_private"><strong>[% Param('insidergroup') FILTER html %]</strong> グループのメンバーのみ閲覧可</span>
-            [% END %]
-          </div>
-        [% END %]
+        <div class="details">
+          [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %])
+          [% IF attachment.datasize %]
+            [%+ attachment.datasize FILTER unitconvert %]
+          [% ELSE %]
+            <em>削除済</em>
+          [% END %] による添付 [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
+          [% IF attachment.isprivate %]
+            <span class="bz_private"><strong>[% Param('insidergroup') FILTER html %]</strong> グループのメンバーのみ閲覧可</span>
+          [% END %]
+        </div>
       </div>
       <div id="attachment_information_edit">
         <span class="bz_hide">
@@ -99,12 +97,6 @@
           %]
         </div>
 
-        [% IF attachment.isurl %]
-          <input type="hidden" name="filename"
-                 value="[% attachment.filename FILTER html %]">
-          <input type="hidden" name="contenttypeentry"
-                 value="[% attachment.contenttype FILTER html %]">
-        [% ELSE %]
           <div id="attachment_filename">
             <label for="filename">ファイル名:</label>
             <input type="text" size="20"  class="text block[% editable_or_hide %]"
@@ -138,7 +130,6 @@
                    [%+ 'checked="checked"' IF attachment.ispatch %]>
                    <label for="ispatch">パッチ</label>
           </div>
-        [% END %]
 
         <div class="readonly">
           <div class="checkboxes">
@@ -170,18 +161,6 @@
       <div id="attachment_view_window">
         [% IF !attachment.datasize %]
           <div><b>この添付の内容は削除されました。</b></div>
-        [% ELSIF attachment.isurl %]
-          <div>
-            <a href="[% attachment.data FILTER html %]">
-              [% IF attachment.datasize < 120 %]
-                [% attachment.data FILTER html %]
-              [% ELSE %]
-                [% attachment.data FILTER truncate(80) FILTER html %]
-                &nbsp;...
-                [% attachment.data.match(".*(.{20})$").0 FILTER html %]
-              [% END %]
-            </a>
-          </div>
         [% ELSIF !Param("allow_attachment_display") %]
           <div id="view_disabled" >
             <p><b>
@@ -195,7 +174,7 @@
             </b></p>
           </div>
         [% ELSIF attachment.is_viewable %]
-          <div >
+          <div>
             [% INCLUDE global/textarea.html.tmpl
               id      = 'editFrame'
               name    = 'comment'
@@ -206,10 +185,27 @@
               defaultcontent = (attachment.contenttype.match('^text\/')) ?
                                  attachment.data.replace('(.*\n|.+)', '>$1') : undef
             %]
-            <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]">
-              <b>あなたのブラウザが IFRAME をサポートしていないので、添付の詳細をここで見ることができません。
-              <a href="attachment.cgi?id=[% attachment.id %]">別のページで見てください</a>。</b>
-            </iframe>
+            [%# The regexp is stolen from quoteUrls(), see Template.pm %]
+            [% safe_protocols = constants.SAFE_PROTOCOLS.join('|') %]
+            [% IF attachment.contenttype == 'text/plain'
+                  && attachment.data.match("^($safe_protocols):" _ '[^\s<>\"]+[\w\/]$') %]
+              <p>
+                <a href="[% attachment.data FILTER html %]">
+                  [% IF attachment.datasize < 120 %]
+                    [% attachment.data FILTER html %]
+                  [% ELSE %]
+                    [% attachment.data FILTER truncate(80) FILTER html %]
+                    ...
+                    [% attachment.data.match('.*(.{20})$').0 FILTER html %]
+                  [% END %]
+                </a>
+              </p>
+            [% ELSE %]
+              <iframe id="viewFrame" src="attachment.cgi?id=[% attachment.id %]">
+                <b>あなたのブラウザが IFRAME をサポートしていないので、添付の詳細をここで見ることができません。
+                <a href="attachment.cgi?id=[% attachment.id %]">別のページで見てください</a>。</b>
+              </iframe>
+            [% END %]
             <script type="text/javascript">
               <!--
               var patchviewerinstalled = 0;

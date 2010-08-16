@@ -112,7 +112,7 @@
           <li>
             [% otheruser.login FILTER html %]
             <a href="buglist.cgi?field0-0-0=attachments.submitter&type0-0-0=equals&value0-0-0=
-               [%- otheruser.login FILTER url_quote %]">は
+               [%- otheruser.login FILTER uri %]">は
             [% IF attachments == 1 %]
               1ファイル
             [% ELSE %]
@@ -132,7 +132,7 @@
           <li>
             [% otheruser.login FILTER html %] は、
             <a href="buglist.cgi?emailreporter1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">[%+ reporter %] 件の [%+ terms.bugs %]</a>
+               [%- otheruser.login FILTER uri %]">[%+ reporter %] 件の [%+ terms.bugs %]</a>
             を報告しています。
             もし、このユーザアカウントを削除すると、データベースのレコードに不整合が発生します。
             その結果、
@@ -162,7 +162,7 @@
           <li>
             [% otheruser.login FILTER html %] は、
             <a href="buglist.cgi?field0-0-0=setters.login_name&amp;type0-0-0=equals&amp;value0-0-0=
-               [%- otheruser.login FILTER url_quote %]">[%+ flags.setter %]
+               [%- otheruser.login FILTER uri %]">[%+ flags.setter %]
             件のフラグを変更、もしくは要求しています</a>。
             もし、このユーザのアカウントを削除すると、データベースのフラグのテーブルに不整合が発生します。
             その結果、
@@ -178,7 +178,7 @@
           <li>
             [% otheruser.login FILTER html %] は、
             <a href="buglist.cgi?emaillongdesc1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">[% terms.bugs %]
+               [%- otheruser.login FILTER uri %]">[% terms.bugs %]
             で、[%+ longdescs %] 件のコメントを追加しています</a>。
             もし、このユーザのアカウントを削除すると、データベースのコメントのテーブルに不整合が発生します。
             その結果、
@@ -215,7 +215,7 @@
           <li>
             [% otheruser.login FILTER html %] は、
             <a href="buglist.cgi?emailassigned_to1=1&amp;emailqa_contact1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">[%+ assignee_or_qa %] 件の [%+ terms.bugs %]
+               [%- otheruser.login FILTER uri %]">[%+ assignee_or_qa %] 件の [%+ terms.bugs %]
             の担当者か、QA コンタクトです</a>。
             もし、このユーザのアカウントを削除した場合、これらは、既定の担当者や既定の
             QA コンタクトに再設定されます。
@@ -225,7 +225,7 @@
           <li>
             [% otheruser.login FILTER html %] は、
             <a href="buglist.cgi?emailcc1=1&amp;emailtype1=exact&amp;email1=
-               [%- otheruser.login FILTER url_quote %]">[%+ cc %] 件の [%+ terms.bugs %]
+               [%- otheruser.login FILTER uri %]">[%+ cc %] 件の [%+ terms.bugs %]
             の CC リストに登録されています</a>。
             もし、このユーザのアカウントを削除した場合、該当の CC リストから削除されます。
           </li>
@@ -250,7 +250,7 @@
           <li>
             [% otheruser.login FILTER html %] は、
             <a href="buglist.cgi?field0-0-0=requestees.login_name&amp;type0-0-0=equals&amp;value0-0-0=
-               [%- otheruser.login FILTER url_quote %]">[% flags.requestee %]
+               [%- otheruser.login FILTER uri %]">[% flags.requestee %]
             件のフラグの要求先に登録されています</a>。
             もし、このユーザのアカウントを削除した場合、
             [% IF flags.requestee == 1 %]

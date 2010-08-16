@@ -37,15 +37,7 @@
 [% DEFAULT title = "内部エラー" %]
 
 [% error_message = BLOCK %]
-  [% IF error == "attachment_local_storage_disabled" %]
-    [% title = "ローカルへの保存は無効です" %]
-    添付を (サーバ) ローカルに保存することはできません。この機能は無効化されています。
-
-  [% ELSIF error == "attachment_url_disabled" %]
-    [% title = "添付に URL は利用できません" %]
-    URL を添付することはできません。この機能は無効化されています。
-
-  [% ELSIF error == "auth_invalid_email" %]
+  [% IF error == "auth_invalid_email" %]
     [% title = "無効なメールアドレス" %]
     あなたのアカウントの作成もしくは更新の際に送信されたメールアドレス
     (<b>[% addr FILTER html %]</b>)
@@ -98,6 +90,10 @@
   [% ELSIF error == "chart_file_open_fail" %]
     チャート用データファイル <tt>[% filename FILTER html %]</tt> が開けません。
 
+  [% ELSIF error == "column_alter_nonexistent_fk" %]
+    [% table FILTER html %].[% column FILTER html %] 用の外部キーを編集しようと
+    しましたが、このカラムには外部キーは定義されていません。
+ 
   [% ELSIF error == "column_not_null_without_default" %]
     カラム [% name FILTER html %] の追加に失敗しました:
     <code>$init_value</code> 引数を指定しない限り、
@@ -141,6 +137,11 @@
       ユーザのメールアドレスを含むような環境変数の名前を設定する必要があります。
     [% END %]
 
+  [% ELSIF error == "extension_disabled" %]
+    [% title = "拡張は無効化されました" %]
+    拡張機能 '[% name FILTER html %]' が無効なため、
+    このページにはアクセスできません。
+
   [% ELSIF error == "extension_must_be_subclass" %]
     <code>[% filename FILTER html %]</code> の
     <code>[% package FILTER html %]</code> は
@@ -182,10 +183,6 @@
   [% ELSIF error == "field_not_custom" %]
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
     はカスタムフィールドではありません。
-
-  [% ELSIF error == "field_type_mismatch" %]
-    <code>[% field FILTER html %]</code> と <code>[% type FILTER html %]</code> 
-    を同時に処理できません。
 
   [% ELSIF error == "field_type_not_specified" %]
     [% title = "フィールド型が指定されていません" %]
@@ -444,11 +441,6 @@
 
   [% ELSIF error == "not_in_transaction" %]
     始めていないトランザクションを終了させようとしました。
-
-  [% ELSIF error == "comma_operator_deprecated" %]
-    [% title = "SQL クエリ生成器の内部エラーです" %]
-    SQL クエリ生成コードで、
-    暗黙の JOIN を利用したクエリを生成する部分でエラーが発生しました。
 
   [% ELSIF error == "invalid_post_bug_submit_action" %]
     post_bug_submit_action の無効な設定です。

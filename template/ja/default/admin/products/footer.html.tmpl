@@ -33,10 +33,10 @@
     classification '[% classification.name FILTER html %]' の
   [% END %]
   [% classification_url_part = BLOCK %]&amp;classification=
-     [%- classification.name FILTER url_quote %]
+     [%- classification.name FILTER uri %]
   [% END %]
   [% classification_url_part_start = BLOCK %]classification=
-     [%- classification.name FILTER url_quote %]
+     [%- classification.name FILTER uri %]
   [% END %]
 [% END %]
 
@@ -61,7 +61,7 @@
   プロダクト <a 
   title="[%- classification_text %] プロダクト '[% product.name FILTER html %] の編集'"
   href="editproducts.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]">
+        [%- product.name FILTER uri %]">
         '[% product.name FILTER html %]'</a> を編集する。
 [% END %]
 

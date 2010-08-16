@@ -73,7 +73,7 @@
 %]
 
 <p><a href="editusers.cgi?action=edit&amp;userid=
-  [%- otheruser.id FILTER url_quote %]"
+  [%- otheruser.id FILTER uri %]"
   title="ユーザ '[% otheruser.login FILTER html %]' を編集">このユーザを編集</a> または
   <a title="ユーザを検索" href="editusers.cgi">ほかのアカウントを検索</a>
   [% IF listselectionvalues.matchtype != 'exact' %]

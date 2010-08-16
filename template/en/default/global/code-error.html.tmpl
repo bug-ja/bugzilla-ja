@@ -37,15 +37,7 @@
 [% DEFAULT title = "Internal Error" %]
 
 [% error_message = BLOCK %]
-  [% IF error == "attachment_local_storage_disabled" %]
-    [% title = "Local Storage Disabled" %]
-    You cannot store attachments locally. This feature is disabled.
-
-  [% ELSIF error == "attachment_url_disabled" %]
-    [% title = "Attachment URL Disabled" %]
-    You cannot attach a URL. This feature is currently disabled.
-
-  [% ELSIF error == "auth_invalid_email" %]
+  [% IF error == "auth_invalid_email" %]
     [% title = "Invalid Email Address" %]
     We received an email address (<b>[% addr FILTER html %]</b>)
     that didn't pass our syntax checking for a legal email address,
@@ -99,7 +91,12 @@
   
   [% ELSIF error == "chart_file_open_fail" %]
     Unable to open the chart datafile <tt>[% filename FILTER html %]</tt>.
-  
+ 
+  [% ELSIF error == "column_alter_nonexistent_fk" %]
+    You attempted to modify the foreign key for 
+    [%+ table FILTER html %].[% column FILTER html %], but there is
+    no foreign key on that column.
+ 
   [% ELSIF error == "column_not_null_without_default" %]
     Failed adding the column [% name FILTER html %]:
     You cannot add a NOT NULL column with no default to an existing table
@@ -146,6 +143,11 @@
       address.
     [% END %]
 
+  [% ELSIF error == "extension_disabled" %]
+    [% title = "Extension Disabled" %]
+    You cannot access this page because the extension '[% name FILTER html %]'
+    is disabled.
+
   [% ELSIF error == "extension_must_be_subclass" %]
     <code>[% package FILTER html %]</code> from 
     <code>[% filename FILTER html %]</code> is not a subclass of
@@ -187,10 +189,6 @@
   [% ELSIF error == "field_not_custom" %]
     '[% field.description FILTER html %]' ([% field.name FILTER html %])
     is not a custom field.
-
-  [% ELSIF error == "field_type_mismatch" %]
-    Cannot seem to handle <code>[% field FILTER html %]</code>
-    and <code>[% type FILTER html %]</code> together.
 
   [% ELSIF error == "field_type_not_specified" %]
     [% title = "Field Type Not Specified" %]
@@ -457,11 +455,6 @@
 
   [% ELSIF error == "not_in_transaction" %]
     Attempted to end transaction without starting one first.
-
-  [% ELSIF error == "comma_operator_deprecated" %]
-    [% title = "SQL query generator internal error" %]
-    There is an internal error in the SQL query generation code,
-    creating queries with implicit JOIN.
 
   [% ELSIF error == "invalid_post_bug_submit_action" %]
     Invalid setting for post_bug_submit_action

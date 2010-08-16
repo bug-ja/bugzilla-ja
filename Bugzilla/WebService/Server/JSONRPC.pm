@@ -27,8 +27,9 @@ use base qw(JSON::RPC::Server::CGI Bugzilla::WebService::Server);
 use Bugzilla::Error;
 use Bugzilla::WebService::Constants;
 use Bugzilla::WebService::Util qw(taint_data);
-
 use Bugzilla::Util qw(correct_urlbase trim);
+
+use MIME::Base64 qw(decode_base64 encode_base64);
 
 #####################################
 # Public JSON::RPC Method Overrides #
@@ -190,7 +191,10 @@ sub type {
         # ISO-8601 "YYYYMMDDTHH:MM:SS" with a literal T
         $retval = $self->datetime_format_outbound($value);
     }
-    # XXX Will have to implement base64 if Bugzilla starts using it.
+    elsif ($type eq 'base64') {
+        utf8::encode($value) if utf8::is_utf8($value);
+        $retval = encode_base64($value, '');
+    }
 
     return $retval;
 }
@@ -324,6 +328,12 @@ sub _argument_type_check {
             else {
                 $params->{$field} = $self->datetime_format_inbound($value);
             }
+        }
+    }
+    my @base64_fields = @{ $pkg->BASE64_FIELDS->{$method} || [] };
+    foreach my $field (@base64_fields) {
+        if (defined $params->{$field}) {
+            $params->{$field} = decode_base64($params->{$field});
         }
     }
 
@@ -502,6 +512,11 @@ of "Z" at the end. This behavior is expected to continue into the future, but
 to be fully safe for forward-compatibility with all future versions of
 Bugzilla, it is safest to pass in all times as UTC with the "Z" timezone
 specifier.)
+
+C<base64> fields are strings that have been base64 encoded. Note that
+although normal base64 encoding includes newlines to break up the data,
+newlines within a string are not valid JSON, so you should not insert
+newlines into your base64-encoded string.
 
 All other types are standard JSON types.
 

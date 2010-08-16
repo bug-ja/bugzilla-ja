@@ -39,7 +39,7 @@ X-Bugzilla-Type: admin
 もし、この要請を行っていないなら、もしくはキャンセルしたいなら、次の URL
 を開いてください :
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cxlem
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=cxlem
 
 何もしなければ、そして [% newemailaddress %] がこの要請を受け入れれば、
 この要請は [% constants.MAX_TOKEN_AGE %] 日後

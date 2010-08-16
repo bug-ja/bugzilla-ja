@@ -32,7 +32,7 @@ X-Bugzilla-Type: admin
 このメールアドレスでのアカウント作成を続行するには、次の URL を
 [% expiration_ts FILTER time("%B %e, %Y at %H:%M %Z") %] までに訪問してください。
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=request_new_account
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=request_new_account
 
 もし、このメールを [% expiration_ts FILTER time("%B %e, %Y at %H:%M %Z") %] より前に
 受け取らなかったか、ほかのメールアドレスでアカウントを作成したい場合は、
@@ -50,7 +50,7 @@ X-Bugzilla-Type: admin
 アカウントを作成しないことを望むなら、もしくは要請が何らかの間違いであるなら、
 何もしないか次の URL を訪問してください。
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cancel_new_account
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=cancel_new_account
 
 上のリンクが動作しないなら、もしくはアカウントに関して何か問題があるなら、
 管理者 [% Param('maintainer') %] に問い合わせてみてください。

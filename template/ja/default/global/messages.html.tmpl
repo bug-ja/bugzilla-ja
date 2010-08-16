@@ -125,7 +125,7 @@
   [% ELSIF message_tag == "buglist_updated_named_query" %]
     [% title = "保存された検索の更新完了" %]
     あなたの保存された検索 <code><a 
-     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER uri %]"
     >[% queryname FILTER html %]</a></code> を更新しました。
 
   [% ELSIF message_tag == "buglist_new_default_query" %]
@@ -135,7 +135,7 @@
   [% ELSIF message_tag == "buglist_new_named_query" %]
     [% title = "保存された検索の作成完了" %]
     新しい保存された検索 <code><a
-     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER uri %]"
     >[% queryname FILTER html %]</a></code> を作成しました。
 
   [% ELSIF message_tag == "buglist_query_gone" %]
@@ -146,10 +146,6 @@
   [% ELSIF message_tag == "buglist_sorted_by_relevance" %]
     リストの [% terms.Bugs %] は関連性でソートされます。
     最も関連する [% terms.bugs %] が最上部に表示されます。
-    [% IF bugs.size == constants.FULLTEXT_BUGLIST_LIMIT %]
-      最も関連する [% constants.FULLTEXT_BUGLIST_LIMIT FILTER html %]
-      個の [% terms.bugs %] のみが表示されます。
-    [% END %]
 
   [% ELSIF message_tag == "change_columns" %]
     [% title = "カラム変更" %]
@@ -655,11 +651,20 @@
     これらは、[% IF action == 'delete' %]削除[% ELSE %]NULL に設定[% END %] されました:
     [%+ values.join(', ') FILTER html %]
 
+  [% ELSIF message_tag == "install_fk_setup" %]
+    外部キーを作成中...
+
   [% ELSIF message_tag == "install_group_create" %]
     グループ [% name FILTER html %] を作成中...
 
+  [% ELSIF message_tag == "install_groups_setup" %]
+    既定のグループを作成中...
+
   [% ELSIF message_tag == "install_setting_new" %]
-    新規ユーザの設定 '[% name FILTER html %]' を追加中。
+    新規ユーザの設定 '[% name FILTER html %]' を追加中...
+
+  [% ELSIF message_tag == "install_setting_setup" %]
+    ユーザ設定項目を設定中...
 
   [% ELSIF message_tag == "install_table_drop" %]
     '[% name FILTER html %]' テーブルを削除中...
@@ -716,7 +721,7 @@
     [% title = "プロダクト作成完了" %]
     プロダクト <em>[% product.name FILTER html %]</em> の作成を完了しました。
     このプロダクトに対して [% terms.bugs %] を登録できるようにするには、
-    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER url_quote %]">
+    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER uri %]">
     最低ひとつのコンポーネントを追加</a> する必要があります。
 
   [% ELSIF message_tag == "product_deleted" %]

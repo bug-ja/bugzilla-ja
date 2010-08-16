@@ -117,7 +117,7 @@ sub sql_istring {
 sub sql_position {
     my ($self, $fragment, $text) = @_;
 
-    return "POSITION($fragment IN ${text}::text)";
+    return "POSITION(${fragment}::text IN ${text}::text)";
 }
 
 sub sql_regexp {
@@ -277,6 +277,33 @@ END
         $self->do("ALTER TABLE fielddefs_fieldid_seq RENAME TO fielddefs_id_seq");
         $self->do("ALTER TABLE fielddefs ALTER COLUMN id
                     SET DEFAULT NEXTVAL('fielddefs_id_seq')");
+    }
+
+    # Certain sequences got upgraded before we required Pg 8.3, and
+    # so they were not properly associated with their columns.
+    my @tables = $self->bz_table_list_real;
+    foreach my $table (@tables) {
+        my @columns = $self->bz_table_columns_real($table);
+        foreach my $column (@columns) {
+            # All our SERIAL pks have "id" in their name at the end.
+            next unless $column =~ /id$/;
+            my $sequence = "${table}_${column}_seq";
+            if ($self->bz_sequence_exists($sequence)) {
+                my $is_associated = $self->selectrow_array(
+                    'SELECT pg_get_serial_sequence(?,?)',
+                    undef, $table, $column);
+                next if $is_associated;
+                print "Fixing $sequence to be associated"
+                      . " with $table.$column...\n";
+                $self->do("ALTER SEQUENCE $sequence OWNED BY $table.$column");
+                # In order to produce an exactly identical schema to what
+                # a brand-new checksetup.pl run would produce, we also need
+                # to re-set the default on this column.
+                $self->do("ALTER TABLE $table
+                          ALTER COLUMN $column
+                           SET DEFAULT nextval('$sequence')");
+            }
+        }
     }
 }
 

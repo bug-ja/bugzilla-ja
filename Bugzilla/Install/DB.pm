@@ -429,10 +429,6 @@ sub update_table_definitions {
     # PUBLIC is a reserved word in Oracle.
     $dbh->bz_rename_column('series', 'public', 'is_public');
 
-    # 2005-09-28 bugreport@peshkin.net Bug 149504
-    $dbh->bz_add_column('attachments', 'isurl',
-                        {TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 0});
-
     # 2005-10-21 LpSolit@gmail.com - Bug 313020
     $dbh->bz_add_column('namedqueries', 'query_type',
                         {TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 0});
@@ -629,6 +625,9 @@ sub update_table_definitions {
     # of the new workflow.
     $dbh->bz_alter_column('products', 'allows_unconfirmed',
         { TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'TRUE' });
+
+    # 2010-07-18 LpSolit@gmail.com - Bug 119703
+    _remove_attachment_isurl();
 
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #
@@ -3155,13 +3154,11 @@ sub _add_foreign_keys_to_multiselects {
           WHERE type = ' . FIELD_TYPE_MULTI_SELECT);
 
     foreach my $name (@$names) {
-        $dbh->bz_add_fk("bug_$name", "bug_id", {TABLE  => 'bugs',
-                                                COLUMN => 'bug_id',
-                                                DELETE => 'CASCADE',});
+        $dbh->bz_add_fk("bug_$name", "bug_id", 
+            {TABLE => 'bugs', COLUMN => 'bug_id', DELETE => 'CASCADE'});
                                                 
-        $dbh->bz_add_fk("bug_$name", "value", {TABLE  => $name,
-                                               COLUMN => 'value',
-                                               DELETE => 'RESTRICT',});
+        $dbh->bz_add_fk("bug_$name", "value",
+            {TABLE  => $name, COLUMN => 'value', DELETE => 'RESTRICT'});
     }
 }
 
@@ -3182,12 +3179,21 @@ sub _populate_bugs_fulltext {
         return if !@$bug_ids;
         my $num_bugs = scalar @$bug_ids;
 
+        my $command = "INSERT";
         my $where = "";
         if ($fulltext) {
             print "Updating bugs_fulltext for $num_bugs bugs...\n";
             $where = "WHERE " . $dbh->sql_in('bugs.bug_id', $bug_ids);
-            $dbh->do("DELETE FROM bugs_fulltext WHERE " 
-                     . $dbh->sql_in('bug_id', $bug_ids));
+            # It turns out that doing a REPLACE INTO is up to 10x faster
+            # than any other possible method of updating the table, in MySQL,
+            # which matters a LOT for large installations.
+            if ($dbh->isa('Bugzilla::DB::Mysql')) {
+                $command = "REPLACE";
+            }
+            else {
+                $dbh->do("DELETE FROM bugs_fulltext WHERE " 
+                         . $dbh->sql_in('bug_id', $bug_ids));
+            }
         }
         else {
             print "Populating bugs_fulltext with $num_bugs entries...";
@@ -3195,7 +3201,7 @@ sub _populate_bugs_fulltext {
         }
         my $newline = $dbh->quote("\n");
         $dbh->do(
-            q{INSERT INTO bugs_fulltext (bug_id, short_desc, comments, 
+         qq{$command INTO bugs_fulltext (bug_id, short_desc, comments, 
                                          comments_noprivate)
                    SELECT bugs.bug_id, bugs.short_desc, }
                  . $dbh->sql_group_concat('longdescs.thetext', $newline, 0)
@@ -3371,9 +3377,8 @@ sub _convert_flagtypes_fks_to_set_null {
     foreach my $column (qw(request_group_id grant_group_id)) {
         my $fk = $dbh->bz_fk_info('flagtypes', $column);
         if ($fk and !defined $fk->{DELETE}) {
-            # checksetup will re-create the FK with the appropriate definition
-            # at the end of its table upgrades, so we just drop it here.
-            $dbh->bz_drop_fk('flagtypes', $column);
+            $fk->{DELETE} = 'SET NULL';
+            $dbh->bz_alter_fk('flagtypes', $column, $fk);
         }
     }
 }
@@ -3389,10 +3394,21 @@ sub _fix_decimal_types {
 sub _fix_series_creator_fk {
     my $dbh = Bugzilla->dbh;
     my $fk = $dbh->bz_fk_info('series', 'creator');
-    # Change the FK from SET NULL to CASCADE. (It will be re-created
-    # automatically at the end of all DB changes.)
     if ($fk and $fk->{DELETE} eq 'SET NULL') {
-        $dbh->bz_drop_fk('series', 'creator');
+        $fk->{DELETE} = 'CASCADE';
+        $dbh->bz_alter_fk('series', 'creator', $fk);
+    }
+}
+
+sub _remove_attachment_isurl {
+    my $dbh = Bugzilla->dbh;
+
+    if ($dbh->bz_column_info('attachments', 'isurl')) {
+        # Now all attachments must have a filename.
+        $dbh->do('UPDATE attachments SET filename = ? WHERE isurl = 1',
+                 undef, 'url.txt');
+        $dbh->bz_drop_column('attachments', 'isurl');
+        $dbh->do("DELETE FROM fielddefs WHERE name='attachments.isurl'");
     }
 }
 

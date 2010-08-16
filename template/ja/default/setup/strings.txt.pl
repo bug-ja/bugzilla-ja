@@ -44,6 +44,10 @@ EOT
 必須モジュールをインストールするためのコマンド
 (*必ず*これらすべてのコマンドを実行後、このスクリプトを再実行してください)
 EOT
+    db_enum_setup  => "標準的なドロップダウンフィールドを表示する準備中です:",
+    db_schema_init => "bz_schema初期化中...",
+    db_table_new   => "新規テーブル ##table## 追加中...",
+    db_table_setup => "テーブル作成中...",
     done => '完了',
 
     extension_must_return_name => <<END,
@@ -68,6 +72,8 @@ END
     feature_updates           => 'システム更新通知',
     feature_xmlrpc            => 'XML-RPC インターフェース',
 
+    file_remove => 'ファイル ##name## を削除中...',
+    file_rename => 'ファイル名を ##from## から ##to## へ変更中...',
     header => "* これは perl ##perl_ver## で動作中の Bugzilla ##bz_ver## です\n"
             . "* ##os_name## ##os_ver## で起動中です",
     install_all => <<EOT,

@@ -129,7 +129,7 @@
   [% ELSIF message_tag == "buglist_updated_named_query" %]
     [% title = "Search updated" %]
     Your search named <code><a 
-     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER uri %]"
     >[% queryname FILTER html %]</a></code> has been updated.
 
   [% ELSIF message_tag == "buglist_new_default_query" %]
@@ -139,7 +139,7 @@
   [% ELSIF message_tag == "buglist_new_named_query" %]
     [% title = "Search created" %]
     OK, you have a new search named <code><a
-     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER url_quote %]"
+     href="buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% queryname FILTER uri %]"
     >[% queryname FILTER html %]</a></code>.
 
   [% ELSIF message_tag == "buglist_query_gone" %]
@@ -150,10 +150,6 @@
   [% ELSIF message_tag == "buglist_sorted_by_relevance" %]
     [% terms.Bugs %] on this list are sorted by relevance, with the most
     relevant [% terms.bugs %] at the top.
-    [% IF bugs.size == constants.FULLTEXT_BUGLIST_LIMIT %]
-      Only the [% constants.FULLTEXT_BUGLIST_LIMIT FILTER html %]
-      most relevant [% terms.bugs %] are shown.
-    [% END %]
 
   [% ELSIF message_tag == "change_columns" %]
     [% title = "Change columns" %]
@@ -666,11 +662,20 @@
     that have been [% IF action == 'delete' %]deleted[% ELSE %]set to NULL[% END %]:
     [%+ values.join(', ') FILTER html %]
 
+  [% ELSIF message_tag == "install_fk_setup" %]
+    Setting up foreign keys...
+
   [% ELSIF message_tag == "install_group_create" %]
     Creating group [% name FILTER html %]...
 
+  [% ELSIF message_tag == "install_groups_setup" %]
+    Creating default groups...
+
   [% ELSIF message_tag == "install_setting_new" %]
     Adding a new user setting called '[% name FILTER html %]'
+
+  [% ELSIF message_tag == "install_setting_setup" %]
+    Setting up user preferences...
 
   [% ELSIF message_tag == "install_table_drop" %]
     Dropping the '[% name FILTER html %]' table...
@@ -725,7 +730,7 @@
   [% ELSIF message_tag == "product_created" %]
     [% title = "Product Created" %]
     The product <em>[% product.name FILTER html %]</em> has been created. You will need to
-    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER url_quote %]">
+    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER uri %]">
     add at least one component</a> before anyone can enter [% terms.bugs %] against this product.
 
   [% ELSIF message_tag == "product_deleted" %]

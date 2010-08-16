@@ -35,7 +35,7 @@
   [% title = title _ ": " _ (searchname OR defaultsavename) FILTER html %]
 [% END %]
 
-[% qorder = order FILTER url_quote IF order %]
+[% qorder = order FILTER uri IF order %]
 
 
 [%############################################################################%]
@@ -212,7 +212,7 @@
         [% urlquerypart FILTER html %]&amp;ctype=ics">iCalendar</a> |
         <a href="colchange.cgi?
         [% urlquerypart FILTER html %]&amp;query_based_on=
-          [% defaultsavename OR searchname FILTER url_quote %]">カラム変更</a> |
+          [% defaultsavename OR searchname FILTER uri %]">カラム変更</a> |
 
         [% IF bugs.size > 1 && caneditbugs && !dotweak %]
           <a href="buglist.cgi?[% urlquerypart FILTER html %]
@@ -239,8 +239,8 @@
       <td valign="middle" nowrap="nowrap" class="bz_query_forget">
         |
         <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-                [% searchname FILTER url_quote %]&amp;token=
-                [% issue_hash_token([search_id, searchname]) FILTER url_quote %]">検索条件を削除する'
+                [% searchname FILTER uri %]&amp;token=
+                [% issue_hash_token([search_id, searchname]) FILTER uri %]">検索条件を削除する'
                 [% searchname FILTER html %]'</a>
       </td>
     [% ELSE %]
@@ -261,7 +261,7 @@
   </tr>
 </table>
 
-[% IF one_product.defined %]
+[% IF one_product.defined && bugs.size %]
   <p class="bz_query_single_product">
     [% PROCESS enter_bug_link %]
   </p>
@@ -277,14 +277,14 @@
   [% editqueryname = searchname OR defaultsavename OR '' %]
   query.cgi?[% urlquerypart FILTER html %]
     [%- IF editqueryname != '' %]&amp;known_name=
-      [%- editqueryname FILTER url_quote %]
+      [%- editqueryname FILTER uri %]
     [% END %]
 [% END %]
 
 [% BLOCK enter_bug_link %]
   <a href="enter_bug.cgi
            [%- IF one_product.defined %]?product=
-             [%- one_product.name FILTER url_quote %][% END %]">
+             [%- one_product.name FILTER uri %][% END %]">
      [% IF one_product.defined %]
        "[% one_product.name FILTER html %]" プロダクトへ
      [% END %]

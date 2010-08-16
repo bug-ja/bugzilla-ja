@@ -154,7 +154,7 @@
     [% ELSIF action == "approve" %]
       approve
     [% ELSE %]
-      [% Hook.process('auth_failure_action') %]
+      [%+ Hook.process('auth_failure_action') %]
     [% END %]
 
     [% IF object == "administrative_pages" %]
@@ -222,11 +222,6 @@
     [% title = "Attachment Deletion Disabled" %]
     Attachment deletion is disabled on this installation.
 
-  [% ELSIF error == "attachment_illegal_url" %]
-    [% title = "Illegal Attachment URL" %]
-    <em>[% url FILTER html %]</em> is not a legal URL for attachments.
-    It must start either with http://, https:// or ftp://.
-
   [% ELSIF error == "attachment_removed" %]
     [% title = "Attachment Removed" %]
     The attachment you are attempting to access has been removed.
@@ -242,7 +237,7 @@
     You are not authorized to access [% terms.bug %] #[% bug_id FILTER html %].
     To see this [% terms.bug %], you must
     first <a href="show_bug.cgi?id=
-                   [% bug_id FILTER url_quote %]&amp;GoAheadAndLogIn=1">log
+                   [% bug_id FILTER uri %]&amp;GoAheadAndLogIn=1">log
     in to an account</a> with the appropriate permissions.
 
   [% ELSIF error == "bug_url_invalid" %]
@@ -525,7 +520,7 @@
     or disabled.
     [% IF user.in_group('tweakparams') %]
       You have to <a href="editparams.cgi?section=bugfields#
-      [%- param_name FILTER url_quote %]">change</a> the default value first.
+      [%- param_name FILTER uri %]">change</a> the default value first.
     [% END %]
 
   [% ELSIF error == "fieldvalue_name_too_long" %]
@@ -574,17 +569,16 @@
 
   [% ELSIF error == "file_too_large" %]
     [% title = "File Too Large" %]
+    [%# Convert maxlocalattachment from Mb to Kb %]
+    [% max_local = Param('maxlocalattachment') * 1024 %]
+    [% max_limit = [Param('maxattachmentsize'), max_local] %]
     The file you are trying to attach is [% filesize FILTER html %] 
-    kilobytes (KB) in size. Non-patch attachments cannot be more than
-    [%+ Param('maxattachmentsize') %] KB. <br>
+    kilobytes (KB) in size. Attachments cannot be more than
+    [%# Hack to get the max value between both limits %]
+    [%+ max_limit.nsort.last FILTER html %] KB. <br>
     We recommend that you store your attachment elsewhere
-    [% IF Param("allow_attach_url") %]
-      and then specify the URL to this file on the attachment
-      creation page in the <b>AttachURL</b> field.
-    [% ELSE %]
-      and then insert the URL to it in a comment, or in the URL field
-      for this [% terms.bug %].
-    [% END %]
+    and then paste the URL to this file on the attachment
+    creation page in the appropriate text field.
     <br>Alternately, if your attachment is an image, you could convert
     it to a compressible format like JPG or PNG and try again.
 
@@ -695,7 +689,7 @@
     The <em>[% group.name FILTER html %]</em> group cannot be deleted because
     there are
     <a href="editgroups.cgi?action=del&amp;group=
-             [%- group.id FILTER url_quote %]">records</a>
+             [%- group.id FILTER uri %]">records</a>
     in the database which refer to it. All references to this group must
     be removed before you can remove it.
 
@@ -740,11 +734,15 @@
     [% title = "Group not specified" %]
     No group was specified.
 
+  [% ELSIF error == "group_not_visible" %]
+    [% title = "Group Not Allowed" %]
+    You are not allowed to see members of the [% group.name FILTER html %]
+    group.
+
   [% ELSIF error == "system_group_not_deletable" %]
     [% title = "System Groups not deletable" %]
     <em>[% name FILTER html %]</em> is a system group.
     This group cannot be deleted.
-
   [% ELSIF error == "group_unknown" %]
     [% title = "Unknown Group" %]
     The group [% name FILTER html %] does not exist. Please specify
@@ -759,11 +757,6 @@
     You are not authorized to edit attachments on [% terms.bug %] 
     [%+ bug_id FILTER html %].
          
-  [% ELSIF error == "illegal_attachment_is_patch" %]
-    [% title = "Your Search Makes No Sense" %]
-    The only legal values for the <em>Attachment is patch</em> field are
-    0 and 1.
-
   [% ELSIF error == "illegal_bug_status_transition" %]
     [% title = "Illegal $terms.Bug Status Change" %]
     [% IF old.defined %]
@@ -799,11 +792,6 @@
     but only a user allowed to edit 
     both related [% terms.bugs %] may change that field.
 
-  [% ELSIF error == "illegal_changed_in_last_x_days" %]
-    [% title = "Your Search Makes No Sense" %]
-    The <em>Changed in last ___ days</em> field must be a simple number. 
-    You entered <tt>[% value FILTER html %]</tt>, which isn't.
-    
   [% ELSIF error == "illegal_date" %]
     [% title = "Illegal Date" %]
     '<tt>[% date FILTER html %]</tt>' is not a legal date.
@@ -834,11 +822,6 @@
     [% admindocslinks = {'groups.html' => 'Assigning Group Controls to Products'} %]
     Your group control combination for group &quot;
     [% groupname FILTER html %]&quot; is illegal.
-
-  [% ELSIF error == "illegal_is_obsolete" %]
-    [% title = "Your Search Makes No Sense" %]
-    The only legal values for the <em>Attachment is obsolete</em> field are
-    0 and 1.
 
   [% ELSIF error == "illegal_query_name" %]
     [% title = "Illegal Search Name" %]
@@ -1004,8 +987,8 @@
     characters are allowed in the 'callback' parameter: <code>[]._</code>
 
   [% ELSIF error == "json_rpc_post_only" %]
-    For security reasons, you may only call the '[% method FILTER html %]'
-    method via HTTP POST.
+    For security reasons, you must use HTTP POST to call the
+    '[% method FILTER html %]' method.
 
   [% ELSIF error == "keyword_already_exists" %]
     [% title = "Keyword Already Exists" %]
@@ -1023,11 +1006,6 @@
     [% title = "Invalid Keyword Name" %]
     You may not use commas or whitespace in a keyword name.
      
-  [% ELSIF error == "local_file_too_large" %]
-    [% title = "Local File Too Large" %]
-    Local file uploads must not exceed 
-    [% Param('maxlocalattachment') %] MB in size.
-
   [% ELSIF error == "login_needed_for_password_change" %]
     [% title = "Login Name Required" %]
     You must enter a login name when requesting to change your password.
@@ -1108,7 +1086,7 @@
     has to have at least one component in order for you to
     enter [% terms.abug %] into it.<br>
     [% IF user.in_group("editcomponents", product.id) %]
-      <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">Create
+      <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER uri %]">Create
       a new component</a>.
     [% ELSE %]
       Please contact [% Param("maintainer") %] and ask them
@@ -1175,7 +1153,7 @@
     has to have at least one version in order for you to
     enter [% terms.abug %] into it.<br>
     [% IF user.in_group("editcomponents", product.id) %]
-      <a href="editversions.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">Create
+      <a href="editversions.cgi?action=add&amp;product=[% product.name FILTER uri %]">Create
       a new version</a>.
     [% ELSE %]
       Please contact [% Param("maintainer") %] and ask them
@@ -1220,8 +1198,8 @@
     This will remove all [% terms.bugs %] from the
     <em>[% name FILTER html %]</em> tag. This will delete the tag completely. Click
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- name FILTER url_quote %]&amp;token=
-    [%- issue_hash_token([query_id, name]) FILTER url_quote %]">here</a>
+    [%- name FILTER uri %]&amp;token=
+    [%- issue_hash_token([query_id, name]) FILTER uri %]">here</a>
     if you really want to delete it.
 
   [% ELSIF error == "no_bugs_to_remove" %]
@@ -1289,6 +1267,9 @@
     [% IF class == "Bugzilla::User" %]
       Either you mis-typed the name or that user has not yet registered
       for a [% terms.Bugzilla %] account.
+    [% ELSIF class == "Bugzilla::Keyword" %]
+      The legal keyword names are <a href="describekeywords.cgi">listed
+      here</a>.
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
@@ -1311,13 +1292,6 @@
     [% title = "Password Too Short" %]
     The password must be at least
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long.
-
-  [% ELSIF error == "patch_too_large" %]
-    [% title = "File Too Large" %]
-    The file you are trying to attach is [% filesize FILTER html %] 
-    kilobytes (KB) in size.
-    Patches cannot be more than [% Param('maxattachmentsize') %] KB in size.
-    Try splitting your patch into several pieces.
 
   [% ELSIF error == "product_access_denied" %]
     Either the product 
@@ -1353,7 +1327,7 @@
     [% title = "Must define new default milestone" %]
     [% admindocslinks = {'products.html' => 'Administering products',
                          'milestones.html' => 'About Milestones'} %]
-    You must <a href="editmilestones.cgi?action=add&amp;product=[% product FILTER url_quote %]">
+    You must <a href="editmilestones.cgi?action=add&amp;product=[% product FILTER uri %]">
     create the milestone '[% milestone FILTER html %]'</a> before
     it can be made the default milestone for product '[% product FILTER html %]'.
 
@@ -1402,8 +1376,8 @@
     The name <em>[% name FILTER html %]</em> is already used by another
     saved search. You first have to
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- name FILTER url_quote %]&amp;token=
-    [% issue_hash_token([query_id, name]) FILTER url_quote %]">delete</a>
+    [%- name FILTER uri %]&amp;token=
+    [% issue_hash_token([query_id, name]) FILTER uri %]">delete</a>
     it if you really want to use this name.
 
   [% ELSIF error == "query_name_missing" %]
@@ -1484,6 +1458,12 @@
     The "content" field can only be used with "matches" search 
     and the "matches" search can only be used with the "content"
     field.
+
+  [% ELSIF error == "search_field_operator_invalid" %]
+    [% terms.Bugzilla %] does not support using the 
+    "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
+    field with the "[% search_descs.$operator FILTER html %]" 
+    ([% operator FILTER html %]) search type.
 
   [% ELSIF error == "series_already_exists" %]
     [% title = "Series Already Exists" %]
@@ -1569,11 +1549,6 @@
     [% ELSE %]
        I could not figure out what you wanted to do.
     [% END %]
-
-  [% ELSIF error == "unknown_keyword" %]
-    [% title = "Unknown Keyword" %]
-    <code>[% keyword FILTER html %]</code> is not a known keyword.
-    The legal keyword names are <a href="describekeywords.cgi">listed here</a>.
 
   [% ELSIF error == "unknown_tab" %]
     [% title = "Unknown Tab" %]
@@ -1732,7 +1707,7 @@
   <p>  
     Alternatively, you can    
     <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-                  [% namedcmd FILTER url_quote %]">forget</a>
+                  [% namedcmd FILTER uri %]">forget</a>
                   
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
@@ -1767,6 +1742,8 @@
     field
   [% ELSIF class == "Bugzilla::Group" %]
     group
+  [% ELSIF class == "Bugzilla::Keyword" %]
+    keyword
   [% ELSIF class == "Bugzilla::Product" %]
     product
   [% ELSIF class == "Bugzilla::Search::Recent" %]

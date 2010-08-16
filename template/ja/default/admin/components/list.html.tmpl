@@ -33,11 +33,11 @@
 %]
 
 [% edit_contentlink = BLOCK %]editcomponents.cgi?action=edit&amp;product=
-  [%- product.name FILTER url_quote %]&amp;component=%%name%%[% END %]
+  [%- product.name FILTER uri %]&amp;component=%%name%%[% END %]
 [% delete_contentlink = BLOCK %]editcomponents.cgi?action=del&amp;product=
-  [%- product.name FILTER url_quote %]&amp;component=%%name%%[% END %]
+  [%- product.name FILTER uri %]&amp;component=%%name%%[% END %]
 [% bug_count_contentlink = BLOCK %]buglist.cgi?component=%%name%%&amp;product=
-  [%- product.name FILTER url_quote %][% END %]
+  [%- product.name FILTER uri %][% END %]
 
 
 [% columns = [
@@ -111,12 +111,12 @@
 %]
 
 <p>プロダクト '[% product.name FILTER html %]' に新しいコンポーネントを
-   <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER url_quote %]">追加</a>
+   <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER uri %]">追加</a>
    する。</p>
 
 [% IF ! showbugcounts %]
 
-  <p><a href="editcomponents.cgi?product=[% product.name FILTER url_quote %]&amp;showbugcounts=1">
+  <p><a href="editcomponents.cgi?product=[% product.name FILTER uri %]&amp;showbugcounts=1">
       [% terms.bug %] 数とともに表示 (遅い)</a></p>
 
 [% END %]

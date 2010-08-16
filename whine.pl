@@ -446,10 +446,10 @@ sub run_queries {
         my $searchparams = new Bugzilla::CGI($savedquery);
         my $search = new Bugzilla::Search(
             'fields' => \@searchfields,
-            'params' => $searchparams,
+            'params' => scalar $searchparams->Vars,
             'user'   => $args->{'recipient'}, # the search runs as the recipient
         );
-        my $sqlquery = $search->getSQL();
+        my $sqlquery = $search->sql;
         $sth = $dbh->prepare($sqlquery);
         $sth->execute;
 

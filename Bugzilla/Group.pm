@@ -185,6 +185,16 @@ sub products {
 ####        Methods        ####
 ###############################
 
+sub check_members_are_visible {
+    my $self = shift;
+    my $user = Bugzilla->user;
+    return if !Bugzilla->params->{'usevisibilitygroups'};
+    my $is_visible = grep { $_->id == $_ } @{ $user->visible_groups_inherited };
+    if (!$is_visible) {
+        ThrowUserError('group_not_visible', { group => $self });
+    }
+}
+
 sub set_description { $_[0]->set('description', $_[1]); }
 sub set_is_active   { $_[0]->set('isactive', $_[1]);    }
 sub set_name        { $_[0]->set('name', $_[1]);        }
@@ -379,8 +389,11 @@ sub create {
     my ($params) = @_;
     my $dbh = Bugzilla->dbh;
 
-    print get_text('install_group_create', { name => $params->{name} }) . "\n" 
-        if Bugzilla->usage_mode == USAGE_MODE_CMDLINE;
+    my $silently = delete $params->{silently};
+    if (Bugzilla->usage_mode == USAGE_MODE_CMDLINE and !$silently) {
+        print get_text('install_group_create', { name => $params->{name} }),
+              "\n";
+    }
 
     $dbh->bz_start_transaction();
 
@@ -508,21 +521,27 @@ be a member of this group.
 
 =item C<ValidateGroupName($name, @users)>
 
- Description: ValidateGroupName checks to see if ANY of the users
-              in the provided list of user objects can see the
-              named group.
+Description: ValidateGroupName checks to see if ANY of the users
+             in the provided list of user objects can see the
+             named group.
 
- Params:      $name - String with the group name.
-              @users - An array with Bugzilla::User objects.
+Params:      $name - String with the group name.
+             @users - An array with Bugzilla::User objects.
 
- Returns:     It returns the group id if successful
-              and undef otherwise.
+Returns:     It returns the group id if successful
+             and undef otherwise.
 
 =back
+
 
 =head1 METHODS
 
 =over
+
+=item C<check_members_are_visible>
+
+Throws an error if this group is not visible (according to 
+visibility groups) to the currently-logged-in user.
 
 =item C<check_remove>
 

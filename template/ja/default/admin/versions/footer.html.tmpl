@@ -39,28 +39,28 @@
   バージョンを
   <a title="プロダクト '[% product.name FILTER html %]' にバージョンを追加"
      href="editversions.cgi?action=add&amp;product=
-          [%- product.name FILTER url_quote %]">追加する</a>。
+          [%- product.name FILTER uri %]">追加する</a>。
 [% END %]
 
 [% IF version.name && !no_edit_version_link %]
   バージョン <a 
   title="プロダクト '[%- product.name FILTER html %]' のバージョン '[% version.name FILTER html %]' を編集"
   href="editversions.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]&amp;version=
-        [%- version.name FILTER url_quote %]">
+        [%- product.name FILTER uri %]&amp;version=
+        [%- version.name FILTER uri %]">
         '[% version.name FILTER html %]'</a> を編集する。
 [% END %]
 
 [% UNLESS no_edit_other_versions_link %]
   プロダクト <a 
   href="editversions.cgi?product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+        [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a>
   の他のバージョンを編集する。
 [% END %]
 
   プロダクト <a 
   href="editproducts.cgi?action=edit&amp;product=
-        [%- product.name FILTER url_quote %]">'[% product.name FILTER html %]'</a>
+        [%- product.name FILTER uri %]">'[% product.name FILTER html %]'</a>
   を編集する。
 
 </p>

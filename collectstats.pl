@@ -509,10 +509,10 @@ sub CollectSeriesData {
         # Do not die if Search->new() detects invalid data, such as an obsolete
         # login name or a renamed product or component, etc.
         eval {
-            my $search = new Bugzilla::Search('params' => $cgi,
+            my $search = new Bugzilla::Search('params' => scalar $cgi->Vars,
                                               'fields' => ["bug_id"],
                                               'user'   => $user);
-            my $sql = $search->getSQL();
+            my $sql = $search->sql;
             $data = $shadow_dbh->selectall_arrayref($sql);
         };
 

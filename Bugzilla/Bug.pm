@@ -50,7 +50,7 @@ use Bugzilla::Status;
 use Bugzilla::Comment;
 
 use List::MoreUtils qw(firstidx uniq);
-use List::Util qw(min first);
+use List::Util qw(min max first);
 use Storable qw(dclone);
 use URI;
 use URI::QueryParam;
@@ -265,9 +265,14 @@ use constant MAX_LINE_LENGTH => 254;
 # of Bugzilla. (These are the field names that the WebService and email_in.pl
 # use.)
 use constant FIELD_MAP => {
+    blocks           => 'blocked',
+    is_confirmed     => 'everconfirmed',
+    cc_accessible    => 'cclist_accessible',
     creation_time    => 'creation_ts',
     creator          => 'reporter',
     description      => 'comment',
+    depends_on       => 'dependson',
+    dupe_of          => 'dup_id',
     id               => 'bug_id',
     last_change_time => 'delta_ts',
     platform         => 'rep_platform',
@@ -978,7 +983,9 @@ sub update {
           old_bug => $old_bug });
 
     # If any change occurred, refresh the timestamp of the bug.
-    if (scalar(keys %$changes) || $self->{added_comments}) {
+    if (scalar(keys %$changes) || $self->{added_comments}
+        || $self->{comment_isprivate})
+    {
         $dbh->do('UPDATE bugs SET delta_ts = ? WHERE bug_id = ?',
                  undef, ($delta_ts, $self->id));
         $self->{delta_ts} = $delta_ts;
@@ -1149,14 +1156,22 @@ sub send_changes {
 
     # If there were changes in dependencies, we need to notify those
     # dependencies.
-    my %notify_deps;
     if ($changes->{'bug_status'}) {
         my ($old_status, $new_status) = @{ $changes->{'bug_status'} };
 
         # If this bug has changed from opened to closed or vice-versa,
         # then all of the bugs we block need to be notified.
         if (is_open_state($old_status) ne is_open_state($new_status)) {
-            $notify_deps{$_} = 1 foreach (@{ $self->blocked });
+            my $params = { forced   => { changer => $user },
+                           type     => 'dep',
+                           dep_only => 1,
+                           blocker  => $self,
+                           changes  => $changes };
+
+            foreach my $id (@{ $self->blocked }) {
+                $params->{id} = $id;
+                _send_bugmail($params, $vars);
+            }
         }
     }
 
@@ -1172,8 +1187,7 @@ sub send_changes {
     # an error later.
     delete $changed_deps{''};
 
-    my %all_dep_changes = (%notify_deps, %changed_deps);
-    foreach my $id (sort { $a <=> $b } (keys %all_dep_changes)) {
+    foreach my $id (sort { $a <=> $b } (keys %changed_deps)) {
         _send_bugmail({ forced => { changer => $user }, type => "dep",
                          id => $id }, $vars);
     }
@@ -1183,7 +1197,7 @@ sub _send_bugmail {
     my ($params, $vars) = @_;
 
     my $results = 
-        Bugzilla::BugMail::Send($params->{'id'}, $params->{'forced'});
+        Bugzilla::BugMail::Send($params->{'id'}, $params->{'forced'}, $params);
 
     if (Bugzilla->usage_mode == USAGE_MODE_BROWSER) {
         my $template = Bugzilla->template;
@@ -1632,8 +1646,7 @@ sub _check_keywords {
     my %keywords;
     foreach my $keyword (@$keyword_array) {
         next unless $keyword;
-        my $obj = new Bugzilla::Keyword({ name => $keyword });
-        ThrowUserError("unknown_keyword", { keyword => $keyword }) if !$obj;
+        my $obj = Bugzilla::Keyword->check($keyword);
         $keywords{$obj->id} = $obj;
     }
     return [values %keywords];
@@ -2623,7 +2636,7 @@ sub add_comment {
     # later in set_all. But if they haven't, this keeps remaining_time
     # up-to-date.
     if ($params->{work_time}) {
-        $self->set_remaining_time($self->remaining_time - $params->{work_time});
+        $self->set_remaining_time(max($self->remaining_time - $params->{work_time}, 0));
     }
 
     # So we really want to comment. Make sure we are allowed to do so.
@@ -3707,19 +3720,19 @@ sub LogActivityEntry {
 # Convert WebService API and email_in.pl field names to internal DB field
 # names.
 sub map_fields {
-    my ($params) = @_; 
+    my ($params, $except) = @_; 
 
     my %field_values;
     foreach my $field (keys %$params) {
-        my $field_name = FIELD_MAP->{$field} || $field;
+        my $field_name;
+        if ($except->{$field}) {
+           $field_name = $field;
+        }
+        else {
+            $field_name = FIELD_MAP->{$field} || $field;
+        }
         $field_values{$field_name} = $params->{$field};
     }
-
-    # This protects the WebService Bug.search method.
-    unless (Bugzilla->user->is_timetracker) {
-        delete @field_values{qw(estimated_time remaining_time deadline)};
-    }
-    
     return \%field_values;
 }
 

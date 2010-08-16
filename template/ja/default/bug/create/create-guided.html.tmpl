@@ -80,7 +80,7 @@ function PutDescription() {
 [% ELSIF product.name == "Thunderbird" %]
   [% productstring = "product=Mozilla%20Application%20Suite&amp;product=Thunderbird" %]
 [% ELSE %]
-  [% productstring = BLOCK %]product=[% product.name FILTER url_quote %][% END %]
+  [% productstring = BLOCK %]product=[% product.name FILTER uri %][% END %]
 [% END %]
 
 <p>
@@ -204,7 +204,7 @@ function PutDescription() {
         正しいコンポーネントを選択するには、似たような [% terms.bugs %]
         を検索して同じものを選択するか、
         <a target="_blank" href="describecomponents.cgi?product=
-            [% product.name FILTER url_quote %]">コンポーネント説明</a> 
+            [% product.name FILTER uri %]">コンポーネント説明</a> 
         の一覧をみて (新規ウィンドウで開きます) ください。
       </p>
     </td>

@@ -30,12 +30,12 @@ X-Bugzilla-Type: admin
 
 この変更を許可するなら、次の URL を開いてください :
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cfmem
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=cfmem
 
 もし、この要請を行っていないなら、もしくはキャンセルしたいなら、次の URL
 を開いてください :
 
-[%+ urlbase %]token.cgi?t=[% token FILTER url_quote %]&a=cxlem
+[%+ urlbase %]token.cgi?t=[% token FILTER uri %]&a=cxlem
 
 何もしなければ、この要請は [% constants.MAX_TOKEN_AGE %] 日後
 ([% expiration_ts FILTER time("%B %e, %Y at %H:%M %Z") %])

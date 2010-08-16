@@ -28,7 +28,8 @@ use base qw(Exporter);
 require Test::Taint;
 
 our @EXPORT_OK = qw(
-    filter 
+    filter
+    filter_wants
     taint_data
     validate
 );
@@ -36,29 +37,37 @@ our @EXPORT_OK = qw(
 sub filter ($$) {
     my ($params, $hash) = @_;
     my %newhash = %$hash;
-    my %include = map { $_ => 1 } @{ $params->{'include_fields'} || [] };
-    my %exclude = map { $_ => 1 } @{ $params->{'exclude_fields'} || [] };
 
     foreach my $key (keys %$hash) {
-        if (defined $params->{include_fields}) {
-            delete $newhash{$key} if !$include{$key};
-        }
-        if (defined $params->{exclude_fields}) {
-            delete $newhash{$key} if $exclude{$key};
-        }
+        delete $newhash{$key} if !filter_wants($params, $key);
     }
 
     return \%newhash;
 }
 
+sub filter_wants ($$) {
+    my ($params, $field) = @_;
+    my %include = map { $_ => 1 } @{ $params->{'include_fields'} || [] };
+    my %exclude = map { $_ => 1 } @{ $params->{'exclude_fields'} || [] };
+
+    if (defined $params->{include_fields}) {
+        return 0 if !$include{$field};
+    }
+    if (defined $params->{exclude_fields}) {
+        return 0 if $exclude{$field};
+    }
+
+    return 1;
+}
+
 sub taint_data {
-    my $params = shift;
-    return if !$params;
+    my @params = @_;
+    return if !@params;
     # Though this is a private function, it hasn't changed since 2004 and
     # should be safe to use, and prevents us from having to write it ourselves
     # or require another module to do it.
-    Test::Taint::_deeply_traverse(\&_delete_bad_keys, $params);
-    Test::Taint::taint_deeply($params);
+    Test::Taint::_deeply_traverse(\&_delete_bad_keys, \@params);
+    Test::Taint::taint_deeply(\@params);
 }
 
 sub _delete_bad_keys {
@@ -79,6 +88,11 @@ sub _delete_bad_keys {
 
 sub validate  {
     my ($self, $params, @keys) = @_;
+
+    # If $params is defined but not a reference, then we weren't
+    # sent any parameters at all, and we're getting @keys where
+    # $params should be.
+    return ($self, undef) if (defined $params and !ref $params);
     
     # If @keys is not empty then we convert any named 
     # parameters that have scalar values to arrayrefs
@@ -110,19 +124,24 @@ internally in the WebService code.
 
  filter({ include_fields => ['id', 'name'], 
           exclude_fields => ['name'] }, $hash);
-
+ my $wants = filter_wants $params, 'field_name';
  validate(@_, 'ids');
 
 =head1 METHODS
 
 =over
 
-=item C<filter_fields>
+=item C<filter>
 
 This helps implement the C<include_fields> and C<exclude_fields> arguments
 of WebService methods. Given a hash (the second argument to this subroutine),
 this will remove any keys that are I<not> in C<include_fields> and then remove
 any keys that I<are> in C<exclude_fields>.
+
+=item C<filter_wants>
+
+Returns C<1> if a filter would preserve the specified field when passing
+a hash to L</filter>, C<0> otherwise.
 
 =item C<validate>
 

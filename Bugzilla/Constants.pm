@@ -35,6 +35,7 @@ use base qw(Exporter);
 
 # For bz_locations
 use File::Basename;
+use Memoize;
 
 @Bugzilla::Constants::EXPORT = qw(
     BUGZILLA_VERSION
@@ -111,8 +112,6 @@ use File::Basename;
         
     GLOBAL_EVENTS
     EVT_FLAG_REQUESTED EVT_REQUESTED_FLAG
-
-    FULLTEXT_BUGLIST_LIMIT
 
     ADMIN_GROUP_NAME
     PER_PRODUCT_PRIVILEGES
@@ -368,10 +367,6 @@ use constant EVT_REQUESTED_FLAG     => 101; # I have requested a flag
 
 use constant GLOBAL_EVENTS => EVT_FLAG_REQUESTED, EVT_REQUESTED_FLAG;
 
-#  Number of bugs to return in a buglist when performing
-#  a fulltext search.
-use constant FULLTEXT_BUGLIST_LIMIT => 200;
-
 # Default administration group name.
 use constant ADMIN_GROUP_NAME => 'admin';
 
@@ -404,11 +399,11 @@ use constant EMPTY_DATETIME_REGEX => qr/^[0\-:\sA-Za-z]+$/;
 
 # See the POD for Bugzilla::Field/is_abnormal to see why these are listed
 # here.
-use constant ABNORMAL_SELECTS => qw(
-    classification
-    product
-    component
-);
+use constant ABNORMAL_SELECTS => {
+    classification => 1,
+    component      => 1,
+    product        => 1,
+};
 
 # The fields from fielddefs that are blocked from non-timetracking users.
 # work_time is sometimes called actual_time.
@@ -488,7 +483,7 @@ use constant DB_MODULE => {
                     version => '4.00',
                 },
                 name => 'MySQL'},
-    'pg'    => {db => 'Bugzilla::DB::Pg', db_version => '8.00.0000',
+    'pg'    => {db => 'Bugzilla::DB::Pg', db_version => '8.03.0000',
                 dbd => {
                     package => 'DBD-Pg',
                     module  => 'DBD::Pg',
@@ -618,5 +613,9 @@ sub bz_locations {
         'extensionsdir' => "$libpath/extensions",
     };
 }
+
+# This makes us not re-compute all the bz_locations data every time it's
+# called.
+BEGIN { memoize('bz_locations') };
 
 1;

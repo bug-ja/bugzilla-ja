@@ -34,7 +34,7 @@
     <td bgcolor="#ff0000">
       <font size="+2">
         このフォームですでに
-        <a href="[% urlbase FILTER html %]attachment.cgi?id=[% attachid FILTER url_quote %]&action=edit">添付 [% attachid FILTER url_quote %]</a>
+        <a href="[% urlbase FILTER html %]attachment.cgi?id=[% attachid FILTER uri %]&action=edit">attachment [% attachid FILTER uri %]</a>.
         を登録しています。
       </font>
     </td>
@@ -42,7 +42,7 @@
 </table>
 
 <p>
-  <a href="[% urlbase FILTER html %]attachment.cgi?bugid=[% bugid FILTER url_quote %]&action=enter">
+  <a href="[% urlbase FILTER html %]attachment.cgi?bugid=[% bugid FILTER uri %]&action=enter">
   新規添付の登録</a> もしくは [% "$terms.bug $bugid に戻る" FILTER bug_link(bugid) FILTER none %] のどちらかを行ってください。
 <p>
 

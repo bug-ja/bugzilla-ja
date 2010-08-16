@@ -25,11 +25,11 @@
 [% IF bottom_navigator == 1 %]
   <ul class="related_actions">
     <li><a href="show_bug.cgi?format=multiple&amp;id=
-                [% bug.bug_id FILTER url_quote %]">印刷用整形</a></li>
+                [% bug.bug_id FILTER uri %]">印刷用整形</a></li>
     <li>&nbsp;-&nbsp;<a href="show_bug.cgi?ctype=xml&amp;id=
-                        [% bug.bug_id  FILTER url_quote %]">XML</a></li>
+                        [% bug.bug_id  FILTER uri %]">XML</a></li>
     <li>&nbsp;-&nbsp;<a href="enter_bug.cgi?cloned_bug_id=
-                        [% bug.bug_id  FILTER url_quote %]">この
+                        [% bug.bug_id  FILTER uri %]">この
                         [% terms.Bug %] を複製</a></li>
     [%# Links to more things users can do with this bug. %]
     [% Hook.process("links") %]
@@ -48,17 +48,17 @@
   ([% last_bug_list.size %] の [% this_bug_idx + 1 %])
 
   <a href="show_bug.cgi?id=
-           [%- last_bug_list.first FILTER url_quote %]&amp;list_id=
-           [%- my_search.id FILTER url_quote %]">先頭</a>
+           [%- last_bug_list.first FILTER uri %]&amp;list_id=
+           [%- my_search.id FILTER uri %]">先頭</a>
   <a href="show_bug.cgi?id=
-           [%- last_bug_list.last FILTER url_quote %]&amp;list_id=
-           [%- my_search.id FILTER url_quote %]">最後</a>
+           [%- last_bug_list.last FILTER uri %]&amp;list_id=
+           [%- my_search.id FILTER uri %]">最後</a>
 
   [% IF this_bug_idx > 0 %]
     [% prev_bug = this_bug_idx - 1 %]
     <a href="show_bug.cgi?id=
-             [%- last_bug_list.$prev_bug FILTER url_quote %]&amp;list_id=
-             [%- my_search.id FILTER url_quote %]">前</a>
+             [%- last_bug_list.$prev_bug FILTER uri %]&amp;list_id=
+             [%- my_search.id FILTER uri %]">前</a>
   [% ELSE %]
     <i><font color="#777777">前</font></i>
   [% END %]
@@ -66,14 +66,14 @@
   [% IF this_bug_idx + 1 < last_bug_list.size %]
     [% next_bug = this_bug_idx + 1 %]
     <a href="show_bug.cgi?id=
-             [%- last_bug_list.$next_bug FILTER url_quote %]&amp;list_id=
-             [%- my_search.id FILTER url_quote %]">次</a>
+             [%- last_bug_list.$next_bug FILTER uri %]&amp;list_id=
+             [%- my_search.id FILTER uri %]">次</a>
   [% ELSE %]
     <i><font color="#777777">次</font></i>
   [% END %]
 
   &nbsp;&nbsp;<a href="buglist.cgi?regetlastlist=
-              [%- my_search.id FILTER url_quote %]">最後の検索結果を表示</a>
+              [%- my_search.id FILTER uri %]">最後の検索結果を表示</a>
 [% ELSE %]
   [%# With no list, don't show link to search results %]
   <i><font color="#777777">先頭</font></i>

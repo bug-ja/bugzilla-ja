@@ -69,7 +69,7 @@
   [% IF headers %]
     <a href="[% PROCESS viewurl id=attachid %]">見る</a>
     | <a href="[% PROCESS editurl id=attachid %]">詳細</a>
-    | <a href="[% PROCESS diffurl id=attachid %]&amp;context=[% context FILTER url_quote %]&amp;collapsed=[% collapsed FILTER url_quote %]&amp;headers=[% headers FILTER url_quote %]&amp;format=raw">そのまま</a>
+    | <a href="[% PROCESS diffurl id=attachid %]&amp;context=[% context FILTER uri %]&amp;collapsed=[% collapsed FILTER uri %]&amp;headers=[% headers FILTER uri %]&amp;format=raw">そのまま</a>
     | [% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %] に戻る
   [% END %]
   [% IF other_patches.size > 0 %]
@@ -115,12 +115,12 @@
   [% IF context == "patch" %]
     (<strong>パッチ</strong> / 
   [% ELSE %]
-    (<a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER url_quote %]">パッチ</a> / 
+    (<a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER uri %]">パッチ</a> / 
   [% END %]
   [% IF context == "file" %]
     <strong>ファイル</strong> /
   [% ELSE %]
-    <a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER url_quote %]&amp;context=file">ファイルe</a> / 
+    <a href="[% PROCESS diffurl id=attachid %]&amp;headers=[% headers FILTER uri %]&amp;context=file">ファイル</a> / 
   [% END %]
 
   [% IF context == "patch" || context == "file" %]

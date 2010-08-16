@@ -55,7 +55,7 @@
     これらのユーザが所属している間は削除することができません。</b>
 
     <br><a href="editusers.cgi?action=list&amp;groupid=
-                 [%- group.id FILTER url_quote %]&amp;grouprestrict=1">該当するユーザを表示する</a>
+                 [%- group.id FILTER uri %]&amp;grouprestrict=1">該当するユーザを表示する</a>
      - <label><input type="checkbox" name="removeusers">このグループから全てのユーザを削除する。</label></p>
   [% END %]
 
@@ -74,7 +74,7 @@
     このグループを利用している [% terms.bugs %] がある間は削除することができません。</b>
 
     <br><a href="buglist.cgi?field0-0-0=bug_group&amp;type0-0-0=equals&amp;value0-0-0=
-                 [%- group.name FILTER url_quote %]">該当する [% terms.bugs %] を表示する</a>
+                 [%- group.name FILTER uri %]">該当する [% terms.bugs %] を表示する</a>
      - <label><input type="checkbox" name="removebugs">このグループから全ての [% terms.bugs %] を削除する。</label></p>
 
     <p><b>※注意:</b> このチェックボックスを使うことで、該当する [% terms.bugs %]
@@ -115,7 +115,7 @@
         [% END %]
 
         <li><a href="editproducts.cgi?action=editgroupcontrols&amp;product=
-                    [%- data.product.name FILTER url_quote %]">
+                    [%- data.product.name FILTER uri %]">
           [%- data.product.name FILTER html %]</a>
           ([% active.join(', ') FILTER html %])
           [% IF hidden %]
@@ -134,7 +134,7 @@
     このグループがフラグタイプから利用されている間は削除することができません。</b>
 
     <br><br><a href="editflagtypes.cgi?action=list&amp;group=
-                 [%- group.id FILTER url_quote %]">該当のフラグタイプを表示する</a>
+                 [%- group.id FILTER uri %]">該当のフラグタイプを表示する</a>
      - <label><input type="checkbox" name="removeflags">このグループから全てのフラグタイプを削除する。</label></p>
   [% END %]
 

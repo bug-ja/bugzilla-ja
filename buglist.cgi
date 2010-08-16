@@ -849,9 +849,9 @@ my @orderstrings = split(/,\s*/, $order);
 
 # Generate the basic SQL query that will be used to generate the bug list.
 my $search = new Bugzilla::Search('fields' => \@selectcolumns, 
-                                  'params' => $params,
+                                  'params' => scalar $params->Vars,
                                   'order' => \@orderstrings);
-my $query = $search->getSQL();
+my $query = $search->sql;
 $vars->{'search_description'} = $search->search_description;
 
 if (defined $cgi->param('limit')) {
@@ -861,7 +861,6 @@ if (defined $cgi->param('limit')) {
     }
 }
 elsif ($fulltext) {
-    $query .= " " . $dbh->sql_limit(FULLTEXT_BUGLIST_LIMIT);
     if ($cgi->param('order') && $cgi->param('order') =~ /^relevance/) {
         $vars->{'message'} = 'buglist_sorted_by_relevance';
     }
