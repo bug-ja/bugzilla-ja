@@ -789,7 +789,7 @@
     [% title = BLOCK %] [% jawords.attachment_file FILTER html %] が大きすぎます [% END %]
     アップロードしようとした [% jawords.attachment_file FILTER html %] は
     [% filesize FILTER html %] KB あります。
-    [% jawords.attachment_patch FILTER html %] 以外の [% jawords.attachment_file FILTER html %] は
+    [% jawords.attachment_file FILTER html %] は
     [%+ Param('maxattachmentsize') %] KB を超えることはできません。 <br>
     [% jawords.attachment_file FILTER html %] をウェブのどこかに保存して、
     [% IF Param("allow_attach_url") %]
