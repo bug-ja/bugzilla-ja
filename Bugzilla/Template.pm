@@ -61,6 +61,11 @@ use Scalar::Util qw(blessed);
 
 use base qw(Template);
 
+use constant FORMAT_TRIPLE => '%19s|%-28s|%-28s';
+use constant FORMAT_3_SIZE => [19,28,28];
+use constant FORMAT_DOUBLE => '%19s %-55s';
+use constant FORMAT_2_SIZE => [19,55];
+
 # Convert the constants in the Bugzilla::Constants module into a hash we can
 # pass to the template object for reflection into its "constants" namespace
 # (which is like its "variables" namespace, but for constants).  To do so, we
@@ -268,21 +273,15 @@ sub get_attachment_link {
     my ($attachid, $link_text) = @_;
     my $dbh = Bugzilla->dbh;
 
-    detaint_natural($attachid)
-      || die "get_attachment_link() called with non-integer attachment number";
+    my $attachment = new Bugzilla::Attachment($attachid);
 
-    my ($bugid, $isobsolete, $desc, $is_patch) =
-        $dbh->selectrow_array('SELECT bug_id, isobsolete, description, ispatch
-                               FROM attachments WHERE attach_id = ?',
-                               undef, $attachid);
-
-    if ($bugid) {
+    if ($attachment) {
         my $title = "";
         my $className = "";
-        if (Bugzilla->user->can_see_bug($bugid)) {
-            $title = $desc;
+        if (Bugzilla->user->can_see_bug($attachment->bug_id)) {
+            $title = $attachment->description;
         }
-        if ($isobsolete) {
+        if ($attachment->isobsolete) {
             $className = "bz_obsolete";
         }
         # Prevent code injection in the title.
@@ -294,7 +293,7 @@ sub get_attachment_link {
         # If the attachment is a patch, try to link to the diff rather
         # than the text, by default.
         my $patchlink = "";
-        if ($is_patch and Bugzilla->feature('patch_viewer')) {
+        if ($attachment->ispatch and Bugzilla->feature('patch_viewer')) {
             $patchlink = '&amp;action=diff';
         }
 
@@ -330,17 +329,16 @@ sub get_bug_link {
     # Initialize these variables to be "" so that we don't get warnings
     # if we don't change them below (which is highly likely).
     my ($pre, $title, $post) = ("", "", "");
+    my @css_classes = ("bz_bug_link");
 
     $title = get_text('get_status', { status => $bug->bug_status });
-    if ($bug->bug_status eq 'UNCONFIRMED') {
-        $pre = "<i>";
-        $post = "</i>";
-    }
+
+    push @css_classes, "bz_status_" . css_class_quote($bug->bug_status);
+
     if ($bug->resolution) {
-        $pre .= '<span class="bz_closed">';
+        push @css_classes, "bz_closed";
         $title .= ' ' . get_text('get_resolution',
                                  { resolution => $bug->resolution });
-        $post .= '</span>';
     }
     if (Bugzilla->user->can_see_bug($bug)) {
         $title .= " - " . $bug->short_desc;
@@ -355,7 +353,41 @@ sub get_bug_link {
     if (defined $options->{comment_num}) {
         $linkval .= "#c" . $options->{comment_num};
     }
+
+    $pre  = '<span class="' . join(" ", @css_classes) . '">';
+    $post = '</span>';
+
     return qq{$pre<a href="$linkval" title="$title">$link_text</a>$post};
+}
+
+# We use this instead of format because format doesn't deal well with
+# multi-byte languages.
+sub multiline_sprintf {
+    my ($format, $args, $sizes) = @_;
+    my @parts;
+    my @my_sizes = @$sizes; # Copy this so we don't modify the input array.
+    foreach my $string (@$args) {
+        my $size = shift @my_sizes;
+        my @pieces = split("\n", wrap_hard($string, $size));
+        push(@parts, \@pieces);
+    }
+
+    my $formatted;
+    while (1) {
+        # Get the first item of each part.
+        my @line = map { shift @$_ } @parts;
+        # If they're all undef, we're done.
+        last if !grep { defined $_ } @line;
+        # Make any single undef item into ''
+        @line = map { defined $_ ? $_ : '' } @line;
+        # And append a formatted line
+        $formatted .= sprintf($format, @line);
+        # Remove trailing spaces, or they become lots of =20's in
+        # quoted-printable emails.
+        $formatted =~ s/\s+$//;
+        $formatted .= "\n";
+    }
+    return $formatted;
 }
 
 #####################
@@ -809,6 +841,8 @@ sub create {
                 {
                     $var = wrap_comment($var, 72);
                 }
+                $var =~ s/\&nbsp;/ /g;
+
                 return $var;
             },
 
@@ -836,6 +870,14 @@ sub create {
 
             # Function to create date strings
             'time2str' => \&Date::Format::time2str,
+
+            # Fixed size column formatting for bugmail.
+            'format_columns' => sub {
+                my $cols = shift;
+                my $format = ($cols == 3) ? FORMAT_TRIPLE : FORMAT_DOUBLE;
+                my $col_size = ($cols == 3) ? FORMAT_3_SIZE : FORMAT_2_SIZE;
+                return multiline_sprintf($format, \@_, $col_size);
+            },
 
             # Generic linear search function
             'lsearch' => sub {

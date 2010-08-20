@@ -1209,7 +1209,7 @@ sub _parse_basic_fields {
         my @values = $self->_param_array($param_name);
         next if !@values;
         my $operator = $params->{"${param_name}_type"} || 'anyexact';
-        $operator = 'matches' if $operator eq 'content';
+        $operator = 'matches' if $param_name eq 'content';
         # Fields that are displayed as multi-selects are passed as arrays,
         # so that they can properly search values that contain commas.
         # However, other fields are sent as strings, so that they are properly
@@ -1856,10 +1856,14 @@ sub _contact_exact_group {
     my ($value, $operator, $field, $chart_id, $joins) =
         @$args{qw(value operator field chart_id joins)};
     my $dbh = Bugzilla->dbh;
+    my $user = $self->_user;
     
     $value =~ /\%group\.([^%]+)%/;
     my $group = Bugzilla::Group->check($1);
     $group->check_members_are_visible();
+    $user->in_group($group)
+      || ThrowUserError('invalid_group_name', {name => $group->name});
+
     my $group_ids = Bugzilla::Group->flatten_group_membership($group->id);
     my $table = "user_group_map_$chart_id";
     my $join = {
@@ -1904,6 +1908,9 @@ sub _cc_exact_group {
     $value =~ m/%group\.([^%]+)%/;
     my $group = Bugzilla::Group->check($1);
     $group->check_members_are_visible();
+    $user->in_group($group)
+      || ThrowUserError('invalid_group_name', {name => $group->name});
+
     my $all_groups = Bugzilla::Group->flatten_group_membership($group->id);
 
     # This is for the email1, email2, email3 fields from query.cgi.

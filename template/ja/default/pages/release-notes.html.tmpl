@@ -60,6 +60,60 @@
 
 <h2 id="v36_point">3.6.x リリースでの更新点</h2>
 
+<h3>3.6.2</h3>
+
+<p>このリリースではひとつのセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.2.7/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下のようないくつかの重要な修正や変更が行われました。</p>
+
+<ul>
+  <li>古いバージョンの IIS 上で動いている [% terms.Bugzilla %] サイトで
+    時々発生する可能性があった "Undef to trick_taint" エラーが、
+    起こらなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=521416">[% terms.Bug %] 521416</a>)
+  </li>
+  <li>メール通知でコメントが追加された日付が抜けていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=578003">[% terms.Bug %] 578003</a>)
+  </li>
+  <li>簡易検索のボックスで文字列を引用符で囲む検索が正常に動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=578494">[% terms.Bug %] 578494</a>
+    and <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=553884">[% terms.Bug %] 553884</a>)
+  </li>
+  <li>簡易検索の結果が (誤って) 通常 200 個に制限されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=581622">[% terms.Bug %] 581622</a>)
+  </li>
+  <li>Windows においても <kbd>install-module.pl</kbd> を利用して、正常に
+    DateTime や他の Perl モジュールをインストールできるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=576105">[% terms.Bug %] 576105</a>)
+  </li>
+  <li>"キーワード" 検索で、"単語のどれも含まない" もしくは
+    "正規表現に合致しない" の条件が正常に動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=562014">[% terms.Bug %] 562014</a>)
+  </li>
+  <li><kbd>collectstats.pl --regenerate</kbd> が PostgreSQL の環境下でも動作する
+    ようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=577058">[% terms.Bug %] 577058</a>)
+  </li>
+  <li>"フィールド値" 管理パネルにおいて、正当な理由がないのに
+    時々管理者がフィールド値を削除できなくなっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=577054">[% terms.Bug %] 577054</a>)
+  </li>
+  <li>"未初期化値" の警告がプロダクトにあるコンポーネントを編集する際に
+    表示されることがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=576911">[% terms.Bug %] 576911</a>)
+  </li>
+  <li>3.6 へアップグレードする際の <kbd>checksetup.pl</kbd> における 
+    bugs_fulltext のアップグレードが、かなり高速化しました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=577754">[% terms.Bug %] 577754</a>)
+  </li>
+  <li><kbd>email_in.pl</kbd> を利用していると、メール経由での経過時間追跡フィールド
+    の設定ができませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=583622">[% terms.Bug %] 583622</a>)
+  </li>
+</ul>
+
 <h3>3.6.1</h3>
 
 <p>このリリースではふたつのセキュリティー問題への修正を含みます。詳細に関しては、

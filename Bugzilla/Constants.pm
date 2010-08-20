@@ -160,6 +160,7 @@ use Memoize;
 
     MAX_TOKEN_AGE
     MAX_LOGINCOOKIE_AGE
+    MAX_SUDO_TOKEN_AGE
     MAX_LOGIN_ATTEMPTS
     LOGIN_LOCKOUT_INTERVAL
     MAX_STS_AGE
@@ -169,6 +170,7 @@ use Memoize;
 
     MIN_SMALLINT
     MAX_SMALLINT
+    MAX_INT_32
 
     MAX_LEN_QUERY_NAME
     MAX_CLASSIFICATION_SIZE
@@ -415,6 +417,8 @@ use constant TIMETRACKING_FIELDS =>
 use constant MAX_TOKEN_AGE => 3;
 # How many days a logincookie will remain valid if not used.
 use constant MAX_LOGINCOOKIE_AGE => 30;
+# How many seconds (default is 6 hours) a sudo cookie remains valid.
+use constant MAX_SUDO_TOKEN_AGE => 21600;
 
 # Maximum failed logins to lock account for this IP
 use constant MAX_LOGIN_ATTEMPTS => 5;
@@ -510,6 +514,7 @@ use constant ROOT_USER => ON_WINDOWS ? 'Administrator' : 'root';
 
 use constant MIN_SMALLINT => -32768;
 use constant MAX_SMALLINT => 32767;
+use constant MAX_INT_32 => 2147483647;
 
 # The longest that a saved search name can be.
 use constant MAX_LEN_QUERY_NAME => 64;
