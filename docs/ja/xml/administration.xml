@@ -1429,247 +1429,243 @@
         </para>
 
         <para>
-        
-        Groups may be applicable (e.g bugs in this product can be associated
-        with this group) , default (e.g. bugs in this product are in this group
-        by default), and mandatory (e.g. bugs in this product must be associated
-        with this group) for each product. Groups can also control access 
-        to bugs for a given product, or be used to make bugs for a product 
-        totally read-only unless the group restrictions are met. The best way to
-        understand these relationships is by example. See 
-        <xref linkend="group-control-examples"/> for examples of 
-        product and group relationships.
+        グループは選択可能 (たとえば、このプロダクトに登録されたバグはこのグループ
+        に関連付けられる)、標準で選択 (たとえば、このプロダクトのバグは既定でこのグルー
+        プに関連付けられる)、強制 (たとえば、このプロダクトのバグはこのグループに
+        関連付けられなければならない) をそれぞれのプロダクトにおいて設定できます。
+        グループはあるプロダクトのバグへのアクセス制限にも利用でき、もしくはプロダ
+        クトに登録されたバグについてグループ権限が合わない限り完全に閲覧のみに制限
+        することも可能です。この関連を理解するのにはサンプルを見るのがいいでしょう。
+        プロダクトとグループの関連のサンプルは
+        <xref linkend="group-control-examples"/> にあります。
         </para>
   
         <note>
           <para>
-            Products and Groups are not limited to a one-to-one relationship. 
-            Multiple groups can be associated with the same product, and groups
-            can be associated with more than one product. 
+            プロダクトとグループは1対1の関係に制限されません。
+            同じプロダクトに複数のグループを関連付けられますし、
+            一つのグループが二つ以上のプロダクトに関連付けられることもあります。
           </para>
         </note> 
 
         <para>
-        If any group has <emphasis>Entry</emphasis> selected, then the 
-        product will restrict bug entry to only those users 
-        who are members of <emphasis>all</emphasis> the groups with 
-        <emphasis>Entry</emphasis> selected.
+        あるグループが <emphasis>新規追加</emphasis> に対して設定されている場合、
+        プロダクトへのバグ登録は <emphasis>新規追加</emphasis> に設定されている
+        <emphasis>全ての</emphasis> グループに所属するユーザに限定されます。
         </para>
 
         <para>
-        If any group has <emphasis>Canedit</emphasis> selected, 
-        then the product will be read-only for any users 
-        who are not members of <emphasis>all</emphasis> of the groups with
-        <emphasis>Canedit</emphasis> selected. <emphasis>Only</emphasis> users who 
-        are members of all the <emphasis>Canedit</emphasis> groups 
-        will be able to edit bugs for this product. This is an additional 
-        restriction that enables finer-grained control over products rather 
-        than just all-or-nothing access levels.
+        あるグループが <emphasis>編集可能</emphasis> に対して設定されている場合、
+        プロダクトは <emphasis>編集可能</emphasis> に設定されている <emphasis>全ての</emphasis>
+        グループに所属しないユーザには読み込み専用になります。 <emphasis>全ての</emphasis>
+        グループに所属するユーザ <emphasis>のみ</emphasis> がこのプロダクトの
+        バグを編集できるようになります。
+        1か0かのアクセスレベルではなく、より細かいプロダクトへの制限を加えられる
+        追加の制限機能となります。
         </para>
 
         <para>
-        The following settings let you 
-        choose privileges on a <emphasis>per-product basis</emphasis>.
-        This is a convenient way to give privileges to 
-        some users for some products only, without having 
-        to give them global privileges which would affect 
-        all products.
+        以下の設定は <emphasis>プロダクトごとを基本とする</emphasis> 
+        権限設定に利用できます。
+        これにより、あるユーザにあるプロダクトへの権限を与えるが、
+        全てのプロダクトに影響するような全体に対する権限を与えないという
+        ことが可能になります。
         </para>
 
         <para>
-        Any group having <emphasis>editcomponents</emphasis> 
-        selected  allows users who are in this group to edit all 
-        aspects of this product, including components, milestones 
-        and versions.
+        <emphasis>コンポーネントを編集可能</emphasis> が選択されているグループ
+        がある場合、グループに所属するユーザは該当のプロダクトの全ての設定が
+        編集可能になります。これにはコンポーネント、マイルストーン、バージョン
+        が含まれます。
         </para>
 
         <para>
-        Any group having <emphasis>canconfirm</emphasis> selected 
-        allows users who are in this group to confirm bugs 
-        in this product.
+        <emphasis>承認可能</emphasis> が選択されているグループがある場合、
+        グループに所属するユーザは、プロダクトに登録されたバグを承認できるよう
+        になります。
         </para>
 
         <para>
-        Any group having <emphasis>editbugs</emphasis> selected allows 
-        users who are in this group to edit all fields of 
-        bugs in this product.
+        <emphasis>bug を編集可能</emphasis> に選択されているグループがある場合、
+        グループに所属するユーザはプロダクトの全てのフィールドを編集できるように
+        なります。
         </para>
 
         <para>
-        The <emphasis>MemberControl</emphasis> and 
-        <emphasis>OtherControl</emphasis> are used in tandem to determine which 
-        bugs will be placed in this group. The only allowable combinations of
-        these two parameters are listed in a table on the "Edit Group Access Controls"
-        page. Consult this table for details on how these fields can be used.
-        Examples of different uses are described below.
+        <emphasis>メンバーの操作</emphasis> と <emphasis>メンバー以外の操作</emphasis>
+        の両方を利用することで、このグループにどのようなバグを登録できるか
+        を評価します。この二つのパラメータの利用可能な組み合わせは、
+        "グループによる制限の編集" ページの下に表示される表にあります。
+        どのようにこれらの設定を利用するかについての詳細もこの表を参照してください。
+        いくつかの設定例を以下にあげます。
         </para>
 
       <section id="group-control-examples">
-      <title>Common Applications of Group Controls</title>
+      <title>グループ制限の一般的な設定</title>
 
       <para>
-        The use of groups is best explained by providing examples that illustrate
-        configurations for common use cases. The examples follow a common syntax:
-        <emphasis>Group: Entry, MemberControl, OtherControl, CanEdit,
-        EditComponents, CanConfirm, EditBugs</emphasis>. Where "Group" is the name
-        of the group being edited for this product. The other fields all
-        correspond to the table on the "Edit Group Access Controls" page. If any
-        of these options are not listed, it means they are not checked.      
+        一般的な利用方法における設定を例としてグループの利用方法を説明します。
+        以下の例はある共通の書式で表記しています。
+        <emphasis>Group: 新規追加, メンバーの操作 / メンバー以外の操作, 編集可能,
+        コンポーネントを編集可能, 承認可能, bug を編集可能</emphasis>. 
+        "Group" はこのプロダクトに対して編集を行うグループの名前です。
+        他のフィールドは全て "グループによる制限を編集" ページの表にある値です。
+        リストされていないオプションはチェックされていないものになります。
+        (訳注: メンバーの操作・メンバー以外の操作の二つはドロップダウンの値として
+        表記されています。)
       </para>
-      
+
           <para>
-            Basic Product/Group Restriction
+            基本的なプロダクト・グループ制限
           </para>
 
         <para>
-          Suppose there is a product called "Bar". The 
-          "Bar" product can only have bugs entered against it by users in the
-          group "Foo". Additionally, bugs filed against product "Bar" must stay
-          restricted to users to "Foo" at all times. Furthermore, only members
-          of group "Foo" can edit bugs filed against product "Bar", even if other
-          users could see the bug. This arrangement would achieved by the
-          following:
+          プロダクト "Bar" が登録されています。
+          "Bar" プロダクトは "Foo" グループに属するユーザからのみバグを登録可能
+          です。また、"Bar" プロダクトに登録されたバグは必ず "Foo" に属するユーザ
+          に制限されていなければなりません。また、他のユーザが閲覧できたとしても、
+          "Foo" グループのメンバーのみが "Bar" プロダクトに登録されたバグを編集
+          可能になります。
+          この設定は以下のようになります。
         </para>
 
         <programlisting>
 Product Bar: 
-foo: ENTRY, MANDATORY/MANDATORY, CANEDIT
+foo: 新規追加, 強制/強制, 編集可能
         </programlisting>
 
         <para>
-          Perhaps such strict restrictions are not needed for product "Bar". A 
-          more lenient way to configure product "Bar" and group "Foo" would be:
+          このような厳しい制限はプロダクト "Bar" には必要ないかもしれません。
+          プロダクト "Bar" とグループ "Foo" について、よりゆるい制限は次のように
+          なります。
         </para>
 
         <programlisting>
 Product Bar: 
-foo: ENTRY, SHOWN/SHOWN, EDITCOMPONENTS, CANCONFIRM, EDITBUGS
+foo: 新規追加, 選択可能/選択可能, コンポーネントを編集可能, 承認可能, bug を編集可能
         </programlisting>
 
         <para>
-          The above indicates that for product "Bar", members of group "Foo" can
-          enter bugs. Any one with permission to edit a bug against product "Bar"
-          can put the bug
-          in group "Foo", even if they themselves are not in "Foo". Anyone in group
-          "Foo" can edit all aspects of the components of product "Bar", can confirm
-          bugs against product "Bar", and can edit all fields of any bug against
-          product "Bar".
+          この制限はプロダクト "Bar" にグループ "Foo" のメンバーはバグを追加でき
+          ます。"Foo" グループに所属していなくても、
+          "Bar" プロダクトのバグを編集可能な誰でもバグを登録できるようになります。
+          グループ "Foo" のメンバーはプロダクト "Bar" にあるコンポーネントの全ての
+          設定を編集、"Bar" プロダクトのバグを承認、プロダクト "Bar" のバグの全ての
+          フィールドを編集できるようになります。
         </para>
  
           <para>
-            General User Access With Security Group
+            一般的なセキュリティーグループにおけるユーザ制限
           </para>
 
              <para>
-               To permit any user to file bugs against "Product A",
-               and to permit any user to submit those bugs into a
-               group called "Security":  
+               "Product A" に対して誰にでもバグを登録できるようにし、
+               かつ "Security" グループに制限した形でバグを登録できるように
+               する場合
             </para>
 
       <programlisting> 
 Product A:
-security: SHOWN/SHOWN
+security: 選択可能/選択可能
       </programlisting>
 
           <para>
-            General User Access With A Security Product
+            セキュリティープロダクトについての一般的なユーザ制限
           </para>
 
           <para>
-            To permit any user to file bugs against product called "Security"
-            while keeping those bugs from becoming visible to anyone
-            outside the group "SecurityWorkers" (unless a member of the
-            "SecurityWorkers" group removes that restriction):
+            "Security" プロダクトへは誰でもバグを登録できるようにしながらも、
+            "SecurityWorkers" グループに所属していないユーザにはバグが見られない
+            ようにする ("SecurityWorkers" グループのユーザは制限を受けずに
+            見ることができる)
           </para>
 
           <programlisting> 
 Product Security:
-securityworkers: DEFAULT/MANDATORY
+securityworkers: 標準で選択/強制
           </programlisting>
 
           <para>
-            Product Isolation With a Common Group
+            グループに関連させたプロダクト
           </para>
 
           <para>
-            To permit users of "Product A" to access the bugs for
-            "Product A", users of "Product B" to access the bugs for 
-            "Product B", and support staff, who are members of the "Support 
-            Group" to access both, three groups are needed:
+            "Product A" のユーザは "Product A" のバグにアクセスでき、
+            "Product B" のユーザは "Product B" のバグにアクセスできる。
+            そして、サポートスタッフである "Support Group" のメンバーは
+            その両方にアクセスできる場合、3つのグループが必要です。
           </para>
 
           <orderedlist>
 
           <listitem>
-            <para>Support Group: Contains members of the support staff.</para>
+            <para>Support Group: サポートスタッフが入るグループ</para>
           </listitem>
 
           <listitem>
-            <para>AccessA Group: Contains users of product A and the Support group.</para>
+            <para>AccessA Group: Product A のユーザとサポートグループのユーザが入る</para>
           </listitem>
 
           <listitem>
-            <para>AccessB Group: Contains users of product B and the Support group.</para>
+            <para>AccessB Group: Product B のユーザとサポートグループのユーザが入る</para>
           </listitem>
 
           </orderedlist>
 
           <para>
-            Once these three groups are defined, the product group controls
-            can be set to:
+            これら3つのグループを定義してから、グループ制限を以下のように
+            設定します。
           </para>
 
           <programlisting>
 Product A:
-AccessA: ENTRY, MANDATORY/MANDATORY
+AccessA: 新規追加, 強制/強制
 Product B:
-AccessB: ENTRY, MANDATORY/MANDATORY
+AccessB: 新規追加, 強制/強制
         </programlisting>
 
         <para>
-         Perhaps the "Support Group" wants more control. For example, 
-         the "Support Group"  could be permitted to make bugs inaccessible to 
-         users of both groups "AccessA" and "AccessB". 
-         Then, the "Support Group" could be permitted to publish
-         bugs relevant to all users in a third product (let's call it 
-         "Product Common") that is read-only
-         to anyone outside the "Support Group". In this way the "Support Group" 
-         could control bugs that should be seen by both groups. 
-         That configuration would be:
+         "Support Group" により権限が必要になることもあるでしょう。たとえば、
+         "Support Group" が "AccessA" と "AccessB" の二つのグループのユーザには
+         アクセスできないバグを追加する権限が必要になるかもしれません。
+         この場合、"Support Group" は "Support Group" 以外には閲覧専用となる
+         3つ目のプロダクト ("Product Common") において、全てのユーザにバグを
+         公開することができる必要があります。
+         このようにして "Support Group" は2つのグループから見られるような
+         バグの制御が可能になります。このような設定は以下のように行えます。
         </para>
 
       <programlisting>
 Product A:
-AccessA: ENTRY, MANDATORY/MANDATORY
-Support: SHOWN/NA
+AccessA: 新規追加, 強制/強制
+Support: 選択可能/無関係
 Product B:
-AccessB: ENTRY, MANDATORY/MANDATORY
-Support: SHOWN/NA
+AccessB: 新規追加, 強制/強制
+Support: 選択可能/無関係
 Product Common:
-Support: ENTRY, DEFAULT/MANDATORY, CANEDIT
+Support: 新規追加, 標準で選択/強制, 編集可能
       </programlisting>
 
           <para>
-            Make a Product Read Only
+            プロダクトを閲覧専用にする
           </para>
 
           <para>
-            Sometimes a product is retired and should no longer have
-            new bugs filed against it (for example, an older version of a software
-            product that is no longer supported). A product can be made read-only
-            by creating a group called "readonly" and adding products to the
-            group as needed:
+            プロダクトを廃止にして、新しいバグを登録できないようにする必要が
+            あるでしょう。(たとえば、もうサポートされないような古いバージョンの
+            ソフトウェアなど) プロダクトを閲覧専用にするのは、"readonly" グループ
+            を作成して、そのグループにプロダクトを制限することで可能です。
           </para>
 
          <programlisting>
 Product A:
-ReadOnly: ENTRY, NA/NA, CANEDIT
+ReadOnly: 新規追加, 無関係/無関係, 編集可能
          </programlisting>
 
         <note>
           <para>
-            For more information on Groups outside of how they relate to products
-            see <xref linkend="groups"/>.
+            グループに関するより詳細な情報と、プロダクトとの関連付けについての
+            詳細は <xref linkend="groups"/> を参照してください。
           </para>
         </note>
 
@@ -1680,86 +1676,83 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
   </section>
 
   <section id="components" xreflabel="Components">
-    <title>Components</title>
+    <title>コンポーネント</title>
 
-    <para>Components are subsections of a Product. E.g. the computer game 
-    you are designing may have a "UI"
-    component, an "API" component, a "Sound System" component, and a
-    "Plugins" component, each overseen by a different programmer. It
-    often makes sense to divide Components in Bugzilla according to the
-    natural divisions of responsibility within your Product or
-    company.</para>
+    <para>コンポーネントはプロダクトの下位構造です。たとえば、コンピューターゲーム
+    では、"UI" コンポーネント、"API" ドキュメント、"音声システム" コンポーネント、
+    "プラグイン" コンポーネントをデザインし、それぞれ別のプログラマーが担当する
+    でしょう。プロダクトや会社の中での自然な責任分割に沿った
+    コンポーネントへの分離を Bugzilla では行うことがよくあります。
+    </para>
 
     <para>
-    Each component has a default assignee and (if you turned it on in the parameters),
-    a QA Contact. The default assignee should be the primary person who fixes bugs in
-    that component. The QA Contact should be the person who will ensure
-    these bugs are completely fixed. The Assignee, QA Contact, and Reporter
-    will get email when new bugs are created in this Component and when
-    these bugs change. Default Assignee and Default QA Contact fields only
-    dictate the 
-    <emphasis>default assignments</emphasis>; 
-    these can be changed on bug submission, or at any later point in
-    a bug's life.</para>
+    それぞれのコンポーネントは既定の担当者と (パラメータで有効にしていれば)
+    QA コンタクトを持ちます。既定の担当者はコンポーネントに登録されたバグの修正
+    に第一の責任を持ちます。QA コンタクトはバグが完全に修正されたことを確認する
+    担当者です。担当者、QA コンタクト、報告者は、コンポーネントに新規バグが追加
+    されたときやバグが変更されたときにメールを受け取ります。
+    既定の担当者と既定の QA コンタクトのフィールドは、<emphasis>既定値</emphasis>
+    であるだけで、バグの登録時やその後の任意の時点で変更すること
+    が可能です。</para>
 
-    <para>To create a new Component:</para>
+    <para>新しいコンポーネントの作成方法:</para>
 
    <orderedlist>
       <listitem>
-        <para>Select the <quote>Edit components</quote> link 
-        from the <quote>Edit product</quote> page</para>
+        <para><quote>プロダクトの編集</quote> ページの
+        <quote>コンポーネントの編集</quote> リンクをクリックします。</para>
       </listitem>
 
       <listitem>
-        <para>Select the <quote>Add</quote> link in the bottom right.</para>
+        <para>右下の <quote>追加</quote> リンクをクリックします。</para>
       </listitem>
 
       <listitem>
-        <para>Fill out the <quote>Component</quote> field, a 
-        short <quote>Description</quote>, the 
-        <quote>Default Assignee</quote>, <quote>Default CC List</quote> 
-        and <quote>Default QA Contact</quote> (if enabled). 
-        The <quote>Component Description</quote> field may contain a 
-        limited subset of HTML tags. The <quote>Default Assignee</quote> 
-        field must be a login name already existing in the Bugzilla database. 
+        <para><quote>コンポーネント</quote>、短い <quote>説明</quote>、
+        <quote>既定の担当者</quote>、<quote>既定の CC リスト</quote>、
+        (もし有効にしていれば) <quote>既定の QA コンタクト</quote> の欄
+        を埋めます。
+        <quote>コンポーネントの説明</quote> はいくつかの HTML タグを利用
+        できます。<quote>既定の担当者</quote> 
+        は Bugzilla データベースに既存のログイン名である必要があります。
         </para>
       </listitem>
     </orderedlist>
   </section>
 
   <section id="versions">
-    <title>Versions</title>
+    <title>バージョン</title>
 
-    <para>Versions are the revisions of the product, such as "Flinders
-    3.1", "Flinders 95", and "Flinders 2000". Version is not a multi-select
-    field; the usual practice is to select the earliest version known to have
-    the bug.
+    <para>バージョンは、"Flinders 3.1", "Flinders 95", や "Flinders 2000"
+    というようなプロダクトのリビジョンです。バージョンは、複数選択フィールド
+    ではありませんので、通常は最も早く確認されたバージョンを選択します。
     </para>
 
-    <para>To create and edit Versions:</para>
+    <para>バージョンの作成・編集方法:</para>
 
     <orderedlist>
       <listitem>
-        <para>From the "Edit product" screen, select "Edit Versions"</para>
+        <para>"プロダクトの編集" 画面から、"バージョンの編集" を選択します。</para>
       </listitem>
 
       <listitem>
-        <para>You will notice that the product already has the default
-        version "undefined". Click the "Add" link in the bottom right.</para>
+        <para>すでに既定のバージョン "undefined" がプロダクトに存在すると
+        表示されるでしょう。右下の "追加" リンクをクリックしてください。</para>
       </listitem>
 
       <listitem>
-        <para>Enter the name of the Version. This field takes text only. 
-        Then click the "Add" button.</para>
+        <para>バージョン名を入力してください。文字列のみです。
+        そして "追加" ボタンをクリックしてください。</para>
       </listitem>
 
     </orderedlist>
   </section>
 
   <section id="milestones">
-    <title>Milestones</title>
+    <title>マイルストーン</title>
 
-    <para>Milestones are "targets" that you plan to get a bug fixed by. For
+    <para>マイルストーンは、
+    Milestones are "targets" that you plan to get a bug fixed by. For
     example, you have a bug that you plan to fix for your 3.0 release, it
     would be assigned the milestone of 3.0.</para>
 
