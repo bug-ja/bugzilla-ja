@@ -1751,100 +1751,97 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
   <section id="milestones">
     <title>マイルストーン</title>
 
-    <para>マイルストーンは、
-    Milestones are "targets" that you plan to get a bug fixed by. For
-    example, you have a bug that you plan to fix for your 3.0 release, it
-    would be assigned the milestone of 3.0.</para>
+    <para>マイルストーンは、バグを修正する期限の"目標"です。
+    たとえば、3.0 リリースまでに修正しようと考えている場合、マイルストーンを
+    3.0 にしてください。</para>
 
     <note>
-      <para>Milestone options will only appear for a Product if you turned
-      on the "usetargetmilestone" parameter in the "Bug Fields" tab of the
-      "Parameters" page.
+      <para>"パラメータ" ページにある "bug フィールド" タブの "usetargetmilestone" 
+      パラメータを有効にしているときのみプロダクトにマイルストーンが表示されます。
       </para>
     </note>
 
-    <para>To create new Milestones, and set Default Milestones:</para>
+    <para>新規マイルストーンの作成方法と既定のマイルストーンの設定方法:</para>
 
     <orderedlist>
       <listitem>
-        <para>Select "Edit milestones" from the "Edit product" page.</para>
+        <para>"プロダクトの編集" ページの "マイルストーンの編集" を選択してください。</para>
       </listitem>
 
       <listitem>
-        <para>Select "Add" in the bottom right corner.
-        text</para>
+        <para>右下の "追加" ボタンをクリックしてください。</para>
       </listitem>
 
       <listitem>
-        <para>Enter the name of the Milestone in the "Milestone" field. You
-        can optionally set the "sortkey", which is a positive or negative
-        number (-32768 to 32767) that defines where in the list this particular
-        milestone appears. This is because milestones often do not 
-        occur in alphanumeric order For example, "Future" might be
-        after "Release 1.2". Select "Add".</para>
+        <para>"マイルストーン" フィールドのマイルストーンの名前を入力してください。
+        また、マイルストーンの並び順を決めるような正負の数 (-32768 から 32767)
+        を "ソートキー" に指定することも可能です。
+        この機能は、マイルストーンが文字ソート順に並ばない可能性があるため
+        のものです。たとえば、"Future" は "Release 1.2" より後であるべきです。
+        入力後、"追加" をクリックしてください。</para>
       </listitem>
     </orderedlist>
   </section>
   
  <section id="flags-overview">
-   <title>Flags</title>
+   <title>フラグ</title>
    
    <para>
-     Flags are a way to attach a specific status to a bug or attachment, 
-     either <quote>+</quote> or <quote>-</quote>. The meaning of these symbols depends on the text
-     the flag itself, but contextually they could mean pass/fail, 
-     accept/reject, approved/denied, or even a simple yes/no. If your site
-     allows requestable flags, then users may set a flag to <quote>?</quote> as a 
-     request to another user that they look at the bug/attachment, and set
-     the flag to its correct status.
+     フラグは特定のステータスを <quote>+</quote> または <quote>-</quote> 
+     付きでバグもしくは添付につける機能です。これらの意味はフラグの文字列に依存
+     しますが、合格/不合格、受理/却下、承認/否認、yes/no などをいみすることに
+     なります。フラグを要求することを許可していれば、ユーザは他のユーザに対して
+     該当のバグや添付を確認してもらうために <quote>?</quote> つきのフラグを
+     設定でき、ユーザにステータスを設定することを要請できます。
    </para>
 
    <section id="flags-simpleexample">
-     <title>A Simple Example</title>
+     <title>簡単な例</title>
 
      <para>
-       A developer might want to ask their manager, 
-       <quote>Should we fix this bug before we release version 2.0?</quote> 
-       They might want to do this for a <emphasis>lot</emphasis> of bugs,
-       so it would be nice to streamline the process...
+       開発者がマネージャーに
+       <quote>このバグを 2.0 のリリースより前に修正すべきかどうか ?</quote>
+       を聞く場面があります。<emphasis>非常にたくさんの</emphasis> バグについ
+       てこれを聞くことになるでしょうから、プロセスを効率化できるとありがたい
+       でしょう。。
      </para>
      <para>
-       In Bugzilla, it would work this way:
+       Bugzilla では以下のように行います
        <orderedlist>
          <listitem>
            <para>
-             The Bugzilla administrator creates a flag type called 
-             <quote>blocking2.0</quote> that shows up on all bugs in 
-             your product.
+             Bugzilla 管理者が <quote>blocking2.0</quote> というフラグを作成し、
+             プロダクトで表示されるようにします。
            </para>
  
            <para>
-             It shows up on the <quote>Show Bug</quote> screen
-             as the text <quote>blocking2.0</quote> with a drop-down box next
-             to it. The drop-down box contains four values: an empty space,
-             <quote>?</quote>, <quote>-</quote>, and <quote>+</quote>.
+             <quote>バグの表示</quote> 画面では <quote>blocking2.0</quote> 
+             がドロップダウンボックス付きで表示されます。
+             ドロップダウンボックスには4つの値が表示されています: 
+             空白、
+             <quote>?</quote>、<quote>-</quote>、<quote>+</quote>
            </para>
          </listitem>
          <listitem>
-           <para>The developer sets the flag to <quote>?</quote>.</para>
+           <para>開発者はフラグを <quote>?</quote> に設定します。</para>
          </listitem>
          <listitem>
            <para>
-             The manager sees the <computeroutput>blocking2.0</computeroutput>
-             flag with a <quote>?</quote> value.
-           </para>
-         </listitem>
-         <listitem>
-           <para>
-             If the manager thinks the feature should go into the product
-             before version 2.0 can be released, he sets the flag to 
-             <quote>+</quote>. Otherwise, he sets it to <quote>-</quote>.
+             マネージャーが <quote>?</quote> つきの 
+             <computeroutput>blocking2.0</computeroutput> を発見します。
            </para>
          </listitem>
          <listitem>
            <para>
-             Now, every Bugzilla user who looks at the bug knows whether or 
-             not the bug needs to be fixed before release of version 2.0.
+             マネージャーがこの機能はプロダクトのバージョン 2.0 リリース以前に
+             実装されていなければならないと考えた場合、フラグを
+             <quote>+</quote> とします。そうでなければ、<quote>-</quote> とします。
+           </para>
+         </listitem>
+         <listitem>
+           <para>
+             これで、Bugzilla の全てのユーザがこのバグをバージョン 2.0 リリース
+             以前に修正しなければならないのかどうかどうかを知ることができます。
            </para>
          </listitem>
        </orderedlist>
@@ -1853,117 +1850,113 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
    </section>
 
    <section id="flags-about">
-     <title>About Flags</title>
+     <title>フラグ</title>
 
      <section id="flag-values">
-       <title>Values</title>
+       <title>値</title>
        <para>
-         Flags can have three values:
+         フラグは3つの値を持ちます
          <variablelist>
            <varlistentry>
              <term><computeroutput>?</computeroutput></term>
              <listitem><simpara>
-               A user is requesting that a status be set. (Think of it as 'A question is being asked'.)
+               ユーザはステータスを設定されるのを待っています。("質問されてます" と理解してください)
              </simpara></listitem>
            </varlistentry>
            <varlistentry>
              <term><computeroutput>-</computeroutput></term>
              <listitem><simpara>
-               The status has been set negatively. (The question has been answered <quote>no</quote>.)
+               ステータスは否定されました。(<quote>no</quote> が答えでした。)
              </simpara></listitem>
            </varlistentry>
            <varlistentry>
              <term><computeroutput>+</computeroutput></term>
              <listitem><simpara>
-               The status has been set positively.
-               (The question has been answered <quote>yes</quote>.)
+               ステータスは承認されました。
+               (<quote>yes</quote> が答えでした。)
              </simpara></listitem>
            </varlistentry>
          </variablelist>
        </para>
        <para>
-         Actually, there's a fourth value a flag can have -- 
-         <quote>unset</quote> -- which shows up as a blank space. This 
-         just means that nobody has expressed an opinion (or asked
-         someone else to express an opinion) about this bug or attachment.
+         実際には、空白として表示される4つ目の値 <quote>設定なし</quote> が
+         あります。この値は、バグや添付について誰も意見を表明していない 
+         (もしくは、誰にも意見を聞いていない) 状態であることを示します。
        </para>
      </section>
    </section>
 
    <section id="flag-askto">
-     <title>Using flag requests</title>
+     <title>フラグ要請の利用方法</title>
      <para>
-       If a flag has been defined as 'requestable', and a user has enough privileges
-       to request it (see below), the user can set the flag's status to <quote>?</quote>.
-       This status indicates that someone (a.k.a. <quote>the requester</quote>) is asking
-       someone else to set the flag to either <quote>+</quote> or <quote>-</quote>.
+       フラグが '要求可能' と設定されていれば、要求するために必要な権限を持つユーザ
+       (下参照) であれば、フラグのステータスを <quote>?</quote> に設定できます。
+       このステータスは誰か (<quote>要請者</quote>) が他の誰かに <quote>+</quote> 
+       もしくは <quote>-</quote> にフラグを設定するよう依頼していることを示します。
      </para>
      <para>
-       If a flag has been defined as 'specifically requestable', 
-       a text box will appear next to the flag into which the requester may
-       enter a Bugzilla username. That named person (a.k.a. <quote>the requestee</quote>)
-       will receive an email notifying them of the request, and pointing them
-       to the bug/attachment in question.
+       フラグが '特定のユーザに要求可能' と設定されていれば、フラグの隣に
+       要請者が要請先の Bugzilla のユーザ名を入力するテキストボックスが表示
+       されるようになります。指名されたユーザ (<quote>被要請者</quote>)
+       は、対象となるバグや添付を明示する要請についての通知メールを受け取ります。
      </para>
      <para>
-       If a flag has <emphasis>not</emphasis> been defined as 'specifically requestable',
-       then no such text-box will appear. A request to set this flag cannot be made of
-       any specific individual, but must be asked <quote>to the wind</quote>.
-       A requester may <quote>ask the wind</quote> on any flag simply by leaving the text-box blank.
+       フラグが '特定のユーザに要求可能' と設定 <emphasis>されていなければ</emphasis>
+       テキストボックスは表示されません。フラグの要請は、特定のユーザに対して
+       行えませんが、<quote>全体の誰か</quote> への要請となります。
+       また、要請者はテキストボックスをからにしておくことで、フラグの要請先を 
+       <quote>全体の誰か</quote> とすることも可能です。
      </para>
    </section>
 
    <section id="flag-types">
-     <title>Two Types of Flags</title>
+     <title>二つのフラグ型</title>
     
      <para>
-       Flags can go in two places: on an attachment, or on a bug.
+       フラグは二つに対して設定できます: 添付、バグ
      </para>
 
      <section id="flag-type-attachment">
-       <title>Attachment Flags</title>
+       <title>添付のフラグ</title>
       
        <para>
-         Attachment flags are used to ask a question about a specific 
-         attachment on a bug.
+         添付へのフラグはバグの特定の添付についての質問になります。
        </para>
        <para>
-         Many Bugzilla installations use this to 
-         request that one developer <quote>review</quote> another 
-         developer's code before they check it in. They attach the code to
-         a bug report, and then set a flag on that attachment called
-         <quote>review</quote> to 
-         <computeroutput>review?boss@domain.com</computeroutput>.
-         boss@domain.com is then notified by email that
-         he has to check out that attachment and approve it or deny it.
+         さまざまな Bugzilla のサイトでは、この型をある開発者が別の開発者
+         にチェックイン前にコードについての <quote>レビュー</quote> 
+         を要請する際に利用しています。バグ報告に対してコードを添付し、
+         <quote>review</quote> というフラグを添付に
+         <computeroutput>review?boss@domain.com</computeroutput>
+         のように設定します。すると、 boss@domain.com 
+         に通知メールが送られ、添付を確認して承認もしくは拒否するでしょう。
        </para>
 
        <para>
-         For a Bugzilla user, attachment flags show up in three places:
+         Bugzilla ユーザには、添付のフラグは3つの場所で表示されます:
          <orderedlist>
            <listitem>
              <para>
-               On the list of attachments in the <quote>Show Bug</quote>
-               screen, you can see the current state of any flags that
-               have been set to ?, +, or -. You can see who asked about 
-               the flag (the requester), and who is being asked (the 
-               requestee).
+               <quote>バグ表示</quote> 画面の添付リストに、?/+/- に設定
+               されている全てのフラグと現状が表示されます。
+               フラグの要請者と被要請者も表示されます。
              </para>
            </listitem>
            <listitem>
              <para>
-              When you <quote>Edit</quote> an attachment, you can 
-              see any settable flag, along with any flags that have 
-              already been set. This <quote>Edit Attachment</quote> 
-              screen is where you set flags to ?, -, +, or unset them.
+              添付を <quote>編集</quote> する際、設定可能な全てのフラグ
+              や設定されている全てのフラグを見ることができます。
+              <quote>添付の編集</quote> 画面ではフラグを ?/-/+ に設定でき、
+              また設定を解除することも可能です。
              </para>
            </listitem>
            <listitem>
              <para>
-               Requests are listed in the <quote>Request Queue</quote>, which
-               is accessible from the <quote>My Requests</quote> link (if you are
-               logged in) or <quote>Requests</quote> link (if you are logged out)
-               visible in the footer of all pages.
+               要請は全てのページのフッタにある、(ログインしていれば) 
+               <quote>わたしの要請</quote> リンクから表示される、
+               もしくは (ログインしていなければ) <quote>要請リスト</quote>
+               リンクで表示される、
+               <quote>要請キュー</quote> にもリストされます。
              </para>
            </listitem>
          </orderedlist>
@@ -1972,35 +1965,34 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
      </section>
 
      <section id="flag-type-bug">
-       <title>Bug Flags</title>
+       <title>バグのフラグ</title>
 
        <para>
-         Bug flags are used to set a status on the bug itself. You can 
-         see Bug Flags in the <quote>Show Bug</quote> and <quote>Requests</quote>
-         screens, as described above.
+         バグのフラグは、バグそのものへのステータスになります。
+         上述と同様に <quote>バグ表示</quote> と <quote>要請リスト</quote> 画面
+         でバグのフラグが一覧できます。
        </para>
        <para>
-         Only users with enough privileges (see below) may set flags on bugs.
-         This doesn't necessarily include the assignee, reporter, or users with the
-         <computeroutput>editbugs</computeroutput> permission.
+         権限がある (以下参照) ユーザのみがバグにフラグを設定できます。
+         <computeroutput>editbugs</computeroutput> 権限を持つ担当者、報告者、
+         ユーザを含んでいる必要はありません。
        </para>
      </section>
 
    </section>
 
    <section id="flags-admin">
-     <title>Administering Flags</title>
+     <title>フラグの管理</title>
 
      <para>
-       If you have the <quote>editcomponents</quote> permission, you can
-       edit Flag Types from the main administration page. Clicking the
-       <quote>Flags</quote> link will bring you to the <quote>Administer
-       Flag Types</quote> page. Here, you can select whether you want 
-       to create (or edit) a Bug flag, or an Attachment flag.
+       <quote>editcomponents</quote> 権限を持っていれば、全体の管理ページから
+       フラグ型を編集できます。<quote>フラグ</quote> リンクから、
+       <quote>フラグ型の管理</quote> ページを表示できます。
+       ここから、バグのフラグもしくは添付のフラグの作成・編集が可能です。
      </para>
      <para>
-       No matter which you choose, the interface is the same, so we'll 
-       just go over it once.
+       どれを選択しても、設定のインターフェースは同じですので、
+       一度に把握できます。
      </para>
 
      <section id="flags-edit">
