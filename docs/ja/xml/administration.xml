@@ -1996,220 +1996,221 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
      </para>
 
      <section id="flags-edit">
-       <title>Editing a Flag</title>
+       <title>フラグの編集</title>
        <para>
-         To edit a flag's properties, just click on the <quote>Edit</quote>
-         link next to the flag's description. That will take you to the same
-         form as described below (<xref linkend="flags-create"/>).
+         フラグのプロパティーを編集するには、フラグの説明の後にある
+         <quote>編集</quote> リンクをクリックしてください。
+         以下の (<xref linkend="flags-create"/>) 説明と同じフォームが表示されます。
        </para>
      </section>
 
      <section id="flags-create">
-       <title>Creating a Flag</title>
+       <title>フラグの作成</title>
        
         <para>
-          When you click on the <quote>Create a Flag Type for...</quote>
-          link, you will be presented with a form. Here is what the fields in 
-          the form mean:
+          <quote>... のフラグタイプを作成</quote> リンクをクリックすると、
+          フォームが表示されます。このフォームのそれぞれのフィールドは以下の
+          ような意味になります。
         </para>
 
         <section id="flags-create-field-name">
-          <title>Name</title>
+          <title>名前</title>
           <para>
-            This is the name of the flag. This will be displayed 
-            to Bugzilla users who are looking at or setting the flag. 
-            The name may contain any valid Unicode characters except commas
-            and spaces.
+            フラグの名前です。Bugzilla のユーザがフラグを見るもしくは設定する際に
+            表示されます。名前には、カンマ・空白以外の有効なユニコード文字が利用
+            できます。
           </para>
         </section>
 
         <section id="flags-create-field-description">
-          <title>Description</title>
+          <title>説明</title>
           <para>
-            The description describes the flag in more detail. It is visible
-            in a tooltip when hovering over a flag either in the <quote>Show Bug</quote>
-            or <quote>Edit Attachment</quote> pages. This field can be as
-            long as you like, and can contain any character you want.
+            説明はフラグについてより詳細に説明します。<quote>バグの表示</quote> 
+            や <quote>添付の編集</quote> ページでフラグにカーソルを当てたときの
+            ツールチップとして表示されます。このフィールドの長さに制限はなく、
+            どのような文字列でも挿入できます。
           </para>
         </section>
 
         <section id="flags-create-field-category">
-          <title>Category</title>
+          <title>カテゴリ</title>
 
           <para>
-            Default behaviour for a newly-created flag is to appear on
-            products and all components, which is why <quote>__Any__:__Any__</quote>
-            is already entered in the <quote>Inclusions</quote> box.
-            If this is not your desired behaviour, you must either set some
-            exclusions (for products on which you don't want the flag to appear),
-            or you must remove <quote>__Any__:__Any__</quote> from the Inclusions box
-            and define products/components specifically for this flag.
+            既定の振る舞いは、新しく作成したフラグは全てのプロダクトとコンポーネント
+            で表示されるようになり、これが<quote>利用可能</quote>の欄に
+            <quote>__Any__:__Any__</quote>がすでに含まれている理由です。
+            これが望ましい振る舞いでなければ、何らかの利用不可の設定
+            (フラグを表示したくないプロダクトの設定)
+            を行うか、<quote>__Any__:__Any__</quote> を削除してフラグを表示する
+            プロダクト・コンポーネントを指定してください。
           </para>
 
           <para>
-            To create an Inclusion, select a Product from the top drop-down box.
-            You may also select a specific component from the bottom drop-down box.
-            (Setting <quote>__Any__</quote> for Product translates to, 
-            <quote>all the products in this Bugzilla</quote>.
-            Selecting  <quote>__Any__</quote> in the Component field means
-            <quote>all components in the selected product.</quote>) 
-            Selections made, press <quote>Include</quote>, and your
-            Product/Component pairing will show up in the <quote>Inclusions</quote> box on the right.
+            設定するには、プロダクトを上のドロップダウンから選択してください。
+            また、下のドロップダウンから特定のコンポーネントを選択することも可能
+            です。(プロダクトに<quote>__どれでも__</quote>を選択すると、
+            <quote>Bugzilla に定義されている全てのプロダクト</quote>になります。
+            コンポーネントに<quote>__どれでも__</quote>を選択すると、
+            <quote>指定されたプロダクトの全てのコンポーネント</quote>になります。)
+            選択後、<quote>利用可能</quote>ボタンをクリックすると、指定した
+            プロダクト・コンポーネントの組が右の<quote>利用可能</quote>ボックスに
+            追加されます。
           </para>
 
           <para>
-            To create an Exclusion, the process is the same; select a Product from the
-            top drop-down box, select a specific component if you want one, and press
-            <quote>Exclude</quote>. The Product/Component pairing will show up in the 
-            <quote>Exclusions</quote> box on the right.
+            除外設定も同じ方法で行います。上のドロップダウンからプロダクトを選択、
+            必要ならコンポーネントも指定し、<quote>利用不可</quote> をクリックしてください。
+            プロダクト・コンポーネントの組が右側の<quote>利用不可</quote>のボックス
+            に表示されます。
           </para>
 
           <para>
-            This flag <emphasis>will</emphasis> and <emphasis>can</emphasis> be set for any
-            products/components that appearing in the <quote>Inclusions</quote> box 
-            (or which fall under the appropriate <quote>__Any__</quote>). 
-            This flag <emphasis>will not</emphasis> appear (and therefore cannot be set) on
-            any products appearing in the <quote>Exclusions</quote> box.
-            <emphasis> IMPORTANT: Exclusions override inclusions.</emphasis>
+            フラグは <quote>利用可能</quote> のボックスに表示されるどのプロダクト・
+            コンポーネント (もしくはどれかの <quote>__どれでも__</quote> に該当する) 
+            について設定 <emphasis>されえます</emphasis> し、<emphasis>できます</emphasis>。
+            またフラグは、<quote>利用不可</quote> のボックスに表示されるプロダクト
+            には表示 <emphasis>されません</emphasis> (ので設定もできません)。
+            <emphasis>重要: 利用不可は、利用可能を上書きします。</emphasis>
           </para>
 
           <para>
-            You may select a Product without selecting a specific Component,
-            but you can't select a Component without a Product, or to select a
-            Component that does not belong to the named Product. If you do so,
-            Bugzilla will display an error message, even if all your products
-            have a component by that name.
+            特定のコンポーネントとともにプロダクトを指定できますが、プロダクト
+            なしにコンポーネントを指定できません。もしくは、名前付きプロダクトに
+            属さないコンポーネントについても同様です。そのようなコンポーネントに
+            設定しようとした場合、全てのプロダクトが指定した名前のコンポーネントを
+            持っていたとしても、Bugzilla はエラーメッセージを表示します。
           </para>
 
-          <para><emphasis>Example:</emphasis> Let's say you have a product called 
-            <quote>Jet Plane</quote> that has thousands of components. You want
-            to be able to ask if a problem should be fixed in the next model of 
-            plane you release. We'll call the flag <quote>fixInNext</quote>.
-            But, there's one component in <quote>Jet Plane,</quote> 
-            called <quote>Pilot.</quote> It doesn't make sense to release a 
-            new pilot, so you don't want to have the flag show up in that component.
-            So, you include <quote>Jet Plane:__Any__</quote> and you exclude 
-            <quote>Jet Plane:Pilot</quote>.
+          <para><emphasis>例:</emphasis> 数千のコンポーネントを持つプロダクト
+            <quote>Jet Plane</quote> を想定します。発生した問題が次にリリースされる
+            航空機のモデルで修正されるかどうかを問い合わせられるようにしたいでしょう。
+            これをフラグ <quote>fixInNext</quote> と呼びます。しかしながら、
+            <quote>Jst Plane</quote> にコンポーネント <quote>Pilot</quote>
+            があるとします。このコンポーネントについては、新しいパイロットの
+            リリースは意味を成しませんので、このコンポーネントについてはフラグを
+            表示しないようにするでしょう。この場合、<quote>Jet Plane:__どれでも__</quote>
+            を利用可能にし、<quote>Jet Plane:Pilot</quote> を利用不可にするでしょう。
           </para>
         </section>
 
         <section id="flags-create-field-sortkey">
-          <title>Sort Key</title>
+          <title>ソートキー</title>
           <para>
-            Flags normally show up in alphabetical order. If you want them to 
-            show up in a different order, you can use this key set the order on each flag. 
-            Flags with a lower sort key will appear before flags with a higher
-            sort key. Flags that have the same sort key will be sorted alphabetically,
-            but they will still be after flags with a lower sort key, and before flags
-            with a higher sort key.
+            フラグは通常アルファベット順に表示されます。他の順序で表示したい場合、
+            このキーをフラグの並べ順を設定するために利用できます。
+            低いソート順の番号を持つフラグは、高い番号を持つフラグより前に表示されます。
+            同じソート順を持つフラグはアルファベット順に表示されますが、
+            低いソート順の番号を持つフラグより後、高い番号を持つフラグより前に
+            は表示されます。
           </para>
           <para>
-            <emphasis>Example:</emphasis> I have AFlag (Sort Key 100), BFlag (Sort Key 10), 
-            CFlag (Sort Key 10), and DFlag (Sort Key 1). These show up in
-            the order: DFlag, BFlag, CFlag, AFlag.
+            <emphasis>例:</emphasis> フラグが () 内のソート順番号を持つとします。
+            AFlag (100), BFlag (10), CFlag (10), DFlag (1)
+            この場合、DFlag, BFlag, CFlag, AFlag の順に表示されます。
           </para>
         </section>
 
         <section id="flags-create-field-active">
-          <title>Active</title>
+          <title>有効</title>
           <para>
-            Sometimes, you might want to keep old flag information in the 
-            Bugzilla database, but stop users from setting any new flags of this type.
-            To do this, uncheck <quote>active</quote>. Deactivated
-            flags will still show up in the UI if they are ?, +, or -, but they
-            may only be cleared (unset), and cannot be changed to a new value.
-            Once a deactivated flag is cleared, it will completely disappear from a 
-            bug/attachment, and cannot be set again.
+            古いラグの情報を Bugzilla データベースに保存しておきたいけれども、
+            ユーザが新たにフラグを設定することを止めたいということもあるでしょう。
+            この時、<quote>有効</quote> のチェックボックスを外してください。
+            無効化されたフラグは、?/+/- のステータスを持っていれば UI に表示され
+            ますが、いったん解除されれば新しい値を設定できなくなります。
+            無効化されたフラグが解除されれば、バグや添付からは一切消え去り、
+            再度設定することはできなくなります。
           </para>
         </section>
 
         <section id="flags-create-field-requestable">
-          <title>Requestable</title>
+          <title>要求可能</title>
           <para>
-            New flags are, by default, <quote>requestable</quote>, meaning that they
-            offer users the <quote>?</quote> option, as well as <quote>+</quote>
-            and <quote>-</quote>.
-            To remove the ? option, uncheck <quote>requestable</quote>.
+            新規フラグは既定で <quote>要求可能</quote> になっており、ユーザが
+            <quote>?</quote> オプションを <quote>+</quote> や <quote>-</quote> 
+            などと同様に利用できることを意味します。
+            <quote>?</quote> を利用できなくするには、<quote>要求可能</quote> 
+            のチェックボックスを外してください。
           </para>
         </section>
 
         <section id="flags-create-field-specific">
-          <title>Specifically Requestable</title>
+          <title>特定のユーザにリクエスト可能</title>
           <para>
-            By default this box is checked for new flags, meaning that users may make
-            flag requests of specific individuals. Unchecking this box will remove the
-            text box next to a flag; if it is still requestable, then requests may
-            only be made <quote>to the wind.</quote> Removing this after specific
-            requests have been made will not remove those requests; that data will
-            stay in the database (though it will no longer appear to the user).
+            新規フラグでは既定でチェックされており、ユーザはフラグの設定を特定のユーザ
+            に対して要請できることを意味します。このチェックボックスを解除すると、
+            フラグの横にテキストボックスが表示されなくなり、フラグを要請できますが
+            <quote>ユーザ誰でも</quote> に対してしかできなくなります。特定のユーザへの
+            フラグの要請が行われた後にチェックボックスを外しても、リクエストは解除され
+            ませんし、データベースにも残ります。(が、ユーザには表示されません。)
           </para>
         </section>
 
         <section id="flags-create-field-multiplicable">
-          <title>Multiplicable</title>
+          <title>複数のユーザに対してリクエスト可能</title>
           <para>
-            Any flag with <quote>Multiplicable</quote> set (default for new flags is 'on')
-            may be set more than once. After being set once, an unset flag
-            of the same type will appear below it with <quote>addl.</quote> (short for 
-            <quote>additional</quote>) before the name. There is no limit to the number of
-            times a Multiplicable flags may be set on the same bug/attachment.
+            <quote>複数のユーザに対してリクエスト可能</quote> が設定されているフラグ
+            (新規フラグでは既定で 'on' です) は複数回設定可能です。一度設定したあとも、
+            未設定の同じ項目が <quote>addl.</quote> (<quote>追加</quote> の略)とともに
+            表示されます。複数リクエスト可能なフラグについて、同じバグ・添付に対して
+            つけられるフラグの数に制限はありません。
           </para>
         </section>
 
 	<section id="flags-create-field-cclist">
-          <title>CC List</title>
+          <title>CC リスト</title>
 
           <para>
-            If you want certain users to be notified every time this flag is 
-            set to ?, -, +, or unset, add them here. This is a comma-separated 
-            list of email addresses that need not be restricted to Bugzilla usernames.
+            フラグが ?/-/+ に設定・解除されたもしくは追加された際に、特定のユーザに
+            毎回通知を送りたい場合に利用します。カンマ区切りのメールアドレスのリスト
+            が指定でき、Bugzilla のユーザ名には制限されません。
           </para>
         </section>
 
         <section id="flags-create-grant-group">
-          <title>Grant Group</title>
+          <title>承認できるグループ</title>
           <para>
-            When this field is set to some given group, only users in the group
-            can set the flag to <quote>+</quote> and <quote>-</quote>. This
-            field does not affect who can request or cancel the flag. For that,
-            see the <quote>Request Group</quote> field below. If this field
-            is left blank, all users can set or delete this flag. This field is
-            useful for restricting which users can approve or reject requests.
+            このフィールドが特定のグループに対して設定されていれば、
+            グループのユーザのみが <quote>+</quote> と <quote>-</quote> に設定
+            可能になります。ただし、フラグの要請とキャンセルには影響しません。
+            要請・キャンセルについては <quote>要求できるグループ</quote> 
+            を参照してください。このフィールドが空白なら、誰でもフラグを設定・
+            削除可能になります。このフィールドは要請を許可・却下できるユーザを
+            限定するのに有用です。
           </para>
         </section>
 
         <section id="flags-create-request-group">
-          <title>Request Group</title>
+          <title>要求できるグループ</title>
           <para>
-            When this field is set to some given group, only users in the group
-            can request or cancel this flag. Note that this field has no effect
-            if the <quote>grant group</quote> field is empty. You can set the
-            value of this field to a different group, but both fields have to be
-            set to a group for this field to have an effect.
+            このフィールドが特定のグループに設定されていれば、
+            グループのユーザのみがフラグの要請・キャンセルを行えます。
+            ただし <quote>承認できるグループ</quote> フィールドが空白の場合は
+            影響しません。二つのフィールドは別の値に設定できますが、このフィールド
+            を有効にするには両方とものフィールドを設定する必要があります。
           </para>
         </section>
       </section> <!-- flags-create -->
 
       <section id="flags-delete">
-        <title>Deleting a Flag</title>
+        <title>フラグの削除</title>
 
         <para>
-          When you are at the <quote>Administer Flag Types</quote> screen,
-          you will be presented with a list of Bug flags and a list of Attachment
-          Flags.
+          <quote>フラグタイプの管理</quote> 画面で、たくさんのバグについてのフラグと
+          添付についてのフラグが表示されるでしょう。
         </para>
         <para>
-          To delete a flag, click on the <quote>Delete</quote> link next to
-          the flag description.
+          フラグを削除するには、フラグの説明の次に表示されている 
+          <quote>削除</quote> リンクをクリックしてください。
         </para>
         <warning>
           <para>
-            Once you delete a flag, it is <emphasis>gone</emphasis> from
-            your Bugzilla. All the data for that flag will be deleted.
-            Everywhere that flag was set, it will disappear,
-            and you cannot get that data back. If you want to keep flag data,
-            but don't want anybody to set any new flags or change current flags,
-            unset <quote>active</quote> in the flag Edit form.
+            いったんフラグを削除すると、Bugzilla から <emphasis>消え去って</emphassi>
+            しまいます。全てのフラグについてのデータが削除されます。
+            フラグが設定されていた全ての場所で、データが消滅し、復旧は不可能です。
+            新しくフラグを設定されたり、変更されたりされないように、フラグデータを
+            保存しておきたければ、フラグ編集フォームの <quote>有効</quote> 
+            を外してください。
           </para>
         </warning>
       </section>
