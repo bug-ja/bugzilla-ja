@@ -2222,114 +2222,109 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
   </section> <!-- flags -->
 
   <section id="keywords">
-    <title>Keywords</title>
+    <title>キーワード</title>
 
     <para>
-    The administrator can define keywords which can be used to tag and
-    categorise bugs. For example, the keyword "regression" is commonly used.
-    A company might have a policy stating all regressions
-    must be fixed by the next release - this keyword can make tracking those
-    bugs much easier.
+    バグへのタグ付けやカテゴリ付けのために利用できるキーワードを定義できます。
+    例えば、キーワード "regression" などが一般的に利用されています。
+    全てのレグレッションを次期リリースまでに修正することをポリシーとする
+    会社があるとすると、このキーワードを利用することでより簡単に追跡できる
+    ようになります。
     </para>
     <para>
-    Keywords are global, rather than per-product. If the administrator changes
-    a keyword currently applied to any bugs, the keyword cache must be rebuilt
-    using the <xref linkend="sanitycheck"/> script. Currently keywords can not
-    be marked obsolete to prevent future usage.
+    キーワードはプロダクトごとでなくてグローバルです。管理者がすでにバグに適用
+    されているキーワードを変更すると、キーワードキャッシュを
+    <xref linkend="sanitycheck"/> により再構築する必要があります。
+    将来再利用されるのを防ぐために、キーワードは現状では廃止に指定できません。
     </para>
     <para>
-    Keywords can be created, edited or deleted by clicking the "Keywords"
-    link in the admin page. There are two fields for each keyword - the keyword
-    itself and a brief description. Once created, keywords can be selected
-    and applied to individual bugs in that bug's "Details" section.
+    キーワードは管理画面の "キーワード" リンクから作成・編集・削除可能です。
+    一つのキーワードには二つの項目があり、キーワードそのものとその簡単な説明
+    を入力します。いったん作成されると、それぞれのバグの "詳細" セクションで
+    キーワードを選択・設定できるようになります。
     </para>
   </section>
 
   <section id="custom-fields">
-    <title>Custom Fields</title>
+    <title>カスタムフィールド</title>
 
     <para>
-      The release of Bugzilla 3.0 added the ability to create Custom Fields. 
-      Custom Fields are treated like any other field - they can be set in bugs
-      and used for search queries. Administrators should keep in mind that
-      adding too many fields can make the user interface more complicated and
-      harder to use. Custom Fields should be added only when necessary and with 
-      careful consideration.
+      Bugzilla 3.0 のリリースで、カスタムフィールドの機能が追加されました。
+      カスタムフィールドは他のフィールドと同様に取り扱われ、バグに設定できますし、
+      検索でも利用できます。管理者は、フィールドを追加しすぎると、ユーザインターフェース
+      が非常に複雑になり利用するのが難しくなることを気にかける必要があります。
+      カスタムフィールドは十分検討してから必要なときに追加すべきです。
     </para>
     <tip>
       <para>
-        Before adding a Custom Field, make sure that Bugzilla can not already
-        do the desired behavior. Many Bugzilla options are not enabled by 
-        default, and many times Administrators find that simply enabling
-        certain options that already exist is sufficient. 
+        カスタムフィールドを追加する前に、必要とする機能が Bugzilla に本当に
+        存在しないのかを確認してください。さまざまな Bugzilla のオプションは
+        既定では無効になっており、管理者はそれらの機能をオプションを有効にする
+        だけで効率的に利用し始めることができます。
       </para>
     </tip>
     <para>
-      Administrators can manage Custom Fields using the
-      <quote>Custom Fields</quote> link on the Administration page. The Custom
-      Fields administration page displays a list of Custom Fields, if any exist,
-      and a link to "Add a new custom field". 
+      カスタムフィールドは、管理画面の <quote>カスタムフィールド</quote> 
+      リンクで表示される画面で管理できます。カスタムフィールドの管理ページは、
+      存在していればカスタムフィールドのリストと、
+      "新規カスタムフィールド追加" のリンクを表示します。
     </para>
 
     <section id="add-custom-fields">
-      <title>Adding Custom Fields</title>
+      <title>カスタムフィールドの追加</title>
 
       <para>
-        To add a new Custom Field, click the "Add a new custom field" link. This
-        page displays several options for the new field, described below.
+        新しいカスタムフィールドの追加は、"新規カスタムフィールド追加" 
+        リンクから行えます。このページでは以下のような新規フィールドのための
+        いくつかのオプションのフィールドが表示されます。
       </para>
 
       <para>
-        The following attributes must be set for each new custom field:
+        全てのカスタムフィールドで以下の全ての属性を設定する必要があります。
         <itemizedlist>
           <listitem>
             <para>
-              <emphasis>Name:</emphasis>
-              The name of the field in the database, used internally. This name 
-              MUST begin with <quote>cf_</quote> to prevent confusion with 
-              standard fields. If this string is omitted, it will
-              be automatically added to the name entered. 
+              <emphasis>名前:</emphasis>
+              データベース上でのフィールド名で、内部的に利用されます。
+              この名前は標準フィールドと区別するために <quote>cf_</quote> 
+              で始まっていなければなりません。先頭についていなければ、
+              自動的に付加されます。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Description:</emphasis>
-              A brief string which is used as the label for this Custom Field.
-              That is the string that users will see, and should be
-              short and explicit.
+              <emphasis>説明:</emphasis>
+              カスタムフィールドのラベルとして利用される簡単な説明です。
+              ユーザが実際に見るものになりますので、短くて正確なものにすべきです。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Type:</emphasis>
-              The type of field to create. There are
-              several types available:
+              <emphasis>型:</emphasis>
+              フィールドの型です。いくつかのタイプがあります。
                <simplelist>
                  <member>
-                   Large Text Box: A multiple line box for entering free text.
+                   広い入力エリア: 複数行の自由記入ができるテキストボックスです。
                  </member>
                  <member>
-                   Free Text: A single line box for entering free text.
+                   テキスト: 自由記入ができる1行ボックスです。
                  </member>
                  <member>
-                   Multiple-Selection Box: A list box where multiple options 
-                   can be selected. After creating this field, it must be edited
-                   to add the selection options. See 
-                   <xref linkend="edit-values-list" /> for information about 
-                   editing legal values.
+                   複数選択ボックス: 複数の選択肢を選べるリストボックスです。
+                   フィールド作成後、選択肢を追加・編集できるようになります。
+                   利用可能な値への制限については、
+                   <xref linkend="edit-values-list" /> を参照してください。
                  </member>
                  <member>
-                   Drop Down: A list box where only one option can be selected.
-                   After creating this field, it must be edited to add the
-                   selection options. See 
-                   <xref linkend="edit-values-list" /> for information about 
-                   editing legal values.
+                   ドロップダウン: 一つのオプションのみが選択可能なリストボックス
+                   です。フィールド作成後、選択肢を追加・編集できるようになります。
+                   利用可能な値への制限については、
                  </member>
                  <member>
-                   Date/Time: A date field. This field appears with a 
-                   calendar widget for choosing the date.
+                   日時: 日付フィールドです。日付を選択するためのカレンダー
+                   ウィジェットが表示されます。
                  </member>
                </simplelist>
             </para>
@@ -2337,37 +2332,37 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
 
           <listitem>
             <para>
-              <emphasis>Sortkey:</emphasis>
-              Integer that determines in which order Custom Fields are
-              displayed in the User Interface, especially when viewing a bug. 
-              Fields with lower values are displayed first.
+              <emphasis>ソート順:</emphasis>
+              特にバグ表示画面で、カスタムフィールドがユーザ画面に表示される表示
+              順を決定します。
+              小さな値が設定されているフィールドが先に表示されます。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Can be set on bug creation:</emphasis>
-              Boolean that determines whether this field can be set on
-              bug creation. If not selected, then a bug must be created 
-              before this field can be set. See <xref linkend="bugreports" /> 
-              for information about filing bugs.
+              <emphasis>bug 作成時に設定可能:</emphasis>
+              バグ作成時にこのフィールドを設定可能とするかどうかを決定します。
+              非選択の場合、バグを作成するまではフィールドに値を設定することが
+              できなくなります。バグ作成については、<xref linkend="bugreports" /> 
+              を参照してください。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Displayed in bugmail for new bugs:</emphasis>
-              Boolean that determines whether the value set on this field
-              should appear in bugmail when the bug is filed. This attribute
-              has no effect if the field cannot be set on bug creation.
+              <emphasis>bug 作成時に bug メールに表示:</emphasis>
+              フィールドをバグ作成時に送信されるバグメールに表示するかどうか
+              を決定します。この項目は、バグ作成時に設定可能になっていなければ
+              無視されます。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Is obsolete:</emphasis>
-              Boolean that determines whether this field should
-              be displayed at all. Obsolete Custom Fields are hidden.
+              <emphasis>用済み:</emphasis>
+              このフィールドを表示するかどうかを決定します。
+              用済みとされたフィールドは表示されません。
             </para>
           </listitem>
         </itemizedlist>
@@ -2375,86 +2370,87 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
     </section>
 
     <section id="edit-custom-fields">
-      <title>Editing Custom Fields</title>
+      <title>カスタムフィールドの編集</title>
 
       <para>
-        As soon as a Custom Field is created, its name and type cannot be
-        changed. If this field is a drop down menu, its legal values can
-        be set as described in <xref linkend="edit-values-list" />. All
-        other attributes can be edited as described above.
+        カスタムフィールド作成後、名前と型は変更できません。
+        フィールドがドロップダウンメニューを利用する型の場合、有効な値は
+        <xref linkend="edit-values-list" /> の条件にあうものになります。
+        他の属性については上述と同様に編集可能です。
       </para>
     </section>
 
     <section id="delete-custom-fields">
-      <title>Deleting Custom Fields</title>
+      <title>カスタムフィールドの削除</title>
 
       <para>
-        Only custom fields which are marked as obsolete, and which never
-        have been used, can be deleted completely (else the integrity
-        of the bug history would be compromised). For custom fields marked
-        as obsolete, a "Delete" link will appear in the <quote>Action</quote>
-        column. If the custom field has been used in the past, the deletion
-        will be rejected. But marking the field as obsolete is sufficient
-        to hide it from the user interface entirely.
+        用済みにされており、そして利用されていないカスタムフィールドのみが
+        完全に削除できます。(バグの履歴に存在している場合、履歴が不完全に
+        なります。)用済みとされているカスタムフィールドには、<quote>操作</quote>
+        カラムに "削除" リンクが表示されます。過去に利用されたことのある
+        カスタムフィールドについては、削除操作はできません。
+        しかしながら、用済みにしておくことでもユーザインターフェースから
+        完全に隠されます。
       </para>
     </section>
   </section>
 
   <section id="edit-values">
-    <title>Legal Values</title>
+    <title>有効な値</title>
 
     <para>
-      Since Bugzilla 2.20 RC1, legal values for Operating Systems, platforms,
-      bug priorities and severities can be edited from the User Interface
-      directly. This means that it is no longer required to manually edit
-      <filename>localconfig</filename>. Starting with Bugzilla 2.23.3, 
-      the list of valid resolutions can be customized from the same interface.
-      Since Bugzilla 3.1.1 the list of valid bug statuses can be customized
-      as well.
+      Bugzilla 2.20 RC1 以降、OS、プラットフォーム、バグの優先度と重要度
+      フィールドの値はユーザインターフェースから直接編集できるようになりました。
+      これは、<filename>localconfig</filename> から直接編集しなくても
+      よくなったともいえます。Bugzilla 2.23.3 以降、有効な解決方法のリストも
+      同じ画面から編集できるようになりました。
+      そして、Bugzilla 3.1.1 からはバグのステータスについても同様に編集
+      できるようになりました。
     </para>
 
     <section id="edit-values-list">
-      <title>Viewing/Editing legal values</title>
+      <title>有効な値の参照・編集方法</title>
       <para>
-        Editing legal values requires <quote>admin</quote> privileges.
-        Select "Legal Values" from the Administration page. A list of all
-        fields, both system fields and Custom Fields, for which legal values
-        can be edited appears. Click a field name to edit its legal values.
+        有効な値の編集は <quote>admin</quote> 権限が必要です。
+        管理ページの "フィールド値" を選択してください。
+        有効な値のリストを編集可能なシステムフィールドおよびカスタムフィールドの
+        全てのフィールドがリスト表示されます。有効な値を編集するには、
+        フィールド名をクリックしてください。
       </para>
       <para>
-        There is no limit to how many values a field can have, but each value 
-        must be unique to that field. The sortkey is important to display these
-        values in the desired order.
+        フィールドが持つことができる値の数に制限はありませんが、全ての値は
+        フィールド内で唯一でなければなりません。ソート順は値がどのような順で
+        表示されるかを決定する重要な値です。
       </para>
     </section>
 
     <section id="edit-values-delete">
-      <title>Deleting legal values</title>
+      <title>有効な値の削除</title>
       <para>
-        Legal values from Custom Fields can be deleted, but only if the 
-        following two conditions are respected:
+        カスタムフィールドの有効な値は削除可能ですが、
+        以下の二つの条件を満たしていなければ削除できません。
       </para>
 
       <orderedlist>
         <listitem>
-	  <para>The value is not used by default for the field.</para>
-	</listitem>
+          <para>値がフィールドの既定値でない場合。</para>
+        </listitem>
 
-	<listitem>
-	  <para>No bug is currently using this value.</para>
+        <listitem>
+          <para>値がバグで利用されていない場合。</para>
         </listitem>
       </orderedlist>
 
       <para>
-        If any of these conditions is not respected, the value cannot be deleted.
-	The only way to delete these values is to reassign bugs to another value
-	and to set another value as default for the field.
+        これらの条件のひとつでも満たされない場合、値を削除できません。
+        そのような値を削除する方法は、該当のバグを他の値を利用するように変更し、
+        かつフィールドの既定値から外すしかありません。
       </para>
     </section>
   </section>
 
   <section id="bug_status_workflow">
-    <title>Bug Status Workflow</title>
+    <title>バグステータスワークフロー</title>
 
     <para>
       The bug status workflow is no longer hardcoded but can be freely customized
