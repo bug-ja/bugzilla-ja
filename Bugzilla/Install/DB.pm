@@ -88,7 +88,6 @@ sub update_fielddefs_definition {
     }
 
     $dbh->bz_add_column('fielddefs', 'visibility_field_id', {TYPE => 'INT3'});
-    $dbh->bz_add_column('fielddefs', 'visibility_value_id', {TYPE => 'INT2'});
     $dbh->bz_add_column('fielddefs', 'value_field_id', {TYPE => 'INT3'});
     $dbh->bz_add_index('fielddefs', 'fielddefs_value_field_id_idx',
                        ['value_field_id']);
@@ -112,6 +111,9 @@ sub update_fielddefs_definition {
         {TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'FALSE'});
     $dbh->bz_add_index('fielddefs', 'fielddefs_is_mandatory_idx',
                        ['is_mandatory']);
+
+    # 2010-04-05 dkl@redhat.com - Bug 479400
+    _migrate_field_visibility_value();
 
     # Remember, this is not the function for adding general table changes.
     # That is below. Add new changes to the fielddefs table above this
@@ -3217,7 +3219,7 @@ sub _add_visiblity_value_to_value_tables {
         undef, FIELD_TYPE_SINGLE_SELECT, FIELD_TYPE_MULTI_SELECT);
     foreach my $field (@standard_fields, @$custom_fields) {
         $dbh->bz_add_column($field, 'visibility_value_id', {TYPE => 'INT2'});
-        $dbh->bz_add_index($field, "${field}_visibility_value_id_idx", 
+        $dbh->bz_add_index($field, "${field}_visibility_value_id_idx",
                            ['visibility_value_id']);
     }
 }
@@ -3257,9 +3259,9 @@ sub _fix_logincookies_ipaddr {
 }
 
 sub _fix_invalid_custom_field_names {
-    my @fields = Bugzilla->get_fields({ custom => 1 });
+    my $fields = Bugzilla->fields({ custom => 1 });
 
-    foreach my $field (@fields) {
+    foreach my $field (@$fields) {
         next if $field->name =~ /^[a-zA-Z0-9_]+$/;
         # The field name is illegal and can break the DB. Kill the field!
         $field->set_obsolete(1);
@@ -3392,6 +3394,33 @@ sub _remove_attachment_isurl {
                  undef, 'url.txt');
         $dbh->bz_drop_column('attachments', 'isurl');
         $dbh->do("DELETE FROM fielddefs WHERE name='attachments.isurl'");
+    }
+}
+
+sub _migrate_field_visibility_value {
+    my $dbh = Bugzilla->dbh;
+
+    if ($dbh->bz_column_info('fielddefs', 'visibility_value_id')) {
+        print "Populating new field_visibility table...\n";
+
+        $dbh->bz_start_transaction();
+
+        my %results =
+            @{ $dbh->selectcol_arrayref(
+                "SELECT id, visibility_value_id FROM fielddefs
+                 WHERE visibility_value_id IS NOT NULL",
+               { Columns => [1,2] }) };
+
+        my $insert_sth =
+            $dbh->prepare("INSERT INTO field_visibility (field_id, value_id)
+                           VALUES (?, ?)");
+
+        foreach my $id (keys %results) {
+            $insert_sth->execute($id, $results{$id});
+        }
+
+        $dbh->bz_commit_transaction();
+        $dbh->bz_drop_column('fielddefs', 'visibility_value_id');
     }
 }
 

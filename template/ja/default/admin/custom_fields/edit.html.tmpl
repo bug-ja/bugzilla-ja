@@ -109,7 +109,7 @@
         <select name="visibility_field_id" id="visibility_field_id"
                 onchange="onChangeVisibilityField()">
           <option></option>
-          [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+          [% FOREACH sel_field = Bugzilla.fields({ is_select => 1 }) %]
             [% NEXT IF sel_field.id == field.id %]
             <option value="[% sel_field.id FILTER html %]"
              [% ' selected="selected"' 
@@ -119,8 +119,11 @@
             </option>
           [% END %]
         </select>
-        <label for="visibility_value_id"><strong>が次の状態の時:</strong></label>
-        <select name="visibility_value_id" id="visibility_value_id">
+        <label for="visibility_values">
+          <strong>が次の状態の時:</strong>
+        </label>
+        <select multiple="multiple" size="5" name="visibility_values" 
+                id="visibility_values" class="field_value">
           [% FOREACH value = field.visibility_field.legal_values %]
             <option value="[% value.id FILTER html %]"
              [% ' selected="selected"' 
@@ -151,7 +154,7 @@
         <td>
           <select name="value_field_id" id="value_field_id">
             <option></option>
-            [% FOREACH sel_field = Bugzilla.get_fields({ is_select => 1 }) %]
+            [% FOREACH sel_field = Bugzilla.fields({ is_select => 1 }) %]
               [% NEXT IF sel_field.id == field.id %]
               <option value="[% sel_field.id FILTER html %]"
                [% ' selected="selected"' 

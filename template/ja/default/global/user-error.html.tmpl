@@ -666,6 +666,11 @@
     [% title = "無効な値制御フィールド" %]
     ドロップダウンか複数選択フィールドのみが自分の値を制御することができます。
 
+  [% ELSIF error == "field_visibility_values_must_be_selected" %]
+    [% title = "有効なフィールド値がありません" %]
+    一つ以上の有効なフィールド値が '[% field.name FILTER html %]'
+    に対して選択されている必要があります。
+
   [% ELSIF error == "fieldname_invalid" %]
     [% title = BLOCK %] 指定されたフィールドは存在しません [% END %]
     フィールド '[% field.name FILTER html %]' は存在しないか、
@@ -1650,10 +1655,6 @@
       [%+ series.name FILTER html %]</em>
       は既に存在しています。
     
-  [% ELSIF error == "sidebar_supports_mozilla_only" %]
-    sidebar.cgi は Mozilla ベースのブラウザでのみ利用できます。
-    <a href="http://www.mozilla.org">今すぐアップグレードしてください</a>(笑)
-
   [% ELSIF error == "still_unresolved_bugs" %]
     [% IF dependency_count == 1 %]
       [% terms.Bug %]# <a href="show_bug.cgi?id=[% dependencies.0.bug_id FILTER none %]">[% dependencies.0.bug_id FILTER none %]</a>
