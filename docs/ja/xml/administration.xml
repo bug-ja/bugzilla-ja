@@ -2453,258 +2453,248 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
     <title>バグステータスワークフロー</title>
 
     <para>
-      The bug status workflow is no longer hardcoded but can be freely customized
-      from the web interface. Only one bug status cannot be renamed nor deleted,
-      UNCONFIRMED, but the workflow involving it is free. The configuration
-      page displays all existing bug statuses twice, first on the left for bug
-      statuses we come from and on the top for bug statuses we move to.
-      If the checkbox is checked, then the transition between the two bug statuses
-      is legal, else it's forbidden independently of your privileges. The bug status
-      used for the "duplicate_or_move_bug_status" parameter must be part of the
-      workflow as that is the bug status which will be used when duplicating or
-      moving a bug, so it must be available from each bug status.
+      バグステータスワークフローはハードコードではなくなり、ウェブインターフェース
+      より自由に編集できるようになりました。一つのステータス値 UNCONFIRMED 
+      だけは削除も名前の変更もできませんが、ワークフローは自由になりました。
+      設定ページには全てのステータスが2つずつ表示され、一つは左側に変更元の、
+      もう一つは上に変更先のステータスが表示されます。ユーザの権限で独立に制限
+      されていない限り、チェックボックスがオンの対応でのみバグのステータスを変更
+      することができます。"duplicate_or_move_bug_status" パラメータで利用されている
+      バグのステータスは必ずワークフローに含まれていなければならず、バグを重複と
+      する際や移動する際に利用されますので、全てのステータスから遷移できなければ
+      なりません。
     </para>
     <para>
-      When the workflow is set, the "View Current Triggers" link below the table
-      lets you set which transitions require a comment from the user.
+      ワークフローを設定後、下の "現在のトリガーを見る" リンクから遷移時にユーザ
+      にコメントを求める関係を指定できます。
     </para>
   </section>
 
   <section id="voting">
-    <title>Voting</title>
+    <title>投票</title>
 
-    <para>Voting allows users to be given a pot of votes which they can allocate
-    to bugs, to indicate that they'd like them fixed. 
-    This allows developers to gauge
-    user need for a particular enhancement or bugfix. By allowing bugs with
-    a certain number of votes to automatically move from "UNCONFIRMED" to
-    "CONFIRMED", users of the bug system can help high-priority bugs garner
-    attention so they don't sit for a long time awaiting triage.</para>
+    <para>
+      投票機能により、ユーザは自分が修正を望んでいることを示すために、バグ
+      に対して票を投じることができます。これにより、開発者にとってはどのバグ
+      や機能要望が望まれているのかを知ることができます。ある票数を獲得した
+      バグを "UNCONFIRMED" から "CONFIRMED" に自動的に変更することにより、
+      重要度の高いバグをシステムにより把握できるようになり、ユーザが長期間
+      対処を待たなくてすむようになります。</para>
 
-    <para>To modify Voting settings:</para>
+    <para>投票設定の変更方法:</para>
 
     <orderedlist>
       <listitem>
-        <para>Navigate to the "Edit product" screen for the Product you
-        wish to modify</para>
+        <para>"プロダクトの編集" 画面から編集したいプロダクトを選択してください</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Maximum Votes per person</emphasis>:
-        Setting this field to "0" disables voting.</para>
+        <para><emphasis>ユーザあたりの最大投票数</emphasis>:
+        "0" にすると投票機能は無効になります。</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Maximum Votes a person can put on a single
-         bug</emphasis>: 
-         It should probably be some number lower than the
-        "Maximum votes per person". Don't set this field to "0" if
-        "Maximum votes per person" is non-zero; that doesn't make
-        any sense.</para>
+        <para><emphasis>単一バグに投じることができる最大票数</emphasis>: 
+        "ユーザあたりの最大投票数" よりも小さい値であるべきでしょう。
+        "ユーザあたりの最大投票数" が 0 でなければ "0" にしないでください。
+        その設定は意味をなしません。</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Number of votes a bug in this product needs to
-        automatically get out of the UNCONFIRMED state</emphasis>: 
-        Setting this field to "0" disables the automatic move of
-        bugs from UNCONFIRMED to CONFIRMED. 
+        <para><emphasis>このプロダクトで自動的に UNCONFIRMED 
+        状態から変更されるのに必要な票数</emphasis>: 
+        "0" に設定すると自動的に UNCONFIRMED から CONFIRMED 
+        に変更されなくなります。
         </para>
       </listitem>
 
       <listitem>
-        <para>Once you have adjusted the values to your preference, click
-        "Update".</para>
+        <para>値を設定したら、"更新" をクリックしてください。</para>
       </listitem>
     </orderedlist>
   </section>
 
   <section id="quips">
-    <title>Quips</title>
+    <title>quip</title>
 
     <para>
-      Quips are small text messages that can be configured to appear
-      next to search results. A Bugzilla installation can have its own specific
-      quips. Whenever a quip needs to be displayed, a random selection
-      is made from the pool of already existing quips.
+      "quip" は検索結果の画面で表示することができる短いテキストメッセージです。
+      Bugzilla の各サイトでは独自の "quip" を利用することができます。
+      "quip" を表示する場合には、既存のプールからランダムに選択されます。
     </para>
   
     <para>
-      Quips are controlled by the <emphasis>enablequips</emphasis> parameter.
-      It has several possible values: on, approved, frozen or off.
-      In order to enable quips approval you need to set this parameter
-      to "approved". In this way, users are free to submit quips for
-      addition but an administrator must explicitly approve them before
-      they are actually used.
+      "quip" は <emphasis>enablequips</emphasis> パラメータにより制御されます。
+      いくつかの値から選択できます: on, approved, frozen, off
+      承認された "quip" を有効にするにはパラメータを "approved" にします。
+      この設定では、ユーザは自由に "quip" を投稿できますが、管理者が明示的に
+      承認を与えない限り実際には利用されません。
     </para>
 
     <para>
-      In order to see the user interface for the quips, it is enough to click
-      on a quip when it is displayed together with the search results. Or
-      it can be seen directly in the browser by visiting the quips.cgi URL
-      (prefixed with the usual web location of the Bugzilla installation).
-      Once the quip interface is displayed, it is enough to click the
-      "view and edit the whole quip list" in order to see the administration
-      page. A page with all the quips available in the database will
-      be displayed.
+      "quip" のユーザインターフェースを表示するには、検索結果とともに表示
+      されている際に "quip" をクリックすると表示されます。もしくは、quips.cgi 
+      URL (先頭に Bugzilla サイトの通常の先頭部分を追加してください) に
+      直接アクセスすることでも表示されます。"quip" の画面が表示されれば、
+      "すべての quip のリストを表示・編集する" をクリックして、管理画面に
+      移動してください。データベースに格納されている全ての quip が表示されます。
     </para>
 
     <para>
-      Next to each tip there is a checkbox, under the
-      "Approved" column. Quips who have this checkbox checked are
-      already approved and will appear next to the search results.
-      The ones that have it unchecked are still preserved in the
-      database but they will not appear on search results pages.
-      User submitted quips have initially the checkbox unchecked.
+      それぞれの quip の隣、"承認" カラムにチェックボックスが表示されます。
+      このチェックボックスがチェックされている quip が承認されたもので、
+      検索結果に表示されます。チェックされていないものもデータベースに保存
+      されますが、検索結果の画面には表示されません。
+      ユーザが登録したばかりの quip はチェックボックスが外れています。
     </para>
   
     <para>
-      Also, there is a delete link next to each quip,
-      which can be used in order to permanently delete a quip.
+      また、それぞれの quip には削除リンクがあり、完全に削除できるように
+      なっています。
     </para>
   </section>
 
   <section id="groups">
-    <title>Groups and Group Security</title>
+    <title>グループとグループセキュリティー</title>
 
     <para>
-    Groups allow for separating bugs into logical divisions.
-    Groups are typically used to
-    to isolate bugs that should only be seen by certain people. For
-    example, a company might create a different group for each one of its customers
-    or partners. Group permissions could be set so that each partner or customer would
-    only have access to their own bugs. Or, groups might be used to create
-    variable access controls for different departments within an organization.
-    Another common use of groups is to associate groups with products,
-    creating isolation and access control on a per-product basis.
+    グループによりバグを論理的な区分に分割できます。
+    グループは特定の人にのみ見えるような独立したバグのためによく利用されます。
+    たとえば、顧客やパートナー単位で異なるグループを作成する会社を考えましょう。
+    グループ権限はそれぞれの顧客やパートナーが各自のバグにのみアクセスできるよう
+    に設定できます。もしくは、グループを組織内の異なる部門に対する細かい
+    アクセス制限に利用することも可能です。もう一つの一般的な用途として、
+    プロダクトに関連するグループを作成し、プロダクトごとの分離とアクセス制限
+    を行うこともできます。
     </para>
 
     <para>
-    Groups and group behaviors are controlled in several places:
+    グループとグループの動作は複数の場所で制御します:
     </para>
 
       <orderedlist>
 
          <listitem>
            <para>
-             The group configuration page. To view or edit existing groups, or to
-             create new groups, access the "Groups" link from the "Administration"
-             page. This section of the manual deals primarily with the aspect of
-             group controls accessed on this page.  
+             グループ設定ページ。既存のグループを表示・編集する、もしくは新規
+             グループを作成するには、"管理" ページの "グループ" リンクにアクセス
+             してください。マニュアルのこの節では、基本的にこのページから編集
+             できるグループ制限の方法を解説します。
            </para>
          </listitem> 
 
         <listitem>
           <para>
-            Global configuration parameters. Bugzilla has several parameters 
-            that control the overall default group behavior and restriction
-            levels. For more information on the parameters that control 
-            group behavior globally, see <xref linkend="param-group-security"/>.
+            グローバル設定パラメータ。Bugzilla は既定のグループの動作や制限レベル
+            に関するいくつかのパラメータを持ちます。
+            グローバルなグループの動作を制御するパラメータについての詳細は、
+            <xref linkend="param-group-security"/> を参照してください。
           </para>
 
          </listitem>
 
          <listitem>
           <para>
-            Product association with groups. Most of the functionality of groups
-            and group security is controlled at the product level. Some aspects
-            of group access controls for products are discussed in this section,
-            but for more detail see <xref linkend="product-group-controls"/>.
+            プロダクトに関連したグループ。大半のグループの機能とグループセキュリティー
+            はプロダクトレベルで制御されます。プロダクトに対するグループアクセス制限
+            のいくつかの機能についてこの節で紹介されますが、より詳細については
+            <xref linkend="product-group-controls"/> を参照してください。
           </para>
          </listitem>
 
          <listitem>
           <para>
-            Group access for users. See <xref linkend="users-and-groups"/> for
-            details on how users are assigned group access.
+            ユーザに対するグループ制限。グループに対してユーザをどう割り当てるか
+            についての詳細は <xref linkend="users-and-groups"/> 
+            を参照してください。
           </para>
          </listitem>
 
       </orderedlist>
 
     <para>
-      Group permissions are such that if a bug belongs to a group, only members
-      of that group can see the bug. If a bug is in more than one group, only
-      members of <emphasis>all</emphasis> the groups that the bug is in can see
-      the bug. For information on granting read-only access to certain people and
-      full edit access to others, see <xref linkend="product-group-controls"/>.
+      バグがグループに属し、グループのメンバーしか見ることができないようにする
+      グループ権限を設定できます。複数のグループに設定されているバグは、
+      <emphasis>全ての</emphasis> グループのメンバーでなければ、バグを見ることが
+      できなくなります。より詳細な、特定ユーザの表示アクセス権限や他の編集権限
+      については、<xref linkend="product-group-controls"/> を参照してください。
      </para> 
 
      <note>
       <para>
-        By default, bugs can also be seen by the Assignee, the Reporter, and 
-        by everyone on the CC List, regardless of whether or not the bug would 
-        typically be viewable by them. Visibility to the Reporter and CC List can 
-        be overridden (on a per-bug basis) by bringing up the bug, finding the 
-        section that starts with <quote>Users in the roles selected below...</quote>
-        and un-checking the box next to either 'Reporter' or 'CC List' (or both).
+        既定では、バグは担当者・報告者とCCリストの全員にも、バグの表示権限が
+        付与されているかどうかによらず表示されます。
+        報告者とCCリストに対する表示は (バグごとに) 上書きすることができ、
+        <quote>以下の担当になっているユーザは常にこの bug を見ることができます</quote> 
+        で始まる部分の '報告者' や 'CC リスト' のチェックボックスを外すことで
+        行えます。
       </para>
     </note> 
 
     <section id="create-groups">
-      <title>Creating Groups</title>
+      <title>グループの作成</title>
 
       <para>
-        To create a new group, follow the steps below:
+        新規グループ作成は以下の方法で行えます:
       </para>
   
       <orderedlist>
 
         <listitem>
           <para>
-            Select the <quote>Administration</quote> link in the page footer, 
-            and then select the <quote>Groups</quote> link from the 
-            Administration page.
+            ページフッタの <quote>管理</quote> リンクから、管理ページの
+            <quote>グループ</quote> リンクをクリックしてください。
           </para>
         </listitem>
   
         <listitem>
           <para>
-            A table of all the existing groups is displayed. Below the table is a
-            description of all the fields. To create a new group, select the 
-            <quote>Add Group</quote> link under the table of existing groups.
+            全ての既存グループのテーブルが表示されます。
+            テーブルの下にフィールドの説明が表示されます。
+            新規グループ作成には、既存グループの表の下にある
+            <quote>グループ追加</quote> リンクを選択してください。
           </para>
         </listitem>
   
         <listitem>
           <para>
-            There are five fields to fill out. These fields are documented below
-            the form. Choose a name and description for the group. Decide whether
-            this group should be used for bugs (in all likelihood this should be
-            selected). Optionally, choose a regular expression that will
-            automatically add any matching users to the group, and choose an
-            icon that will help identify user comments for the group. The regular
-            expression can be useful, for example, to automatically put all users
-            from the same company into one group (if the group is for a specific
-            customer or partner). 
+            5つの項目を埋める必要があります。フォームの下に解説があります。
+            まず、グループの名前と説明を入力してください。そして、グループが
+            バグで利用されるかどうか (ほぼ全ての状況でこれを選択するでしょう)
+            を決めてください。また、自動的にグループにユーザを追加するための
+            正規表現での条件と、ユーザがグループに所属していることを判断する
+            ためのアイコンを指定できます。
+            正規表現は有用で、たとえば、同一会社に所属する全てのユーザを
+            自動的に一つのグループに所属させることもできます。
+            (グループが特定の顧客やパートナーのためのものである場合。)
           </para>
             <note>
              <para>
-               If <quote>User RegExp</quote> is filled out, users whose email 
-               addresses match the regular expression will automatically be 
-               members of the group as long as their email addresses continue 
-               to match the regular expression. If their email address changes
-               and no longer matches the regular expression, they will be removed
-               from the group. Versions 2.16 and older of Bugzilla did not automatically
-               remove users who's email addresses no longer matched the RegExp.
+               もし <quote>含める正規表現</quote> が設定されていれば、
+               メールアドレスがこの正規表現に該当するユーザは、メールアドレスが
+               正規表現に該当し続ける限り、自動的に
+               グループのメンバーに含まれるようになります。
+               メールアドレスが変更され、正規表現に合わなくなれば、グループから
+               外されます。2.16 とそれ以前の Bugzilla では自動的に外す機能
+               はありませんでした。
              </para>
             </note>
             <warning>
              <para>
-               If specifying a domain in the regular expression, end
-               the regexp with a "$". Otherwise, when granting access to 
-               "@mycompany\.com", access will also be granted to 
-               'badperson@mycompany.com.cracker.net'. Use the syntax,
-               '@mycompany\.com$' for the regular expression.
+               正規表現にドメインを設定する場合、最後を "$" にしてください。
+               そうでなければ、"@mycompany\.com" は
+               'badperson@mycompany.com.cracker.net' にも該当してしまいます。
+               '@mycompany\.com$' と設定してください。
              </para>
             </warning>
         </listitem>
 
         <listitem>
           <para>
-          After the new group is created, it can be edited for additional options. 
-          The "Edit Group" page allows for specifying other groups that should be included
-          in this group and which groups should be permitted to add and delete
-          users from this group. For more details, see <xref linkend="edit-groups"/>.
+          新規グループを作成後、他のオプションを設定できます。
+          "グループの編集" ページでこのグループのメンバーとして含まれる他のグループ
+          の設定や、このグループにユーザを追加・削除できるグループなどを設定できます。
+          詳細については、<xref linkend="edit-groups"/> を参照してください。
           </para>
         </listitem>
       </orderedlist>
