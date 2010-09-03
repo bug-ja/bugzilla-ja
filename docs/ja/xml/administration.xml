@@ -2702,35 +2702,33 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
     </section>
  
     <section id="edit-groups">
-      <title>Editing Groups and Assigning Group Permissions</title>
+      <title>グループの編集とグループ権限の割り当て</title>
 
       <para>
-        To access the "Edit Groups" page, select the 
-        <quote>Administration</quote> link in the page footer, 
-        and then select the <quote>Groups</quote> link from the Administration page.
-        A table of all the existing groups is displayed. Click on a group name
-        you wish to edit or control permissions for.
+        "グループの編集" 画面には、ページフッタの <quote>管理</quote> リンクから
+        表示される管理ページの <quote>グループ</quote> リンクを選択してください。
+        既存の全てのグループの表が表示されます。権限を編集・管理したい
+        グループ名をクリックしてください。
       </para>
 
       <para>
-       The "Edit Groups" page contains the same five fields present when 
-       creating a new group. Below that are two additional sections, "Group
-       Permissions," and "Mass Remove". The "Mass Remove" option simply removes
-       all users from the group who match the regular expression entered. The
-       "Group Permissions" section requires further explanation.
+       "グループの編集" ページでは新規グループを作成する際と同じ5つのフィールドが
+       表示されます。それに加えて、"グループの権限" と "大量削除" の二つの
+       部分が表示されます。"大量削除" オプションは、単純に入力した正規表現に
+       合致する全てのユーザをグループから削除します。
+       "グループの権限" の部分はより説明が必要でしょう。
       </para>
 
       <para>
-       The "Group Permissions" section on the "Edit Groups" page contains four sets
-       of permissions that control the relationship of this group to other
-       groups. If the 'usevisibilitygroups' parameter is in use (see
-       <xref linkend="parameters"/>) two additional sets of permissions are displayed. 
-       Each set consists of two select boxes. On the left, a select box
-       with a list of all existing groups. On the right, a select box listing
-       all groups currently selected for this permission setting (this box will
-       be empty for new groups). The way these controls allow groups to relate
-       to one another is called <emphasis>inheritance</emphasis>. 
-       Each of the six permissions is described below.
+       "グループの編集" ページの "グループの権限" 部分では、グループと他のグループ
+       の関係を決める4つの値を設定できます。'usevisibilitygroups' パラメータが有効
+       になっている (<xref linkend="parameters"/> を参照してください) 場合、
+       権限についての2つの追加の設定が表示されます。それぞれの設定には二つの
+       選択ボックスが表示されています。左側のボックスは全ての既存のグループのリスト
+       になっています。右側は権限設定に現在設定されているグループ
+       のリストが表示されます (新規グループでは空白のはずです)。
+       これらのボックスは他のグループに対して <emphasis>継承</emphasis> の関係を
+       設定するものです。次に6つの詳細を説明します。
       </para>
 
       <variablelist>
@@ -2738,14 +2736,14 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
         <varlistentry>
 
           <term>
-            <emphasis>Groups That Are a Member of This Group</emphasis>
+            <emphasis>このグループのメンバーとなるグループ</emphasis>
           </term>
 
           <listitem>
             <para> 
-              Members of any groups selected here will automatically have 
-              membership in this group. In other words, members of any selected 
-              group will inherit membership in this group. 
+              選択されたどのグループのメンバーに対してもこのグループの権限が付与
+              されます。言い換えれば、選択されたどのグループのメンバーについても、
+              このグループの権限を継承します。
             </para>
           </listitem>
 
@@ -2754,18 +2752,17 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
         <varlistentry>
 
           <term>
-            <emphasis>Groups That This Group Is a Member Of</emphasis>
+            <emphasis>このグループがメンバーであるグループ</emphasis>
           </term>
 
           <listitem>
             <para>
-              Members of this group will inherit membership to any group 
-              selected here. For example, suppose the group being edited is
-              an Admin group. If there are two products  (Product1 and Product2) 
-              and each product has its
-              own group (Group1 and Group2), and the Admin group 
-              should have access to both products, 
-              simply select both Group1 and Group2 here. 
+              編集中のグループのメンバーになっていれば、ここで選択されたグループ
+              の権限も継承します。たとえば、"Admin" グループを編集中とします。
+              プロダクトが二つ (Product1, Product2) あり、それぞれがオーナーと
+              なるグループ (Group1, Group2) を持つとき、"Admin" グループにも
+              それらにアクセスさせようと思った場合、ここで Group1, Group2 
+              を選択してください。
            </para>
           </listitem>
 
@@ -2774,13 +2771,13 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
         <varlistentry>
 
           <term>
-            <emphasis>Groups That Can Grant Membership in This Group</emphasis>
+            <emphasis>このグループにメンバーを追加することができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             The members of any group selected here will be able add users
-             to this group, even if they themselves are not in this group.
+             ここで選択されたグループのメンバーは、このグループに所属していなくても
+             このグループにメンバーを追加できます。
            </para>
           </listitem>
 
@@ -2789,13 +2786,13 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
         <varlistentry>
 
           <term>
-            <emphasis>Groups That This Group Can Grant Membership In</emphasis>
+            <emphasis>このグループがメンバーを追加することができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             Members of this group can add users to any group selected here,
-             even if they themselves are not in the selected groups.  
+             このグループに所属するメンバーは、ここで選択されたどのグループに
+             対しても所属しているかどうかにかかわらずユーザを追加できます。
            </para>
           </listitem>
 
@@ -2804,15 +2801,15 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
         <varlistentry>
 
           <term>
-            <emphasis>Groups That Can See This Group</emphasis>
+            <emphasis>このグループを見ることができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             Members of any selected group can see the users in this group.
-             This setting is only visible if the 'usevisibilitygroups' parameter
-             is enabled on the Bugzilla Configuration page. See
-             <xref linkend="parameters"/> for information on configuring Bugzilla.
+             ここで選択されたグループのメンバーはこのグループのユーザを見ることができます。
+             この設定は Bugzilla 設定ページで 'usevisibilitygroups' が有効の場合にのみ
+             表示されます。Bugzilla の設定方法に関しては
+             <xref linkend="parameters"/> を参照してください。
            </para>
           </listitem>
 
@@ -2821,15 +2818,16 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
         <varlistentry>
 
           <term>
-            <emphasis>Groups That This Group Can See</emphasis>
+            <emphasis>このグループのメンバーが見ることができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             Members of this group can see members in any of the selected groups.
-             This setting is only visible if the 'usevisibilitygroups' parameter
-             is enabled on the the Bugzilla Configuration page. See
-             <xref linkend="parameters"/> for information on configuring Bugzilla.               
+             このグループに所属するユーザは、選択されているグループのメンバーを
+             一覧できます。
+             この設定は Bugzilla 設定ページで 'usevisibilitygroups' が有効の場合にのみ
+             表示されます。Bugzilla の設定方法に関しては
+             <xref linkend="parameters"/> を参照してください。
            </para>
           </listitem>
 
@@ -2840,45 +2838,44 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
     </section>
 
     <section id="users-and-groups">
-      <title>Assigning Users to Groups</title>
+      <title>ユーザをグループに所属させる</title>
 
       <para>
-        A User can become a member of a group in several ways:
+        ユーザをグループのメンバーとするにはいくつかの方法があります:
       </para>
 
       <orderedlist>
 
         <listitem>
           <para>
-            The user can be explicitly placed in the group by editing
-            the user's profile. This can be done by accessing the "Users" page
-            from the "Administration" page. Use the search form to find the user
-            you want to edit group membership for, and click on their email
-            address in the search results to edit their profile. The profile
-            page lists all the groups, and indicates if the user is a member of
-            the group either directly or indirectly. More information on indirect
-            group membership is below. For more details on User administration,
-            see <xref linkend="useradmin"/>.
+            ユーザのプロファイルを編集することで明示的にグループに所属させられます。
+            "管理" ページの "ユーザ" ページからアクセスできます。
+            グループ権限を設定したいユーザを検索画面から検索し、
+            検索結果からメールアドレスをクリックして、プロファイルを編集します。
+            プロファイルには全てのグループが表示され、そのユーザがどのグループに
+            直接もしくは継承されて所属しているかが表示されます。
+            継承によるグループ権限については後ほど説明します。
+            ユーザ管理の詳細については、 <xref linkend="useradmin"/> を参照してください。
           </para>
         </listitem>
 
         <listitem>
           <para>
-           The group can include another group of which the user is
-           a member. This is indicated by square brackets around the checkbox  
-           next to the group name in the user's profile. 
-           See <xref linkend="edit-groups"/> for details on group inheritance.
+           グループはユーザがメンバーとなっているグループを含むこともあります。
+           この場合、ユーザプロファイル画面のグループ名の次に表示されるチェック
+           ボックスの周りにかぎ括弧が表示されます。
+           グループの継承の詳細については <xref linkend="edit-groups"/> を参照してください。
           </para>
         </listitem>
 
         <listitem>
           <para>
-            The user's email address can match the regular expression
-            that has been specified to automatically grant membership to
-            the group. This is indicated by "*" around the check box by the
-            group name in the user's profile.
-            See <xref linkend="create-groups"/> for details on 
-            the regular expression option when creating groups.
+            グループに対する権限付与を、正規表現に合致するメールアドレスを持つ
+            ユーザに対して自動的に行うこともできます。
+            これは、ユーザのプロファイルでは、グループ名の隣にある
+            チェックボックスの周りに "*" で表示されます。
+            グループ作成時の正規表現のオプションについての詳細は
+            <xref linkend="create-groups"/> を参照してください。
            </para>
         </listitem>
 
@@ -2887,50 +2884,49 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
     </section>
 
     <section>
-     <title>Assigning Group Controls to Products</title>
+     <title>プロダクトへのグループによる制限の設定</title>
 
      <para>
-     The primary functionality of groups is derived from the relationship of 
-     groups to products. The concepts around segregating access to bugs with
-     product group controls can be confusing. For details and examples on this
-     topic, see <xref linkend="product-group-controls" />.
+     グループの基本的な機能はプロダクトに対するグループの関係によるものです。
+     プロダクト・グループ制御によるバグへのアクセスの制約のコンセプトは非常に
+     難解です。この部分の詳細については、
+     <xref linkend="product-group-controls" /> を参照してください。
      </para>
 
     </section>
   </section>
 
   <section id="sanitycheck">
-    <title>Checking and Maintaining Database Integrity</title>
+    <title>データベース整合性の確認と維持</title>
 
     <para>
-    Over time it is possible for the Bugzilla database to become corrupt
-    or to have anomalies.
-    This could happen through normal usage of Bugzilla, manual database
-    administration outside of the Bugzilla user interface, or from some
-    other unexpected event. Bugzilla includes a "Sanity Check" script that
-    can perform several basic database checks, and repair certain problems or
-    inconsistencies. 
+    長く利用していると、Bugzilla データベースが破損したり不整合を起こす可能性
+    が高くなります。
+    Bugzilla ユーザインターフェース以外からのデータベース管理作業や、予期しな
+    い事態が発生したなど、Bugzilla を普通に利用していても起こりえることです。
+    Bugzilla には "整合性確認" スクリプトが含まれており、いくつかの基本的な
+    データベースの確認やよく知られた問題や不整合を修復することもできます。
     </para>
     <para>
-    To run the "Sanity Check" script, log in as an Administrator and click the
-    "Sanity Check" link in the admin page. Any problems that are found will be
-    displayed in red letters. If the script is capable of fixing a problem,
-    it will present a link to initiate the fix. If the script can not
-    fix the problem it will require manual database administration or recovery.
+    "整合性確認" スクリプトを実行するには、管理者としてログインし、管理ページ
+    にある "整合性確認" のリンクをクリックしてください。何らかの問題が発見
+    された場合、赤く表示されます。スクリプトに問題を修復する機能がある場合、
+    修正を実行するためのリンクが表示されます。スクリプトが問題を修正
+    できない場合は、データベースを手動で修復する必要があります。
     </para>
     <para>
-    The "Sanity Check" script can also be run from the command line via the perl
-    script <filename>sanitycheck.pl</filename>. The script can also be run as
-    a <command>cron</command> job. Results will be delivered by email.
+    "整合性確認" スクリプトは Perl スクリプト <filename>sanitycheck.pl</filename>
+    を利用してコマンドラインからも実行できます。このスクリプトは <command>cron</command>
+    ジョブとしても設定できます。実行結果はメールで届きます。
     </para>
     <para>
-    The "Sanity Check" script should be run on a regular basis as a matter of
-    best practice.
+    最大の効果を得るために、"整合性確認" スクリプトは日常作業として走らせてお
+    くべきです。
     </para>
     <warning>
       <para>
-      The "Sanity Check" script is no substitute for a competent database
-      administrator. It is only designed to check and repair basic database
+      "整合性確認" はデータベース管理者になるように設計されていません。
+      基本的なデータベースの問題を確認し修復するように設計されています。
       problems.
       </para>
     </warning>
