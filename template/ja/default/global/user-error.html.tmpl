@@ -462,9 +462,17 @@
     <code>[% url FILTER html %]</code> は有効な [% terms.abug %] の URL ではありません。
     [% IF reason == 'http' %]
       "http" もしくは "https" から始まる必要があります。
+    [% ELSIF reason == 'path_only' %]
+      URL 全体を指定する必要があります。
     [% ELSIF reason == 'show_bug' %]
-      [%+ terms.Bug %] URL は [% terms.Bugzilla %] サイトの
-      <code>show_bug.cgi</code> を指す必要があります。
+      [%+ field_descs.see_also FILTER html %] URL は以下のうちの一つでなくてはなりません:
+      <ul>
+        <li>[% terms.Bugzilla %]
+          サイトの <code>show_bug.cgi</code></li>
+        <li>launchpad.net の b[% %]ug</li>
+        <li>code.google.com の issue</li>
+        <li>b[% %]ugs.debian.org の b[% %]ug</li>
+      </ul>
     [% ELSIF reason == 'id' %]
       有効な [% terms.bug %] ID が URL に含まれていません。
     [% END %]
