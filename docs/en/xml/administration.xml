@@ -1864,8 +1864,7 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
       </listitem>
 
       <listitem>
-        <para>Select "Add" in the bottom right corner.
-        text</para>
+        <para>Select "Add" in the bottom right corner.</para>
       </listitem>
 
       <listitem>
@@ -2105,8 +2104,8 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
      <section id="flags-edit">
        <title>Editing a Flag</title>
        <para>
-         To edit a flag's properties, just click on the <quote>Edit</quote>
-         link next to the flag's description. That will take you to the same
+         To edit a flag's properties, just click the flag's name.
+         That will take you to the same
          form as described below (<xref linkend="flags-create"/>).
        </para>
      </section>
