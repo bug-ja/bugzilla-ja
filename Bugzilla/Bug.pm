@@ -1742,13 +1742,14 @@ sub _check_resolution {
     # Check noresolveonopenblockers.
     if (Bugzilla->params->{"noresolveonopenblockers"}
         && $resolution eq 'FIXED'
-        && (!$self->resolution || $resolution ne $self->resolution))
+        && (!$self->resolution || $resolution ne $self->resolution)
+        && scalar @{$self->dependson})
     {
-        my @dependencies = CountOpenDependencies($self->id);
-        if (@dependencies) {
+        my $dep_bugs = Bugzilla::Bug->new_from_list($self->dependson);
+        my $count_open = grep { $_->isopened } @$dep_bugs;
+        if ($count_open) {
             ThrowUserError("still_unresolved_bugs",
-                           { dependencies     => \@dependencies,
-                             dependency_count => scalar @dependencies });
+                           { bug_id => $self->id, dep_count => $count_open });
         }
     }
 
@@ -2792,6 +2793,15 @@ sub add_see_also {
         ThrowUserError('bug_url_invalid', { url => $input, reason => 'http' });
     }
 
+    # This stops the following edge cases from being accepted:
+    # * show_bug.cgi?id=1
+    # * /show_bug.cgi?id=1
+    # * http:///show_bug.cgi?id=1
+    if (!$uri->authority or $uri->path !~ m{/}) {
+        ThrowUserError('bug_url_invalid',
+                       { url => $input, reason => 'path_only' });
+    }
+
     my $result;
     # Launchpad URLs
     if ($uri->authority =~ /launchpad.net$/) {
@@ -3729,32 +3739,6 @@ sub map_fields {
         $field_values{$field_name} = $params->{$field};
     }
     return \%field_values;
-}
-
-# CountOpenDependencies counts the number of open dependent bugs for a
-# list of bugs and returns a list of bug_id's and their dependency count
-# It takes one parameter:
-#  - A list of bug numbers whose dependencies are to be checked
-sub CountOpenDependencies {
-    my (@bug_list) = @_;
-    my @dependencies;
-    my $dbh = Bugzilla->dbh;
-
-    my $sth = $dbh->prepare(
-          "SELECT blocked, COUNT(bug_status) " .
-            "FROM bugs, dependencies " .
-           "WHERE " . $dbh->sql_in('blocked', \@bug_list) .
-             "AND bug_id = dependson " .
-             "AND bug_status IN (" . join(', ', map {$dbh->quote($_)} BUG_STATE_OPEN)  . ") " .
-          $dbh->sql_group_by('blocked'));
-    $sth->execute();
-
-    while (my ($bug_id, $dependencies) = $sth->fetchrow_array()) {
-        push(@dependencies, { bug_id       => $bug_id,
-                              dependencies => $dependencies });
-    }
-
-    return @dependencies;
 }
 
 ################################################################################

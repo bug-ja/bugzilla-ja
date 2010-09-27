@@ -88,7 +88,7 @@
                         onclick="showCalendar('[% field.name FILTER js %]')">
            <span>カレンダー</span>
          </button>
-         <div id="con_calendar_[% field.name FILTER html %]"></div>               
+         <span id="con_calendar_[% field.name FILTER html %]"></span>               
     から <input name="[% field.name FILTER html %]to" 
               id="[% field.name FILTER html %]to" size="10" maxlength="10"
               value="[% value.1 FILTER html %]" 
@@ -100,7 +100,7 @@
        </button>まで
     <small>(YYYY-MM-DD もしくは相対日数)</small>
     
-    <div id="con_calendar_[% field.name FILTER html %]to"></div>
+    <span id="con_calendar_[% field.name FILTER html %]to"></span>
     <script type="text/javascript">
       createCalendar('[% field.name FILTER js %]');
       createCalendar('[% field.name FILTER js %]to');
