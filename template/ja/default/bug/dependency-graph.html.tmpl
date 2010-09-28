@@ -21,7 +21,6 @@
 [%# INTERFACE:
   # bug_id: integer. The number of the bug(s).
   # multiple_bugs: boolean. True if bug_id contains > 1 bug number.
-  # doall: boolean. True if we are displaying every bug in the database.
   # showsummary: boolean. True if we are showing bug summaries.
   # rankdir: string. "TB" if we are ranking top-to-bottom,
                      "LR" if left-to-right.
@@ -37,7 +36,7 @@
    header = title
  %]
 
-[% IF NOT multiple_bugs AND NOT doall %]
+[% IF NOT multiple_bugs %]
   [% filtered_desc = short_desc FILTER html %]
   [% title = "$terms.bug $bug_id の $title"
      header = "$terms.bug <a href=\"show_bug.cgi?id=$bug_id\">$bug_id</a> の $title"
@@ -82,8 +81,6 @@
             与えられた [% terms.bugs %] に直接の関係のある [% terms.bugs %] に限る</option>
           <option value="web" [% 'selected="selected"' IF display == "web" %]>
             与えられた [% terms.bugs %] になんらかの関係のある全ての [% terms.bugs %] を表示する</option>
-          <option value="doall" [% 'selected="selected"' IF display == "doall" %]>
-            依存関係のある、システム内の全ての [% terms.bug %] を表示する</option>
         </select>
       </td>
     </tr>

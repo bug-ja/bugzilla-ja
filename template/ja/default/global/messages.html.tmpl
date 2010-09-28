@@ -229,6 +229,9 @@
           <li>既定の CC リストが削除されました</li>
         [% END %]
       [% END %]
+      [% IF changes.isactive.defined %]
+        <li>[% terms.bugs %] には[% comp.is_active ? "有効" : "無効" %]</li>
+      [% END %]
       [% Hook.process('component_updated_fields') %]
       </ul>
     [% ELSE %]
@@ -537,6 +540,9 @@
         [% IF changes.sortkey.defined %]
           <li>ソートキーが <em>[% milestone.sortkey FILTER html %]</em> となりました
         [% END %]
+        [% IF changes.isactive.defined %]
+          <li>[% terms.bugs %] には[% milestone.is_active ? "有効" : "無効" %]</li>
+        [% END %]
       </ul>
     [% ELSE %]
       マイルストーン <em>[% milestone.name FILTER html %]</em> への更新はありません
@@ -665,6 +671,9 @@
 
   [% ELSIF message_tag == "install_setting_setup" %]
     ユーザ設定項目を設定中...
+
+  [% ELSIF message_tag == "install_success" %]
+    checksetup.pl 完了。
 
   [% ELSIF message_tag == "install_table_drop" %]
     '[% name FILTER html %]' テーブルを削除中...
@@ -821,9 +830,16 @@
   [% ELSIF message_tag == "version_updated" %]
     [% title = "バージョン更新完了" %]
     [% IF changes.size %]
-      [% IF changes.value.defined %]
-        バージョン名が <em>[% version.name FILTER html %]</em> に更新されました。
-      [% END %]
+      バージョン <em>[% version.name FILTER html %]</em> への更新
+      が保存されました :
+      <ul>
+        [% IF changes.value.defined %]
+          <li>バージョン名が <em>[% version.name FILTER html %]</em> に変更されました</li>
+        [% END %]
+        [% IF changes.isactive.defined %]
+          <li>[% terms.bugs %] には[% version.is_active ? "有効" : "無効" %]です</li>
+        [% END %]
+      </ul>
     [% ELSE %]
       バージョン <em>[% version.name FILTER html %]</em> は更新されませんでした。
     [% END %]

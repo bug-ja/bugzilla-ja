@@ -28,6 +28,11 @@
 
 %strings = (
     any  => '指定なし',
+    apachectl_failed => <<END,
+警告: Apache の設定を検証できませんでした。これは checksetup.pl を
+##root## 以外で実行している場合に起こりえます。問題の詳細については
+##command## を実行してください。
+END
     bad_executable => '有効な実行ファイルでありません: ##bin##',
     blacklisted => '(ブラックリスト対象)',
     bz_schema_exists_before_220 => <<'END',
@@ -252,6 +257,18 @@ EOT
 # Note: When translating these "modules" messages, don't change the formatting
 # if possible, because there is hardcoded formatting in 
 # Bugzilla::Install::Requirements to match the box formatting.
+    modules_message_apache => <<END,
+***********************************************************************
+* APACHE モジュール                                                   *
+***********************************************************************
+* 通常、Bugzilla のアップグレードの際、全ての Bugzilla ユーザはブラウ *
+* ザキャッシュをクリアする必要があり、しなければ空白が表示されるでし  *
+* ょう。Apache 設定 (httpd.conf もしくは apache2.conf など) で必要な  *
+* モジュールを読み込んでおけば、Bugzilla のアップグレードの際にもキャ *
+* ッシュをクリアする必要はなくなるでしょう。有効にする必要があるモジ  *
+* ュールは以下のものです。                                            *
+*                                                                     *
+END
     modules_message_db => <<EOT,
 ***********************************************************************
 * データベースアクセス                                                *

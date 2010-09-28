@@ -1998,8 +1998,7 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
      <section id="flags-edit">
        <title>フラグの編集</title>
        <para>
-         フラグのプロパティーを編集するには、フラグの説明の後にある
-         <quote>編集</quote> リンクをクリックしてください。
+         フラグのプロパティーを編集するには、フラグ名をクリックしてください。
          以下の (<xref linkend="flags-create"/>) 説明と同じフォームが表示されます。
        </para>
      </section>

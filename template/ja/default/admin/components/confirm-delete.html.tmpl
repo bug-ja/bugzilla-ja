@@ -83,7 +83,7 @@
 </tr>
 <tr>
   <TD VALIGN="top">[% terms.bugs %] を新規登録できるか:</TD>
-  <TD VALIGN="top">[% IF product.is_active %]不可能[% ELSE %]可能[% END %]</td>
+  <TD VALIGN="top">[% IF product.is_active && comp.isactive %]不可能[% ELSE %]可能[% END %]</td>
 </tr>
 <tr>
   <td valign="top">[% terms.Bugs %]:</td>

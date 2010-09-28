@@ -430,9 +430,17 @@
     <code>[% url FILTER html %]</code> は有効な [% terms.abug %] の URL ではありません。
     [% IF reason == 'http' %]
       "http" もしくは "https" から始まる必要があります。
+    [% ELSIF reason == 'path_only' %]
+      URL 全体を指定する必要があります。
     [% ELSIF reason == 'show_bug' %]
-      [%+ terms.Bug %] URL は [% terms.Bugzilla %] サイトの
-      <code>show_bug.cgi</code> を指す必要があります。
+      [%+ field_descs.see_also FILTER html %] URL は以下のうちの一つでなくてはなりません:
+      <ul>
+        <li>[% terms.Bugzilla %]
+          サイトの <code>show_bug.cgi</code></li>
+        <li>launchpad.net の b[% %]ug</li>
+        <li>code.google.com の issue</li>
+        <li>b[% %]ugs.debian.org の b[% %]ug</li>
+      </ul>
     [% ELSIF reason == 'id' %]
       有効な [% terms.bug %] ID が URL に含まれていません。
     [% END %]
@@ -1647,6 +1655,10 @@
     ([% operator FILTER html %]) で利用することは
     [% terms.Bugzilla %] ではサポートされていません。
 
+  [% ELSIF error == "see_also_self_reference" %]
+    [%+ field_descs.see_also FILTER html %] フィールド自身にこの
+    [% terms.bug %] を入れることはできません。
+
   [% ELSIF error == "series_already_exists" %]
     [% title = BLOCK %] [% jawords.report_series FILTER html %] は既に存在しています [% END %]
     [% docslinks = {'reporting.html' => 'レポート'} %]
@@ -1656,20 +1668,17 @@
       は既に存在しています。
     
   [% ELSIF error == "still_unresolved_bugs" %]
-    [% IF dependency_count == 1 %]
-      [% terms.Bug %]# <a href="show_bug.cgi?id=[% dependencies.0.bug_id FILTER none %]">[% dependencies.0.bug_id FILTER none %]</a>
-      は [% dependencies.0.dependencies FILTER html %] 件の [% jawords.unresolved_bug FILTER html %] が依存しています。
-      <a href="showdependencytree.cgi?id=[% dependencies.0.bug_id FILTER none %]&amp;hide_resolved=1">[% jawords.bug_dependency_tree FILTER html %]</a>
-      を表示して確認してください。
+    [% title = "未解決の依存関係" %]
+    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    は [% dep_count FILTER none %] 件の未解決の
+    [% IF dep_count == 1 %]
+      依存関係
     [% ELSE %]
-      [% dependency_count FILTER none %] 件の開かれた [% jawords.unresolved_bug FILTER html %] が依存しています。
-      <br>
-      [% FOREACH bug = dependencies %]
-        [% terms.Bug %]# <a href="show_bug.cgi?id=[% bug.bug_id FILTER none %]">[% bug.bug_id FILTER none %]</a>
-        は [% bug.dependencies FILTER html %] 件の [% jawords.unresolved_bug FILTER html %] が依存しています。
-        (<a href="showdependencytree.cgi?id=[% bug.bug_id FILTER none %]&amp;hide_resolved=1">[% jawords.bug_dependency_tree FILTER html %]</a> を表示)<br>
-      [% END %]
-    [% END %]
+      依存関係
+    [% END %] を持ちます。
+    この [% terms.bug %] を [% display_value("resolution", "FIXED") FILTER html %] とするには、
+    これらを解決済みにするか
+    "[% field_descs.dependson FILTER html %]" から削除する必要があります。
 
   [% ELSIF error == "sudo_invalid_cookie" %]
     [% title = "無効な Sudo クッキー" %]

@@ -952,6 +952,9 @@ sub update {
                                 join(', ', @$added_see)];
     }
 
+    # Call update for the referenced bugs.
+    $_->update() foreach @{ $self->{see_also_update} || [] };
+
     # Log bugs_activity items
     # XXX Eventually, when bugs_activity is able to track the dupe_id,
     # this code should go below the duplicates-table-updating code below.
@@ -1191,6 +1194,12 @@ sub send_changes {
     foreach my $id (sort { $a <=> $b } (keys %changed_deps)) {
         _send_bugmail({ forced => { changer => $user }, type => "dep",
                          id => $id }, $vars);
+    }
+
+    # Sending emails for the referenced bugs.
+    foreach my $ref_bug (@{ $self->{see_also_update} || [] }) {
+        _send_bugmail({ forced => { changer => $user },
+                        id => $ref_bug->id }, $vars);
     }
 }
 
@@ -1748,13 +1757,14 @@ sub _check_resolution {
     # Check noresolveonopenblockers.
     if (Bugzilla->params->{"noresolveonopenblockers"}
         && $resolution eq 'FIXED'
-        && (!$self->resolution || $resolution ne $self->resolution))
+        && (!$self->resolution || $resolution ne $self->resolution)
+        && scalar @{$self->dependson})
     {
-        my @dependencies = CountOpenDependencies($self->id);
-        if (@dependencies) {
+        my $dep_bugs = Bugzilla::Bug->new_from_list($self->dependson);
+        my $count_open = grep { $_->isopened } @$dep_bugs;
+        if ($count_open) {
             ThrowUserError("still_unresolved_bugs",
-                           { dependencies     => \@dependencies,
-                             dependency_count => scalar @dependencies });
+                           { bug_id => $self->id, dep_count => $count_open });
         }
     }
 
@@ -2782,8 +2792,15 @@ sub remove_group {
 }
 
 sub add_see_also {
-    my ($self, $input) = @_;
+    my ($self, $input, $skip_recursion) = @_;
     $input = trim($input);
+
+    # If a bug id/alias has been taken, then treat it
+    # as a link to the local Bugzilla.
+    my $local_bug_uri = correct_urlbase() . "show_bug.cgi?id=";
+    if ($input =~ m/^\w+$/) {
+        $input = $local_bug_uri . $input;
+    }
 
     # We assume that the URL is an HTTP URL if there is no (something):// 
     # in front.
@@ -2796,6 +2813,15 @@ sub add_see_also {
     }
     elsif ($uri->scheme ne 'http' && $uri->scheme ne 'https') {
         ThrowUserError('bug_url_invalid', { url => $input, reason => 'http' });
+    }
+
+    # This stops the following edge cases from being accepted:
+    # * show_bug.cgi?id=1
+    # * /show_bug.cgi?id=1
+    # * http:///show_bug.cgi?id=1
+    if (!$uri->authority or $uri->path !~ m{/}) {
+        ThrowUserError('bug_url_invalid',
+                       { url => $input, reason => 'path_only' });
     }
 
     my $result;
@@ -2880,7 +2906,35 @@ sub add_see_also {
         $uri->query("id=$bug_id");
         # And remove any # part if there is one.
         $uri->fragment(undef);
-        $result = $uri->canonical->as_string;
+        my $uri_canonical = $uri->canonical;
+        $result = $uri_canonical->as_string;
+
+        # If this is a link to a local bug (treating the domain
+        # case-insensitively and ignoring http(s)://), then also update
+        # the other bug to point at this one.
+        my $canonical_local = URI->new($local_bug_uri)->canonical;
+        if (!$skip_recursion 
+            and $canonical_local->authority eq $uri_canonical->authority
+            and $canonical_local->path eq $uri_canonical->path) 
+        {
+            my $ref_bug = Bugzilla::Bug->check($bug_id);
+            if ($ref_bug->id == $self->id) {
+                ThrowUserError('see_also_self_reference');
+            }
+        
+            my $product = $ref_bug->product_obj;
+            if (!Bugzilla->user->can_edit_product($product->id)) {
+                ThrowUserError("product_edit_denied",
+                               { product => $product->name });
+            }
+
+            my $ref_input = $local_bug_uri . $self->id;
+            if (!grep($ref_input, @{ $ref_bug->see_also })) {
+                $ref_bug->add_see_also($ref_input, 'skip recursion');
+                push @{ $self->{see_also_update} }, $ref_bug;
+            }
+        }
+
     }
 
     if (length($result) > MAX_BUG_URL_LENGTH) {
@@ -3735,32 +3789,6 @@ sub map_fields {
         $field_values{$field_name} = $params->{$field};
     }
     return \%field_values;
-}
-
-# CountOpenDependencies counts the number of open dependent bugs for a
-# list of bugs and returns a list of bug_id's and their dependency count
-# It takes one parameter:
-#  - A list of bug numbers whose dependencies are to be checked
-sub CountOpenDependencies {
-    my (@bug_list) = @_;
-    my @dependencies;
-    my $dbh = Bugzilla->dbh;
-
-    my $sth = $dbh->prepare(
-          "SELECT blocked, COUNT(bug_status) " .
-            "FROM bugs, dependencies " .
-           "WHERE " . $dbh->sql_in('blocked', \@bug_list) .
-             "AND bug_id = dependson " .
-             "AND bug_status IN (" . join(', ', map {$dbh->quote($_)} BUG_STATE_OPEN)  . ") " .
-          $dbh->sql_group_by('blocked'));
-    $sth->execute();
-
-    while (my ($bug_id, $dependencies) = $sth->fetchrow_array()) {
-        push(@dependencies, { bug_id       => $bug_id,
-                              dependencies => $dependencies });
-    }
-
-    return @dependencies;
 }
 
 ################################################################################

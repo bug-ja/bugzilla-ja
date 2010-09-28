@@ -189,7 +189,11 @@
       <title>Bugzilla</title>
 
       <para>
-        <ulink url="http://www.bugzilla.org/download/">Download a Bugzilla tarball</ulink>
+        <ulink url="http://www.bugzilla.org/download/">Bugzilla の tar アーカイブ</ulink>
+        をダウンロード (もしくは CVS からチェックアウト) して、
+        ウェブブラウザが動作するユーザ (通常 <quote>apache</quote> や <quote>www</quote>
+        でしょう) からアクセス可能な適切なディレクトリにおいてください。
+        
         (or check it out from CVS) and place
         it in a suitable directory, accessible by the default web server user 
         (probably <quote>apache</quote> or <quote>www</quote>). 
@@ -349,18 +353,6 @@
         <listitem>
           <para>
             Email::MIME (&min-email-mime-ver;)
-          </para>
-        </listitem>
-
-        <listitem>
-          <para>
-            Email::MIME::Encodings (&min-email-mime-encodings-ver;)
-          </para>
-        </listitem>
-
-        <listitem>
-          <para>
-            Email::MIME::Modifier (&min-email-mime-modifier-ver;)
           </para>
         </listitem>
 
