@@ -1711,11 +1711,6 @@
     <a href="http://www.mozilla.org">今すぐアップグレードしてください</a>(笑)
 
   [% ELSIF error == "still_unresolved_bugs" %]
-    [% IF dependency_count == 1 %]
-      [% terms.Bug %]# <a href="show_bug.cgi?id=[% dependencies.0.bug_id FILTER none %]">[% dependencies.0.bug_id FILTER none %]</a>
-      は [% dependencies.0.dependencies FILTER html %] 件の [% jawords.unresolved_bug FILTER html %] が依存しています。
-      <a href="showdependencytree.cgi?id=[% dependencies.0.bug_id FILTER none %]&amp;hide_resolved=1">[% jawords.bug_dependency_tree FILTER html %]</a>
-      を表示して確認してください。
     [% title = "未解決の依存関係" %]
     [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
     は [% dep_count FILTER none %] 件の未解決の
