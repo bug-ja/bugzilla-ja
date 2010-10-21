@@ -36,16 +36,15 @@
       tag_name = "span"
       editable = 1
     %]
-    [% INCLUDE "search/type-select.html.tmpl"
-       name = field.name _ "_type",
-       types = types, 
-       selected = type_selected
-    %]    
-       
     <input name="[% field.name FILTER html %]" 
            id="[% field.name FILTER html %]" size="40"
            [% IF onchange %] onchange="[% onchange FILTER html %]"[% END %]
            value="[% value FILTER html %]">
+    [% INCLUDE "search/type-select.html.tmpl"
+       name = field.name _ "_type",
+       types = types, 
+       selected = type_selected
+    %]
   [% CASE constants.FIELD_TYPE_KEYWORDS %]
     [% INCLUDE "bug/field-label.html.tmpl"
       field = field
