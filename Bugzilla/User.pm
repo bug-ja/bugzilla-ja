@@ -405,7 +405,7 @@ sub recent_search_for {
             }
         }
 
-        if ($list_id) {
+        if ($list_id && $list_id ne 'cookie') {
             # If we got a bad list_id (either some other user's or an expired
             # one) don't crash, just don't return that list.
             my $search = 
@@ -425,7 +425,8 @@ sub recent_search_for {
     if (my $list = $cgi->cookie('BUGLIST')) {
         my @bug_ids = split(':', $list);
         if (grep { $_ == $bug->id } @bug_ids) {
-            return { id => 'cookie', bug_list => \@bug_ids };
+            my $search = Bugzilla::Search::Recent->new_from_cookie(\@bug_ids);
+            return $search;
         }
     }
 
