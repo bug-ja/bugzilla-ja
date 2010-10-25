@@ -634,6 +634,12 @@ sub update_table_definitions {
     # 2009-05-07 ghendricks@novell.com - Bug 77193
     _add_isactive_to_product_fields();
 
+    # 2010-10-09 LpSolit@gmail.com - Bug 505165
+    $dbh->bz_alter_column('flags', 'setter_id', {TYPE => 'INT3', NOTNULL => 1});
+
+    # 2010-10-09 LpSolit@gmail.com - Bug 451735
+    _fix_series_indexes();
+
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #
     ################################################################
@@ -3445,6 +3451,16 @@ sub _migrate_field_visibility_value {
         $dbh->bz_commit_transaction();
         $dbh->bz_drop_column('fielddefs', 'visibility_value_id');
     }
+}
+
+sub _fix_series_indexes {
+    my $dbh = Bugzilla->dbh;
+    return if $dbh->bz_index_info('series', 'series_category_idx');
+
+    $dbh->bz_drop_index('series', 'series_creator_idx');
+    $dbh->bz_add_index('series', 'series_creator_idx', ['creator']);
+    $dbh->bz_add_index('series', 'series_category_idx',
+        {FIELDS => [qw(category subcategory name)], TYPE => 'UNIQUE'});
 }
 
 1;

@@ -272,6 +272,14 @@ use constant OPERATOR_FIELD_OVERRIDE => {
         changedafter  => \&_long_desc_changedbefore_after,
         _default      => \&_long_desc,
     },
+    'longdescs.count' => {
+        changedby     => \&_long_desc_changedby,
+        changedbefore => \&_long_desc_changedbefore_after,
+        changedafter  => \&_long_desc_changedbefore_after,
+        changedfrom   => \&_invalid_combination,
+        changedto     => \&_invalid_combination,
+        _default      => \&_long_descs_count,
+    },
     'longdescs.isprivate' => {
         _default => \&_longdescs_isprivate,
     },
@@ -406,6 +414,11 @@ use constant COLUMN_DEPENDS => {
 # DB::Schema to figure out what needs to be joined, but for some
 # fields it needs a little help.
 use constant COLUMN_JOINS => {
+    actual_time => {
+        table => '(SELECT bug_id, SUM(work_time) AS total'
+                 . ' FROM longdescs GROUP BY bug_id)',
+        join  => 'INNER',
+    },
     assigned_to => {
         from  => 'assigned_to',
         to    => 'userid',
@@ -441,10 +454,6 @@ use constant COLUMN_JOINS => {
         to    => 'id',
         join  => 'INNER',
     },
-    actual_time => {
-        table  => 'longdescs',
-        join   => 'INNER',
-    },
     'flagtypes.name' => {
         as    => 'map_flags',
         table => 'flags',
@@ -464,6 +473,10 @@ use constant COLUMN_JOINS => {
             from  => 'map_keywords.keywordid',
             to    => 'id',
         },
+    },
+    'longdescs.count' => {
+        table => 'longdescs',
+        join  => 'INNER',
     },
 };
 
@@ -504,23 +517,27 @@ sub COLUMNS {
 
     # Next we define columns that have special SQL instead of just something
     # like "bugs.bug_id".
-    my $actual_time = '(SUM(map_actual_time.work_time)'
-        . ' * COUNT(DISTINCT map_actual_time.bug_when)/COUNT(bugs.bug_id))';
+    my $total_time = "(map_actual_time.total + bugs.remaining_time)";
     my %special_sql = (
         deadline    => $dbh->sql_date_format('bugs.deadline', '%Y-%m-%d'),
-        actual_time => $actual_time,
+        actual_time => 'map_actual_time.total',
 
+        # "FLOOR" is in there to turn this into an integer, making searches
+        # totally predictable. Otherwise you get floating-point numbers that
+        # are rather hard to search reliably if you're asking for exact
+        # numbers.
         percentage_complete =>
-            "(CASE WHEN $actual_time + bugs.remaining_time = 0.0"
-              . " THEN 0.0"
-              . " ELSE 100"
-                   . " * ($actual_time / ($actual_time + bugs.remaining_time))"
-              . " END)",
+            "(CASE WHEN $total_time = 0"
+               . " THEN 0"
+               . " ELSE FLOOR(100 * (map_actual_time.total / $total_time))"
+                . " END)",
 
         'flagtypes.name' => $dbh->sql_group_concat('DISTINCT ' 
             . $dbh->sql_string_concat('map_flagtypes.name', 'map_flags.status')),
 
         'keywords' => $dbh->sql_group_concat('DISTINCT map_keyworddefs.name'),
+        
+        'longdescs.count' => 'COUNT(DISTINCT map_longdescs_count.comment_id)',
     );
 
     # Backward-compatibility for old field names. Goes new_name => old_name.
@@ -614,10 +631,10 @@ sub REPORT_COLUMNS {
 # is here because it *always* goes into the GROUP BY as the first item,
 # so it should be skipped when determining extra GROUP BY columns.
 use constant GROUP_BY_SKIP => EMPTY_COLUMN, qw(
-    actual_time
     bug_id
     flagtypes.name
     keywords
+    longdescs.count
     percentage_complete
 );
 
@@ -1171,8 +1188,8 @@ sub _convert_special_params_to_chart_params {
     my $and = 0;
     foreach my $or_array (@special_charts) {
         my $or = 0;
-        my $identifier = "$chart-$and-$or";
         while (@$or_array) {
+            my $identifier = "$chart-$and-$or";
             $params->{"field$identifier"} = shift @$or_array;
             $params->{"type$identifier"}  = shift @$or_array;
             $params->{"value$identifier"} = shift @$or_array;
@@ -1209,8 +1226,8 @@ sub _parse_basic_fields {
         $param_name =~ s/\./_/g;
         my @values = $self->_param_array($param_name);
         next if !@values;
-        my $operator = $params->{"${param_name}_type"} || 'anyexact';
-        $operator = 'matches' if $param_name eq 'content';
+        my $default_op = $param_name eq 'content' ? 'matches' : 'anyexact';
+        my $operator = $params->{"${param_name}_type"} || $default_op;
         # Fields that are displayed as multi-selects are passed as arrays,
         # so that they can properly search values that contain commas.
         # However, other fields are sent as strings, so that they are properly
@@ -1234,6 +1251,11 @@ sub _special_parse_bug_status {
     my ($self) = @_;
     my $params = $self->_params;
     return if !defined $params->{'bug_status'};
+    # We want to allow the bug_status_type parameter to work normally,
+    # meaning that this special code should only be activated if we are
+    # doing the normal "anyexact" search on bug_status.
+    return if (defined $params->{'bug_status_type'}
+               and $params->{'bug_status_type'} ne 'anyexact');
 
     my @bug_status = $self->_param_array('bug_status');
     # Also include inactive bug statuses, as you can query them.
@@ -1259,7 +1281,7 @@ sub _special_parse_bug_status {
     @bug_status = _valid_values(\@bug_status, $legal_statuses);
 
     # If the user has selected every status, change to selecting none.
-    # This is functionally equivalent, but quite a lot faster.    
+    # This is functionally equivalent, but quite a lot faster.
     if ($all or scalar(@bug_status) == scalar(@$legal_statuses)) {
         delete $params->{'bug_status'};
     }
@@ -1280,26 +1302,26 @@ sub _special_parse_chfield {
     my $value_to = $params->{'chfieldvalue'};
     $value_to = '' if !defined $value_to;
 
+    @fields = map { $_ eq '[Bug creation]' ? 'creation_ts' : $_ } @fields;
+
     my @charts;
     # It is always safe and useful to push delta_ts into the charts
-    # if there are any dates specified. It doesn't conflict with
+    # if there is a "from" date specified. It doesn't conflict with
     # searching [Bug creation], because a bug's delta_ts is set to
     # its creation_ts when it is created. So this just gives the
-    # database an additional index to possibly choose.
+    # database an additional index to possibly choose, on a table that
+    # is smaller than bugs_activity.
     if ($date_from ne '') {
         push(@charts, ['delta_ts', 'greaterthaneq', $date_from]);
     }
-    if ($date_to ne '') {
+    # It's not normally safe to do it for "to" dates, though--"chfieldto" means
+    # "a field that changed before this date", and delta_ts could be either
+    # later or earlier than that, if we're searching for the time that a field
+    # changed. However, chfieldto all by itself, without any chfieldvalue or
+    # chfield, means "just search delta_ts", and so we still want that to
+    # work.
+    if ($date_to ne '' and !@fields and $value_to eq '') {
         push(@charts, ['delta_ts', 'lessthaneq', $date_to]);
-    }
-    
-    if (grep { $_ eq '[Bug creation]' } @fields) {
-        if ($date_from ne '') {
-            push(@charts, ['creation_ts', 'greaterthaneq', $date_from]);
-        }
-        if ($date_to ne '') {
-            push(@charts, ['creation_ts', 'lessthaneq', $date_to]);
-        }
     }
 
     # Basically, we construct the chart like:
@@ -1316,7 +1338,6 @@ sub _special_parse_chfield {
     if ($value_to ne '') {
         my @value_chart;
         foreach my $field (@fields) {
-            next if $field eq '[Bug creation]';
             push(@value_chart, $field, 'changedto', $value_to);
         }
         push(@charts, \@value_chart) if @value_chart;
@@ -1325,7 +1346,6 @@ sub _special_parse_chfield {
     if ($date_from ne '') {
         my @date_from_chart;
         foreach my $field (@fields) {
-            next if $field eq '[Bug creation]';
             push(@date_from_chart, $field, 'changedafter', $date_from);
         }
         push(@charts, \@date_from_chart) if @date_from_chart;
@@ -1405,6 +1425,7 @@ sub _valid_values {
     my ($input, $valid, $extra_value) = @_;
     my @result;
     foreach my $item (@$input) {
+        $item = trim($item);
         if (defined $extra_value and $item eq $extra_value) {
             push(@result, $item);
         }
@@ -2171,7 +2192,7 @@ sub _content_matches {
     COLUMNS->{'relevance'}->{name} = $select_term;
 }
 
-sub _long_desc {
+sub _join_longdescs {
     my ($self, $args) = @_;
     my ($chart_id, $joins) = @$args{qw(chart_id joins)};
     
@@ -2182,22 +2203,37 @@ sub _long_desc {
         as    => $table,
         extra => $extra,
     };
+    # We only want to do an INNER JOIN if we're not checking isprivate.
+    # Otherwise we'd exclude all bugs with only private comments from
+    # the search entirely.
+    $join->{join} = 'INNER' if $self->_user->is_insider;
     push(@$joins, $join);
+    return $table;
+}
+
+sub _long_desc {
+    my ($self, $args) = @_;
+    my $table = $self->_join_longdescs($args);
     $args->{full_field} = "$table.thetext";
+}
+
+sub _long_descs_count {
+    my ($self, $args) = @_;
+    my ($chart_id, $joins) = @$args{qw(chart_id joins)};
+    my $table = "longdescs_count_$chart_id";
+    my $extra =  $self->_user->is_insider ? "" : "WHERE isprivate = 0";
+    my $join = {
+        table => "(SELECT bug_id, COUNT(*) AS num"
+                 . " FROM longdescs $extra GROUP BY bug_id)",
+        as    => $table,
+    };
+    push(@$joins, $join);
+    $args->{full_field} = "${table}.num";
 }
 
 sub _longdescs_isprivate {
     my ($self, $args) = @_;
-    my ($chart_id, $joins) = @$args{qw(chart_id joins)};
-    
-    my $table = "longdescs_$chart_id";
-    my $extra = $self->_user->is_insider ? [] : ["$table.isprivate = 0"];
-    my $join = {
-        table => 'longdescs',
-        as    => $table,
-        extra => $extra,
-    };
-    push(@$joins, $join);
+    my $table = $self->_join_longdescs($args);
     $args->{full_field} = "$table.isprivate";
 }
 
@@ -2242,30 +2278,12 @@ sub _work_time {
 
 sub _percentage_complete {
     my ($self, $args) = @_;
-    my ($chart_id, $joins, $operator, $having, $fields) =
-        @$args{qw(chart_id joins operator having fields)};
+    
+    $args->{full_field} = COLUMNS->{percentage_complete}->{name};
 
-    my $table = "longdescs_$chart_id";
-
-    # We can't just use "percentage_complete" as the field, because
-    # (a) PostgreSQL doesn't accept it in the HAVING clause
-    # and (b) it wouldn't work in multiple chart rows, because it uses
-    # a fixed name for the table, "ldtime".
-    my $expression = COLUMNS->{percentage_complete}->{name};
-    $expression =~ s/\bldtime\b/$table/g;
-    $args->{full_field} = "($expression)";
-    push(@$joins, { table => 'longdescs', as => $table });
-
-    # We need remaining_time in _select_columns, otherwise we can't use
-    # it in the expression for creating percentage_complete.
-    $self->_add_extra_column('remaining_time');
-
-    $self->_do_operator_function($args);
-    push(@$having, $args->{term});
-   
-    # We put something into $args->{term} so that do_search_function
-    # stops processing.
-    $args->{term} = '';
+    # We need actual_time in _select_columns, otherwise we can't use
+    # it in the expression for searching percentage_complete.
+    $self->_add_extra_column('actual_time');
 }
 
 sub _bug_group_nonchanged {
@@ -2769,10 +2787,18 @@ sub _changedbefore_changedafter {
     my ($chart_id, $joins, $field, $operator, $value) =
         @$args{qw(chart_id joins field operator value)};
     my $dbh = Bugzilla->dbh;
-    
-    my $sql_operator = ($operator =~ /before/) ? '<=' : '>=';
+
     my $field_object = $self->_chart_fields->{$field}
         || ThrowCodeError("invalid_field_name", { field => $field });
+    
+    # Asking when creation_ts changed is just asking when the bug was created.
+    if ($field_object->name eq 'creation_ts') {
+        $args->{operator} =
+            $operator eq 'changedbefore' ? 'lessthaneq' : 'greaterthaneq';
+        return $self->_do_operator_function($args);
+    }
+    
+    my $sql_operator = ($operator =~ /before/) ? '<=' : '>=';
     my $field_id = $field_object->id;
     # Charts on changed* fields need to be field-specific. Otherwise,
     # OR chart rows make no sense if they contain multiple fields.

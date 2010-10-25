@@ -298,7 +298,7 @@ sub _wanted_languages {
 
     # Checking SERVER_SOFTWARE is the same as i_am_cgi() in Bugzilla::Util.
     if (exists $ENV{'SERVER_SOFTWARE'}) {
-        my $cgi = Bugzilla->cgi;
+        my $cgi = eval { Bugzilla->cgi } || eval { require CGI; return CGI->new() };
         $requested = $cgi->http('Accept-Language') || '';
         my $lang = $cgi->cookie('LANG');
         push(@wanted, $lang) if $lang;
@@ -364,7 +364,10 @@ sub include_languages {
     # supports.
     my $wanted;
     if ($params->{language}) {
-        $wanted = [$params->{language}];
+        # We can pass several languages at once as an arrayref
+        # or a single language.
+        $wanted = $params->{language};
+        $wanted = [$wanted] unless ref $wanted;
     }
     else {
         $wanted = _wanted_languages();
@@ -441,7 +444,7 @@ sub _template_base_directories {
 
 sub template_include_path {
     my ($params) = @_;
-    my @used_languages = include_languages(@_);
+    my @used_languages = include_languages($params);
     # Now, we add template directories in the order they will be searched:
     my $template_dirs = _template_base_directories(); 
 
@@ -502,6 +505,12 @@ sub vers_cmp {
         }
     }
     @A <=> @B;
+}
+
+sub no_checksetup_from_cgi {
+    print "Content-Type: text/html; charset=UTF-8\r\n\r\n";
+    print install_string('no_checksetup_from_cgi');
+    exit;
 }
 
 ######################

@@ -24,6 +24,34 @@
    desc = "高度な設定項目項目です。"
 %]
 
+[% sts_desc = BLOCK %]
+  <a href="http://en.wikipedia.org/wiki/Strict_Transport_Security">Strict-Transport-Security</a>
+  ヘッダを SSL 接続の際の HTTP レスポンスヘッダで送ることができます。
+  有効にするとブラウザに対してあなたのドメインで SSL 接続を常に有効にし、
+  無効な証明書を受け入れなくさせることで、SSL 接続をより安全にできます。
+  しかしながら、<code>ssl_redirect</code> パラメータが有効で、かつサイトにおける
+  [% terms.Bugzilla %] が一つ (たとえば、<code>urlbase</code> が
+  <code>http://bugzilla.example.com/</code> であるような場合) しかなく、
+  かつ将来にわたって <code>ssl_redirect</code> パラメータを無効にする
+  予定がない場合にのみ利用してください。
+  <ul>
+    <li>
+      off - Strict-Transport-Security を送らない
+    </li>
+    <li>
+      this_domain_only - Strict-Transport-Security ヘッダを送るが、
+      現在のドメインでのみ送る
+    </li>
+    <li>
+      include_subdomains - Strict-Transport-Security を 
+      <code>includeSubDomains</code> フラグとともに利用すると、
+      全てのサブドメインに対して変更を強制します。特にこれは、
+      [% terms.Bugzilla %] ドメインのサブドメインとして
+      <code>attachment_base</code> が運用されているときに利用すると有用です。
+    </li>
+  </ul>
+[% END %]
+
 [% param_descs = {
   cookiedomain => "$terms.Bugzilla クッキーのドメイン。通常空白にしてください。" _
                   "'www.foo.com' にサイトがあって、これを '.foo.com' に指定すると、" _
@@ -47,4 +75,5 @@
                "もし、認証が必要なら<code>http://user:pass@proxy_url/</code>" _
                "形式を利用してください。",
 
+  strict_transport_security => sts_desc,
 } %]

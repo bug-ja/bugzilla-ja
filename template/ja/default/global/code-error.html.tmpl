@@ -230,6 +230,10 @@
     シリーズ ID [% series_id FILTER html %] は無効です。
     このシリーズは削除された可能性があります。
 
+  [% ELSIF error == "invalid_timestamp" %]
+    入力された日時 <code>[% timestamp FILTER html %]</code> 
+    を有効な日時形式として認識できませんでした。
+
   [% ELSIF error == "invalid_webservergroup" %]
     [% group FILTER html %] というグループは存在しません。
     [% constants.bz_locations.localconfig FILTER html %] の $webservergroup 

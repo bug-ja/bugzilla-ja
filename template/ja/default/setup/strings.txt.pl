@@ -327,6 +327,32 @@ END
       Bugzilla 2.22 以前のバージョンを利用していた場合は、checksetup.pl をい
       ますぐ止めて、contrib/recode.pl を実行することを *強く* お勧めします。
 END
+    no_checksetup_from_cgi => <<END,
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>checksetup.pl をウェブブラウザから実行することはできません</title>
+  </head>
+
+  <body>
+    <h1>checksetup.pl をウェブブラウザから実行することはできません</h1>
+    <p>
+      このスクリプトをウェブブラウザから実行しては <b>なりません</b>。
+      Bugzilla のインストールやアップグレードには、このスクリプトを
+      (Linux では <tt>bash</tt> や <tt>ssh</tt> で、Windows では <tt>cmd.exe</tt>
+      上で) コマンドラインから実行し、表示される指示に従ってください。
+    </p>
+
+    <p>
+      Bugzilla のインストール方法についてのより詳細は、公式 Bugzilla
+      ウェブサイトにある
+      <a href="http://www.bugzilla.org/docs/">ドキュメントを読んで</a>
+      ください。
+    </p>
+  </body>
+</html>
+END
     patchutils_missing => <<'END',
 オプション: Bugzilla の '二つのパッチ間の差分' 機能を利用したい場合、以下の
 URL から patchutils をインストールしてください。(PatchReader Perl モジュール
@@ -355,8 +381,8 @@ EOT
 EOT
     template_precompile   => "テンプレートの事前コンパイル中...",
     template_removal_failed => <<END,
-警告: ディレクトリ '##datadir##/template' を削除できません。
-      '##datadir##/deleteme' に移動させましたので、ディスクスペースの
+警告: ディレクトリ '##template_cache##' を削除できません。
+      '##deleteme##' に移動させましたので、ディスクスペースの
       節約のためには手動で削除してください。
 END
     template_removing_dir => "既存のコンパイル済テンプレートを削除中...",

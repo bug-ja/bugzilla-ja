@@ -24,10 +24,10 @@
            title = title
            onload = "document.forms['confirm_account_form'].realname.focus();" %]
 
-<div>
+<p>
   アカウントを作成するには、パスワードを指定する必要があります。
   メールアドレスと実名 (設定されれば) はあなたの行った変更とともに表示されます。
-</div>
+</p>
 
 <form id="confirm_account_form" method="post" action="token.cgi">
   <input type="hidden" name="t" value="[% token FILTER html %]">
@@ -43,7 +43,10 @@
     </tr>
     <tr>
       <th align="right"><label for="passwd1">パスワードの指定</label>:</th>
-      <td><input type="password" id="passwd1" name="passwd1" value=""></td>
+      <td>
+        <input type="password" id="passwd1" name="passwd1" value="">
+        (最低 [% constants.USER_PASSWORD_MIN_LENGTH FILTER none %] 文字)
+      </td>
     </tr>
     <tr>
       <th align="right"><label for="passwd2">パスワードの確認</label>:</th>

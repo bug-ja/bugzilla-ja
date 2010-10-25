@@ -34,6 +34,13 @@
   style_urls = ['skins/standard/create_attachment.css']
 %]
 
+[% IF hide_obsolete %]
+  <div id="hidden_obsolete_message">
+    用済みの添付は隠されています。(用済みを含む)全ての添付を見るには、
+    <a href="attachment.cgi?bugid=[% bug.id FILTER html %]&amp;action=viewall">全てを表示クリック</a>
+    してください。
+  </div>
+[% END %]
 <br>
 
 [% FOREACH a = attachments %]
