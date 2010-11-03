@@ -129,6 +129,7 @@ EOT
     module_not_found => "非検出",
     module_ok => 'ok',
     module_unknown_version => "バージョン不明を検出",
+    no_such_module => "CPAN に ##module## というモジュールが見つかりません。",
     ppm_repo_add => <<EOT,
 ***********************************************************************
 * Windows ユーザ向けメモ                                              *

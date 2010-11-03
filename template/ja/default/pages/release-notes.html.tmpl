@@ -60,6 +60,48 @@
 
 <h2 id="v36_point">3.6.x リリースでの更新点</h2>
 
+<h3>3.6.3</h3>
+
+<p>このリリースではいくつかの重要なセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.2.8/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下のようないくつかの重要な修正や変更が行われました。</p>
+
+<ul>
+  <li>更新衝突のページから "コメントのみ追加する" を選択した際に <em>再度</em>
+    更新衝突のページが表示される可能性がなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=591218">[% terms.Bug %] 591218</a>)
+  </li>
+  <li>締め切りフィールドのどちらかが "現在" に設定された保存された検索で、
+    検索条件から締め切りフィールドが削除される現象がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=590144">[% terms.Bug %] 590144</a>)
+  </li>
+  <li>[% terms.bugs %] 検索で "最低投票数 X" の条件が、<em>正確に</em>
+    その数の投票を持つ [% terms.bugs %] のみが検索されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=584414">[% terms.Bug %] 584414</a>)
+  </li>
+  <li>"P1-5" のような条件を簡易検索に入力することで、
+    [% field_descs.priority FILTER html %] フィールドが検索されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=585028">[% terms.Bug %] 585028</a>)
+  </li>
+  <li>6 文字以下のパスワードのユーザがログインできませんでした。3.6 以前からの
+    ユーザのみにしかいませんが、3.6 以降にアップグレードした環境では、
+    該当ユーザはログインできなくなります。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=575947">[% terms.Bug %] 575947</a>)
+  </li>
+  <li><a href="config.cgi?ctype=rdf">config.cgi?ctype=rdf</a> の読み込みが高速化され、
+    特にフラグがたくさんある環境で早くなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=553266">[% terms.Bug %] 553266</a>
+    と <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=605693">[% terms.Bug %] 605693</a>)
+  </li>
+  <li>英語以外のテンプレートが checksetup.pl で事前コンパイルされていなく、
+    各言語での [% terms.Bugzilla %] サイトのパフォーマンス劣化がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=605425">[% terms.Bug %] 605425</a>)
+  </li>
+</ul>
+
+
 <h3>3.6.2</h3>
 
 <p>このリリースではひとつのセキュリティー問題への修正を含みます。詳細に関しては、

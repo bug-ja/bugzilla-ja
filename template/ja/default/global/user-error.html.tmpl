@@ -1140,7 +1140,7 @@
 
   [% ELSIF error == "invalid_datasets" %]
     [% title = BLOCK %] [% jawords.report_dataset FILTER html %] が無効です [% END %]
-    [% jawords.report_dataset FILTER html %] <em>[% datasets FILTER html %]</em> は無効です。
+    [% jawords.report_dataset FILTER html %] <em>[% datasets.join(":") FILTER html %]</em> は無効です。
     数値、文字、コロンのみが利用できます。
 
   [% ELSIF error == "invalid_format" %]
