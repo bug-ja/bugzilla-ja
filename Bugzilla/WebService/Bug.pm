@@ -133,6 +133,7 @@ sub fields {
            is_custom         => $self->type('boolean', $field->custom),
            name              => $self->type('string', $field->name),
            display_name      => $self->type('string', $field->description),
+           is_mandatory      => $self->type('boolean', $field->is_mandatory),
            is_on_bug_entry   => $self->type('boolean', $field->enter_bug),
            visibility_field  => $self->type('string', $visibility_field),
            visibility_values => [
@@ -926,7 +927,7 @@ sub _attachment_to_hash {
 
     # creator/attacher require an extra lookup, so we only send them if
     # the filter wants them.
-    foreach my $field qw(creator attacher) {
+    foreach my $field (qw(creator attacher)) {
         if (filter_wants $filters, $field) {
             $item->{$field} = $self->type('string', $attach->attacher->login);
         }
@@ -1041,6 +1042,12 @@ across all Bugzilla installations.
 
 C<string> The name of the field, as it is shown in the user interface.
 
+=item C<is_mandatory>
+
+C<boolean> True if the field must have a value when filing new bugs.
+Also, mandatory fields cannot have their value cleared when updating
+bugs.
+
 =item C<is_on_bug_entry>
 
 C<boolean> For custom fields, this is true if the field is shown when you
@@ -1145,6 +1152,8 @@ You specified an invalid field name or id.
 =over
 
 =item Added in Bugzilla B<3.6>.
+
+=item The C<is_mandatory> return value was added in Bugzilla B<4.0>.
 
 =back
 
@@ -2250,6 +2259,9 @@ don't want it to be assigned to the component owner.
 
 =item C<cc> (array) - An array of usernames to CC on this bug.
 
+=item C<comment_is_private> (boolean) - If set to true, the description
+is private, otherwise it is assumed to be public.
+
 =item C<groups> (array) - An array of group names to put this
 bug into. You can see valid group names on the Permissions
 tab of the Preferences screen, or, if you are an administrator,
@@ -2327,6 +2339,10 @@ B<Required>, due to a bug in Bugzilla.
 =item The C<groups> argument was added in Bugzilla B<4.0>. Before
 Bugzilla 4.0, bugs were only added into Mandatory groups by this
 method.
+
+=item The C<comment_is_private> argument was added in Bugzilla B<4.0>.
+Before Bugzilla 4.0, you had to use the undocumented C<commentprivacy>
+argument.
 
 =back
 
@@ -2612,7 +2628,7 @@ pass in an invalid user name.
 
 =back
 
-=item C<cc_accessible>
+=item C<is_cc_accessible>
 
 C<boolean> Whether or not users in the CC list are allowed to access
 the bug, even if they aren't in a group that can normally access the bug.
@@ -2742,7 +2758,7 @@ normally have permission to file new bugs in that product.
 
 C<string> The full login name of the bug's QA Contact.
 
-=item C<reporter_accessible>
+=item C<is_creator_accessible>
 
 C<boolean> Whether or not the bug's reporter is allowed to access
 the bug, even if he or she isn't in a group that can normally access

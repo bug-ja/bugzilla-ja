@@ -125,7 +125,7 @@ sub VALIDATORS {
         bug_status     => \&_check_bug_status,
         cc             => \&_check_cc,
         comment        => \&_check_comment,
-        commentprivacy => \&_check_commentprivacy,
+        comment_is_private => \&_check_comment_is_private,
         component      => \&_check_component,
         deadline       => \&_check_deadline,
         dup_id         => \&_check_dup_id,
@@ -266,14 +266,17 @@ use constant MAX_LINE_LENGTH => 254;
 # use.)
 use constant FIELD_MAP => {
     blocks           => 'blocked',
-    is_confirmed     => 'everconfirmed',
     cc_accessible    => 'cclist_accessible',
+    commentprivacy   => 'comment_is_private',
     creation_time    => 'creation_ts',
     creator          => 'reporter',
     description      => 'comment',
     depends_on       => 'dependson',
     dupe_of          => 'dup_id',
     id               => 'bug_id',
+    is_confirmed     => 'everconfirmed',
+    is_cc_accessible => 'cclist_accessible',
+    is_creator_accessible => 'reporter_accessible',
     last_change_time => 'delta_ts',
     platform         => 'rep_platform',
     severity         => 'bug_severity',
@@ -610,9 +613,9 @@ sub create {
     my $depends_on = delete $params->{dependson};
     my $blocked    = delete $params->{blocked};
     my $keywords   = delete $params->{keywords};
-    my ($comment, $privacy) = ($params->{comment}, $params->{commentprivacy});
+    my ($comment, $privacy) = ($params->{comment}, $params->{comment_is_private});
     delete $params->{comment};
-    delete $params->{commentprivacy};
+    delete $params->{comment_is_private};
 
     # We don't want the bug to appear in the system until it's correctly
     # protected by groups.
@@ -1138,7 +1141,7 @@ sub send_changes {
                   ? $changes->{cc}->[0] : '';
 
     my %forced = (
-        cc        => [split(/[\s,]+/, $old_cc)],
+        cc        => [split(/[,;]+/, $old_cc)],
         owner     => $old_own,
         qacontact => $old_qa,
         changer   => $user,
@@ -1375,10 +1378,11 @@ sub _check_cc {
     return [map {$_->id} @{$component->initial_cc}] unless $ccs;
 
     # Allow comma-separated input as well as arrayrefs.
-    $ccs = [split(/[\s,]+/, $ccs)] if !ref $ccs;
+    $ccs = [split(/[,;]+/, $ccs)] if !ref $ccs;
 
     my %cc_ids;
     foreach my $person (@$ccs) {
+        $person = trim($person);
         next unless $person;
         my $id = login_to_id($person, THROW_ERROR);
         $cc_ids{$id} = 1;
@@ -1404,7 +1408,7 @@ sub _check_comment {
     return $comment;
 }
 
-sub _check_commentprivacy {
+sub _check_comment_is_private {
     my ($invocant, $comment_privacy) = @_;
     if ($comment_privacy && !Bugzilla->user->is_insider) {
         ThrowUserError('user_not_insider');
@@ -1460,7 +1464,7 @@ sub _check_dependencies {
 
     my %deps_in = (dependson => $depends_on || '', blocked => $blocks || '');
 
-    foreach my $type qw(dependson blocked) {
+    foreach my $type (qw(dependson blocked)) {
         my @bug_ids = ref($deps_in{$type}) 
             ? @{$deps_in{$type}} 
             : split(/[\s,]+/, $deps_in{$type});
@@ -2620,7 +2624,7 @@ sub add_comment {
     }
     if (exists $params->{isprivate}) {
         $params->{isprivate} = 
-            $self->_check_commentprivacy($params->{isprivate});
+            $self->_check_comment_is_private($params->{isprivate});
     }
     # XXX We really should check extra_data, too.
 

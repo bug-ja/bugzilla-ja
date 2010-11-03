@@ -203,6 +203,7 @@
               minrows = 10
               cols    = 80
               wrap    = 'soft'
+              disabled = 'disabled'
               defaultcontent = (attachment.contenttype.match('^text\/')) ?
                                  attachment.data.replace('(.*\n|.+)', '>$1') : undef
             %]
@@ -223,6 +224,10 @@
                   document.write('<button type="button" id="editButton" onclick="editAsComment(patchviewerinstalled);">添付を引用してコメントとして編集する<\/button>');
                   document.write('<button type="button" id="undoEditButton" onclick="undoEditAsComment(patchviewerinstalled);" class="bz_default_hidden">編集をやめる<\/button>');
                   document.write('<button type="button" id="redoEditButton" onclick="redoEditAsComment(patchviewerinstalled);" class="bz_default_hidden">編集を再開する<\/button>');
+                  var editFrame = document.getElementById('editFrame');
+                  if (editFrame) {
+                    editFrame.disabled = false;
+                  }
                 [% END %]
                 [% IF use_patchviewer %]
                   document.write('<button type="button" id="viewDiffButton" onclick="viewDiff(attachment_id, patchviewerinstalled);">添付を差分としてみる<\/button>');

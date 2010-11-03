@@ -27,6 +27,7 @@
                                    style_urls = ['skins/standard/global.css'] %]
 
 <div class="throw_error">
+<!--reason=[%reason FILTER html %]-->
   [% IF reason == "expired_token" %]
     あなたの変更は確定までの期限である [% constants.MAX_TOKEN_AGE FILTER html %] 
     日を過ぎましたので却下されました。ページを長く表示し続けたか、
