@@ -24,19 +24,18 @@
 [% PROCESS "global/js-products.html.tmpl" %]
 
 [% IF type.target_type == "bug" %]
-  [% title = BLOCK %][% terms.Bugs %] のフラグタイプを作成[% END %]
+  [% title = BLOCK %][% terms.Bugs %] [% END %]
   [% typeLabelLowerPlural = BLOCK %][% terms.bugs %][% END %]
   [% typeLabelLowerSingular = BLOCK %][% terms.bug %][% END %]
+[% IF action == "insert" %]
+  [% title = BLOCK %]
+    [% type.target_type == "bug" ? terms.Bugs : "添付" %] のフラグタイプを
+    [% IF type.id %]
+      [% type.name FILTER html %] に基づいて
+    [% END %] 作成
+  [% END %]
+  [% doc_section = "flags-overview.html#flags-create" %]
 [% ELSE %]
-  [% title = "添付のフラグタイプを作成" %]
-  [% typeLabelLowerPlural = BLOCK %]添付[% END %]
-  [% typeLabelLowerSingular = BLOCK %]添付[% END %]
-[% END %]
-
-[% doc_section = "flags-overview.html#flags-create" %]
-[% IF last_action == "copy" %]
-  [% title = BLOCK %][% type.name FILTER html %] からフラグタイプを作成[% END %]
-[% ELSIF last_action == "edit" %]
   [% title = BLOCK %]フラグタイプ [% type.name FILTER html %] を編集[% END %]
   [% doc_section = "flags-overview.html#flags-edit" %]
 [% END %]
@@ -53,10 +52,11 @@
 %]
 
 <form method="post" action="editflagtypes.cgi">
-  <input type="hidden" name="action" value="[% action %]">
+  <input type="hidden" name="action" value="[% action FILTER html %]">
   <input type="hidden" name="id" value="[% type.id %]">
   <input type="hidden" name="token" value="[% token FILTER html %]">
-  <input type="hidden" name="target_type" value="[% type.target_type %]">
+  <input type="hidden" name="target_type" value="[% type.target_type FILTER html %]">
+  <input type="hidden" name="check_clusions" value="[% check_clusions FILTER none %]">
   [% FOREACH category = type.inclusions %]
     <input type="hidden" name="inclusions" value="[% category.value FILTER html %]">
   [% END %]
@@ -95,7 +95,7 @@
       <th>カテゴリ:</th>
 
       <td>
-        ユーザがこのタイプのフラグを [% typeLabelLowerPlural %] で利用することができることができるプロダクト/コンポーネント
+        ユーザがこのタイプのフラグを [% type.target_type == "bug" ? terms.bugs : "添付" %] で利用することができることができるプロダクト/コンポーネント
         <table>
           <tr>
             <td style="vertical-align: top;">
@@ -137,7 +137,7 @@
     <tr>
       <th>ソート順:</th>
       <td>
-        1 から 32767 の数値で、リストとして表示される際のソート順を指定できます。
+        1 から [% constants.MAX_SMALLINT FILTER none %] の数値で、リストとして表示される際のソート順を指定できます。
         表示順を気にしないか、アルファベット順で表示したい場合はこのままにしてください<br>
         <input type="text" name="sortkey" value="[% type.sortkey || 1 %]" size="5" maxlength="5">
       </td>
@@ -189,8 +189,9 @@
       <td>
         <input type="checkbox" id="is_multiplicable" name="is_multiplicable"
                [% " checked" IF type.is_multiplicable || !type.is_multiplicable.defined %]>
-        <label for="is_multiplicable">複数のユーザに対してリクエスト可能 (同じ [% typeLabelLowerSingular %]
-                                      でこのタイプのフラグを複数、設定可能とします)</label>
+        <label for="is_multiplicable">複数のユーザに対してリクエスト可能 (同じ
+            [% type.target_type == "bug" ? terms.bug : "添付" %]
+            でこのタイプのフラグを複数、設定可能とします)</label>
       </td>
     </tr>
 
@@ -214,12 +215,9 @@
     </tr>
 
     <tr>
-      <th></th>
+      <th>&nbsp;</th>
       <td>
-        <input type="submit" id="save" value="
-          [%- IF (last_action == "enter" || last_action == "copy") %]作成
-          [%- ELSE %]変更を保存
-          [%- END %]">
+        <input type="submit" id="save" value="[% action == "insert" ? "作成" : "変更を保存" %]">
       </td>
     </tr>
 

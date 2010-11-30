@@ -258,7 +258,6 @@ use constant MAX_LINE_LENGTH => 254;
 # use.)
 use constant FIELD_MAP => {
     blocks           => 'blocked',
-    is_confirmed     => 'everconfirmed',
     cc_accessible    => 'cclist_accessible',
     commentprivacy   => 'comment_is_private',
     creation_time    => 'creation_ts',
@@ -267,6 +266,9 @@ use constant FIELD_MAP => {
     depends_on       => 'dependson',
     dupe_of          => 'dup_id',
     id               => 'bug_id',
+    is_confirmed     => 'everconfirmed',
+    is_cc_accessible => 'cclist_accessible',
+    is_creator_accessible => 'reporter_accessible',
     last_change_time => 'delta_ts',
     platform         => 'rep_platform',
     severity         => 'bug_severity',
@@ -889,6 +891,9 @@ sub update {
 
     # Comments
     foreach my $comment (@{$self->{added_comments} || []}) {
+        # Override the Comment's timestamp to be identical to the update
+        # timestamp.
+        $comment->{bug_when} = $delta_ts;
         $comment = Bugzilla::Comment->insert_create_data($comment);
         if ($comment->{work_time}) {
             LogActivityEntry($self->id, "work_time", "", $comment->{work_time},
@@ -1132,7 +1137,7 @@ sub send_changes {
                   ? $changes->{cc}->[0] : '';
 
     my %forced = (
-        cc        => [split(/[\s,]+/, $old_cc)],
+        cc        => [split(/[,;]+/, $old_cc)],
         owner     => $old_own,
         qacontact => $old_qa,
         changer   => $user,
@@ -1382,10 +1387,11 @@ sub _check_cc {
     return [map {$_->id} @{$component->initial_cc}] unless $ccs;
 
     # Allow comma-separated input as well as arrayrefs.
-    $ccs = [split(/[\s,]+/, $ccs)] if !ref $ccs;
+    $ccs = [split(/[,;]+/, $ccs)] if !ref $ccs;
 
     my %cc_ids;
     foreach my $person (@$ccs) {
+        $person = trim($person);
         next unless $person;
         my $id = login_to_id($person, THROW_ERROR);
         $cc_ids{$id} = 1;
@@ -1478,7 +1484,7 @@ sub _check_dependencies {
 
     my %deps_in = (dependson => $depends_on || '', blocked => $blocks || '');
 
-    foreach my $type qw(dependson blocked) {
+    foreach my $type (qw(dependson blocked)) {
         my @bug_ids = ref($deps_in{$type}) 
             ? @{$deps_in{$type}} 
             : split(/[\s,]+/, $deps_in{$type});

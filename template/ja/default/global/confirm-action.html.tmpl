@@ -26,6 +26,7 @@
 [% PROCESS global/header.html.tmpl title = "不審な操作"
                                    style_urls = ['skins/standard/global.css'] %]
 
+<!--reason=[%reason FILTER html %]-->
 <div class="throw_error">
   [% IF reason == "expired_token" %]
     あなたの変更は確定までの期限である [% constants.MAX_TOKEN_AGE FILTER html %] 

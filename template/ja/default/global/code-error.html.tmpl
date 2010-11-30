@@ -269,9 +269,6 @@
     フラグタイプ [% type FILTER html %] は無効化されており、
     新規フラグの作成で利用することはできません。
 
-  [% ELSIF error == "flag_type_nonexistent" %]
-    ID <em>[% id FILTER html %]</em> をもつフラグタイプは存在しません。
-
   [% ELSIF error == "flag_type_target_type_invalid" %]
     ターゲットタイプは <em>[% terms.bug %]</em> でも <em>attachment</em> でもなく、
     <em>[% target_type FILTER html %]</em> になっています。

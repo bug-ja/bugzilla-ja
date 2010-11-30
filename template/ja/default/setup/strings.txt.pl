@@ -171,7 +171,10 @@ END
 データベースサーバが実行されている DNS 名もしくは IP アドレスです。
 END
     localconfig_db_name => 
-"データベース名です。Oracle ではデータベースの SID です。",
+    localconfig_db_name => <<'END',
+データベース名です。Oracle ではデータベースの SID です。
+SQLite では DB ファイルの名前(もしくはパス)です。
+END
     localconfig_db_pass => <<'END',
 データベースのパスワードです。通常は、Bugzilla データベース用ユーザのパスワー
 ドを設定します。
@@ -303,6 +306,7 @@ EOT
     module_not_found => "非検出",
     module_ok => 'ok',
     module_unknown_version => "バージョン不明を検出",
+    no_such_module => "##module## という名前の Perl モジュールは CPAN にありません。",
     mysql_innodb_disabled => <<'END',
 あなたの MySQL では InnoDB が無効かされています。
 Bugzilla は InnoDB を利用しますので、有効にしてから checksetup.pl を再実行

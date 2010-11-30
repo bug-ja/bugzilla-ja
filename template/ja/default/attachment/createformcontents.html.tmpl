@@ -49,7 +49,7 @@
     <input type="text" id="description" name="description" size="60" maxlength="200">
   </td>
 </tr>
-<tr class="expert_fields">
+<tr[% ' class="expert_fields"' UNLESS bug.id %]>
   <th>ファイル型:</th>
   <td>
     <em>添付がパッチなら、次を有効にしてください。</em><br>
@@ -82,11 +82,11 @@
              onchange="if (this.value) this.form.contenttypemethod[2].checked = true;">
   </td>
 </tr>
-<tr class="expert_fields">
+<tr[% ' class="expert_fields"' UNLESS bug.id %]>
   <td> </td>
   <td>
     [% IF flag_types && flag_types.size > 0 %]
-      [% PROCESS "flag/list.html.tmpl" bug_id=bugid attach_id=attachid %]<br>
+      [% PROCESS "flag/list.html.tmpl" %]<br>
     [% END %]
   </td>
 </tr>

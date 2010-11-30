@@ -82,9 +82,9 @@
 <td>
   [% IF mode == "edit" %]
     <ul class="bz_collapse_expand_comments">
-      <li><a href="#" onclick="toggle_all_comments('collapse', [% comments.size %]); 
+      <li><a href="#" onclick="toggle_all_comments('collapse'); 
                                return false;">全て折りたたむ</a></li>
-      <li><a href="#" onclick="toggle_all_comments('expand', [% comments.size %]);
+      <li><a href="#" onclick="toggle_all_comments('expand');
                                return false;">全て展開する</a></li>
       [% IF user.settings.comment_box_position.value == "after_comments" && user.id %]
         <li class="bz_add_comment"><a href="#" 
@@ -102,7 +102,7 @@
 
 [% BLOCK a_comment %]
   [% RETURN IF comment.is_private AND ! user.is_insider %]
-  [% comment_text = comment.body_full({ wrap => 1 }) %]
+  [% comment_text = comment.body_full %]
   [% RETURN IF comment_text == '' AND (comment.work_time - 0) != 0 AND !user.is_timetracker %]
 
     <div id="c[% count %]" class="bz_comment[% " bz_private" IF comment.is_private %]

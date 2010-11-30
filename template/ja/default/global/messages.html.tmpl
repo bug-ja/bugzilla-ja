@@ -584,9 +584,63 @@
     [% title = BLOCK %]フラグタイプ '[% name FILTER html %]' 作成完了[% END %]
     フラグタイプ <em>[% name FILTER html %]</em> が作成されました。
 
-  [% ELSIF message_tag == "flag_type_changes_saved" %]
-    [% title = BLOCK %]フラグタイプ '[% name FILTER html %]' 更新完了[% END %]
-    フラグタイプ <em>[% name FILTER html %]</em> への更新が保存されました。
+  [% ELSIF message_tag == "flag_type_updated" %]
+    [% title = BLOCK %]フラグタイプ '[% flagtype.name FILTER html %]' 更新完了[% END %]
+    [% IF changes.size %]
+      フラグタイプ <em>[% flagtype.name FILTER html %]</em> への変更が保存されました :
+      <ul>
+        [% IF changes.is_active.defined %]
+          <li>フラグタイプは [% flagtype.is_active ? "有効" : "無効" %] です。</li>
+        [% END %]
+        [% IF changes.name.defined %]
+          <li>フラグタイプ名が <em>[% flagtype.name FILTER html %]</em> に変更されました。</li>
+        [% END %]
+        [% IF changes.description.defined %]
+          <li>説明が <em>[% flagtype.description FILTER html %]</em> に変更されました。</li>
+        [% END %]
+        [% IF changes.cc_list.defined %]
+          [% IF flagtype.cc_list %]
+            <li>CC リストが <em>[% flagtype.cc_list FILTER html %]</em> に変更されました。</li>
+          [% ELSE %]
+            <li>CC リストは空になりました。</li>
+          [% END %]
+        [% END %]
+        [% IF changes.sortkey.defined %]
+          <li>ソートキーが <em>[% flagtype.sortkey FILTER html %]</em> に変更されました。</li>
+        [% END %]
+        [% IF changes.is_requestable.defined %]
+          <li>このフラグタイプは要求[% "不" UNLESS flagtype.is_requestable %]可能になりました</li>
+        [% END %]
+        [% IF changes.is_requesteeble.defined AND flagtype.is_requestable %]
+          <li>
+            フラグタイプは明示的に要求[% "不" UNLESS flagtype.is_requesteeble %]可能
+            になりました。
+          </li>
+        [% END %]
+        [% IF changes.is_multiplicable.defined %]
+          <li>フラグタイプは複数設定[% "不" UNLESS flagtype.is_multiplicable %]可能になりました。</li>
+        [% END %]
+        [% IF changes.grant_group_id.defined %]
+          [% IF flagtype.grant_group_id %]
+            <li>設定可能グループが <em>[% flagtype.grant_group.name FILTER html %]</em> に変更されました。</li>
+          [% ELSE %]
+            <li>設定可能グループは未設定です。</li>
+          [% END %]
+        [% END %]
+        [% IF changes.request_group_id.defined %]
+          [% IF flagtype.request_group_id %]
+            <li>要求可能グループが <em>[% flagtype.request_group.name FILTER html %]</em> に変更されました。</li>
+          [% ELSE %]
+            <li>要求可能グループは未設定です。</li>
+          [% END %]
+        [% END %]
+        [% IF changes.inclusions.defined || changes.exclusions.defined %]
+          <li>設定条件リストが更新されました。</li>
+        [% END %]
+     </ul>
+    [% ELSE %]
+      フラグタイプ <em>[% flagtype.name FILTER html %]</em> への変更はありません。
+    [% END %]
 
   [% ELSIF message_tag == "flag_type_deleted" %]
     [% title = BLOCK %]フラグタイプ '[% name FILTER html %]' 削除完了[% END %]
