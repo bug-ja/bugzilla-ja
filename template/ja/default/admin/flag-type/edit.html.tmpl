@@ -23,10 +23,6 @@
 
 [% PROCESS "global/js-products.html.tmpl" %]
 
-[% IF type.target_type == "bug" %]
-  [% title = BLOCK %][% terms.Bugs %] [% END %]
-  [% typeLabelLowerPlural = BLOCK %][% terms.bugs %][% END %]
-  [% typeLabelLowerSingular = BLOCK %][% terms.bug %][% END %]
 [% IF action == "insert" %]
   [% title = BLOCK %]
     [% type.target_type == "bug" ? terms.Bugs : "添付" %] のフラグタイプを
