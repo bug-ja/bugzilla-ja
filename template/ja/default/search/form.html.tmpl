@@ -128,17 +128,17 @@ function doOnSelectProduct(selectmode) {
       <label for="short_desc" accesskey="s">要約 (<u>S</u>)</label>:
     </th>
     <td>
-      [% INCLUDE "search/type-select.html.tmpl"
-         name = "short_desc_type",
-         types = query_types, selected = default.short_desc_type.0 %]
-    </td>
-    <td>
       <input name="short_desc" id="short_desc" size="40"
              value="[% default.short_desc.0 FILTER html %]">
       <script type="text/javascript"> <!--
           document.forms[queryform].short_desc.focus(); 
       // -->
       </script>
+    </td>
+    <td>
+      [% INCLUDE "search/type-select.html.tmpl"
+         name = "short_desc_type",
+         types = query_types, selected = default.short_desc_type.0 %]
     </td>
     <td>
       [% IF button_name %]
