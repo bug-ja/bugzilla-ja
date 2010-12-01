@@ -194,6 +194,7 @@
         [% IF type.is_requestable && type.is_requesteeble %]
           <span style="white-space: nowrap;">
             [% SET grant_list = [] %]
+            [% IF Param('usemenuforusers') %]
               [% grant_list = type.grant_list %]
             [% END %]
             [% INCLUDE  global/userselect.html.tmpl
