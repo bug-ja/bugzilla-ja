@@ -569,6 +569,34 @@ L</config_add_panels> if you want to add new panels.
 
 =back
 
+=head2 email_in_before_parse
+
+This happens right after an inbound email is converted into an Email::MIME
+object, but before we start parsing the email to extract field data. This
+means the email has already been decoded for you. It gives you a chance
+to interact with the email itself before L<email_in> starts parsing its content.
+
+=over
+
+=item C<mail> - An Email::MIME object. The decoded incoming email.
+
+=item C<fields> - A hashref. The hash which will contain extracted data.
+
+=back
+
+=head2 email_in_after_parse
+
+This happens after all the data has been extracted from the email, but before
+the reporter is validated, during L<email_in>. This lets you do things after
+the normal parsing of the email, such as sanitizing field data, changing the
+user account being used to file a bug, etc.
+
+=over
+
+=item C<fields> - A hashref. The hash containing the extracted field data.
+
+=back
+
 =head2 enter_bug_entrydefaultvars
 
 B<DEPRECATED> - Use L</template_before_process> instead.
@@ -1156,6 +1184,49 @@ C<bug/show.html.tmpl>).
 A L<Template::Context> object. Usually you will not have to use this, but
 if you need information about the template itself (other than just its
 name), you can get it from here.
+
+=back
+
+=head2 user_preferences
+
+This hook allows you to add additional panels to the User Preferences page,
+and validate data displayed and returned from these panels. It works in
+combination with the C<tabs> hook available in the
+F<template/en/default/account/prefs/prefs.html.tmpl> template. To make it
+work, you must define two templates in your extension:
+F<extensions/Foo/template/en/default/hook/account/prefs/prefs-tabs.html.tmpl>
+contains a list of additional panels to include.
+F<extensions/Foo/template/en/default/account/prefs/bar.html.tmpl> contains
+the content of the panel itself. See the C<Example> extension to see how
+things work.
+
+Params:
+
+=over
+
+=item C<current_tab>
+
+The name of the current panel being viewed by the user. You should always
+make sure that the name of the panel matches what you expect it to be.
+Else you could be interacting with the panel of another extension.
+
+=item C<save_changes>
+
+A boolean which is true when data should be validated and the DB updated
+accordingly. This means the user clicked the "Submit Changes" button.
+
+=item C<handled>
+
+This is a B<reference> to a scalar, not a scalar. (So you would set it like
+C<$$handled = 1>, not like C<$handled = 1>.) Set this to a true value to let
+Bugzilla know that the passed-in panel is valid and that you have handled it.
+(Otherwise, Bugzilla will throw an error that the panel is invalid.) Don't set
+this to true if you didn't handle the panel listed in C<current_tab>.
+
+=item C<vars>
+
+You can add as many new key/value pairs as you want to this hashref.
+It will be passed to the template.
 
 =back
 
