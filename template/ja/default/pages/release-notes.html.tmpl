@@ -38,49 +38,45 @@
 
 <h2 id="v40_introduction">導入</h2>
 
-<p>This is [% terms.Bugzilla %] 4.0! Since 3.6 (our previous major
-  release) we've come a long way, and we've come even further compared to
-  3.0 in 2007! Since [% terms.Bugzilla %] 3.0, almost every major user
-  interface in [% terms.Bugzilla %] has been redesigned, the WebServices have
-  evolved enormously, there's a great new Extensions system, and there
-  are hundreds of other new features. With the major redesigns that come
-  particularly in this release compared to 3.6, we felt that it was time to
-  call this release 4.0.</p>
+<p>[% terms.Bugzilla %] 4.0 にようこそ! 一つ前のメジャーリリースの 3.6 以来、
+  また 2007 年の 3.0 以来さまざまな改良が加えられてきました。[% terms.Bugzilla %]
+  3.0 からは、ほとんどの主要なユーザインターフェースの再デザイン、
+  ウェブサービスの拡充、新しい拡張のシステム、そしてたくさんの新機能が追加され
+  ました。3.6 リリースからの主要な再デザインだけでも、このリリースを 4.0 
+  と呼ぶのに十分でしょう。</p>
 
-<p>It's not just major WebService and UI enhancements that are new in
-  [%+ terms.Bugzilla %] 4.0&mdash;there are many other exciting new features,
-  including automatic duplicate detection, enhanced custom field
-  functionality, autocomplete for users, search improvements, and much
-  more. Overall, 4.0 is far and away the best version of [% terms.Bugzilla %]
-  we've ever released.</p>
+<p>ウェブサービスやユーザインターフェースの改良のみが [% terms.Bugzilla %] 4.0 
+  での主要な改良点でなく、それ以外にもさまざまな新機能があります &mdash;
+  自動重複検知、拡張されたカスタムフィールド機能、ユーザ自動補完、
+  検索機能の改善、などです。これらのおかげで、これまでの [% terms.Bugzilla %] 
+  リリースの中で最高のものを 4.0 として提供できます。</p>
 
-<p>If you're upgrading, make sure to read <a href="#v40_upgrading">Notes
-  On Upgrading From a Previous Version</a>. If you are upgrading from a release
-  before 3.6, make sure to read the release notes for all the 
-  <a href="#v40_previous">previous versions</a> in between your version
-  and this one, <strong>particularly the Upgrading section of each
-  version's release notes</strong>.</p>
+<p>アップグレードを行おうとしている場合、必ず <a href="#v40_upgrading">
+  古いバージョンからのアップグレード方法</a> の項を読んでください。
+  3.6 より前のバージョンからのアップグレードの場合、あなたのバージョンとこの
+  バージョンの間の全ての <a href="#v40_previous">以前のバージョン</a> について
+  <strong>特に各バージョンのリリースノートのアップグレードの章</strong>
+  を読むことを推奨します。</p>
 
-<p>We would like to thank
-  <a href="http://www.itasoftware.com/">ITA Software</a>,
-  the <a href="http://www.ibm.com/linux/ltc/">IBM Linux Technology Center</a>,
-  and <a href="http://www.redhat.com/">Red Hat</a> for funding the development
-  of certain features and improvements in this release of
-  [%+ terms.Bugzilla %].</p>
+<p>また、われわれは
+  <a href="http://www.itasoftware.com/">ITA Software</a>、
+  <a href="http://www.ibm.com/linux/ltc/">IBM Linux Technology Center</a>、
+  <a href="http://www.redhat.com/">Red Hat</a> に対して、このバージョンの
+  [% terms.Bugzilla %] における新機能の開発や改良に対する資金拠出に感謝します。</p>
 
-<h2 id="v40_req">Minimum Requirements</h2>
+<h2 id="v40_req">動作環境</h2>
 
-<p>Any requirements that are new since 3.6.3 will look like
-  <span class="req_new">this</span>.</p>
+<p>3.6.3 から変更された動作環境への要求は
+  <span class="req_new">このように表示</span> されます。</p>
 
 <ul>
   <li><a href="#v40_req_perl">Perl</a></li>
-  <li><a href="#v40_req_mysql">For MySQL Users</a></li>
-  <li><a href="#v40_req_pg">For PostgreSQL Users</a></li>
-  <li><a href="#v40_req_oracle">For Oracle Users</a></li>
-  <li><a href="#v40_req_modules">Required Perl Modules</a></li>
-  <li><a href="#v40_req_optional_mod">Optional Perl Modules</a></li>
-  <li><a href="#v40_req_apache">Optional Apache Modules</a></li>
+  <li><a href="#v40_req_mysql">MySQL ユーザ</a></li>
+  <li><a href="#v40_req_pg">PostgreSQL ユーザ</a></li>
+  <li><a href="#v40_req_oracle">Oracle ユーザ</a></li>
+  <li><a href="#v40_req_modules">必須 Perl モジュール</a></li>
+  <li><a href="#v40_req_optional_mod">オプションの Perl モジュール</a></li>
+  <li><a href="#v40_req_apache">オプションの Apache モジュール</a></li>
 </ul>
 
 
@@ -94,30 +90,30 @@
 
 [% INCLUDE db_req db='oracle' %]
 
-<h3 id="v40_req_modules">Required Perl Modules</h3>
+<h3 id="v40_req_modules">必須 Perl モジュール</h3>
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES
                      new = ['List-MoreUtils']
                      updated = ['Email-MIME', 'CGI.pm'] %]
 
-<h3 id="v40_req_optional_mod">Optional Perl Modules</h3>
+<h3 id="v40_req_optional_mod">オプションの Perl モジュール</h3>
 
-<p>The following perl modules, if installed, enable various
-  features of [% terms.Bugzilla %]:</p>
+<p>以下のような perl モジュールがインストールされていると、
+  いくつかの [% terms.Bugzilla %] の機能が有効になります:</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
                      new  = ['JSON-XS']
                      updated = []
                      include_feature = 1 %]
 
-<h3 id="v40_req_apache">Optional Apache Modules</h3>
+<h3 id="v40_req_apache">オプションの Apache モジュール</h3>
 
-<p>If you are using Apache as your webserver, [% terms.Bugzilla %] can
-  now take advantage of some Apache features if you have the below Apache
-  modules installed and enabled. Currently,
-  <a href="#v40_feat_js_css_update">certain [% terms.Bugzilla %] features</a>
-  are enabled only if you have all of the following modules installed
-  and enabled:</p>
+<p>Apache をウェブサーバとして利用している場合、[% terms.Bugzilla %] は、
+  以下のいくつかの Apache モジュールが有効になっている場合、Apache の機能を
+  活用するようになります。
+  また、今のところ、
+  <a href="#v40_feat_js_css_update">いくつかの [% terms.Bugzilla %] の機能</a>
+  は、以下の全てのモジュールがインストールされ有効になっている場合のみ機能します :</p>
 
 <ul>
   <li>mod_headers</li>
@@ -125,68 +121,60 @@
   <li>mod_env</li>
 </ul>
 
-<p>On most systems (but not on Windows), <kbd>checksetup.pl</kbd> is able to
-  tell whether or not you have these modules installed, and it will tell
-  you.</p>
+<p>(Windows 以外の) ほとんどのシステムでは、<kbd>checksetup.pl</kbd> 
+  はどのモジュールがインストールされているかを判定し表示します。</p>
 
-<h2 id="v40_feat">New Features and Improvements</h2>
+<h2 id="v40_feat">新機能と改善点</h2>
 
 <ul>
-  <li><a href="#v40_feat_dup">Automatic Duplicate Detection When Filing
-    [%+ terms.Bugs %]</a></li>
-  <li><a href="#v40_feat_search_ui">New Advanced Search UI</a></li>
-  <li><a href="#v40_feat_attach_ui">New Attachment Details UI</a></li>
-  <li><a href="#v40_feat_autocomplete">Autocomplete for Users and
-    Keywords</a></li>
-  <li><a href="#v40_feat_ui">General Usability Improvements</a></li>
-  <li><a href="#v40_feat_workflow">New Default Status Workflow</a></li>
-  <li><a href="#v40_feat_lists">"Last Search" Now Remembers Multiple
-    Searches</a></li>
-  <li><a href="#v40_feat_jsonp">Cross-Domain WebServices with JSONP</a></li>
-  <li><a href="#v40_feat_ws">Major WebService Enhancements</a></li>
-  <li><a href="#v40_feat_mandatory">Mandatory Custom Fields</a></li>
-  <li><a href="#v40_feat_vot_ext">Voting Is Now An Extension</a></li>
-  <li><a href="#v40_feat_js_css_update">Users Get New CSS and Javascript
-    Automatically</a></li>
-  <li><a href="#v40_feat_hooks">Many New Hooks</a></li>
-  <li><a href="#v40_feat_apache_config">New Apache Configuration</a></li>
-  <li><a href="#v40_feat_other">Other Enhancements and Changes</a></li>
+  <li><a href="#v40_feat_dup">[% terms.Bugs %] 登録時の自動重複除去機能</a></li>
+  <li><a href="#v40_feat_search_ui">新しい高度な検索画面</a></li>
+  <li><a href="#v40_feat_attach_ui">新しい添付の詳細画面</a></li>
+  <li><a href="#v40_feat_autocomplete">ユーザとキーワードの自動補完</a></li>
+  <li><a href="#v40_feat_ui">一般的な使用感改善</a></li>
+  <li><a href="#v40_feat_workflow">新しい既定のステータスワークフロー</a></li>
+  <li><a href="#v40_feat_lists">"過去の検索" が複数の検索結果を保存</a></li>
+  <li><a href="#v40_feat_jsonp">JSONP によるクロスドメインウェブサービス</a></li>
+  <li><a href="#v40_feat_ws">WebService 機能拡張</a></li>
+  <li><a href="#v40_feat_mandatory">カスタムフィールドの必須化機能</a></li>
+  <li><a href="#v40_feat_vot_ext">投票機能は拡張機能に</a></li>
+  <li><a href="#v40_feat_js_css_update">ユーザへの新しい CSS, JavaScript の自動配信</a></li>
+  <li><a href="#v40_feat_hooks">たくさんの新しいフック箇所</a></li>
+  <li><a href="#v40_feat_apache_config">更新された Apache 設定</a></li>
+  <li><a href="#v40_feat_other">他の更新点と変更点</a></li>
 </ul>
 
-<h3 id="v40_feat_dup">Automatic Duplicate Detection When Filing
-  [%+ terms.Bugs %]</h3>
+<h3 id="v40_feat_dup">[% terms.Bugs %] 登録時の自動重複除去機能</h3>
 
-<p>When filing [% terms.abug %], as soon as you start typing in the summary
-  field, [% terms.Bugzilla %] will suggest possible duplicates of the
-  [%+ terms.bug %] you are filing.</p>
+<p>新規 [% terms.abug %] 登録時に要約フィールドへ入力すると同時に、
+  [% terms.Bugzilla %] は登録しようとしている [% terms.bug %] 
+  と重複の可能性がある既存の一覧を表示します。</p>
 
-<p>In order for this feature to work, all pre-requisites for JSON-RPC
-  support must be installed on your [% terms.Bugzilla %]. It will be
-  much faster on installations that run under mod_perl than it will
-  be on other installations.</p>
+<p>この機能が動作するためには JSON-RPC に必要なモジュールが全て [% terms.Bugzilla %]
+  が利用できるようにインストールされている必要があります。もし、mod_perl
+  が利用できる環境であればより高速に動作するでしょう。</p>
 
-<p>This automatic duplicate detection does not currently work for installations
-  running on PostgreSQL.</p>
+<p>この自動重複検知機能は PostgreSQL で動作しているサービスではうまく動きません。</p>
 
-<h3 id="v40_feat_search_ui">New Advanced Search UI</h3>
+<h3 id="v40_feat_search_ui">新しい高度な検索画面</h3>
 
-<p>Thanks to the UI work of <a href="http://guy-pyrzak.blogspot.com/">Guy
-  Pyrzak</a>, the Advanced Search UI has been completely redesigned.
-  It is now much simpler, and far more approachable for new users, while
-  still retaining all of the features that power users are used to.</p>
+<p><a href="http://guy-pyrzak.blogspot.com/">Guy Pyrzak</a> によるユーザインターフェース
+  更新作業により、高度な検索の画面が完全に新しく設計されなおしました。
+  画面がより単純になり、新しいユーザにも利用しやすく、しかしながら
+  これまでのよく利用していたユーザが必要とする全ての機能が含まれています。</p>
 
-<h3 id="v40_feat_attach_ui">New Attachment Details UI</h3>
+<h3 id="v40_feat_attach_ui">新しい添付の詳細画面</h3>
 
-<p>The UI used for editing attachment details has been completely
-  redesigned, allowing for a normally-size comment box to be used
-  when commenting on attachments, and allowing nearly the entire screen
-  width to be used when doing code reviews or editing an attachment as
-  a comment.</p>
+<p>添付の詳細を編集する画面が完全に再設計され、添付へのコメントを入力する際に
+  通常と同じサイズのコメント入力ボックスが利用可能になり、
+  添付の中身をコメントとしてコードレビューや編集する場合にも、
+  ほぼ画面幅全体が利用可能になりました。</p>
 
-<p>Thanks to <a href="http://guy-pyrzak.blogspot.com/">Guy Pyrzak</a> for
-  his excellent work on this UI redesign.</p>
+<p>このユーザインターフェース再設計は 
+  <a href="http://guy-pyrzak.blogspot.com/">Guy Pyrzak</a> によるもので、
+  そのすばらしい成果に感謝します。</p>
 
-<h3 id="v40_feat_autocomplete">Autocomplete for Users and Keywords</h3>
+<h3 id="v40_feat_autocomplete">ユーザとキーワードの自動補完</h3>
 
 <p>Once you type at least three characters in any field that can contain a user
   (including the [% field_descs.cc FILTER html %],
@@ -202,7 +190,7 @@
 <p>There is also a similar autocomplete for the Keywords field. The
   Keywords autocomplete does not require JSON-RPC.</p>
 
-<h3 id="v40_feat_ui">General Usability Improvements</h3>
+<h3 id="v40_feat_ui">一般的な使用感改善</h3>
 
 <p>In addition to the enhancements listed above, there have been
   <strong>many</strong> improvements made across the [% terms.Bugzilla %]
@@ -210,7 +198,7 @@
   see the <a href="#v40_feat_other">Other Enhancements and Changes</a>
   section.</p>
 
-<h3 id="v40_feat_workflow">New Default Status Workflow</h3>
+<h3 id="v40_feat_workflow">新しい既定のステータスワークフロー</h3>
 
 <p>For new installations of [% terms.Bugzilla %], the default set of
   statuses will now be:</p>
@@ -242,7 +230,7 @@
   <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=486292">[% terms.bug %]
   where the change was made</a>.</p>
 
-<h3 id="v40_feat_lists">"Last Search" Now Remembers Multiple Searches</h3>
+<h3 id="v40_feat_lists">"過去の検索" が複数の検索結果を保存</h3>
 
 <p>At the top of every [% terms.bug %] in [% terms.Bugzilla %], there are
   links that look like: "First", "Last", "Prev", "Next", and
@@ -257,7 +245,7 @@
   "guess" which search you are trying to navigate through, but it does its
   best to get it right.</p>
 
-<h3 id="v40_feat_jsonp">Cross-Domain WebServices with JSONP</h3>
+<h3 id="v40_feat_jsonp">JSONP によるクロスドメインウェブサービス</h3>
 
 <p>[% terms.Bugzilla %] now supports making WebService calls from
   another domain, inside of a web browser, thanks to support for
@@ -270,7 +258,7 @@
   <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html#JSONP">JSONP
   section</a> of the JSON-RPC WebService documentation.</p>
 
-<h3 id="v40_feat_ws">Major WebService Enhancements</h3>
+<h3 id="v40_feat_ws">WebService 機能拡張</h3>
 
 <p>The WebService has been expanded considerably. The WebService should now be
   able to do everything with [% terms.bugs %] that you can do via the
@@ -279,13 +267,13 @@
   <a href="#v40_feat_ws_changes">WebService Changes</a> section of these
   release notes.</p>
 
-<h3 id="v40_feat_mandatory">Mandatory Custom Fields</h3>
+<h3 id="v40_feat_mandatory">カスタムフィールドの必須化機能</h3>
 
 <p>You can now specify that certain custom fields are "mandatory",
   meaning that they must have a value when [% terms.abug %] is filed,
   and they can never be empty after that.</p>
 
-<h3 id="v40_feat_vot_ext">Voting Is Now An Extension</h3>
+<h3 id="v40_feat_vot_ext">投票機能は拡張機能に</h3>
 
 <p>All of the code for voting in [% terms.Bugzilla %] has been moved
   into an extension, called "Voting", in the <kbd>extensions/Voting/</kbd>
@@ -300,8 +288,7 @@
   to get addressed is for somebody to step up and offer to maintain the
   system outside of [% terms.Bugzilla %]'s core code.</p>
 
-<h3 id="v40_feat_js_css_update">Users Get New CSS and Javascript
-  Automatically</h3>
+<h3 id="v40_feat_js_css_update">ユーザへの新しい CSS, JavaScript の自動配信</h3>
   
 <p>In past versions of [% terms.Bugzilla %], if you changed
   [%+ terms.Bugzilla %]'s CSS or Javascript files, then every user of
@@ -316,13 +303,13 @@
   [%+ terms.Bugzilla %] in some cases, and so we recommend that all
   administrators install the optional Apache modules if possible.</p>
 
-<h3 id="v40_feat_hooks">Many New Hooks</h3>
+<h3 id="v40_feat_hooks">たくさんの新しいフック箇所</h3>
 
 <p>Many new code hooks have been added for use by Extensions,
   in [% terms.Bugzilla %] 4.0. Now Extensions can access and modify
   nearly every part of [% terms.Bugzilla %].</p>
 
-<h3 id="v40_feat_apache_config">New Apache Configuration</h3>
+<h3 id="v40_feat_apache_config">更新された Apache 設定</h3>
 
 <p>If you run [% terms.Bugzilla %] under Apache (as most people do),
   you most likely require a <strong>new Apache configuration</strong> 
@@ -330,7 +317,7 @@
   <a href="#v40_upgrading">Notes On Upgrading From a Previous Version</a>
   section for details.</p>
 
-<h3 id="v40_feat_other">Other Enhancements and Changes</h3>
+<h3 id="v40_feat_other">他の更新点と変更点</h3>
 
 <h4>Enhancements for Users</h4>
 
