@@ -176,32 +176,29 @@
 
 <h3 id="v40_feat_autocomplete">ユーザとキーワードの自動補完</h3>
 
-<p>Once you type at least three characters in any field that can contain a user
-  (including the [% field_descs.cc FILTER html %],
-  [%+ field_descs.qa_contact FILTER html %], or
-  [%+ field_descs.assigned_to FILTER html %] fields), a list will appear
-  containing all of the users whose real names or usernames match what you are
-  typing. Your [% terms.Bugzilla %] must have all of the optional Perl
-  modules required for JSON-RPC support installed, though, in order for
-  this feature to work. Also, this feature will be <strong>much</strong>
-  faster on installations that run under mod_perl than it will be on
-  other installations.</p>
+<p>ユーザを指定するフィールド
+  ([% field_descs.cc FILTER html %]、[%+ field_descs.qa_contact FILTER html %]、
+  [%+ field_descs.assigned_to FILTER html %] フィールドを含む) に最低3文字を入力すると、
+  実名もしくはユーザ名と合致する全ユーザのリストが表示されます。
+  この機能が動作するためには、[% terms.Bugzilla %] サイトで JSON-RPC に必要な
+  オプションの perl モジュールがインストールされている必要があります。
+  また、この機能は mod_perl 環境下で動作している場合に、そうでない環境に比べて
+  <strong>非常に</strong> 高速に動作するようになります。</p>
 
-<p>There is also a similar autocomplete for the Keywords field. The
-  Keywords autocomplete does not require JSON-RPC.</p>
+<p>また、同様の機能がキーワードフィールドでも利用可能になります。
+  キーワードの自動補完は JSON-RPC を必要としません。</p>
 
 <h3 id="v40_feat_ui">一般的な使用感改善</h3>
 
-<p>In addition to the enhancements listed above, there have been
-  <strong>many</strong> improvements made across the [% terms.Bugzilla %]
-  user interface. For a list of specific enhancements that were significant,
-  see the <a href="#v40_feat_other">Other Enhancements and Changes</a>
-  section.</p>
+<p>上述のような改善のほかに、<strong>さまざまな</strong>改善が [% terms.Bugzilla %]
+  のユーザインターフェース全体に行われました。それぞれの改善点のリストは
+  長くなるため、<a href="#v40_feat_other">他の更新点と変更点</a>
+  の章をご覧ください。</p>
 
 <h3 id="v40_feat_workflow">新しい既定のステータスワークフロー</h3>
 
-<p>For new installations of [% terms.Bugzilla %], the default set of
-  statuses will now be:</p>
+<p>[% terms.Bugzilla %] の新規インストールでは、ステータスの既定のリストは
+  以下のようになります :</p>
 
 <ul>
   <li>UNCONFIRMED</li>
@@ -211,118 +208,117 @@
   <li>VERIFIED</li>
 </ul>
 
-<p>And the UNCONFIRMED status will be enabled by default in all products.</p>
+<p>そして既定で UNCONFIRMED ステータスは全てのプロダクトで有効になっています。</p>
 
-<p>On upgrade, existing installations will not be affected--you will retain
-  your existing status workflow. However, we strongly recommend that you
-  update your existing workflow to the new one, using a special tool
-  we've included, <kbd>contrib/convert-workflow.pl</kbd>, which you
-  can run after you use <kbd>checksetup.pl</kbd> to upgrade. The
-  <kbd>whineatnews.pl</kbd> and <kbd>bugzilla-submit</kbd> scripts
-  will probably not work properly if you continue to use the old workflow
-  (though most other parts of [% terms.Bugzilla %] will still function
-  normally).</p>
+<p>既存のサイトのアップグレード時にはこれの影響を受けずに、これまでの
+  ステータスワークフローのままで利用できます。しかしながら、
+  <kbd>checksetup.pl</kbd> によるアップグレードの後に
+  <kbd>contrib/convert-workflow.pl</kbd> というリリースに含まれるツールを利用
+  して、この新しいリストに更新することを強くお勧めします。
+  <kbd>whineatnews.pl</kbd> と <kbd>bugzilla-submit</kbd> のスクリプトは
+  古いステータスワークフローを利用し続けていると完全には動作しなくなります。
+  ([% terms.Bugzilla %] のほかの部分は影響を受けずに動作するでしょう。)</p>
 
-<p>For more information about the workflow and our rationale for changing
-  it, see the
-  <a href="http://bugzillaupdate.wordpress.com/2010/07/06/bugzilla-4-0-has-a-new-default-status-workflow/">blog
-  post about it</a> and the
-  <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=486292">[% terms.bug %]
-  where the change was made</a>.</p>
+<p>ワークフローとそれに関連する変更についてのより詳細は、
+  <a href="http://bugzillaupdate.wordpress.com/2010/07/06/bugzilla-4-0-has-a-new-default-status-workflow/">
+  これについての blog 投稿 (英語)</a> と
+  <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=486292">
+  変更が行われることになった [% terms.bug %] (英語)</a>を参照してください。</p>
 
 <h3 id="v40_feat_lists">"過去の検索" が複数の検索結果を保存</h3>
 
-<p>At the top of every [% terms.bug %] in [% terms.Bugzilla %], there are
-  links that look like: "First", "Last", "Prev", "Next", and
-  "Show last search results". In earlier versions of [% terms.Bugzilla %],
-  if you did two separate searches in separate windows, these links would
-  only work for the <em>last</em> search you did. Now, [% terms.Bugzilla %]
-  will "remember" which search result you came from and give you the right
-  "last search results" or "next bug" from <em>that</em> list, instead of
-  always using your most recent search.</p>
+<p>[% terms.Bugzilla %] の全ての [% terms.bug %] ページのトップには、
+  "先頭"、"最後"、"前"、"次"、"最後の検索結果を表示" というリンクがあります。
+  以前の [% terms.Bugzilla %] バージョンでは、別々のウィンドウで二つの別の検索
+  を行った場合に、リンク先は <em>最後に行った</em> 検索のみになっていました。
+  しかしながら、改良後、[% terms.Bugzilla %] はどの検索結果からページを表示して
+  いるのかを "記憶" し、最後に行った検索の結果からでなく<em>その</em>
+  リストからの正しい "最後の検索結果" や "次の [% terms.bug %]" を、
+  表示します。</p>
 
-<p>There are still some situations where [% terms.Bugzilla %] will have to
-  "guess" which search you are trying to navigate through, but it does its
-  best to get it right.</p>
+<p>ただし、いくつかの場合に [% terms.Bugzilla %] がどの検索から表示したかを
+  "推定" できない可能性はあり、その場合には最も正しいと思われる結果が表示
+  されます。</p>
 
 <h3 id="v40_feat_jsonp">JSONP によるクロスドメインウェブサービス</h3>
 
-<p>[% terms.Bugzilla %] now supports making WebService calls from
-  another domain, inside of a web browser, thanks to support for
-  <a href="http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/">JSONP</a>.
-  This will allow for web "mash-ups" to use [% terms.Bugzilla %] data.
-  When using JSONP, you may only call functions that <em>get</em> data, 
-  you may not call functions that <em>change</em> data.</p>
+<p>[% terms.Bugzilla %] のウェブサービスは、
+  <a href="http://bob.pythonmac.org/archives/2005/12/05/remote-json-jsonp/">JSONP</a>
+  を利用して他のドメインからもウェブブラウザから利用できるようになりました。
+  これにより、[% terms.Bugzilla %] のデータからウェブ "マッシュアップ" 
+  することができるようになります。JSONP を利用する際は、データの <em>get</em>
+  だけしか呼ぶことができず、データの <em>更新</em> 機能を呼ぶことはできません。</p>
 
-<p>For more details, see the
+<p>より詳細については、JSON-RPC ウェブサービスのドキュメントの
   <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html#JSONP">JSONP
-  section</a> of the JSON-RPC WebService documentation.</p>
+  の章</a> をご覧ください。</p>
 
 <h3 id="v40_feat_ws">WebService 機能拡張</h3>
 
-<p>The WebService has been expanded considerably. The WebService should now be
-  able to do everything with [% terms.bugs %] that you can do via the
-  web interface, including updating [% terms.bugs %], adding attachments,
-  and getting attachment data. For specifics, see the
-  <a href="#v40_feat_ws_changes">WebService Changes</a> section of these
-  release notes.</p>
+<p>ウェブサービスの機能は大幅に拡充されました。すでに、ウェブサービス経由で
+  [% terms.bugs %] にウェブインターフェースから行えるほとんどの操作を、
+  [% terms.bugs %] の更新、添付の追加、添付データの取得などを含め、
+  行うことができるようになりました。詳細は、リリースノートの
+  <a href="#v40_feat_ws_changes">ウェブサービス機能の更新</a> 
+  の章をごらんください。</p>
 
 <h3 id="v40_feat_mandatory">カスタムフィールドの必須化機能</h3>
 
-<p>You can now specify that certain custom fields are "mandatory",
-  meaning that they must have a value when [% terms.abug %] is filed,
-  and they can never be empty after that.</p>
+<p>特定のカスタムフィールドを "必須" のフィールド、つまり [% terms.abug %] 
+  を登録する際に空白のままにはできないフィールドとして
+  指定できるようになりました。</p>
 
 <h3 id="v40_feat_vot_ext">投票機能は拡張機能に</h3>
 
-<p>All of the code for voting in [% terms.Bugzilla %] has been moved
-  into an extension, called "Voting", in the <kbd>extensions/Voting/</kbd>
-  directory. To enable it, you must remove the <kbd>disabled</kbd> file
-  from that directory, and run checksetup.pl.</p>
+<p>[% terms.Bugzilla %] に含まれる全ての投票機能に関連するコードは、
+  <kbd>extensions/Voting/</kbd> ディレクトリにある "Voting" 
+  という名前の拡張機能に移動されました。この拡張機能を有効にするには、
+  該当ディレクトリの <kbd>disabled</kbd> ファイルを削除した後、
+  <kbd>checksetup.pl</kbd> を実行してください。</p>
 
-<p>In a future version of [% terms.Bugzilla %], the Voting extension will
-  be moved outside of the [% terms.Bugzilla %] core code, so we are looking
-  for somebody who has an interest in the Voting system and would like to
-  maintain it as a separate extension. There are many enhancement requests
-  that have been made against the Voting system, and the best way for those
-  to get addressed is for somebody to step up and offer to maintain the
-  system outside of [% terms.Bugzilla %]'s core code.</p>
+<p>[% terms.Bugzilla %] の将来のバージョンでは、"Voting" 拡張機能は
+  [% terms.Bugzilla %] のコアのコードから切り離される予定で、
+  投票機能に興味があり別個の拡張としてメンテナンスすることに興味があるユーザ
+  を探そうとしています。投票機能にはさまざまな機能拡張要望がありましたが、
+  それらの要望を [% terms.Bugzilla %] のコアから切り離したシステムとして
+  メンテナンスすることができるようになりました。</p>
 
 <h3 id="v40_feat_js_css_update">ユーザへの新しい CSS, JavaScript の自動配信</h3>
   
-<p>In past versions of [% terms.Bugzilla %], if you changed
-  [%+ terms.Bugzilla %]'s CSS or Javascript files, then every user of
-  [%+ terms.Bugzilla %] would have to clear their cache in order to get
-  the updated files. Now, if you are using Apache as your webserver and
-  you have the <a href="#v40_req_apache">optional Apache modules</a>
-  installed, users will automatically get every new version of
-  [%+ terms.Bugzilla %]'s Javascript and CSS without having to clear
-  their caches.</p>
+<p>過去の [% terms.Bugzilla %] では、[% terms.Bugzilla %] の CSS や
+  JavaScript ファイルを更新した場合、更新を受け取るために [% terms.Bugzilla %] 
+  ユーザ側でキャッシュをクリアする必要がありました。
+  Apache をウェブサーバとして利用している場合、
+  <a href="#v40_req_apache">オプションの Apache モジュール</a>
+  を有効にしていれば、[% terms.Bugzilla %] の JavaScript や CSS の新バージョンが、
+  ユーザのキャッシュクリア操作なしに自動的に配信されるようになります。</p>
 
-<p>This feature also gives a slight performance speedup to
-  [%+ terms.Bugzilla %] in some cases, and so we recommend that all
-  administrators install the optional Apache modules if possible.</p>
+<p>この機能はいくつかの場面において [% terms.Bugzilla %] のパフォーマンス向上
+  にもつながるもので、全ての管理者に可能であればオプションの Apache 
+  モジュールを有効にすることを推奨します。</p>
 
 <h3 id="v40_feat_hooks">たくさんの新しいフック箇所</h3>
 
-<p>Many new code hooks have been added for use by Extensions,
-  in [% terms.Bugzilla %] 4.0. Now Extensions can access and modify
-  nearly every part of [% terms.Bugzilla %].</p>
+<p>[% terms.Bugzilla %] 4.0 では、拡張機能向けにさまざまな新しいコードフック
+  箇所が追加されています。これにより、[% terms.Bugzilla %] のほぼ全てのパート
+  について、拡張機能が利用し変更することができるようになりました。</p>
 
 <h3 id="v40_feat_apache_config">更新された Apache 設定</h3>
 
-<p>If you run [% terms.Bugzilla %] under Apache (as most people do),
-  you most likely require a <strong>new Apache configuration</strong> 
-  for this version of [% terms.Bugzilla %]. See the 
-  <a href="#v40_upgrading">Notes On Upgrading From a Previous Version</a>
-  section for details.</p>
+<p>[% terms.Bugzilla %] を Apache 上で動作させている場合 (ほとんどのユーザが
+  該当すると思われますが)、このバージョンの [% terms.Bugzilla %] 
+  については <strong>新しい Apache 設定</strong> を行う必要があるでしょう。
+  詳細については、
+  <a href="#v40_upgrading">以前のバージョンからのアップグレードについて</a>
+  の章をごらんください。</p>
 
 <h3 id="v40_feat_other">他の更新点と変更点</h3>
 
-<h4>Enhancements for Users</h4>
+<h4>ユーザ向けの更新</h4>
 
 <ul>
-  <li>Now, everywhere in [% terms.Bugzilla %] where you can enter a date,
+  <li>
+  Now, everywhere in [% terms.Bugzilla %] where you can enter a date,
     there is a Calendar widget where you can select the date on a
     calendar.</li>
   <li>The big icons on the front page have been replaced with much nicer
