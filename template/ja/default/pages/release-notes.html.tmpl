@@ -317,344 +317,327 @@
 <h4>ユーザ向けの更新</h4>
 
 <ul>
-  <li>
-  Now, everywhere in [% terms.Bugzilla %] where you can enter a date,
-    there is a Calendar widget where you can select the date on a
-    calendar.</li>
-  <li>The big icons on the front page have been replaced with much nicer
-    icons, thanks to Jon Pink of <a href="http://www.jpink.co.uk/">J.&nbsp;Pink&nbsp;Design</a>!</li>
-  <li><strong>[% terms.Bugs %]:</strong> When filing [% terms.bugs %],
-    you will now be warned if you forgot to fill in any mandatory fields,
-    <em>before</em> the page is submitted.</li>
-  <li><strong>[% terms.Bugs %]:</strong> When filing [% terms.abug %],
-    you can hover your mouse over any of the field labels on the page
-    to get a brief description of what that field is and what its purpose
-    is.</li>
-  <li><strong>[% terms.Bugs %]:</strong> When adding Hours Worked to [% terms.abug %],
-    you are no longer required to comment.</li>
-  <li><strong>[% terms.Bugs %]:</strong> There is now a user preference
-    for whether the comment box appears above or below the existing
-    comments.</li>
-  <li><strong>[% terms.Bugs %]:</strong> [% terms.Bugzilla %] will now
-    send an email for every comment that you mark or un-mark as being
-    private. (Previous versions of [% terms.Bugzilla %] did not send emails
-    to users about this change.) The state of comments being made private
-    is also now stored in [% terms.abug %]'s history.</li>
-  <li><strong>[% terms.Bugs %]:</strong> The box to "Add [% terms.Bug %] URLs"
-    in the See Also field is now hidden behind an "(add)" link that you
-    have to click to see the box.</li>
+  <li>[% terms.Bugzilla %] 内で日付を入力する箇所すべてで、
+    カレンダーウィジェットを利用してカレンダーから日付を選択できるように
+    なりました。</li>
+  <li>ホームの大きなアイコンがよりスマートなアイコンに更新されました。
+    <a href="http://www.jpink.co.uk/">J.&nbsp;Pink&nbsp;Design</a> によるものです !</li>
+  <li><strong>[% terms.Bugs %]:</strong> [% terms.bugs %] 登録時、
+    必須フィールドを全て埋めていなければ登録実行<em>前に</em>
+    警告が表示されるようになりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> [% terms.abug %] 登録時、
+    ページ内の全てのフィールドのラベルにマウスカーソルを当てることで、
+    そのフィールドがどのような目的であるかの簡単な説明が表示されるようになりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> [% terms.abug %] の作業時間を更新する
+    場合にコメントが必須ではなくなりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> 既存のコメントの上・下のどちらに、
+    入力ボックスを表示するかが、ユーザ設定の項目に追加されました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> [% terms.Bugzilla %] は、コメントが
+    プライベートとして設定・解除された際にメールを送信するようになりました。
+    (過去の [% terms.Bugzilla %] では変更時にはユーザにメールが配信されません
+    でした。) 同時に、コメントへのプライベートの設定は [% terms.abug %] 
+    の履歴にも掲載されるようになりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> 参照の部分にある、"[% terms.Bug %] 
+    URL を追加" のボックスは隠されるようになり、"(追加)" リンクをクリックした
+    時に表示されるようになりました。</li>
   
-  <li><strong>Searches:</strong> You can now properly search for field values
-    that have commas in their name, when using the Advanced Search form.</li>
-  <li><strong>Searches:</strong> The "URL" field can now be shown as a column
-    in search results.</li>
-  <li><strong>Searches:</strong> When viewing a search result, you can now
-    click on the Summary of the [% terms.bug %] in order to go to the
-    [%+ terms.bug %]-view page, in addition to being able to click on the
-    [%+ terms.bug %] ID.</li>
-  <li><strong>Searches:</strong> When doing a search using the "quicksearch"
-    box in the header or footer, the box will still contain what you searched
-    for when viewing the search results page.</li>
-  <li><strong>Searches:</strong> Multi-select custom fields can now be
-    shown as columns in the search results.</li>
-  <li><strong>Searches:</strong> When using the Boolean Charts (now called
-    "Custom Search"), if you specify both a criterion for an attachment
-    and a criteron for a flag, then only [% terms.bugs %] that have
-    attachments with that flag will be found.</li>
-  <li><strong>Searches:</strong> If you hover your mouse over the field labels
-    on the Advanced Search page, you will get a description of what that
-    field is.</li>
-  <li><strong>Searches:</strong> When searching via a saved search, if you
-    accidentally click on "Forget Search", there is a link to undo it.</li>
-  <li><strong>Searches:</strong> When using the Boolean Charts (now called
-    "Custom Search"), you can search for values "greater than or equal to"
-    or "less than or equal to" some value.</li>
+  <li><strong>検索:</strong> 名前にカンマが含まれるフィールドの値に対して、
+    詳細検索の画面から検索できるようになりました。</li>
+  <li><strong>検索:</strong> "URL" フィールドを検索結果のカラムとして
+    表示できるようになりました。</li>
+  <li><strong>検索:</strong> 検索結果の表示の際に、[% terms.bug %] ID 
+    のみでなく、[% terms.bug %] の要約をクリックすることでも [% terms.bug %] 
+    表示ページに移れるようになりました。</li>
+  <li><strong>検索:</strong> ヘッダ・フッタにある "簡易検索" ボックスから
+    検索を行う場合、ボックスへの入力内容が検索結果表示ページでも挿入され、
+    見ることができるようになりました。</li>
+  <li><strong>検索:</strong> 複数選択カスタムフィールドが検索結果表示の
+    カラムとして利用できるようになりました。</li>
+  <li><strong>検索:</strong> 論理式による検索 ("詳細検索" と呼ばれるようになり
+    ました) を利用するとき、添付についての条件とフラグについての条件を両方指定
+    した場合、添付がそのフラグを持つような [% terms.bugs %] が検索されます。</li>
+  <li><strong>検索:</strong> 詳細検索ページでフィールドラベルにマウスカーソルを
+    当てると、フィールドが何かについての説明が表示されます。</li>
+  <li><strong>検索:</strong> 保存された検索を利用した場合に、"検索条件を破棄"
+    するリンクを間違えてクリックしても、復活できるようになりました。</li>
+  <li><strong>検索:</strong> 論理式による検索 ("詳細検索" とよばれるようになり
+    ました) を利用するとき、同じ値について "より大きいか等しい" と
+    "より小さいか等しい" の両方を指定できるようになりました。</li>
   
-  <li><strong>Flags:</strong> If you hover your mouse over the name of
-    a flag setter when viewing [% terms.abug %], you can see that
-    flag setter's full name and complete username.</li>
-  <li><strong>Flags:</strong> When setting a flag on [% terms.abug %],
-    the box for entering a requestee does not appear until you set the flag
-    to "?", now.</li>
-  <li><strong>Flags:</strong> On the "My Requests" page, [% terms.bugs %]
-    that are restricted to certain groups now properly have the "padlock"
-    icon shown next to them to indicate that they may contain confidential
-    information.</li>
+  <li><strong>Flags:</strong> [% terms.abug %] 表示ページでフラグ設定者の名前
+    にマウスカーソルを当てると、フラグ設定者の実名と完全なユーザ名が表示される
+    ようになりました。</li>
+  <li><strong>Flags:</strong> [% terms.abug %] にフラグを設定する際、
+    フラグを "?" にするまで被要請者の入力ボックスが表示されないように
+    なりました。</li>
+  <li><strong>Flags:</strong> "わたしのリクエスト" ページで、特定のグループに
+    限定されている [% terms.bugs %] には "南京錠" アイコンが、
+    限定されている情報が含まれていることを示すためにつくようになりました。</li>
   
-  <li>When using the Reports interface, you can now choose many more fields
-    as the X, Y, or Z axis of a report, including custom fields.</li>
-  <li>[% terms.Bugzilla %] now prevents
-    Internet Explorer 8 and later from attempting to render
-    <kbd>text/plain</kbd> attachments as HTML.</li>
-  <li>If you receive a Whine mail that is empty, there will now be a brief
-    message explaining that your search found no results.</li>
-  <li>The <a href="page.cgi?id=fields.html">Field Help Page</a> now
-    contains a description of every single field that can be on
-    [%+ terms.abug %] in [% terms.Bugzilla %].</li>
+  <li>レポート画面において、X,Y,Z 軸に、カスタムフィールドを含む、
+    よりたくさんのフィールドを利用できるようになりました。</li>
+  <li>[% terms.Bugzilla %] は IE8 とそれ以降においても <kbd>txt/plain</kbd> 
+    添付を HTML として表示できるようになりました。</li>
+  <li>何も内容がない Whine メールに、検索結果が何もなかったことを示す
+    簡単なメッセージが含まれるようになりました。</li>
+  <li><a href="page.cgi?id=fields.html">フィールドのヘルプ</a> は、
+    [% terms.Bugzilla %] の [% terms.abug %] につけられる、
+    全てのフィールドについての説明が含まれるようになりました。</li>
 </ul>
 
-<h4>Enhancements for Administrators and Developers</h4>
+<h4>管理者と開発者向けの機能拡張</h4>
 
 <ul>
-  <li>The system for moving [% terms.bugs %] between installations has been
-    moved into an extension called <kbd>OldBugMove</kbd>. This system was used
-    by very few [% terms.Bugzilla %] installations--if you aren't certain
-    whether or not you are using it, you're not using it. To enable the system,
-    you have to remove the file <kbd>extensions/OldBugMove/disabled</kbd>
-    and then run checksetup.pl. In a future version of [% terms.Bugzilla %],
-    this extension may be moved outside of the core [% terms.Bugzilla %] code,
-    so if you are interested in maintaining it, please let us know.</li>
-  <li><strong>Custom Fields: </strong> "[% terms.Bug %] ID" custom fields can
-    now represent relationships between [% terms.bugs %], similarly to how the
-    [%+ field_descs.blocked FILTER html %] and
-    [%+ field_descs.dependson FILTER html %] fields work now.</li>
-  <li><strong>Custom Fields:</strong> You can now restrict the visibility
-    of custom fields and their values to a specific Component or
-    Classification.</li>
-  <li>The "keyword cache" has been removed. When you edit keywords, you no
-    longer will have to "rebuild the keyword cache" after you are done.</li>
-  <li>Running <kbd>./collectstats.pl --regenerate</kbd> will now take
-    minutes or hours, instead of days.</li>
-  <li>When using <kbd>email_in.pl</kbd>, there are two new switches,
-    <kbd>--default</kbd> and <kbd>--override</kbd>, which allow you to
-    specify certain default values or override specified values for
-    <kbd>@field</kbd> values sent in emails. (This also allows you to specify
-    defaults for everything so that people do not have to specify any field
-    values when filing [% terms.abug %] via email.)</li>
-  <li><strong>Installation:</strong> If you are using a localized version of
-    [%+ terms.Bugzilla %] and your terminal does not understand Unicode,
-    <kbd>checksetup.pl</kbd> will now attempt to output its messages in your
-    terminal's character set.</li>
-  <li><strong>Installation:</strong> [% terms.Bugzilla %] no longer needs empty
-    "placeholder" CSS in the <kbd>skins/custom</kbd> directory and other
-    directories. When you update, <kbd>checksetup.pl</kbd> will remove these.
-    This also significantly reduces the number of HTTP requests required to
-    load a page for the first time in [% terms.Bugzilla %].</li>
-  <li><strong>Installation:</strong> For Windows users, [% terms.Bugzilla %]
-    now supports Strawberry Perl fully.</li>
-  <li><strong>Installation:</strong> Now, whenever <kbd>checksetup.pl</kbd>
-    throws an error, it will be printed in the color red, to make it
-    obvious that something is wrong.</li>
-  <li><strong>Installation:</strong> Some actions of checksetup.pl were
-    silent, in the past. Now, checksetup.pl will print a message for
-    almost anything it does.</li>
-  <li><strong>Installation:</strong> The process of adding foreign keys
-    to a table is now much faster. This will particularly improve the speed
-    of upgrading from [% terms.Bugzilla %] 3.4 or earlier.</li>
-  <li>If you are using <kbd>jobqueue.pl</kbd> and email gets heavily delayed
-    for some reason, those emails will now have a Date header reflecting the
-    time they were <em>supposed</em> to be sent, instead of when they actually
-    <em>were</em> sent.</li>
-  <li><kbd>./jobqueue.pl install</kbd> now works on SuSE Linux.</li>
-  <li>[% terms.Bugzilla %] now runs much better in Apache's suexec mode
-    than it used to. As part of this, <kbd>checksetup.pl</kbd> sets
-    much stricter permissions on all the files in [% terms.Bugzilla %]
-    than it used to. In particular, any files that [% terms.Bugzilla %]
-    does not know about will not be readable by the webserver.</li>
-  <li>The <kbd>sendmailnow</kbd> parameter has been removed, as it was
-    not necessary for any modern version of Sendmail or other Mail Transfer
-    Agent.</li>
-  <li>When editing a user via the Users administration panel, you can now
-    see if they are a Default CC on any component.</li>
-  <li>For new installations of [% terms.Bugzilla %], all users will be
-    able to see and use the Whining system by default.</li>
-  <li>When you are using SSL with [% terms.Bugzilla %], you can now
-    turn on the <kbd>strict_transport_security</kbd> parameter to
-    send the
+  <li>サイト間の [% terms.bugs %] 移動機能は、<kbd>OldBugMove</kbd>
+    という拡張機能に移動されました。このシステムは非常に少数の [% terms.Bugzilla %]
+    サイトでのみ利用されていた機能で、もしシステムを利用しているかどうか
+    わからないという場合は利用していないことがほとんどです。
+    拡張機能を有効にするには <kbd>extensions/OldBugMove/disabled</kbd>
+    ファイルを削除して <kbd>chcksetup.pl</kbd> を再実行してください。
+    将来の [% terms.Bugzilla %] バージョンでは、この拡張機能が [% terms.Bugzilla %]
+    のコアのコードから削除される予定ですので、メンテナンスに興味がある方は
+    ご連絡ください。</li>
+  <li><strong>カスタムフィールド: </strong> "[% terms.Bug %] ID" 型の
+    カスタムフィールドで、[% field_descs.blocked FILTER html %] と
+    [% field_descs.dependson FILTER html %] フィールドのような、
+    [% terms.bugs %] 間の関係を指定できるようになりました。</li>
+  <li><strong>カスタムフィールド:</strong> カスタムフィールドとその値を、
+    特定のコンポーネントや Classification によって表示制限できるようになりました。</li>
+  <li>"キーワードキャッシュ" は必要なくなりました。キーワードを編集した際、
+    "キーワードキャッシュを再構築する" 操作を行わなくてもよくなりました。</li>
+  <li><kbd>./collectstats.pl --regenerate</kbd> に数日かかることはなくなり、
+    数分か数時間で終わるようになりました。</li>
+  <li><kbd>email_in.pl</kbd> に新しい二つのスイッチ
+    <kbd>--default</kbd> と <kbd>--override</kbd> が追加され、メールで送られて
+    くる<kbd>@field</kbd>の値に任意の既定値を設定したり特定の値を上書きできる
+    ようになりました。(これによりメール経由で [% terms.abug %] を追加する際に、
+    ユーザが既定値を利用することで、全てのフィールド値を指定しなくても済むよう
+    になります。)</li>
+  <li><strong>インストール:</strong> ローカライズされた [% terms.Bugzilla %]
+    を利用していて、Unicode を理解しないターミナルを利用している場合は、
+    <kbd>checksetup.pl</kbd> はあなたのロケールでメッセージを出力しなくなり
+    ました。</li>
+  <li><strong>インストール:</strong> [% terms.Bugzilla %] では、
+    <kbd>skins/custom</kbd> や他のディレクトリに空の "プレースホルダー" CSS 
+    ファイルを用意しておかなくてもよくなりました。アップグレード時に、
+    <kbd>checksetup.pl</kbd> はそれらを削除します。これにより、[% terms.Bugzilla %]
+    を始めて表示する際の HTTP リクエスト数をかなり減らすことができます。</li>
+  <li><strong>インストール:</strong> Windows で、[% terms.Bugzilla %]
+    が Strawberry Perl でも利用できるようになりました。</li>
+  <li><strong>インストール:</strong> <kbd>checksetup.pl</kbd> でエラーが発生
+    すると、どこであっても赤く表示されるようになり、なにか異常が発生したこと
+    が簡単にわかるようになりました。</li>
+  <li><strong>インストール:</strong> <kbd>checksetup.pl</kbd> のいくつかの
+    動作がなにも表示しませんでしたが、<kbd>chcksetup.pl</kbd> はほぼ全ての
+    動作について何らかのメッセージを表示するようになりました。</li>
+  <li><strong>インストール:</strong> テーブルに外部キーを追加する操作が高速化
+    しました。3.4 かそれ以降より [% terms.Bugzilla %] をアップグレードする際の
+    速度が向上します。</li>
+  <li><kbd>jobqueue.pl</kbd> を利用していてメールが何らかの理由で非常に遅れて
+    いる場合、メールの Date が送信 <em>されるべき</em> 時刻になっていましたが、
+    <em>実際に</em> 送信された時刻が入るようになりました。</li>
+  <li><kbd>./jobqueue.pl install</kbd> が SuSE Linux でもうごくようになりました。</li>
+  <li>[% terms.Bugzilla %] の Apache suexec モードでの動作がましになりました。
+    これに伴い、<kbd>checksetup.pl</kbd> は [% terms.Bugzilla %] の全ての
+    ファイル権限をより厳密に設定するようになりました。特に [% terms.Bugzilla %]
+    が認知していないファイルはウェブサーバから読めなくなります。</li>
+  <li><kbd>sendmailnow</kbd> パラメータは削除されました。最近の Sendmail
+    やその他のメール転送サーバ (MTA) では不要でした。</li>
+  <li>ユーザ管理パネルからユーザを編集する際、既定の CC に追加されている
+    コンポーネントが表示されるようになりました。</li>
+  <li>[% terms.Bugzilla %] の新規サイトでは、全てのユーザが Whine 機能を
+    利用できるようになる設定が既定になっています。</li>
+  <li>SSL 経由で [% terms.Bugzilla %] を利用している場合、
+    <kbd>strict_transport_security</kbd> パラメータを利用して、
+    セキュリティー向上のために
     <a href="https://developer.mozilla.org/en/Security/HTTP_Strict_Transport_Security">Strict-Transport-Security</a>
-    header with every HTTPS connection, for additional security.</li>
-  <li>New code hooks (see their documentation in
-    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Hook.html">Bugzilla::Hook</a>):
-    bug_check_can_change_field, search_operator_field_override,
+    ヘッダを全ての HTTPS 接続に対して追加できるようになりました。</li>
+  <li>新しいコードフックの追加 (ドキュメントは
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Hook.html">Bugzilla::Hook</a>
+    を参照): bug_check_can_change_field, search_operator_field_override,
     bugmail_relationships, object_columns, object_update_columns,
-    and object_validators. The colchange_columns hook has been removed,
-    as it is no longer necessary (buglist_columns will be used for data
-    about which columns can be on the buglist).</li>
-  <li>When [% terms.Bugzilla %] throws certain types of errors, it will
-    now include a "traceback" of where exactly the error occurred in the
-    code, to help administrators and developers debug problems.</li>
-  <li>There is now a test, <kbd>xt/search.t</kbd>, that assures that all
-    of the functionality of <kbd>Bugzilla::Search</kbd> is working properly.
-    If you customize the search functionality of [% terms.Bugzilla %],
-    you may wish to run this test to assure that your changes are correct.
-    You can see more information about running this test by doing
-    <kbd>perldoc xt/search.t</kbd> at the command line.</li>
+    object_validators。ただし、colchange_columns ｄのフックは削除されました。
+    (buglist_columns を [% terms.bug %] リストにどのカラムを表示するかの設定
+    に利用できます。)</li>
+  <li>[% terms.Bugzilla %] が特定の型のエラーを出した場合、コードでエラーが
+    発生したところの "トレースバック" を一緒に出力します。これは、
+    管理者や開発者が問題を同定するための助けになります。</li>
+  <li>テストコード <kbd>xt/search.t</kbd> が、<kbd>Bugzilla::Search</kbd> 
+    の全ての機能が正しく動作しているかの確認に利用できるようになりました。
+    [% terms.Bugzilla %] の検索機能をカスタマイズしている場合、
+    このテストを利用して変更が正しく行えているかを確認することもできます。
+    テストの実行に関しての詳細については、コマンドラインから
+    <kbd>perldoc xt/search.t</kbd> を実行すると見ることができます。</li>
 </ul>
 
-<h4 id="v40_feat_ws_changes">WebService Changes</h4>
+<h4 id="v40_feat_ws_changes">ウェブサービスの変更点</h4>
 
 <ul>
-  <li>You can now call some JSON-RPC methods using HTTP GET, in addition to
-    using HTTP POST. See the 
+  <li>いくつかの JSON-PRC メソッドを HTTP POST に加えて HTTP GET でも呼べるよう
+    になりました。詳細は
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html#Connecting_via_GET">JSON-RPC
-    documentation</a> for details.</li>
-  <li>You can now update existing [% terms.bugs %] using the
+    ドキュメント</a> を参照してください。</li>
+  <li>既存の [% terms.bugs %] を
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#update">B[% %]ug.update</a>
-    function.</li>
-  <li>You can now add attachments to [% terms.bugs %] using the
+    関数から更新できるようになりました。</li>
+  <li>[% terms.bugs %] への添付ファイルの追加が
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#add_attachment">B[% %]ug.add_attachment</a>
-    function.</li>
-  <li>The <kbd>B[% %]ug.get</kbd> function now returns all of [% terms.abug %]'s
-    information other than comments and attachments.</li>
-  <li><kbd>B[% %]ug.get</kbd> no longer returns the <kbd>internals</kbd> hash.</li>
-  <li>The <kbd>B[% %]ug.attachments</kbd> function now also returns attachment
-    data.</li>
-  <li>The following functions now support the <kbd>include_fields</kbd>
-    and <kbd>exclude_fields</kbd> arguments: <kbd>B[% %]ug.get</kbd>,
-    <kbd>B[% %]ug.search</kbd>, and <kbd>B[% %]ug.attachments</kbd>. Also,
-    server-side performance of the WebService is actually increased when
-    using these arguments, now, as [% terms.Bugzilla %] will no longer
-    get data from the database for fields you haven't asked for.</li>
-  <li>You can now mark the initial description of [% terms.abug %] as
-    private when filing [% terms.abug %] via the <kbd>B[% %]ug.create</kbd>
-    function.</li>
-  <li>You can now specify groups to put [% terms.abug %] in, in the
+    関数からできるようになりました。</li>
+  <li><kbd>B[% %]ug.get</kbd> 関数は、コメントや添付だけでなく、
+    全ての [% terms.abug %] 情報を返すようになりました。</li>
+  <li><kbd>B[% %]ug.get</kbd> はハッシュ値 <kbd>internals</kbd> を返さなくなりました。</li>
+  <li><kbd>B[% %]ug.attachments</kbd> 関数が添付データそのものも返すように
+    なりました。</li>
+  <li>次の関数で <kbd>include_fields</kbd> と <kbd>exclude_fields</kbd>
+    の引数がサポートされるようになりました: <kbd>B[% %]ug.get</kbd>、
+    <kbd>B[% %]ug.search</kbd>、 <kbd>B[% %]ug.attachments</kbd>。
+    また、これらのパラメータを指定した場合には、[% terms.Bugzilla %]
+    が必要とされないフィールドについてデータベースに問い合わせを行わなくなるため、
+    ウェブサービスのサーバが高速化します。</li>
+  <li><kbd>B[% %]ug.create</kbd> 関数経由で [% terms.abug %] を登録した際にも、
+    最初の説明をプライベートに設定することができるようになりました。</li>
+  <li>[% terms.abug %] をどのグループに制限するかを、
     <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService/Bug.html#create">B[% %]ug.create</a>
-    function. (This also means that you can specify groups when filing
-    [%+ terms.abug %] via email_in.pl.)</li>
-  <li>The <kbd>User.get</kbd> function now accepts <kbd>groups</kbd>
-    and <kbd>group_ids</kbd> arguments, to limit the returned values to
-    only users in the specified groups.</li>
-  <li>There is a new, undocumented B[% %]ug.possible_duplicates
-    function that helps implement the automatic duplicate detection
-    system. Because this function is not documented, its API may change
-    between releases of [% terms.Bugzilla %].</li>
-  <li>You can no longer search using the <kbd>votes</kbd> argument in
-    <kbd>B[% %]ug.search</kbd>.</li>
-  <li><kbd>B[% %]ug.attachments</kbd> now returns the attachment's description
-    using the name "summary" instead of the name "description", to be
-    consistent with the fact that [% terms.bug %] summaries are called
-    "summary". The value is still <em>also</em> returned as "description",
-    for backwards compatibility, but this backwards compatibility will go
-    away in [% terms.Bugzilla %] 5.0.</li>
-  <li>In the return values of various <kbd>B[% %]ug</kbd> functions, the author
-    of comments, [% terms.bugs %], and attachments is now called "creator",
-    instead of sometimes being called "reporter", "author", or "attacher".
-    The old names are retained for backwards-compatibility, and will stay
-    around until [% terms.Bugzilla %] 5.0.</li>
+    関数で指定できるようになりました。(また、これは同時に email_in.pl
+    経由で [%+ terms.abug %] を登録する際にもグループを指定できるようになった
+    ことを意味します。)</li>
+  <li><kbd>User.get</kbd> 関数が <kbd>groups</kbd> と <kbd>group_ids</kbd> 
+    引数を受け付けるようになり、これらにより特定のグループに所属するユーザ
+    のみを取得することができるようになります。</li>
+  <li>新しくドキュメント化されない B[% %]ug.possible_duplicates 関数が導入され、
+    自動重複検知システムの実装で利用されています。この関数はドキュメント化され
+    ておらず、[% terms.Bugzilla %] のリリース間で API が変更される可能性が
+    あります。</li>
+  <li><kbd>B[% %]ug.search</kbd> 関数で <kbd>votes</kbd> 引数を利用して検索
+    することができなくなりました。</li>
+  <li><kbd>B[% %]ug.attachments</kbd> が添付の説明を "summary" でなく、
+    [% terms.bug %] の要約が "summary" であるのとの整合性をとるために、
+    "description" で返すようになりました。ただし、後方互換性のために、
+    この値は "description" <em>でも</em> 返るようにはなっていますが、
+    [% terms.Bugzilla %] 5.0 までに廃止されます。</li>
+  <li>さまざまな <kbd>B[% %]ug</kbd> 関数の戻り値で、コメントや [% terms.bugs %]
+    や添付の作成者は "creator" として返るようになり、
+    "reporter"、"author" や "attacher" などは利用されなくなりました。
+    ただし、後方互換性のために、これまでと同じように返るようにはなっていますが、
+    [% terms.Bugzilla %] 5.0 までに廃止されます。</li>
 </ul>
 
-<h2 id="v40_issues">Outstanding Issues</h2>
+<h2 id="v40_issues">既知の問題</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=423439">
-    [%- terms.Bug %] 423439</a>: Tabs in comments will be converted
-    to four spaces, due to a b<!-- -->ug in Perl as of Perl 5.8.8.</li>
+    [%- terms.Bug %] 423439</a>: コメントのタブが 4 空白文字に変換される。
+    これは、Perl 5.8.8 に存在する Perl のバグです。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=89822">
-    [%- terms.Bug %] 89822</a>: When changing multiple [% terms.bugs %] at 
-    the same time, there is no "mid-air collision" protection.</li>
+    [%- terms.Bug %] 89822</a>: 複数 [% terms.bugs %] を一度に更新すると、
+    "操作衝突" の保護が働きません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=276230">
-    [%- terms.Bug %] 276230</a>: The support for restricting access to 
-    particular Categories of New Charts is not complete. You should treat 
-    the 'chartgroup' Param as the only access mechanism available.<br>
-    However, charts migrated from Old Charts will be restricted to 
-    the groups that are marked MANDATORY for the corresponding Product.
-    There is currently no way to change this restriction, and the 
-    groupings will not be updated if the group configuration
-    for the Product changes.</li>
+    [%- terms.Bug %] 276230</a>: 新しいチャートの特定のカテゴリでのアクセス制限機能は、
+    完全ではありません。'chartgroup' パラメータは、
+    アクセス方法が存在するかの機能として考えるべきです。<br>
+    しかしながら、旧チャートから変換されたチャートは、
+    関連するプロダクトで委任されているグループに制限されます。
+    この制限を変更する方法は現状ではありませんし、プロダクトの変更により、
+    グループ設定が更新されない限りアップグレードされません。</li>
 </ul>
 
-<h2 id="v40_upgrading">Notes On Upgrading From a Previous Version</h2>
+<h2 id="v40_upgrading">以前のバージョンからのアップグレードについての情報</h2>
 
-<h3>IMPORTANT: Apache Configuration Change</h3>
+<h3>重要: Apache の設定の変更</h3>
 
-<p>(Note: If your [% terms.Bugzilla %] runs under mod_perl or runs on some
-  other webserver than Apache, this section does not apply to you.)</p>
+<p>(注: [% terms.Bugzilla %] を mod_perl とともに動かしている場合や、Apache
+  以外のウェブサーバで動かしている場合は、この部分は適用しないでください。)</p>
 
-<p>You will need to update the configuration of Apache for 
-  [%+ terms.Bugzilla %]. In particular, this line in the [% terms.Bugzilla %]
-  <kbd>&lt;Directory&gt;</kbd> block:</p>
+<p>Apache の [%+ terms.Bugzilla %] 用の設定を更新する必要があります。
+  特に、次の [% terms.Bugzilla %] に関連する <kbd>&lt;Directory&gt;</kbd> 
+  の部分を変更してください:</p>
 
 <blockquote><code>AllowOverride Limit</code></blockquote>
 
-<p>needs to become:</p>
+<p>という行を次のようにします:</p>
 
 <blockquote><code>AllowOverride Limit FileInfo Indexes</code></blockquote>
  
-<p>For full details on how to configure Apache for [% terms.Bugzilla %],
-  see the
-  <a href="[% docs_urlbase FILTER html %]configuration.html#http-apache">Configuration</a>
-  section of the [% terms.Bugzilla %] Guide.</p>
+<p>Apache 用の [% terms.Bugzilla %] の設定の詳細については、
+  [% terms.Bugzilla %] ガイドの
+  <a href="[% docs_urlbase FILTER html %]configuration.html#http-apache">設定</a>
+  の章を参照してください。</p>
 
-<h3>New .htaccess file</h3>
+<h3>新しい .htaccess ファイル</h3>
 
-<p>In previous versions of [% terms.Bugzilla %], there was a file
-  in [% terms.Bugzilla %]'s root directory called ".htaccess" that was
-  generated by <kbd>checksetup.pl</kbd>. This file is now shipped with
-  [%+ terms.Bugzilla %] instead of being generated during installation.</p>
+<p>以前の [% terms.Bugzilla %] では、[% terms.Bugzilla %] のルートディレクトリに
+  ".htaccess" というファイルを <kbd>checksetup.pl</kbd> で生成していました。
+  このファイルは、インストール時の自動生成でなく [%+ terms.Bugzilla %] 
+  の一部として提供されるようになりました。</p>
 
-<p>If you update via CVS or bzr, you will get a message that your existing
-  .htaccess file conflicts with the new one. You must
-  <strong>remove your existing .htaccess file</strong> and use the new one
-  instead. Continuing to use your old .htaccess file will cause certain new
-  features of [% terms.Bugzilla %] to not work properly, and may also lead
-  to security issues for your system in the future.</p>
+<p>CVS や bzr 経由でアップグレードしている場合、既存の ".htaccess" ファイルが
+  更新時に衝突したというメッセージが表示されると思います。この場合、
+  まず <strong>既存の .htaccess ファイルを削除して</strong> から、
+  新しいファイルを利用してください。古い .htaccess ファイルを使いつづけると、
+  [% terms.Bugzilla %] の新機能の一部が完全には動作しなくなり、
+  将来的なシステムのセキュリティー問題にもつながる可能性があります。</p>
 
-<h2 id="v40_code_changes">Code Changes Which May Affect Customizations and
-  Extensions</h2>
+<h2 id="v40_code_changes">カスタマイズ・拡張機能に影響するコードの変更</h2>
 
 <ul>
-  <li>In Extensions, if you want to serve files to the user via the web,
-    they must now be in a <kbd>web/</kbd> subdirectory of your Extension.
-    (For example, <kbd>extensions/Foo/web/</kbd>). <kbd>checksetup.pl</kbd>
-    sets permissions on extensions much more strictly now, and files in
-    other locations (such as your base <kbd>extensions/Foo/</kbd> directory)
-    will no longer be available to [% terms.Bugzilla %] users via the web
-    under certain configurations.</li>
-  <li>Previous versions of [% terms.Bugzilla %] used to allow putting a
-    single file into the "skins" directory and having that be an entire
-    skin. That is no longer allowed, and on upgrade, <kbd>checksetup.pl</kbd>
-    will convert any such skins into a directory with a single
-    <kbd>global.css</kbd> file in them.</li>
-  <li>When updating [% terms.bugs %], you should now use
-    <code>$bug-&gt;set_all</code> instead of using the individual
-    <kbd>set_</kbd> methods. In particular, <kbd>set_all</kbd> is now the
-    <em>only</em> way to set the product of [% terms.abug %]. See
-    <kbd>process_bug.cgi</kbd> for an example of how <kbd>set_all</kbd>
-    should be used.</li>
-  <li>You should not insert &lt;script&gt; tags and &lt;link&gt; CSS tags
-    into HTML anymore, in Extensions or in your customizations. Instead,
-    you should push new values into the <kbd>style_urls</kbd> or
-    <kbd>javascript_urls</kbd> parameters. If you have to insert manual
-    tags for some reason, be sure to call "FILTER mtime" on the URL. (Search
-    for other uses of "FILTER mtime" in the templates to see how it is
-    used.)</li>
-  <li>When calling <kbd>Bugzilla::BugMail::Send</kbd>, the "changer"
-    argument must now be a <kbd>Bugzilla::User</kbd> object, not just
-    a login name. The "owner" and "qacontact" arguments are still
-    just login names.</li>
-  <li>When creating a new subclass of Bugzilla::Object, you should no
-    longer use <kbd>UPDATE_VALIDATORS</kbd>. Also, in most cases you will
-    no longer need to override <kbd>run_create_validators</kbd>. Instead,
-    there is a new constant called
-    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Object.html#VALIDATOR_DEPENDENCIES">VALIDATOR_DEPENDENCIES</a>,
-    that specifies that certain fields have to be validated before other fields.
-    Then, all validators receive each already-validated value in a hash
-    as their fourth argument, so each validator can know the other values
-    that were passed in, while an object is being created. For an example of
-    how to use <kbd>VALIDATOR_DEPENDENCIES</kbd>, see
-    <kbd>Bugzilla/Field.pm</kbd>.</li>
-  <li>In previous versions of [% terms.Bugzilla %], you had to call
-    <code>Bugzilla-&gt;template_inner("")</code> after any time
-    that you called <kbd>template_inner</kbd> for a specific language.
-    It is no longer necessary to do this second <kbd>template_inner</kbd>
-    call.</li>
-  <li><kbd>post_bug.cgi</kbd> and <kbd>Bugzilla::Bug-&gt;create</kbd> now take
-    the <em>names</em> of groups instead of group ids.</li>
-  <li>Bugzilla::Bugmail now uses Bugzilla::Bug objects internally instead of
-    a lot of direct SQL.</li>
-  <li>For sending changes about [% terms.bugs %], there is now a method
-    called <kbd>send_changes</kbd> that you can call on Bugzilla::Bug
-    objects. For an example of its use, see <kbd>process_bug.cgi</kbd>.</li>
-  <li>The <kbd>Bugzilla::Search</kbd> class has been refactored, and should
-    now be easier to customize.</li>
-  <li>The <kbd>Bugzilla::Util::lsearch</kbd> function is gone. Use
-    <kbd>firstidx</kbd> from <kbd>List::MoreUtils</kbd>, instead.</li>
-  <li>[% terms.Bugzilla %] now includes YUI 2.8.2.</li>
+  <li>拡張機能からウェブ経由でユーザにファイルを提供する場合、拡張機能の中の
+    <kbd>web/</kbd> サブディレクトリに (たとえば、<kbd>extensions/Foo/web/</kbd>)
+    置く必要があります。<kbd>checksetup.pl</kbd> は拡張機能の中のファイル
+    についてより厳しい権限設定を行うため、(たとえば <kbd>extensions/Foo/</kbd>
+    のベースディレクトリなど) 他の場所に置いたファイルは、きちんと設定されている
+    [% terms.Bugzilla %] ではウェブ経由でユーザがアクセスすることが
+    できなくなります。</li>
+  <li>以前のバージョンの [% terms.Bugzilla %] では、"skins" ディレクトリに
+    スキンの全てを含んだ単一のファイルを置くことでも動作しました。
+    しかしながら、これは動作しなくなり、アップグレード時に <kbd>checksetup.pl</kbd>
+    はそのようなスキンのファイルから、単一の <kbd>global.css</kbd> 
+    ファイルがあるディレクトリに変換します。</li>
+  <li>[% terms.bugs %] の更新時、独立の <kbd>set_</kbd> メソッドでなく
+    <code>$bug-&gt;set_all</code> を利用すべきです。特に、[% terms.abug %] 
+    のプロダクトを設定する <em>唯一の</em> 方法が <kbd>set_all</kbd> 
+    になりました。どのように <kbd>set_all</kbd> を利用するかのサンプルには
+    <kbd>process_bug.cgi</kbd> をご覧ください。</li>
+  <li>HTML 内に &lt;script&gt; タグや &lt;link&gt; CSS タグを、拡張機能や
+    カスタマイズを問わず直接記入すべきではありません。替わりに、
+    <kbd>style_urls</kbd> もしくは <kbd>javascript_urls</kbd> パラメータに
+    追加したい値を入れるべきです。何らかの理由で直接記入すべき必要がある場合、
+    "FILTER mtime" を URL に対して呼んでください。
+    (テンプレートに対して "FILTER mtime" で検索すると利用方法が見つかります。)</li>
+  <li><kbd>Bugzilla::BugMail::Send</kbd> にアクセスする際、"changer"
+    引数はログイン名ではなく、<kbd>Bugzilla::User</kbd> 
+    オブジェクトでなければならなくなりました。"owner" と "qacontact" の引数は、
+    ログイン名のままです。</li>
+  <li>Bugzilla::Object のサブクラスを作成する場合、<kbd>UPDATE_VALIDATORS</kbd>
+    を使わないでください。また、ほとんどの場合では <kbd>run_create_validators</kbd>
+    をオーバーライドする必要もないでしょう。かわりに、
+    <a href="[% docs_urlbase FILTER html %]api/Bugzilla/Object.html#VALIDATOR_DEPENDENCIES">VALIDATOR_DEPENDENCIES</a>
+    定数を利用して特定のフィールドが他のフィールドの前に検証されるべきである
+    ことを指定できます。これを利用することで、全ての検証コードがすでに検証済みの
+    値のハッシュを4つ目の引数として受け取ることになり、オブジェクト生成時の
+    検証コードが他の値を参照することができるようになります。
+    <kbd>VALIDATOR_DEPENDENCIES</kbd> の利用方法については、
+    <kbd>Bugzilla/Field.pm</kbd> を参照してください。</li>
+  <li>[% terms.Bugzilla %] の以前のバージョンでは、ある言語に対して
+    <kbd>template_inner</kbd> を呼び出したあとに必ず
+    <code>Bugzilla-&gt;template_inner("")</code> を呼び出す必要があります。
+    この <kbd>template_inner</kbd> の呼び出しは必要なくなりました。</li>
+  <li><kbd>post_bug.cgi</kbd> と <kbd>Bugzilla::Bug-&gt;create</kbd> 
+    はグループ ID の代わりにグループ <em>名</em> を引数にとるようになりました。</li>
+  <li>Bugzilla::Bugmail は内部で直接多数の SQL を実行するのでなく、
+    Bugzilla::Bug オブジェクトを利用するようになりました。</li>
+  <li>[% terms.bugs %] の変更の送信は、Bugzilla::Bug オブジェクトの
+    <kbd>send_changes</kbd> メソッドを呼ぶことで行えるようになりました。
+    利用法については、<kbd>process_bug.cgi</kbd> を参照してください。</li>
+  <li><kbd>Bugzilla::Search</kbd> クラスはリファクタリングされ、
+    カスタマイズが容易になりました。</li>
+  <li><kbd>Bugzilla::Util::lsearch</kbd> 関数はなくなりました。
+    かわりに <kbd>List::MoreUtils</kbd> の <kbd>firstidx</kbd> 
+    を利用してください。</li>
+  <li>[% terms.Bugzilla %] には YUI 2.8.2 が同梱されるようになりました。</li>
 </ul>
 
 
-<h1 id="v40_previous">[% terms.Bugzilla %] 3.6 Release Notes</h1>
+<h1 id="v40_previous">[% terms.Bugzilla %] 3.6 リリースノート</h1>
 
 <ul class="bz_toc">
   <li><a href="#v36_introduction">導入</a></li>
