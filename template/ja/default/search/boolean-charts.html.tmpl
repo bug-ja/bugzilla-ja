@@ -84,7 +84,7 @@
         <input name="[% "value${chartnum}-${rownum}-${colnum}" %]" 
                value="[% col.value FILTER html %]"> 
 
-        <select name="[% "type${chartnum}-${rownum}-${colnum}" %]">
+        <select name="[% "field${chartnum}-${rownum}-${colnum}" %]">
           [% FOREACH field = fields %]
             <option value="[% field.name %]" [% "selected" IF field.name == col.field %]>
               [% field_descs.${field.name} || field.description FILTER html %]
