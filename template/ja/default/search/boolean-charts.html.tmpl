@@ -85,9 +85,10 @@
                value="[% col.value FILTER html %]"> 
 
         <select name="[% "type${chartnum}-${rownum}-${colnum}" %]">
-          [% FOREACH type = types %]
-            <option value="[% type.name %]"
-              [%- " selected" IF type.name == col.type %]>[% type.description %]</option>
+          [% FOREACH field = fields %]
+            <option value="[% field.name %]" [% "selected" IF field.name == col.field %]>
+              [% field_descs.${field.name} || field.description FILTER html %]
+            </option>
           [% END %]
         </select>
       </td>
