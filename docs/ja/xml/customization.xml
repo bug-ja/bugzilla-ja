@@ -437,77 +437,75 @@
   </section>
 
   <section id="cust-change-permissions">
-    <title>Customizing Who Can Change What</title>
+    <title>どのユーザがどの情報を変更できるかについてのカスタマイズ</title>
     
     <warning>
       <para>
-        This feature should be considered experimental; the Bugzilla code you
-        will be changing is not stable, and could change or move between 
-        versions. Be aware that if you make modifications as outlined here, 
-        you may have
-        to re-make them or port them if Bugzilla changes internally between
-        versions, and you upgrade.
+        この機能は試験的なものと考えてください。変更する対象となる Bugzilla 
+        コードは安定的なものではなく、バージョン間で変更や移動がある可能性が
+        あります。ここにあるような変更を行う場合は、
+        バージョン間のアップグレードを行う場合には、
+        その変更を再び書き直すかポートする必要がある可能性があります。
       </para>
     </warning>
       
     <para>
-      Companies often have rules about which employees, or classes of employees,
-      are allowed to change certain things in the bug system. For example, 
-      only the bug's designated QA Contact may be allowed to VERIFY the bug.
-      Bugzilla has been
-      designed to make it easy for you to write your own custom rules to define
-      who is allowed to make what sorts of value transition.
+      どの社員、もしくは社員グループがバグシステムの中でどのような変更を加えら
+      れるかについての決まりを持つ会社があるとします。たとえば、
+      バグの QA コンタクトのみがバグを VERIFY (確認済み) に変更できると
+      決められているかもしれません。Bugzilla ではだれがどのような変更を加えられ
+      るかについて、独自の規定を導入しやすいように設計されています。
     </para>
 
     <para>
-     By default, assignees, QA owners and users
-     with <emphasis>editbugs</emphasis> privileges can edit all fields of bugs, 
-     except group restrictions (unless they are members of the groups they 
-     are trying to change). Bug reporters also have the ability to edit some 
-     fields, but in a more restrictive manner. Other users, without 
-     <emphasis>editbugs</emphasis> privileges, can not edit 
-     bugs, except to comment and add themselves to the CC list.
+      既定では、担当者、QA 担当者、もしくは <emphasis>editbugs</emphasis> 
+      権限を持つユーザは、グループ権限での制限(ユーザが全ての必要なグループに
+      所属している場合は変更可能)を除き、どのバグのフィールドでも変更できます。
+      バグ報告者はいくつかのフィールドを書き換えられますが、制限されています。
+      <emphasis>editbugs</emphasis> 権限を持たない他のユーザは、
+      コメントを追加すると CC リストに追加するを除いて、バグを更新できません。
     </para> 
     
     <para>
-      For maximum flexibility, customizing this means editing Bugzilla's Perl 
-      code. This gives the administrator complete control over exactly who is
-      allowed to do what. The relevant method is called
-      <filename>check_can_change_field()</filename>,
-      and is found in <filename>Bug.pm</filename> in your
-      Bugzilla/ directory. If you open that file and search for
-      <quote>sub check_can_change_field</quote>, you'll find it.
+      最大限の自由度があるカスタマイズは、Bugzilla の Perl コードを編集する
+      ことです。これにより、管理者は誰が何をできるかについての完全な編集が
+      可能になります。これのためのメソッドは <filename>Bugzilla/</filename>
+      ディレクトリの中の <filename>Bug.pm</filename> に定義されている
+      <filename>check_can_change_field()</filename> です。
+      ファイルを開き、<quote>sub check_can_change_field</quote> 
+      を検索すると見つかるでしょう。
     </para>
     
     <para>
-      This function has been carefully commented to allow you to see exactly
-      how it works, and give you an idea of how to make changes to it.
-      Certain marked sections should not be changed - these are
-      the <quote>plumbing</quote> which makes the rest of the function work.
-      In between those sections, you'll find snippets of code like:
+      この関数には、どのように動作するのかが一目でわかるコメントが記述されており、
+      どのように変更すればいいのかがわかるようになっています。
+      特にマークしている部分を変更しないでください - その部分は関数のほかの部分
+      がきちんと動作するための <quote>つなぎ</quote> の部分です。
+      それらの部分の間に、コードサンプルが次のように記述されています :
       <programlisting>    # Allow the assignee to change anything.
+    # (担当者が全てを変更可能にする設定; 注: コードには日本語はありません)
     if ($ownerid eq $whoid) {
         return 1;
     }</programlisting>
-      It's fairly obvious what this piece of code does.
-    </para>      
+      この部分がコードで何を行っているかを示しています。
+    </para>
       
     <para>
-      So, how does one go about changing this function? Well, simple changes
-      can be made just by removing pieces - for example, if you wanted to 
-      prevent any user adding a comment to a bug, just remove the lines marked
-      <quote>Allow anyone to change comments.</quote> If you don't want the
-      Reporter to have any special rights on bugs they have filed, just
-      remove the entire section that deals with the Reporter.
+      ここで、何を堂変更すればいいのでしょうか？単純な変更としては、
+      提示されている部分を削除することです - たとえば、
+      どのユーザもコメントをバグに追加できないようにするには、
+      <quote>Allow anyone to change comments.</quote>
+      (<quote>全てのユーザがコメントを変更できるようにする)</quote>
+      という部分を削除します。報告者が登録したバグに対してどのような権限も
+      持たないようにするには、報告者に関連する全ての部分を削除してください。
     </para>
     
     <para>
-      More complex customizations are not much harder. Basically, you add
-      a check in the right place in the function, i.e. after all the variables
-      you are using have been set up. So, don't look at $ownerid before 
-      $ownerid has been obtained from the database. You can either add a
-      positive check, which returns 1 (allow) if certain conditions are true,
-      or a negative check, which returns 0 (deny.) E.g.:
+      より複雑な変更はより難しいものになります。基本的には、関数の正しい場所に
+      確認コードを追加することで、全ての値が設定されているかを確認すること
+      でしょう。ただし、$ownerid がデータベースから取得されるまで $ownerid 
+      の値を確認しないようにしてください。特定の条件が満たされたときに 1 (許可)
+      を返す正論理と、0 (却下) を返す負論理のどちらでも利用できます。例: 
       <programlisting>    if ($field eq "qacontact") {
         if (Bugzilla->user->in_group("quality_assurance")) {
             return 1;
@@ -516,12 +514,12 @@
             return 0;
         }
     }</programlisting>
-      This says that only users in the group "quality_assurance" can change
-      the QA Contact field of a bug.
+      この条件は、"quality_assurance" グループのユーザのみがバグの QA 
+      コンタクトを変更できるようにしています。
     </para>
 
     <para>
-      Getting more weird:
+      より複雑には以下のような記述も可能です。
       <programlisting><![CDATA[    if (($field eq "priority") &&
         (Bugzilla->user->email =~ /.*\@example\.com$/))
     {
@@ -532,36 +530,36 @@
             return 0;
         }
     }]]></programlisting>
-      This says that if the user is trying to change the priority field,
-      and their email address is @example.com, they can only do so if the
-      old value of the field was "P1". Not very useful, but illustrative.
+      この条件では、優先度を設定しようとしていて、メールアドレスが 
+      @example.com である場合は、変更前の値が "P1" である場合のみ変更可能
+      にしています。あまり利用場面はありませんが、一つの実例です。
     </para>
 
     <warning>
       <para>
-        If you are modifying <filename>process_bug.cgi</filename> in any
-        way, do not change the code that is bounded by DO_NOT_CHANGE blocks.
-        Doing so could compromise security, or cause your installation to
-        stop working entirely.
+        <filename>process_bug.cgi</filename> をこの方法で変更する場合、
+        DO_NOT_CHANGE ブロックで囲まれたコードを変更しないでください。
+        この部分を変更すると、セキュリティー上の問題が発生したり、
+        完全に動作しなくなる可能性があります。
       </para>
     </warning>
     
     <para>
-      For a list of possible field names, look at the bugs table in the 
-      database. If you need help writing custom rules for your organization,
-      ask in the newsgroup.
+      利用可能なフィールド名は、データベースの bugs テーブルを参照してください。
+      組織内向けに独自ルールを記述するための手助けが必要なら、
+      ニュースグループで聞いてみてください。
     </para>    
   </section>   
 
   <section id="integration">
-    <title>Integrating Bugzilla with Third-Party Tools</title>
+    <title>Bugzilla をサードパーティー製ツールと統合する</title>
 
     <para>
-      Many utilities and applications can integrate with Bugzilla,
-      either on the client- or server-side. None of them are maintained
-      by the Bugzilla community, nor are they tested during our
-      QA tests, so use them at your own risk. They are listed at
-      <ulink url="https://wiki.mozilla.org/Bugzilla:Addons" />.
+      クライアントサイド・サーバサイドを問わず、さまざまなユーティリティーや
+      アプリケーションが Bugzilla に統合可能です。Bugzilla 本体では
+      メンテナンスされておらず、Bugzilla リリース時の QA テストの対象外です
+      ので、独自判断でご利用ください。
+      <ulink url="https://wiki.mozilla.org/Bugzilla:Addons" /> にリストがあります。
     </para>
   </section>
 
