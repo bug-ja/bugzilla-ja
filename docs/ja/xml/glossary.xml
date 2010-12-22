@@ -1,22 +1,18 @@
 <!-- <!DOCTYPE glossary PUBLIC "-//OASIS//DTD DocBook V4.1//EN" > -->
 <glossary id="glossary">
   <glossdiv>
-    <title>0-9, high ascii</title>
+    <title>0-9、特殊文字</title>
 
     <glossentry id="gloss-htaccess">
       <glossterm>.htaccess</glossterm>
 
       <glossdef>
-        <para>Apache web server, and other NCSA-compliant web servers,
-        observe the convention of using files in directories called 
-        <filename>.htaccess</filename>
-
-        to restrict access to certain files. In Bugzilla, they are used
-        to keep secret files which would otherwise
-        compromise your installation - e.g. the 
-        <filename>localconfig</filename>
-        file contains the password to your database.
-        curious.</para>
+        <para>Apache ウェブサーバや、他の NCSA 互換のウェブサーバでは、
+        ディレクトリの中の <filename>.htaccess</filename> ファイルを
+        特定ファイルへのアクセス制限を行うためのデータとして利用します。
+        Bugzilla では <filename>localconfig</filename> のように、
+        データベースパスワードなどのサイトにおける秘密情報が含まれる
+        ファイルを隠しておくために利用しています。</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -28,61 +24,56 @@
       <glossterm>Apache</glossterm>
 
       <glossdef>
-        <para>In this context, Apache is the web server most commonly used
-        for serving up Bugzilla 
-        pages. Contrary to popular belief, the apache web server has nothing
-        to do with the ancient and noble Native American tribe, but instead
-        derived its name from the fact that it was 
-        <quote>a patchy</quote>
-        version of the original 
-        <acronym>NCSA</acronym>
-        world-wide-web server.</para>
+        <para>この文脈では、Apache は Bugzilla を動かすために最も一般的に
+        利用されているウェブサーバをさします。一般的な用語と違い、Apache 
+        ウェブサーバは古くからの気高いネイティブアメリカン部族ではなく、
+        オリジナルの <acronym>NCSA</acronym> ウェブサーバに
+        <quote>a patchy (つぎはぎされた)</quote> バージョンを意味します。</para>
 
         <variablelist>
-          <title>Useful Directives when configuring Bugzilla</title>
+          <title>Bugzilla と利用する際の有用な設定項目</title>
 
           <varlistentry>
             <term><computeroutput><ulink url="http://httpd.apache.org/docs-2.0/mod/core.html#addhandler">AddHandler</ulink></computeroutput></term>
             <listitem>
-              <para>Tell Apache that it's OK to run CGI scripts.</para>
+              <para>Apache に CGI スクリプトの実行を許可します。</para>
             </listitem>
           </varlistentry>
           <varlistentry>
             <term><computeroutput><ulink url="http://httpd.apache.org/docs-2.0/mod/core.html#allowoverride">AllowOverride</ulink></computeroutput></term>
             <term><computeroutput><ulink url="http://httpd.apache.org/docs-2.0/mod/core.html#options">Options</ulink></computeroutput></term>
             <listitem>
-              <para>These directives are used to tell Apache many things about
-              the directory they apply to. For Bugzilla's purposes, we need
-              them to allow script execution and <filename>.htaccess</filename>
-              overrides.
+              <para>これらにより Apache にディレクトリに適用するさまざまな設定を
+              行うことができます。Bugzilla では、スクリプトの実行の許可と
+              <filename>.htaccess</filename> による設定を許可するために利用します。
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
             <term><computeroutput><ulink url="http://httpd.apache.org/docs-2.0/mod/mod_dir.html#directoryindex">DirectoryIndex</ulink></computeroutput></term>
             <listitem>
-              <para>Used to tell Apache what files are indexes. If you can
-              not add <filename>index.cgi</filename> to the list of valid files,
-              you'll need to set <computeroutput>$index_html</computeroutput> to
-              1 in <filename>localconfig</filename> so
-              <command>./checksetup.pl</command> will create an
-              <filename>index.html</filename> that redirects to
-              <filename>index.cgi</filename>.
+              <para>どのファイルをインデックスとするかを Apache に設定します。
+              <filename>index.cgi</filename> を有効なファイルリストに追加できない場合、
+              <filename>localconfig</filename> 設定ファイルの
+              <computeroutput>$index_html</computeroutput> オプションを 1 
+              に設定して、<command>./checksetup.pl</command> が
+              <filename>index.cgi</filename> にリダイレクトする
+              <filename>index.html</filename> を生成するようにしてください。
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
             <term><computeroutput><ulink url="http://httpd.apache.org/docs-2.0/mod/core.html#scriptinterpretersource">ScriptInterpreterSource</ulink></computeroutput></term>
             <listitem>
-              <para>Used when running Apache on windows so the shebang line
-              doesn't have to be changed in every Bugzilla script.
+              <para>Apache を Windows で実行している場合に、Bugzilla スクリプトの
+              shebang 行 (先頭の行) を変更せずに利用するために設定します。
               </para>
             </listitem>
           </varlistentry>
         </variablelist>
 
-        <para>For more information about how to configure Apache for Bugzilla,
-        see <xref linkend="http-apache"/>.
+        <para>Bugzilla を Apache で利用するための設定の詳細については
+        <xref linkend="http-apache"/> を参照してください。
         </para>
       </glossdef>
     </glossentry>
@@ -95,26 +86,24 @@
       <glossterm>Bug</glossterm>
 
       <glossdef>
-        <para>A 
-        <quote>bug</quote>
-
-        in Bugzilla refers to an issue entered into the database which has an
-        associated number, assignments, comments, etc. Some also refer to a 
+        <para>Bugzilla における
+        <quote>bug</quote> は、データベースに
+        ID、担当者、コメントなどとともに登録された問題のことを意味します。
+        これらは Bugzilla のサイトによっては同じ意味で
         <quote>tickets</quote>
-        or 
-        <quote>issues</quote>; 
-        in the context of Bugzilla, they are synonymous.</para>
+        や
+        <quote>issues</quote>
+        として表されることもあります。</para>
       </glossdef>
     </glossentry>
 
     <glossentry>
-      <glossterm>Bug Number</glossterm>
+      <glossterm>Bug 番号</glossterm>
 
       <glossdef>
-        <para>Each Bugzilla bug is assigned a number that uniquely identifies
-        that bug. The bug associated with a bug number can be pulled up via a
-        query, or easily from the very front page by typing the number in the
-        "Find" box.</para>
+        <para>それぞれの Bugzilla bug はユニークに特定可能な番号を持ちます。
+        ある bug 番号を持つ bug を参照することが可能ですし、
+        トップページの "検索" ボックスに番号を入力することで表示できます。</para>
       </glossdef>
     </glossentry>
 
@@ -122,7 +111,8 @@
       <glossterm>Bugzilla</glossterm>
 
       <glossdef>
-        <para>Bugzilla is the world-leading free software bug tracking system.
+        <para>Bugzilla は bug トラッキングシステムとして世界的によく利用される
+        フリーソフトウェアです。
         </para>
       </glossdef>
     </glossentry>
@@ -135,21 +125,22 @@
       <glossterm>Common Gateway Interface</glossterm>
       <acronym>CGI</acronym>
       <glossdef>
-        <para><acronym>CGI</acronym> is an acronym for Common Gateway Interface. This is
-        a standard for interfacing an external application with a web server. Bugzilla
-        is an example of a <acronym>CGI</acronym> application.
+        <para><acronym>CGI</acronym> は "Common Gateway Interface" の略です。
+        これは、ウェブサーバで外部スクリプトを実行する標準的なインターフェースです。
+        Bugzilla は <acronym>CGI</acronym> アプリケーションとしても動作します。
         </para>
       </glossdef>
     </glossentry>
 
     <glossentry id="gloss-component">
-      <glossterm>Component</glossterm>
+      <glossterm>コンポーネント (Component)</glossterm>
 
       <glossdef>
-        <para>A Component is a subsection of a Product. It should be a narrow
-        category, tailored to your organization. All Products must contain at
-        least one Component (and, as a matter of fact, creating a Product
-        with no Components will create an error in Bugzilla).</para>
+        <para>コンポーネントはプロダクトの細分類です。
+        より組織の細かいところについてのカテゴリになります。
+        全てのプロダクトは最低一つのコンポーネント (そして実際には、
+        Bugzilla でコンポーネントなしのプロダクトを作成するとエラーになります)
+        を持たなければなりません。</para>
       </glossdef>
     </glossentry>
 
@@ -161,13 +152,12 @@
       <glossdef>
         <para>
         <acronym>CPAN</acronym>
-
-        stands for the 
-        <quote>Comprehensive Perl Archive Network</quote>. 
-        CPAN maintains a large number of extremely useful 
+        は、
+        <quote>Comprehensive Perl Archive Network</quote> の略です。
+        CPAN には非常に有用な膨大な数の
         <glossterm>Perl</glossterm>
-        modules - encapsulated chunks of code for performing a
-        particular task.</para>
+        モジュール - ある操作を実行するカプセル化されたコードの塊、
+        が登録されています。</para>
       </glossdef>
     </glossentry>
 
@@ -175,16 +165,16 @@
       <glossterm><filename class="directory">contrib</filename></glossterm>
 
       <glossdef>
-        <para>The <filename class="directory">contrib</filename> directory is
-        a location to put scripts that have been contributed to Bugzilla but
-        are not a part of the official distribution. These scripts are written
-        by third parties and may be in languages other than perl. For those
-        that are in perl, there may be additional modules or other requirements
-        than those of the official distribution.
+        <para><filename class="directory">contrib</filename> ディレクトリは、
+        Bugzilla の公式な配布物ではないものの、提供されたスクリプトが置かれて
+        いる場所になります。これらのスクリプトはサードパーティーによって提供
+        されたもので、Perl 以外の言語で書かれていることもあります。Perl 
+        で書かれているスクリプトでも、Bugzilla で必要なモジュール以外に
+        追加のモジュールが必要な場合があります。
         <note>
-          <para>Scripts in the <filename class="directory">contrib</filename>
-          directory are not officially supported by the Bugzilla team and may
-          break in between versions.
+          <para><filename class="directory">contrib</filename> ディレクトリの
+          スクリプトは Bugzilla チームによって公式にサポートされておらず、
+          バージョン間で動作しなくなる可能性もあります。
           </para>
         </note>
         </para>
@@ -196,29 +186,28 @@
     <title>D</title>
 
     <glossentry id="gloss-daemon">
-      <glossterm>daemon</glossterm>
+      <glossterm>デーモン (daemon)</glossterm>
 
       <glossdef>
-        <para>A daemon is a computer program which runs in the background. In
-        general, most daemons are started at boot time via System V init
-        scripts, or through RC scripts on BSD-based systems. 
-        <glossterm>mysqld</glossterm>, 
-        the MySQL server, and 
-        <glossterm>apache</glossterm>, 
-        a web server, are generally run as daemons.</para>
+        <para>デーモンはバックグラウンドで動作するプログラムです。
+        一般的に、ほとんどのデーモンは System V init スクリプトもしくは、
+        BSD ベースのシステムの RC スクリプトから、
+        システムの起動時に起動されます。
+        <glossterm>mysqld</glossterm> (MySQL サーバ) や、
+        <glossterm>apache</glossterm> (ウェブサーバ) は、
+        一般的にデーモンとして起動されます。</para>
       </glossdef>
     </glossentry>
     
     <glossentry id="gloss-dos">
-      <glossterm>DOS Attack</glossterm>
+      <glossterm>DOS アタック</glossterm>
       
       <glossdef>
-        <para>A DOS, or Denial of Service attack, is when a user attempts to
-        deny access to a web server by repeatedly accessing a page or sending
-        malformed requests to a webserver. A D-DOS, or
-        Distributed Denial of Service attack, is when these requests come
-        from multiple sources at the same time. Unfortunately, these are much
-        more difficult to defend against.
+        <para>DOS もしくは "サービス拒否" 攻撃は、ウェブサーバに細工された
+        リクエストを送る、または非常に多数回のページ要求を送ることで、
+        ユーザがサービスを利用できない状態にするものです。D-DOS もしくは
+        "分散サービス拒否" 攻撃では、それらのリクエストが同時に多数の送信元
+        から送られます。不運にも、この種の攻撃に対する防御は難しいです。
         </para>
       </glossdef>
     </glossentry>
@@ -229,19 +218,15 @@
     <title>G</title>
 
     <glossentry id="gloss-groups">
-      <glossterm>Groups</glossterm>
+      <glossterm>グループ (Groups)</glossterm>
 
       <glossdef>
-        <para>The word 
-        <quote>Groups</quote>
-
-        has a very special meaning to Bugzilla. Bugzilla's main security
-        mechanism comes by placing users in groups, and assigning those
-        groups certain privileges to view bugs in particular
-        <glossterm>Products</glossterm>
-        in the 
-        <glossterm>Bugzilla</glossterm>
-        database.</para>
+        <para>
+        <quote>Groups</quote> は Bugzilla では特別な意味を持ちます。
+        Bugzilla の主要なセキュリティー機構はグループにユーザを加えるところ
+        から始まり、<glossterm>Bugzilla</glossterm> データベースの特定の
+        <glossterm>プロダクト</glossterm> に登録されたバグを
+        表示する権限をグループに割り振るなどが可能です。</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -252,7 +237,9 @@
     <glossentry id="gloss-javascript">
       <glossterm>JavaScript</glossterm>
       <glossdef>
-        <para>JavaScript is cool, we should talk about it.
+        <para>JavaScript はクールな有用なものです。
+        (訳注: ウェブブラウザ内で一般的に利用されるウェブページ向けの
+        スクリプト言語です。)
         </para>
       </glossdef>
     </glossentry>
@@ -262,15 +249,15 @@
     <title>M</title>
 
     <glossentry id="gloss-mta">
-      <glossterm>Message Transport Agent</glossterm>
+      <glossterm>メール転送エージェント (Message Transport Agent)</glossterm>
       <acronym>MTA</acronym>
 
       <glossdef>
-        <para>A Message Transport Agent is used to control the flow of email on a system.
-        The <ulink url="http://search.cpan.org/dist/Email-Send/lib/Email/Send.pm">Email::Send</ulink>
-        Perl module, which Bugzilla uses to send email, can be configured to
-        use many different underlying implementations for actually sending the
-        mail using the <option>mail_delivery_method</option> parameter.
+        <para>メール転送エージェントはシステムからのメールの送り先を制御します。
+        Bugzilla が利用する Perl モジュール
+        <ulink url="http://search.cpan.org/dist/Email-Send/lib/Email/Send.pm">Email::Send</ulink>
+        は、実際にメールを送信する段階ではさまざまな種類の機構を利用でき、
+        <option>mail_delivery_method</option> パラメータで設定可能です。
         </para>
       </glossdef>
     </glossentry>
@@ -279,32 +266,33 @@
       <glossterm>MySQL</glossterm>
 
       <glossdef>
-        <para>MySQL is currently the required
-        <glossterm linkend="gloss-rdbms">RDBMS</glossterm> for Bugzilla. MySQL
-        can be downloaded from <ulink url="http://www.mysql.com"/>. While you
-        should familiarize yourself with all of the documentation, some high
-        points are:
+        <para>MySQL は Bugzilla で利用可能な
+        <glossterm linkend="gloss-rdbms">RDBMS</glossterm> の一つで、
+        <ulink url="http://www.mysql.com"/> からダウンロードできます。
+        MySQL の利用法についてはドキュメントを参照していただければよいですが、
+        よく利用されるのは以下のものでしょう。
+        (訳注: 5.1 日本語版のドキュメントへのリンクに張り替えていますが、
+        Oracle の方針によって URL が変更になる可能性が高いでしょう。)
         </para>
         <variablelist>
           <varlistentry>
-            <term><ulink url="http://www.mysql.com/doc/en/Backup.html">Backup</ulink></term>
+            <term><ulink url="http://dev.mysql.com/doc/refman/5.1/ja/disaster-prevention.html">バックアップとリカバリ</ulink></term>
             <listitem>
-              <para>Methods for backing up your Bugzilla database.
+              <para>Bugzilla データベースのバックアップ方法について。
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term><ulink url="http://www.mysql.com/doc/en/Option_files.html">Option Files</ulink></term>
+            <term><ulink url="http://dev.mysql.com/doc/refman/5.1/ja/program-options.html">プログラムオプションの指定</ulink></term>
             <listitem>
-              <para>Information about how to configure MySQL using
-              <filename>my.cnf</filename>.
+              <para>MySQL を <filename>my.cnf</filename> を編集して設定する方法。
               </para>
             </listitem>
           </varlistentry>
           <varlistentry>
-            <term><ulink url="http://www.mysql.com/doc/en/Privilege_system.html">Privilege System</ulink></term>
+            <term><ulink url="http://dev.mysql.com/doc/refman/5.1/ja/privilege-system.html">アクセス権限システム</ulink></term>
             <listitem>
-              <para>Information about how to protect your MySQL server.
+              <para>MySQL サーバの安全確保の方法。
               </para>
             </listitem>
           </varlistentry>
@@ -317,7 +305,7 @@
     <title>P</title>
 
     <glossentry id="gloss-ppm">
-      <glossterm>Perl Package Manager</glossterm>
+      <glossterm>Perl パッケージマネージャー</glossterm>
       <acronym>PPM</acronym>
 
       <glossdef>
@@ -327,14 +315,14 @@
     </glossentry>
 
     <glossentry>
-      <glossterm id="gloss-product">Product</glossterm>
+      <glossterm id="gloss-product">プロダクト (Product)</glossterm>
 
       <glossdef>
-        <para>A Product is a broad category of types of bugs, normally
-        representing a single piece of software or entity. In general,
-        there are several Components to a Product. A Product may define a
-        group (used for security) for all bugs entered into
-        its Components.</para>
+        <para>プロダクトは広範囲のバグのカテゴリで、通常はソフトウェアや対象の
+        一つの部分に当てはめます。一般的に、プロダクトには複数のコンポーネント
+        を定義します。プロダクトにはそのコンポーネントに登録される全てのバグ
+        に対する (セキュリティーのための) グループを定義することも可能です。
+        </para>
       </glossdef>
     </glossentry>
 
@@ -342,13 +330,12 @@
       <glossterm>Perl</glossterm>
 
       <glossdef>
-        <para>First written by Larry Wall, Perl is a remarkable program
-        language. It has the benefits of the flexibility of an interpreted
-        scripting language (such as shell script), combined with the speed
-        and power of a compiled language, such as C. 
+        <para>Larry Wall によりはじめに作成された Perl は優れたプログラミング
+        言語です。(シェルスクリプトのような) インタプリタ型スクリプト言語の
+        自由度をもち、かつ C のようなコンパイルする言語のような速度と機能を
+        兼ね備えています。
         <glossterm>Bugzilla</glossterm>
-
-        is maintained in Perl.</para>
+        は Perl で記述されています。</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -361,18 +348,16 @@
 
       <glossdef>
         <para>
-        <quote>QA</quote>, 
-        <quote>Q/A</quote>, and 
+        <quote>QA</quote>、
+        <quote>Q/A</quote>、もしくは
         <quote>Q.A.</quote>
-        are short for 
-        <quote>Quality Assurance</quote>. 
-        In most large software development organizations, there is a team
-        devoted to ensuring the product meets minimum standards before
-        shipping. This team will also generally want to track the progress of
-        bugs over their life cycle, thus the need for the 
-        <quote>QA Contact</quote>
-
-        field in a bug.</para>
+        は、<quote>品質保証 (Quality Assurance)</quote> の略です。
+        ほとんどの大規模ソフトウェア開発組織では、プロダクトの出荷前に
+        最低限の標準に合致しているかを確認するチームがあります。
+        このチームは、通常バグのライフサイクルにわたる進捗の追跡もしている
+        でしょう。
+        このため、バグに <quote>QA コンタクト</quote> 用のフィールドが必要に
+        なります。</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -381,23 +366,23 @@
     <title>R</title>
 
     <glossentry id="gloss-rdbms">
-      <glossterm>Relational DataBase Management System</glossterm>
+      <glossterm>リレーショナルデータベース管理システム (Relational DataBase Management System)</glossterm>
       <acronym>RDBMS</acronym>
 
       <glossdef>
-        <para>A relational database management system is a database system
-        that stores information in tables that are related to each other.
+        <para>リレーショナルデータベース管理システムは、
+        互いに関連性のある表形式の情報を保管するデータベースシステムです。
         </para>
       </glossdef>
     </glossentry>
 
     <glossentry id="gloss-regexp">
-      <glossterm>Regular Expression</glossterm>
+      <glossterm>正規表現 (Regular Expression)</glossterm>
       <acronym>regexp</acronym>
 
       <glossdef>
-          <para>A regular expression is an expression used for pattern matching.
-              <ulink url="http://perldoc.com/perl5.6/pod/perlre.html#Regular-Expressions">Documentation</ulink>
+          <para>正規表現は、パターンマッチングに利用される表現方法です。
+              <ulink url="http://perldoc.com/perl5.6/pod/perlre.html#Regular-Expressions">参考文献</ulink>
         </para>
       </glossdef>
     </glossentry>
@@ -407,14 +392,13 @@
     <title>S</title>
 
     <glossentry id="gloss-service">
-      <glossterm>Service</glossterm>
+      <glossterm>サービス (Service)</glossterm>
       
       <glossdef>
-        <para>In Windows NT environment, a boot-time background application
-        is referred to as a service. These are generally managed through the
-        control panel while logged in as an account with
-        <quote>Administrator</quote> level capabilities. For more
-        information, consult your Windows manual or the MSKB.
+        <para>Windows NT では、起動時にバックエンドで起動するアプリケーションを
+        サービスと呼びます。これらは、通常 <quote>管理者</quote>
+        権限を持つアカウントでログインし、コントロールパネルから設定します。
+        より詳細については、Windows のマニュアルもしくは MSKB を参照してください。
         </para>
       </glossdef>
     </glossentry>
@@ -427,33 +411,28 @@
       <glossdef>
         <para>
         <acronym>SGML</acronym>
-
-        stands for 
-        <quote>Standard Generalized Markup Language</quote>. 
-        Created in the 1980's to provide an extensible means to maintain
-        documentation based upon content instead of presentation, 
+        は、
+        <quote>Standard Generalized Markup Language</quote> の略です。
+        1980 年代に文書を表示ではなく内容を元にして意味を持たせて処理するために
+        考案されたもので、
         <acronym>SGML</acronym>
-
-        has withstood the test of time as a robust, powerful language. 
+        は年を経るにつれロバストかつ強力な言語として認識されています。
         <glossterm>
           <acronym>XML</acronym>
         </glossterm>
-
-        is the 
-        <quote>baby brother</quote>
-
-        of SGML; any valid 
+        は SGML の
+        <quote>兄弟</quote>
+        のようなもので、全ての妥当な
         <acronym>XML</acronym>
-
-        document it, by definition, a valid 
+        文書は、その定義から
         <acronym>SGML</acronym>
-
-        document. The document you are reading is written and maintained in 
-        <acronym>SGML</acronym>, 
-        and is also valid 
+        としても妥当です。
+        このマニュアルも
+        <acronym>SGML</acronym>
+        で記述・メンテナンスされており、
+        DTD 部分を編集すれば
         <acronym>XML</acronym>
-
-        if you modify the Document Type Definition.</para>
+        としても妥当な文書になります。</para>
       </glossdef>
     </glossentry>
   </glossdiv>
@@ -462,18 +441,16 @@
     <title>T</title>
 
     <glossentry id="gloss-target-milestone" xreflabel="Target Milestone">
-      <glossterm>Target Milestone</glossterm>
+      <glossterm>ターゲットマイルストーン (Target Milestone)</glossterm>
 
       <glossdef>
-        <para>Target Milestones are Product goals. They are configurable on a
-        per-Product basis. Most software development houses have a concept of
-        
-        <quote>milestones</quote>
-
-        where the people funding a project expect certain functionality on
-        certain dates. Bugzilla facilitates meeting these milestones by
-        giving you the ability to declare by which milestone a bug will be
-        fixed, or an enhancement will be implemented.</para>
+        <para>ターゲットマイルストーンはプロダクトのゴールです。
+        プロダクトごとに設定します。ほとんどのソフトウェア開発会社は、
+        特定の機能を特定の期限までにプロジェクトに導入することを示すために
+        <quote>マイルストーン</quote>
+        を採用しているでしょう。Bugzilla の機能では、
+        どのマイルストーンでバグを修正する、もしくは機能拡張を実装するかを
+        示すためにこのようなマイルストーンを設定できるようにしています。</para>
       </glossdef>
     </glossentry>
 
@@ -481,10 +458,11 @@
       <glossterm>Tool Command Language</glossterm>
       <acronym>TCL</acronym>
       <glossdef>
-        <para>TCL is an open source scripting language available for Windows,
-        Macintosh, and Unix based systems. Bugzilla 1.0 was written in TCL but
-        never released. The first release of Bugzilla was 2.0, which was when
-        it was ported to perl.
+        <para>TCL はオープンソースのスクリプト言語で、Windows, Macintosh, 
+        Unix ベースのシステムで動作します。Bugzilla 1.0 は TCL で記述されて
+        いましたが、リリースされませんでした。
+        最初のリリースバージョンである Bugzilla 2.0 では、
+        Perl に移植されていました。
         </para>
       </glossdef>
     </glossentry>
@@ -494,30 +472,31 @@
     <title>Z</title>
 
     <glossentry id="gloss-zarro">
-      <glossterm>Zarro Boogs Found</glossterm>
+      <glossterm>検索結果は・・・なんにも言えねぇ. (Zarro Boogs Found)</glossterm>
 
       <glossdef>
-        <para>This is just a goofy way of saying that there were no bugs
-        found matching your query. When asked to explain this message,
-        Terry had the following to say:
+        <para>これは、単に検索条件に合致するバグが見つからなかったことを
+        間抜けな形で表現しているだけです。このメッセージについて説明するとき、
+        Terry は次のように表現していました。
         </para>
 
         <blockquote>
           <attribution>Terry Weissman</attribution>
-          <para>I've been asked to explain this ... way back when, when
-          Netscape released version 4.0 of its browser, we had a release
-          party.  Naturally, there had been a big push to try and fix every
-          known bug before the release. Naturally, that hadn't actually
-          happened.  (This is not unique to Netscape or to 4.0; the same thing
-          has happened with every software project I've ever seen.)  Anyway,
-          at the release party, T-shirts were handed out that said something
-          like "Netscape 4.0: Zarro Boogs". Just like the software, the
-          T-shirt had no known bugs.  Uh-huh.
+          <para>これについて説明を求められた、、たしか、
+          Netscape が 4.0 をリリースしたとき、リリースパーティーがありました。
+          普通、リリース前には全ての既知のバグを修正する強い要請があります。
+          そして、修正しきれることもあまりありませんが。
+          (Netscape や 4.0 でのことでなく、これまで見てきたどのソフトウェア
+          開発でも同じことでしたが。)
+          どちらにせよ、パーティーのときに、"Netscape 4.0: Zarro Boogs" 
+          というロゴが入った T シャツが配られたんです。
+          ソフトウェアみたいに、T シャツにも既知のバグはなかったわけです。ははは。
           </para>
 
-          <para>So, when you query for a list of bugs, and it gets no results,
-          you can think of this as a friendly reminder.  Of *course* there are
-          bugs matching your query, they just aren't in the bugsystem yet...
+          <para>ということで、バグを検索したとき、なにも結果がなければ、
+          この話を思い出してください。
+          *もちろん*、検索に引っかかるようなバグがなくても、
+          単に登録されていないだけでしょうけどね。
           </para>
         </blockquote>
 
