@@ -193,101 +193,98 @@
         をダウンロード (もしくは CVS からチェックアウト) して、
         ウェブブラウザが動作するユーザ (通常 <quote>apache</quote> や <quote>www</quote>
         でしょう) からアクセス可能な適切なディレクトリにおいてください。
-        
-        (or check it out from CVS) and place
-        it in a suitable directory, accessible by the default web server user 
-        (probably <quote>apache</quote> or <quote>www</quote>). 
-        Good locations are either directly in the web server's document directories or
-        in <filename>/usr/local</filename> with a symbolic link to the web server's 
-        document directories or an alias in the web server's configuration.
+        通常は、ウェブサーバのドキュメント用ディレクトリに直接置くか、
+        <filename>/usr/local</filename> においてウェブサーバのドキュメント用
+        ディレクトリにリンクを張る、もしくはウェブサーバの設定でエイリアスを設定する
+        ことになるでしょう。
       </para>
 
       <caution>
-        <para>The default Bugzilla distribution is NOT designed to be placed
-        in a <filename class="directory">cgi-bin</filename> directory. This
-        includes any directory which is configured using the
-        <option>ScriptAlias</option> directive of Apache.
+        <para>Bugzilla 配布物そのままでは、<filename class="directory">cgi-bin</filename> 
+        に置くように考えられていません。このディレクトリには、
+        Apache の <option>ScriptAlias</option> 設定を利用できるディレクトリ
+        のみを配置できます。
         </para>
       </caution>
       
-      <para>Once all the files are in a web accessible directory, make that
-      directory writable by your web server's user. This is a temporary step
-      until you run the 
+      <para>全てのファイルをウェブからアクセスできるディレクトリに置いた後、
+      ウェブサーバのユーザから書き込みできるようにしてください。ただし、これは
       <filename>checksetup.pl</filename>
-      script, which locks down your installation.</para>
+      スクリプトを実行するまでの一時的なもので、スクリプトによって
+      インストールが完了されます。</para>
     </section>
 
     <section id="install-perlmodules">
-      <title>Perl Modules</title>
+      <title>Perl モジュール</title>
       
-      <para>Bugzilla's installation process is based
-      on a script called <filename>checksetup.pl</filename>. 
-      The first thing it checks is whether you have appropriate 
-      versions of all the required
-      Perl modules. The aim of this section is to pass this check. 
-      When it passes, proceed to <xref linkend="configuration"/>.
+      <para>Bugzilla のインストールは <filename>checksetup.pl</filename>
+      というスクリプトによって基本的に行われます。
+      このスクリプトは最初に全ての必須の Perl モジュールがインストールされて
+      いるかを確認します。この説明はこの部分を通るようにするためのものです。
+      必要なモジュールの確認が済めば、<xref linkend="configuration"/>
+      に進んでください。
       </para>
       
       <para>
-      At this point, you need to <filename>su</filename> to root. You should
-      remain as root until the end of the install. To check you have the
-      required modules, run:
+      この時点では、<filename>su</filename> で root 権限になることが必要です。
+      インストールの最後まで root 権限であるほうが便利でしょう。
+      必要とされるモジュールの確認には次のコマンドを実行してください。
       </para>
       
       <screen><prompt>bash#</prompt> ./checksetup.pl --check-modules</screen>
  
       <para>
-        <filename>checksetup.pl</filename> will print out a list of the
-        required and optional Perl modules, together with the versions
-        (if any) installed on your machine.
-        The list of required modules is reasonably long; however, you 
-        may already have several of them installed.
+        <filename>checksetup.pl</filename> が必須・推奨 Perl モジュールのリスト
+        を (もしあれば) システムにインストールされているバージョンとともに
+        表示します。必須モジュールのリストは多少長いですが、
+        それらのいくつかはすでにインストールされているでしょう。
       </para>
       
       <para>
-        The preferred way to install missing Perl modules is to use the package
-        manager provided by your operating system (e.g <quote>rpm</quote> or
-        <quote>yum</quote> on Linux distros, or <quote>ppm</quote> on Windows
-        if using ActivePerl, see <xref linkend="win32-perl-modules"/>).
-        If some Perl modules are still missing or are too old, then we recommend
-        using the <filename>install-module.pl</filename> script (doesn't work
-        with ActivePerl on Windows). If for some reason you really need to
-        install the Perl modules manually, see
-        <xref linkend="install-perlmodules-manual"/>. For instance, on Unix,
-        you invoke <filename>install-module.pl</filename> as follows:
+        不足している Perl モジュールのインストール方法として推奨されるのは、
+        利用している OS で提供されているパッケージマネージャー (たとえば、
+        Linux ディストリビューションでの <quote>rpm</quote> や <quote>yum</quote>、
+        Windows で ActivePerl を利用している場合は <quote>ppm</quote> ですが
+        これについては <xref linkend="win32-perl-modules"/> を参照してください。)
+        それでもインストールできないや古い Perl モジュールがある場合は、
+        <filename>install-module.pl</filename> スクリプトの利用を推奨します
+        (ただし Windows での ActivePerl では動作しません)。
+        もし何らかの理由で Perl モジュールを手動でインストールする必要がある
+        場合は、<xref linkend="install-perlmodules-manual"/> を参照してください。
+        Unix では <filename>install-module.pl</filename> は以下のように実行
+        します。
       </para>  
         
       <screen><prompt>bash#</prompt> perl install-module.pl &lt;modulename&gt;</screen>
 
       <tip>
-        <para>Many people complain that Perl modules will not install for
-        them. Most times, the error messages complain that they are missing a
-        file in 
-        <quote>@INC</quote>.
-        Virtually every time, this error is due to permissions being set too
-        restrictively for you to compile Perl modules or not having the
-        necessary Perl development libraries installed on your system.
-        Consult your local UNIX systems administrator for help solving these
-        permissions issues; if you 
-        <emphasis>are</emphasis>
-        the local UNIX sysadmin, please consult the newsgroup/mailing list
-        for further assistance or hire someone to help you out.</para>
+        <para>たくさんのユーザが Perl モジュールが正常にインストールされない
+        といいますが、ほとんどの場合エラーメッセージは <quote>@INC</quote>
+        の中に見つからないというものです。
+        実際ほとんどは、このエラーは Perl モジュールをコンパイルするために必要
+        な権限よりもより厳しく設定されているか、必要な Perl の開発用ライブラリ
+        がシステムにインストールされていないことが原因です。
+        あなたの UNIX システム管理者に相談して、権限の問題を解決するか、
+        もしあなた <emphasis>が</emphasis> システム管理者なら、
+        ニュースグループやメーリングリストに相談するか、コンサルタントに
+        相談するなどで解決してください。</para>
       </tip>
 
       <note>
-        <para>If you are using a package-based system, and attempting to install the
-        Perl modules from CPAN, you may need to install the "development" packages for
-        MySQL and GD before attempting to install the related Perl modules. The names of
-        these packages will vary depending on the specific distribution you are using,
-        but are often called <filename>&lt;packagename&gt;-devel</filename>.</para>
+        <para>パッケージベースのシステムを利用している場合に、Perl モジュールを
+        CPAN 経由でインストールしようとすると、Perl モジュールのインストール前に
+        MySQL や GD の "開発版" パッケージをインストールしておく必要があります。
+        それらのパッケージの名前は利用しているディストリビューションによって
+        異なりますが、通常 <filename>&lt;パッケージ名&gt;-devel</filename> 
+        のような名前になっているでしょう。</para>
       </note>
  
       <para>
-        Here is a complete list of modules and their minimum versions.
-        Some modules have special installation notes, which follow.
+        以下にモジュールとその最低必要バージョンの完全なリストを示します。
+        いくつかのモジュールは特別な要件が追記されています。
       </para>
 
-      <para>Required Perl modules:
+      <para>必須 Perl モジュール:
       <orderedlist>
 
         <listitem>
@@ -322,19 +319,19 @@
 
         <listitem>
           <para>
-            DBD::mysql (&min-dbd-mysql-ver;) if using MySQL
+            DBD::mysql (&min-dbd-mysql-ver;) MySQL 利用時のみ
           </para>
         </listitem>
         
         <listitem>
           <para>
-            DBD::Pg (&min-dbd-pg-ver;) if using PostgreSQL
+            DBD::Pg (&min-dbd-pg-ver;) PostgreSQL 利用時のみ
           </para>
         </listitem>
 
         <listitem>
           <para>
-            DBD::Oracle (&min-dbd-oracle-ver;) if using Oracle
+            DBD::Oracle (&min-dbd-oracle-ver;) Oracle 利用時のみ
           </para>
         </listitem>
 
@@ -369,151 +366,151 @@
         </listitem>
       </orderedlist>
 
-      Optional Perl modules:
+      オプション (推奨) Perl モジュール:
       <orderedlist>
         <listitem>
           <para>
-            GD (&min-gd-ver;) for bug charting
+            GD (&min-gd-ver;) バグのチャート用
           </para>
         </listitem>
 
         <listitem>
           <para>
             Template::Plugin::GD::Image
-            (&min-template-plugin-gd-image-ver;) for Graphical Reports
+            (&min-template-plugin-gd-image-ver;) 画像形式のレポート用
           </para>
         </listitem>
 
         <listitem>
           <para>
-            Chart::Lines (&min-chart-lines-ver;) for bug charting
+            Chart::Lines (&min-chart-lines-ver;) バグのチャート用
           </para>
         </listitem>
 
         <listitem>
           <para>
-            GD::Graph (&min-gd-graph-ver;) for bug charting
+            GD::Graph (&min-gd-graph-ver;) バグのチャート用
           </para>
         </listitem>
 
         <listitem>
           <para>
-            GD::Text (&min-gd-text-ver;) for bug charting
+            GD::Text (&min-gd-text-ver;) バグのチャート用
           </para>
         </listitem>
 
         <listitem>
           <para>
-            XML::Twig (&min-xml-twig-ver;) for bug import/export
+            XML::Twig (&min-xml-twig-ver;) バグのインポート・エクスポート用
           </para>
         </listitem>
 
         <listitem>
           <para>
-            MIME::Parser (&min-mime-parser-ver;) for bug import/export
+            MIME::Parser (&min-mime-parser-ver;) バグのインポート・エクスポート用
           </para>
         </listitem>
 
         <listitem>
           <para>
             LWP::UserAgent
-            (&min-lwp-useragent-ver;) for Automatic Update Notifications
+            (&min-lwp-useragent-ver;) 事項更新通知用
           </para>
         </listitem>
 
         <listitem>
           <para>
-            PatchReader (&min-patchreader-ver;) for pretty HTML view of patches
+            PatchReader (&min-patchreader-ver;) パッチの HTML での見やすい表示
           </para>
         </listitem>
 
         <listitem>
           <para>
             Net::LDAP
-            (&min-net-ldap-ver;) for LDAP Authentication
+            (&min-net-ldap-ver;) LDAP 認証
           </para>
         </listitem>
 
         <listitem>
           <para>
             Authen::SASL
-            (&min-authen-sasl-ver;) for SASL Authentication
+            (&min-authen-sasl-ver;) SASL 認証
           </para>
         </listitem>
 
         <listitem>
           <para>
             Authen::Radius
-            (&min-authen-radius-ver;) for RADIUS Authentication
+            (&min-authen-radius-ver;) RADIUS 認証
           </para>
         </listitem>
 
         <listitem>
           <para>
-            SOAP::Lite (&min-soap-lite-ver;) for the web service interface
+            SOAP::Lite (&min-soap-lite-ver;) ウェブサービスインターフェース用
           </para>
         </listitem>
 
         <listitem>
           <para>
             JSON::RPC
-            (&min-json-rpc-ver;) for the JSON-RPC interface
+            (&min-json-rpc-ver;) JSON-RPC インターフェース用
           </para>
         </listitem>
 
         <listitem>
           <para>
             Test::Taint
-            (&min-test-taint-ver;) for the web service interface
+            (&min-test-taint-ver;) ウェブサービスインターフェース用
           </para>
         </listitem>
 
         <listitem>
           <para>
             HTML::Parser
-            (&min-html-parser-ver;) for More HTML in Product/Group Descriptions
+            (&min-html-parser-ver;) プロダクト・グループ説明内の HTML 利用
           </para>
         </listitem>
 
         <listitem>
           <para>
             HTML::Scrubber
-            (&min-html-scrubber-ver;) for More HTML in Product/Group Descriptions
+            (&min-html-scrubber-ver;) プロダクト・グループ説明内の HTML 利用
           </para>
         </listitem>
 
         <listitem>
           <para>
             Email::MIME::Attachment::Stripper
-            (&min-email-mime-attachment-stripper-ver;) for Inbound Email
+            (&min-email-mime-attachment-stripper-ver;) メールでの変更用
           </para>
         </listitem>
 
         <listitem>
           <para>
             Email::Reply
-            (&min-email-reply-ver;) for Inbound Email
+            (&min-email-reply-ver;) メールでの変更用
           </para>
         </listitem>
 
         <listitem>
           <para>
             TheSchwartz
-            (&min-theschwartz-ver;) for Mail Queueing
+            (&min-theschwartz-ver;) メールキュー用
           </para>
         </listitem>
 
         <listitem>
           <para>
             Daemon::Generic
-            (&min-daemon-generic-ver;) for Mail Queueing
+            (&min-daemon-generic-ver;) メールキュー用
           </para>
         </listitem>
 
         <listitem>
           <para>
             mod_perl2
-            (&min-mod_perl2-ver;) for mod_perl
+            (&min-mod_perl2-ver;) mod_perl 用
           </para>
         </listitem>
       </orderedlist>
@@ -521,7 +518,7 @@
     </section>
 
     <section id="install-MTA">
-      <title>Mail Transfer Agent (MTA)</title>
+      <title>メール転送エージェント (MTA)</title>
     
       <para>
         Bugzilla is dependent on the availability of an e-mail system for its 
