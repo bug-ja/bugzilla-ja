@@ -922,11 +922,10 @@
     <em>[% sortkey FILTER html %]</em> には設定できません。
 
   [% ELSIF error == "freetext_too_long" %]
-    [% title = BLOCK %] [% jawords.text FILTER html %] が長すぎます [% END %]
-    入力された [% jawords.text FILTER html %] が長すぎます
-    (最長、[% constants.MAX_FREETEXT_LENGTH FILTER none %] ですが、
-    [% text.length FILTER html %] 文字入力されています):
-    <p><em>[% text FILTER html %]</em></p>
+    [% title = "文章が長すぎます" %]
+    [% field_descs.$field FILTER html %] に入力した文章が長すぎます。
+    (最長 [%+ constants.MAX_FREETEXT_LENGTH FILTER none %] 文字が制限ですが、
+    [% text.length FILTER html %] 文字入力されています。)
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = BLOCK %]グループを削除できません[% END %]
@@ -1504,6 +1503,10 @@
     [% END %] [% type FILTER html %] がありません。
     [% IF class == "Bugzilla::User" %]
       入力した [% jawords.account_login_name FILTER html %] が間違えているか、その人は [% terms.Bugzilla %] にはアカウントを登録していないのかもしれません。
+    [% END %]
+    [% IF class == "Bugzilla::Keyword" %]
+      有効なキーワード名の <a href="describekeywords.cgi">リスト</a>
+      を参照してください。
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]

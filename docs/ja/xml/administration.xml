@@ -1429,247 +1429,243 @@
         </para>
 
         <para>
-        
-        Groups may be applicable (e.g bugs in this product can be associated
-        with this group) , default (e.g. bugs in this product are in this group
-        by default), and mandatory (e.g. bugs in this product must be associated
-        with this group) for each product. Groups can also control access 
-        to bugs for a given product, or be used to make bugs for a product 
-        totally read-only unless the group restrictions are met. The best way to
-        understand these relationships is by example. See 
-        <xref linkend="group-control-examples"/> for examples of 
-        product and group relationships.
+        グループは選択可能 (たとえば、このプロダクトに登録されたバグはこのグループ
+        に関連付けられる)、標準で選択 (たとえば、このプロダクトのバグは既定でこのグルー
+        プに関連付けられる)、強制 (たとえば、このプロダクトのバグはこのグループに
+        関連付けられなければならない) をそれぞれのプロダクトにおいて設定できます。
+        グループはあるプロダクトのバグへのアクセス制限にも利用でき、もしくはプロダ
+        クトに登録されたバグについてグループ権限が合わない限り完全に閲覧のみに制限
+        することも可能です。この関連を理解するのにはサンプルを見るのがいいでしょう。
+        プロダクトとグループの関連のサンプルは
+        <xref linkend="group-control-examples"/> にあります。
         </para>
   
         <note>
           <para>
-            Products and Groups are not limited to a one-to-one relationship. 
-            Multiple groups can be associated with the same product, and groups
-            can be associated with more than one product. 
+            プロダクトとグループは1対1の関係に制限されません。
+            同じプロダクトに複数のグループを関連付けられますし、
+            一つのグループが二つ以上のプロダクトに関連付けられることもあります。
           </para>
         </note> 
 
         <para>
-        If any group has <emphasis>Entry</emphasis> selected, then the 
-        product will restrict bug entry to only those users 
-        who are members of <emphasis>all</emphasis> the groups with 
-        <emphasis>Entry</emphasis> selected.
+        あるグループが <emphasis>新規追加</emphasis> に対して設定されている場合、
+        プロダクトへのバグ登録は <emphasis>新規追加</emphasis> に設定されている
+        <emphasis>全ての</emphasis> グループに所属するユーザに限定されます。
         </para>
 
         <para>
-        If any group has <emphasis>Canedit</emphasis> selected, 
-        then the product will be read-only for any users 
-        who are not members of <emphasis>all</emphasis> of the groups with
-        <emphasis>Canedit</emphasis> selected. <emphasis>Only</emphasis> users who 
-        are members of all the <emphasis>Canedit</emphasis> groups 
-        will be able to edit bugs for this product. This is an additional 
-        restriction that enables finer-grained control over products rather 
-        than just all-or-nothing access levels.
+        あるグループが <emphasis>編集可能</emphasis> に対して設定されている場合、
+        プロダクトは <emphasis>編集可能</emphasis> に設定されている <emphasis>全ての</emphasis>
+        グループに所属しないユーザには読み込み専用になります。 <emphasis>全ての</emphasis>
+        グループに所属するユーザ <emphasis>のみ</emphasis> がこのプロダクトの
+        バグを編集できるようになります。
+        1か0かのアクセスレベルではなく、より細かいプロダクトへの制限を加えられる
+        追加の制限機能となります。
         </para>
 
         <para>
-        The following settings let you 
-        choose privileges on a <emphasis>per-product basis</emphasis>.
-        This is a convenient way to give privileges to 
-        some users for some products only, without having 
-        to give them global privileges which would affect 
-        all products.
+        以下の設定は <emphasis>プロダクトごとを基本とする</emphasis> 
+        権限設定に利用できます。
+        これにより、あるユーザにあるプロダクトへの権限を与えるが、
+        全てのプロダクトに影響するような全体に対する権限を与えないという
+        ことが可能になります。
         </para>
 
         <para>
-        Any group having <emphasis>editcomponents</emphasis> 
-        selected  allows users who are in this group to edit all 
-        aspects of this product, including components, milestones 
-        and versions.
+        <emphasis>コンポーネントを編集可能</emphasis> が選択されているグループ
+        がある場合、グループに所属するユーザは該当のプロダクトの全ての設定が
+        編集可能になります。これにはコンポーネント、マイルストーン、バージョン
+        が含まれます。
         </para>
 
         <para>
-        Any group having <emphasis>canconfirm</emphasis> selected 
-        allows users who are in this group to confirm bugs 
-        in this product.
+        <emphasis>承認可能</emphasis> が選択されているグループがある場合、
+        グループに所属するユーザは、プロダクトに登録されたバグを承認できるよう
+        になります。
         </para>
 
         <para>
-        Any group having <emphasis>editbugs</emphasis> selected allows 
-        users who are in this group to edit all fields of 
-        bugs in this product.
+        <emphasis>bug を編集可能</emphasis> に選択されているグループがある場合、
+        グループに所属するユーザはプロダクトの全てのフィールドを編集できるように
+        なります。
         </para>
 
         <para>
-        The <emphasis>MemberControl</emphasis> and 
-        <emphasis>OtherControl</emphasis> are used in tandem to determine which 
-        bugs will be placed in this group. The only allowable combinations of
-        these two parameters are listed in a table on the "Edit Group Access Controls"
-        page. Consult this table for details on how these fields can be used.
-        Examples of different uses are described below.
+        <emphasis>メンバーの操作</emphasis> と <emphasis>メンバー以外の操作</emphasis>
+        の両方を利用することで、このグループにどのようなバグを登録できるか
+        を評価します。この二つのパラメータの利用可能な組み合わせは、
+        "グループによる制限の編集" ページの下に表示される表にあります。
+        どのようにこれらの設定を利用するかについての詳細もこの表を参照してください。
+        いくつかの設定例を以下にあげます。
         </para>
 
       <section id="group-control-examples">
-      <title>Common Applications of Group Controls</title>
+      <title>グループ制限の一般的な設定</title>
 
       <para>
-        The use of groups is best explained by providing examples that illustrate
-        configurations for common use cases. The examples follow a common syntax:
-        <emphasis>Group: Entry, MemberControl, OtherControl, CanEdit,
-        EditComponents, CanConfirm, EditBugs</emphasis>. Where "Group" is the name
-        of the group being edited for this product. The other fields all
-        correspond to the table on the "Edit Group Access Controls" page. If any
-        of these options are not listed, it means they are not checked.      
+        一般的な利用方法における設定を例としてグループの利用方法を説明します。
+        以下の例はある共通の書式で表記しています。
+        <emphasis>Group: 新規追加, メンバーの操作 / メンバー以外の操作, 編集可能,
+        コンポーネントを編集可能, 承認可能, bug を編集可能</emphasis>. 
+        "Group" はこのプロダクトに対して編集を行うグループの名前です。
+        他のフィールドは全て "グループによる制限を編集" ページの表にある値です。
+        リストされていないオプションはチェックされていないものになります。
+        (訳注: メンバーの操作・メンバー以外の操作の二つはドロップダウンの値として
+        表記されています。)
       </para>
-      
+
           <para>
-            Basic Product/Group Restriction
+            基本的なプロダクト・グループ制限
           </para>
 
         <para>
-          Suppose there is a product called "Bar". The 
-          "Bar" product can only have bugs entered against it by users in the
-          group "Foo". Additionally, bugs filed against product "Bar" must stay
-          restricted to users to "Foo" at all times. Furthermore, only members
-          of group "Foo" can edit bugs filed against product "Bar", even if other
-          users could see the bug. This arrangement would achieved by the
-          following:
+          プロダクト "Bar" が登録されています。
+          "Bar" プロダクトは "Foo" グループに属するユーザからのみバグを登録可能
+          です。また、"Bar" プロダクトに登録されたバグは必ず "Foo" に属するユーザ
+          に制限されていなければなりません。また、他のユーザが閲覧できたとしても、
+          "Foo" グループのメンバーのみが "Bar" プロダクトに登録されたバグを編集
+          可能になります。
+          この設定は以下のようになります。
         </para>
 
         <programlisting>
 Product Bar: 
-foo: ENTRY, MANDATORY/MANDATORY, CANEDIT
+foo: 新規追加, 強制/強制, 編集可能
         </programlisting>
 
         <para>
-          Perhaps such strict restrictions are not needed for product "Bar". A 
-          more lenient way to configure product "Bar" and group "Foo" would be:
+          このような厳しい制限はプロダクト "Bar" には必要ないかもしれません。
+          プロダクト "Bar" とグループ "Foo" について、よりゆるい制限は次のように
+          なります。
         </para>
 
         <programlisting>
 Product Bar: 
-foo: ENTRY, SHOWN/SHOWN, EDITCOMPONENTS, CANCONFIRM, EDITBUGS
+foo: 新規追加, 選択可能/選択可能, コンポーネントを編集可能, 承認可能, bug を編集可能
         </programlisting>
 
         <para>
-          The above indicates that for product "Bar", members of group "Foo" can
-          enter bugs. Any one with permission to edit a bug against product "Bar"
-          can put the bug
-          in group "Foo", even if they themselves are not in "Foo". Anyone in group
-          "Foo" can edit all aspects of the components of product "Bar", can confirm
-          bugs against product "Bar", and can edit all fields of any bug against
-          product "Bar".
+          この制限はプロダクト "Bar" にグループ "Foo" のメンバーはバグを追加でき
+          ます。"Foo" グループに所属していなくても、
+          "Bar" プロダクトのバグを編集可能な誰でもバグを登録できるようになります。
+          グループ "Foo" のメンバーはプロダクト "Bar" にあるコンポーネントの全ての
+          設定を編集、"Bar" プロダクトのバグを承認、プロダクト "Bar" のバグの全ての
+          フィールドを編集できるようになります。
         </para>
  
           <para>
-            General User Access With Security Group
+            一般的なセキュリティーグループにおけるユーザ制限
           </para>
 
              <para>
-               To permit any user to file bugs against "Product A",
-               and to permit any user to submit those bugs into a
-               group called "Security":  
+               "Product A" に対して誰にでもバグを登録できるようにし、
+               かつ "Security" グループに制限した形でバグを登録できるように
+               する場合
             </para>
 
       <programlisting> 
 Product A:
-security: SHOWN/SHOWN
+security: 選択可能/選択可能
       </programlisting>
 
           <para>
-            General User Access With A Security Product
+            セキュリティープロダクトについての一般的なユーザ制限
           </para>
 
           <para>
-            To permit any user to file bugs against product called "Security"
-            while keeping those bugs from becoming visible to anyone
-            outside the group "SecurityWorkers" (unless a member of the
-            "SecurityWorkers" group removes that restriction):
+            "Security" プロダクトへは誰でもバグを登録できるようにしながらも、
+            "SecurityWorkers" グループに所属していないユーザにはバグが見られない
+            ようにする ("SecurityWorkers" グループのユーザは制限を受けずに
+            見ることができる)
           </para>
 
           <programlisting> 
 Product Security:
-securityworkers: DEFAULT/MANDATORY
+securityworkers: 標準で選択/強制
           </programlisting>
 
           <para>
-            Product Isolation With a Common Group
+            グループに関連させたプロダクト
           </para>
 
           <para>
-            To permit users of "Product A" to access the bugs for
-            "Product A", users of "Product B" to access the bugs for 
-            "Product B", and support staff, who are members of the "Support 
-            Group" to access both, three groups are needed:
+            "Product A" のユーザは "Product A" のバグにアクセスでき、
+            "Product B" のユーザは "Product B" のバグにアクセスできる。
+            そして、サポートスタッフである "Support Group" のメンバーは
+            その両方にアクセスできる場合、3つのグループが必要です。
           </para>
 
           <orderedlist>
 
           <listitem>
-            <para>Support Group: Contains members of the support staff.</para>
+            <para>Support Group: サポートスタッフが入るグループ</para>
           </listitem>
 
           <listitem>
-            <para>AccessA Group: Contains users of product A and the Support group.</para>
+            <para>AccessA Group: Product A のユーザとサポートグループのユーザが入る</para>
           </listitem>
 
           <listitem>
-            <para>AccessB Group: Contains users of product B and the Support group.</para>
+            <para>AccessB Group: Product B のユーザとサポートグループのユーザが入る</para>
           </listitem>
 
           </orderedlist>
 
           <para>
-            Once these three groups are defined, the product group controls
-            can be set to:
+            これら3つのグループを定義してから、グループ制限を以下のように
+            設定します。
           </para>
 
           <programlisting>
 Product A:
-AccessA: ENTRY, MANDATORY/MANDATORY
+AccessA: 新規追加, 強制/強制
 Product B:
-AccessB: ENTRY, MANDATORY/MANDATORY
+AccessB: 新規追加, 強制/強制
         </programlisting>
 
         <para>
-         Perhaps the "Support Group" wants more control. For example, 
-         the "Support Group"  could be permitted to make bugs inaccessible to 
-         users of both groups "AccessA" and "AccessB". 
-         Then, the "Support Group" could be permitted to publish
-         bugs relevant to all users in a third product (let's call it 
-         "Product Common") that is read-only
-         to anyone outside the "Support Group". In this way the "Support Group" 
-         could control bugs that should be seen by both groups. 
-         That configuration would be:
+         "Support Group" により権限が必要になることもあるでしょう。たとえば、
+         "Support Group" が "AccessA" と "AccessB" の二つのグループのユーザには
+         アクセスできないバグを追加する権限が必要になるかもしれません。
+         この場合、"Support Group" は "Support Group" 以外には閲覧専用となる
+         3つ目のプロダクト ("Product Common") において、全てのユーザにバグを
+         公開することができる必要があります。
+         このようにして "Support Group" は2つのグループから見られるような
+         バグの制御が可能になります。このような設定は以下のように行えます。
         </para>
 
       <programlisting>
 Product A:
-AccessA: ENTRY, MANDATORY/MANDATORY
-Support: SHOWN/NA
+AccessA: 新規追加, 強制/強制
+Support: 選択可能/無関係
 Product B:
-AccessB: ENTRY, MANDATORY/MANDATORY
-Support: SHOWN/NA
+AccessB: 新規追加, 強制/強制
+Support: 選択可能/無関係
 Product Common:
-Support: ENTRY, DEFAULT/MANDATORY, CANEDIT
+Support: 新規追加, 標準で選択/強制, 編集可能
       </programlisting>
 
           <para>
-            Make a Product Read Only
+            プロダクトを閲覧専用にする
           </para>
 
           <para>
-            Sometimes a product is retired and should no longer have
-            new bugs filed against it (for example, an older version of a software
-            product that is no longer supported). A product can be made read-only
-            by creating a group called "readonly" and adding products to the
-            group as needed:
+            プロダクトを廃止にして、新しいバグを登録できないようにする必要が
+            あるでしょう。(たとえば、もうサポートされないような古いバージョンの
+            ソフトウェアなど) プロダクトを閲覧専用にするのは、"readonly" グループ
+            を作成して、そのグループにプロダクトを制限することで可能です。
           </para>
 
          <programlisting>
 Product A:
-ReadOnly: ENTRY, NA/NA, CANEDIT
+ReadOnly: 新規追加, 無関係/無関係, 編集可能
          </programlisting>
 
         <note>
           <para>
-            For more information on Groups outside of how they relate to products
-            see <xref linkend="groups"/>.
+            グループに関するより詳細な情報と、プロダクトとの関連付けについての
+            詳細は <xref linkend="groups"/> を参照してください。
           </para>
         </note>
 
@@ -1680,178 +1676,172 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
   </section>
 
   <section id="components" xreflabel="Components">
-    <title>Components</title>
+    <title>コンポーネント</title>
 
-    <para>Components are subsections of a Product. E.g. the computer game 
-    you are designing may have a "UI"
-    component, an "API" component, a "Sound System" component, and a
-    "Plugins" component, each overseen by a different programmer. It
-    often makes sense to divide Components in Bugzilla according to the
-    natural divisions of responsibility within your Product or
-    company.</para>
+    <para>コンポーネントはプロダクトの下位構造です。たとえば、コンピューターゲーム
+    では、"UI" コンポーネント、"API" ドキュメント、"音声システム" コンポーネント、
+    "プラグイン" コンポーネントをデザインし、それぞれ別のプログラマーが担当する
+    でしょう。プロダクトや会社の中での自然な責任分割に沿った
+    コンポーネントへの分離を Bugzilla では行うことがよくあります。
+    </para>
 
     <para>
-    Each component has a default assignee and (if you turned it on in the parameters),
-    a QA Contact. The default assignee should be the primary person who fixes bugs in
-    that component. The QA Contact should be the person who will ensure
-    these bugs are completely fixed. The Assignee, QA Contact, and Reporter
-    will get email when new bugs are created in this Component and when
-    these bugs change. Default Assignee and Default QA Contact fields only
-    dictate the 
-    <emphasis>default assignments</emphasis>; 
-    these can be changed on bug submission, or at any later point in
-    a bug's life.</para>
+    それぞれのコンポーネントは既定の担当者と (パラメータで有効にしていれば)
+    QA コンタクトを持ちます。既定の担当者はコンポーネントに登録されたバグの修正
+    に第一の責任を持ちます。QA コンタクトはバグが完全に修正されたことを確認する
+    担当者です。担当者、QA コンタクト、報告者は、コンポーネントに新規バグが追加
+    されたときやバグが変更されたときにメールを受け取ります。
+    既定の担当者と既定の QA コンタクトのフィールドは、<emphasis>既定値</emphasis>
+    であるだけで、バグの登録時やその後の任意の時点で変更すること
+    が可能です。</para>
 
-    <para>To create a new Component:</para>
+    <para>新しいコンポーネントの作成方法:</para>
 
    <orderedlist>
       <listitem>
-        <para>Select the <quote>Edit components</quote> link 
-        from the <quote>Edit product</quote> page</para>
+        <para><quote>プロダクトの編集</quote> ページの
+        <quote>コンポーネントの編集</quote> リンクをクリックします。</para>
       </listitem>
 
       <listitem>
-        <para>Select the <quote>Add</quote> link in the bottom right.</para>
+        <para>右下の <quote>追加</quote> リンクをクリックします。</para>
       </listitem>
 
       <listitem>
-        <para>Fill out the <quote>Component</quote> field, a 
-        short <quote>Description</quote>, the 
-        <quote>Default Assignee</quote>, <quote>Default CC List</quote> 
-        and <quote>Default QA Contact</quote> (if enabled). 
-        The <quote>Component Description</quote> field may contain a 
-        limited subset of HTML tags. The <quote>Default Assignee</quote> 
-        field must be a login name already existing in the Bugzilla database. 
+        <para><quote>コンポーネント</quote>、短い <quote>説明</quote>、
+        <quote>既定の担当者</quote>、<quote>既定の CC リスト</quote>、
+        (もし有効にしていれば) <quote>既定の QA コンタクト</quote> の欄
+        を埋めます。
+        <quote>コンポーネントの説明</quote> はいくつかの HTML タグを利用
+        できます。<quote>既定の担当者</quote> 
+        は Bugzilla データベースに既存のログイン名である必要があります。
         </para>
       </listitem>
     </orderedlist>
   </section>
 
   <section id="versions">
-    <title>Versions</title>
+    <title>バージョン</title>
 
-    <para>Versions are the revisions of the product, such as "Flinders
-    3.1", "Flinders 95", and "Flinders 2000". Version is not a multi-select
-    field; the usual practice is to select the earliest version known to have
-    the bug.
+    <para>バージョンは、"Flinders 3.1", "Flinders 95", や "Flinders 2000"
+    というようなプロダクトのリビジョンです。バージョンは、複数選択フィールド
+    ではありませんので、通常は最も早く確認されたバージョンを選択します。
     </para>
 
-    <para>To create and edit Versions:</para>
+    <para>バージョンの作成・編集方法:</para>
 
     <orderedlist>
       <listitem>
-        <para>From the "Edit product" screen, select "Edit Versions"</para>
+        <para>"プロダクトの編集" 画面から、"バージョンの編集" を選択します。</para>
       </listitem>
 
       <listitem>
-        <para>You will notice that the product already has the default
-        version "undefined". Click the "Add" link in the bottom right.</para>
+        <para>すでに既定のバージョン "undefined" がプロダクトに存在すると
+        表示されるでしょう。右下の "追加" リンクをクリックしてください。</para>
       </listitem>
 
       <listitem>
-        <para>Enter the name of the Version. This field takes text only. 
-        Then click the "Add" button.</para>
+        <para>バージョン名を入力してください。文字列のみです。
+        そして "追加" ボタンをクリックしてください。</para>
       </listitem>
 
     </orderedlist>
   </section>
 
   <section id="milestones">
-    <title>Milestones</title>
+    <title>マイルストーン</title>
 
-    <para>Milestones are "targets" that you plan to get a bug fixed by. For
-    example, you have a bug that you plan to fix for your 3.0 release, it
-    would be assigned the milestone of 3.0.</para>
+    <para>マイルストーンは、バグを修正する期限の"目標"です。
+    たとえば、3.0 リリースまでに修正しようと考えている場合、マイルストーンを
+    3.0 にしてください。</para>
 
     <note>
-      <para>Milestone options will only appear for a Product if you turned
-      on the "usetargetmilestone" parameter in the "Bug Fields" tab of the
-      "Parameters" page.
+      <para>"パラメータ" ページにある "bug フィールド" タブの "usetargetmilestone" 
+      パラメータを有効にしているときのみプロダクトにマイルストーンが表示されます。
       </para>
     </note>
 
-    <para>To create new Milestones, and set Default Milestones:</para>
+    <para>新規マイルストーンの作成方法と既定のマイルストーンの設定方法:</para>
 
     <orderedlist>
       <listitem>
-        <para>Select "Edit milestones" from the "Edit product" page.</para>
+        <para>"プロダクトの編集" ページの "マイルストーンの編集" を選択してください。</para>
       </listitem>
 
       <listitem>
-        <para>Select "Add" in the bottom right corner.
-        text</para>
+        <para>右下の "追加" ボタンをクリックしてください。</para>
       </listitem>
 
       <listitem>
-        <para>Enter the name of the Milestone in the "Milestone" field. You
-        can optionally set the "sortkey", which is a positive or negative
-        number (-32768 to 32767) that defines where in the list this particular
-        milestone appears. This is because milestones often do not 
-        occur in alphanumeric order For example, "Future" might be
-        after "Release 1.2". Select "Add".</para>
+        <para>"マイルストーン" フィールドのマイルストーンの名前を入力してください。
+        また、マイルストーンの並び順を決めるような正負の数 (-32768 から 32767)
+        を "ソートキー" に指定することも可能です。
+        この機能は、マイルストーンが文字ソート順に並ばない可能性があるため
+        のものです。たとえば、"Future" は "Release 1.2" より後であるべきです。
+        入力後、"追加" をクリックしてください。</para>
       </listitem>
     </orderedlist>
   </section>
   
  <section id="flags-overview">
-   <title>Flags</title>
+   <title>フラグ</title>
    
    <para>
-     Flags are a way to attach a specific status to a bug or attachment, 
-     either <quote>+</quote> or <quote>-</quote>. The meaning of these symbols depends on the text
-     the flag itself, but contextually they could mean pass/fail, 
-     accept/reject, approved/denied, or even a simple yes/no. If your site
-     allows requestable flags, then users may set a flag to <quote>?</quote> as a 
-     request to another user that they look at the bug/attachment, and set
-     the flag to its correct status.
+     フラグは特定のステータスを <quote>+</quote> または <quote>-</quote> 
+     付きでバグもしくは添付につける機能です。これらの意味はフラグの文字列に依存
+     しますが、合格/不合格、受理/却下、承認/否認、yes/no などをいみすることに
+     なります。フラグを要求することを許可していれば、ユーザは他のユーザに対して
+     該当のバグや添付を確認してもらうために <quote>?</quote> つきのフラグを
+     設定でき、ユーザにステータスを設定することを要請できます。
    </para>
 
    <section id="flags-simpleexample">
-     <title>A Simple Example</title>
+     <title>簡単な例</title>
 
      <para>
-       A developer might want to ask their manager, 
-       <quote>Should we fix this bug before we release version 2.0?</quote> 
-       They might want to do this for a <emphasis>lot</emphasis> of bugs,
-       so it would be nice to streamline the process...
+       開発者がマネージャーに
+       <quote>このバグを 2.0 のリリースより前に修正すべきかどうか ?</quote>
+       を聞く場面があります。<emphasis>非常にたくさんの</emphasis> バグについ
+       てこれを聞くことになるでしょうから、プロセスを効率化できるとありがたい
+       でしょう。。
      </para>
      <para>
-       In Bugzilla, it would work this way:
+       Bugzilla では以下のように行います
        <orderedlist>
          <listitem>
            <para>
-             The Bugzilla administrator creates a flag type called 
-             <quote>blocking2.0</quote> that shows up on all bugs in 
-             your product.
+             Bugzilla 管理者が <quote>blocking2.0</quote> というフラグを作成し、
+             プロダクトで表示されるようにします。
            </para>
  
            <para>
-             It shows up on the <quote>Show Bug</quote> screen
-             as the text <quote>blocking2.0</quote> with a drop-down box next
-             to it. The drop-down box contains four values: an empty space,
-             <quote>?</quote>, <quote>-</quote>, and <quote>+</quote>.
+             <quote>バグの表示</quote> 画面では <quote>blocking2.0</quote> 
+             がドロップダウンボックス付きで表示されます。
+             ドロップダウンボックスには4つの値が表示されています: 
+             空白、
+             <quote>?</quote>、<quote>-</quote>、<quote>+</quote>
            </para>
          </listitem>
          <listitem>
-           <para>The developer sets the flag to <quote>?</quote>.</para>
+           <para>開発者はフラグを <quote>?</quote> に設定します。</para>
          </listitem>
          <listitem>
            <para>
-             The manager sees the <computeroutput>blocking2.0</computeroutput>
-             flag with a <quote>?</quote> value.
-           </para>
-         </listitem>
-         <listitem>
-           <para>
-             If the manager thinks the feature should go into the product
-             before version 2.0 can be released, he sets the flag to 
-             <quote>+</quote>. Otherwise, he sets it to <quote>-</quote>.
+             マネージャーが <quote>?</quote> つきの 
+             <computeroutput>blocking2.0</computeroutput> を発見します。
            </para>
          </listitem>
          <listitem>
            <para>
-             Now, every Bugzilla user who looks at the bug knows whether or 
-             not the bug needs to be fixed before release of version 2.0.
+             マネージャーがこの機能はプロダクトのバージョン 2.0 リリース以前に
+             実装されていなければならないと考えた場合、フラグを
+             <quote>+</quote> とします。そうでなければ、<quote>-</quote> とします。
+           </para>
+         </listitem>
+         <listitem>
+           <para>
+             これで、Bugzilla の全てのユーザがこのバグをバージョン 2.0 リリース
+             以前に修正しなければならないのかどうかどうかを知ることができます。
            </para>
          </listitem>
        </orderedlist>
@@ -1860,117 +1850,113 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
    </section>
 
    <section id="flags-about">
-     <title>About Flags</title>
+     <title>フラグ</title>
 
      <section id="flag-values">
-       <title>Values</title>
+       <title>値</title>
        <para>
-         Flags can have three values:
+         フラグは3つの値を持ちます
          <variablelist>
            <varlistentry>
              <term><computeroutput>?</computeroutput></term>
              <listitem><simpara>
-               A user is requesting that a status be set. (Think of it as 'A question is being asked'.)
+               ユーザはステータスを設定されるのを待っています。("質問されてます" と理解してください)
              </simpara></listitem>
            </varlistentry>
            <varlistentry>
              <term><computeroutput>-</computeroutput></term>
              <listitem><simpara>
-               The status has been set negatively. (The question has been answered <quote>no</quote>.)
+               ステータスは否定されました。(<quote>no</quote> が答えでした。)
              </simpara></listitem>
            </varlistentry>
            <varlistentry>
              <term><computeroutput>+</computeroutput></term>
              <listitem><simpara>
-               The status has been set positively.
-               (The question has been answered <quote>yes</quote>.)
+               ステータスは承認されました。
+               (<quote>yes</quote> が答えでした。)
              </simpara></listitem>
            </varlistentry>
          </variablelist>
        </para>
        <para>
-         Actually, there's a fourth value a flag can have -- 
-         <quote>unset</quote> -- which shows up as a blank space. This 
-         just means that nobody has expressed an opinion (or asked
-         someone else to express an opinion) about this bug or attachment.
+         実際には、空白として表示される4つ目の値 <quote>設定なし</quote> が
+         あります。この値は、バグや添付について誰も意見を表明していない 
+         (もしくは、誰にも意見を聞いていない) 状態であることを示します。
        </para>
      </section>
    </section>
 
    <section id="flag-askto">
-     <title>Using flag requests</title>
+     <title>フラグ要請の利用方法</title>
      <para>
-       If a flag has been defined as 'requestable', and a user has enough privileges
-       to request it (see below), the user can set the flag's status to <quote>?</quote>.
-       This status indicates that someone (a.k.a. <quote>the requester</quote>) is asking
-       someone else to set the flag to either <quote>+</quote> or <quote>-</quote>.
+       フラグが '要求可能' と設定されていれば、要求するために必要な権限を持つユーザ
+       (下参照) であれば、フラグのステータスを <quote>?</quote> に設定できます。
+       このステータスは誰か (<quote>要請者</quote>) が他の誰かに <quote>+</quote> 
+       もしくは <quote>-</quote> にフラグを設定するよう依頼していることを示します。
      </para>
      <para>
-       If a flag has been defined as 'specifically requestable', 
-       a text box will appear next to the flag into which the requester may
-       enter a Bugzilla username. That named person (a.k.a. <quote>the requestee</quote>)
-       will receive an email notifying them of the request, and pointing them
-       to the bug/attachment in question.
+       フラグが '特定のユーザに要求可能' と設定されていれば、フラグの隣に
+       要請者が要請先の Bugzilla のユーザ名を入力するテキストボックスが表示
+       されるようになります。指名されたユーザ (<quote>被要請者</quote>)
+       は、対象となるバグや添付を明示する要請についての通知メールを受け取ります。
      </para>
      <para>
-       If a flag has <emphasis>not</emphasis> been defined as 'specifically requestable',
-       then no such text-box will appear. A request to set this flag cannot be made of
-       any specific individual, but must be asked <quote>to the wind</quote>.
-       A requester may <quote>ask the wind</quote> on any flag simply by leaving the text-box blank.
+       フラグが '特定のユーザに要求可能' と設定 <emphasis>されていなければ</emphasis>
+       テキストボックスは表示されません。フラグの要請は、特定のユーザに対して
+       行えませんが、<quote>全体の誰か</quote> への要請となります。
+       また、要請者はテキストボックスをからにしておくことで、フラグの要請先を 
+       <quote>全体の誰か</quote> とすることも可能です。
      </para>
    </section>
 
    <section id="flag-types">
-     <title>Two Types of Flags</title>
+     <title>二つのフラグ型</title>
     
      <para>
-       Flags can go in two places: on an attachment, or on a bug.
+       フラグは二つに対して設定できます: 添付、バグ
      </para>
 
      <section id="flag-type-attachment">
-       <title>Attachment Flags</title>
+       <title>添付のフラグ</title>
       
        <para>
-         Attachment flags are used to ask a question about a specific 
-         attachment on a bug.
+         添付へのフラグはバグの特定の添付についての質問になります。
        </para>
        <para>
-         Many Bugzilla installations use this to 
-         request that one developer <quote>review</quote> another 
-         developer's code before they check it in. They attach the code to
-         a bug report, and then set a flag on that attachment called
-         <quote>review</quote> to 
-         <computeroutput>review?boss@domain.com</computeroutput>.
-         boss@domain.com is then notified by email that
-         he has to check out that attachment and approve it or deny it.
+         さまざまな Bugzilla のサイトでは、この型をある開発者が別の開発者
+         にチェックイン前にコードについての <quote>レビュー</quote> 
+         を要請する際に利用しています。バグ報告に対してコードを添付し、
+         <quote>review</quote> というフラグを添付に
+         <computeroutput>review?boss@domain.com</computeroutput>
+         のように設定します。すると、 boss@domain.com 
+         に通知メールが送られ、添付を確認して承認もしくは拒否するでしょう。
        </para>
 
        <para>
-         For a Bugzilla user, attachment flags show up in three places:
+         Bugzilla ユーザには、添付のフラグは3つの場所で表示されます:
          <orderedlist>
            <listitem>
              <para>
-               On the list of attachments in the <quote>Show Bug</quote>
-               screen, you can see the current state of any flags that
-               have been set to ?, +, or -. You can see who asked about 
-               the flag (the requester), and who is being asked (the 
-               requestee).
+               <quote>バグ表示</quote> 画面の添付リストに、?/+/- に設定
+               されている全てのフラグと現状が表示されます。
+               フラグの要請者と被要請者も表示されます。
              </para>
            </listitem>
            <listitem>
              <para>
-              When you <quote>Edit</quote> an attachment, you can 
-              see any settable flag, along with any flags that have 
-              already been set. This <quote>Edit Attachment</quote> 
-              screen is where you set flags to ?, -, +, or unset them.
+              添付を <quote>編集</quote> する際、設定可能な全てのフラグ
+              や設定されている全てのフラグを見ることができます。
+              <quote>添付の編集</quote> 画面ではフラグを ?/-/+ に設定でき、
+              また設定を解除することも可能です。
              </para>
            </listitem>
            <listitem>
              <para>
-               Requests are listed in the <quote>Request Queue</quote>, which
-               is accessible from the <quote>My Requests</quote> link (if you are
-               logged in) or <quote>Requests</quote> link (if you are logged out)
-               visible in the footer of all pages.
+               要請は全てのページのフッタにある、(ログインしていれば) 
+               <quote>わたしの要請</quote> リンクから表示される、
+               もしくは (ログインしていなければ) <quote>要請リスト</quote>
+               リンクで表示される、
+               <quote>要請キュー</quote> にもリストされます。
              </para>
            </listitem>
          </orderedlist>
@@ -1979,252 +1965,251 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
      </section>
 
      <section id="flag-type-bug">
-       <title>Bug Flags</title>
+       <title>バグのフラグ</title>
 
        <para>
-         Bug flags are used to set a status on the bug itself. You can 
-         see Bug Flags in the <quote>Show Bug</quote> and <quote>Requests</quote>
-         screens, as described above.
+         バグのフラグは、バグそのものへのステータスになります。
+         上述と同様に <quote>バグ表示</quote> と <quote>要請リスト</quote> 画面
+         でバグのフラグが一覧できます。
        </para>
        <para>
-         Only users with enough privileges (see below) may set flags on bugs.
-         This doesn't necessarily include the assignee, reporter, or users with the
-         <computeroutput>editbugs</computeroutput> permission.
+         権限がある (以下参照) ユーザのみがバグにフラグを設定できます。
+         <computeroutput>editbugs</computeroutput> 権限を持つ担当者、報告者、
+         ユーザを含んでいる必要はありません。
        </para>
      </section>
 
    </section>
 
    <section id="flags-admin">
-     <title>Administering Flags</title>
+     <title>フラグの管理</title>
 
      <para>
-       If you have the <quote>editcomponents</quote> permission, you can
-       edit Flag Types from the main administration page. Clicking the
-       <quote>Flags</quote> link will bring you to the <quote>Administer
-       Flag Types</quote> page. Here, you can select whether you want 
-       to create (or edit) a Bug flag, or an Attachment flag.
+       <quote>editcomponents</quote> 権限を持っていれば、全体の管理ページから
+       フラグ型を編集できます。<quote>フラグ</quote> リンクから、
+       <quote>フラグ型の管理</quote> ページを表示できます。
+       ここから、バグのフラグもしくは添付のフラグの作成・編集が可能です。
      </para>
      <para>
-       No matter which you choose, the interface is the same, so we'll 
-       just go over it once.
+       どれを選択しても、設定のインターフェースは同じですので、
+       一度に把握できます。
      </para>
 
      <section id="flags-edit">
-       <title>Editing a Flag</title>
+       <title>フラグの編集</title>
        <para>
-         To edit a flag's properties, just click on the <quote>Edit</quote>
-         link next to the flag's description. That will take you to the same
-         form as described below (<xref linkend="flags-create"/>).
+         フラグのプロパティーを編集するには、フラグ名をクリックしてください。
+         以下の (<xref linkend="flags-create"/>) 説明と同じフォームが表示されます。
        </para>
      </section>
 
      <section id="flags-create">
-       <title>Creating a Flag</title>
+       <title>フラグの作成</title>
        
         <para>
-          When you click on the <quote>Create a Flag Type for...</quote>
-          link, you will be presented with a form. Here is what the fields in 
-          the form mean:
+          <quote>... のフラグタイプを作成</quote> リンクをクリックすると、
+          フォームが表示されます。このフォームのそれぞれのフィールドは以下の
+          ような意味になります。
         </para>
 
         <section id="flags-create-field-name">
-          <title>Name</title>
+          <title>名前</title>
           <para>
-            This is the name of the flag. This will be displayed 
-            to Bugzilla users who are looking at or setting the flag. 
-            The name may contain any valid Unicode characters except commas
-            and spaces.
+            フラグの名前です。Bugzilla のユーザがフラグを見るもしくは設定する際に
+            表示されます。名前には、カンマ・空白以外の有効なユニコード文字が利用
+            できます。
           </para>
         </section>
 
         <section id="flags-create-field-description">
-          <title>Description</title>
+          <title>説明</title>
           <para>
-            The description describes the flag in more detail. It is visible
-            in a tooltip when hovering over a flag either in the <quote>Show Bug</quote>
-            or <quote>Edit Attachment</quote> pages. This field can be as
-            long as you like, and can contain any character you want.
+            説明はフラグについてより詳細に説明します。<quote>バグの表示</quote> 
+            や <quote>添付の編集</quote> ページでフラグにカーソルを当てたときの
+            ツールチップとして表示されます。このフィールドの長さに制限はなく、
+            どのような文字列でも挿入できます。
           </para>
         </section>
 
         <section id="flags-create-field-category">
-          <title>Category</title>
+          <title>カテゴリ</title>
 
           <para>
-            Default behaviour for a newly-created flag is to appear on
-            products and all components, which is why <quote>__Any__:__Any__</quote>
-            is already entered in the <quote>Inclusions</quote> box.
-            If this is not your desired behaviour, you must either set some
-            exclusions (for products on which you don't want the flag to appear),
-            or you must remove <quote>__Any__:__Any__</quote> from the Inclusions box
-            and define products/components specifically for this flag.
+            既定の振る舞いは、新しく作成したフラグは全てのプロダクトとコンポーネント
+            で表示されるようになり、これが<quote>利用可能</quote>の欄に
+            <quote>__Any__:__Any__</quote>がすでに含まれている理由です。
+            これが望ましい振る舞いでなければ、何らかの利用不可の設定
+            (フラグを表示したくないプロダクトの設定)
+            を行うか、<quote>__Any__:__Any__</quote> を削除してフラグを表示する
+            プロダクト・コンポーネントを指定してください。
           </para>
 
           <para>
-            To create an Inclusion, select a Product from the top drop-down box.
-            You may also select a specific component from the bottom drop-down box.
-            (Setting <quote>__Any__</quote> for Product translates to, 
-            <quote>all the products in this Bugzilla</quote>.
-            Selecting  <quote>__Any__</quote> in the Component field means
-            <quote>all components in the selected product.</quote>) 
-            Selections made, press <quote>Include</quote>, and your
-            Product/Component pairing will show up in the <quote>Inclusions</quote> box on the right.
+            設定するには、プロダクトを上のドロップダウンから選択してください。
+            また、下のドロップダウンから特定のコンポーネントを選択することも可能
+            です。(プロダクトに<quote>__どれでも__</quote>を選択すると、
+            <quote>Bugzilla に定義されている全てのプロダクト</quote>になります。
+            コンポーネントに<quote>__どれでも__</quote>を選択すると、
+            <quote>指定されたプロダクトの全てのコンポーネント</quote>になります。)
+            選択後、<quote>利用可能</quote>ボタンをクリックすると、指定した
+            プロダクト・コンポーネントの組が右の<quote>利用可能</quote>ボックスに
+            追加されます。
           </para>
 
           <para>
-            To create an Exclusion, the process is the same; select a Product from the
-            top drop-down box, select a specific component if you want one, and press
-            <quote>Exclude</quote>. The Product/Component pairing will show up in the 
-            <quote>Exclusions</quote> box on the right.
+            除外設定も同じ方法で行います。上のドロップダウンからプロダクトを選択、
+            必要ならコンポーネントも指定し、<quote>利用不可</quote> をクリックしてください。
+            プロダクト・コンポーネントの組が右側の<quote>利用不可</quote>のボックス
+            に表示されます。
           </para>
 
           <para>
-            This flag <emphasis>will</emphasis> and <emphasis>can</emphasis> be set for any
-            products/components that appearing in the <quote>Inclusions</quote> box 
-            (or which fall under the appropriate <quote>__Any__</quote>). 
-            This flag <emphasis>will not</emphasis> appear (and therefore cannot be set) on
-            any products appearing in the <quote>Exclusions</quote> box.
-            <emphasis> IMPORTANT: Exclusions override inclusions.</emphasis>
+            フラグは <quote>利用可能</quote> のボックスに表示されるどのプロダクト・
+            コンポーネント (もしくはどれかの <quote>__どれでも__</quote> に該当する) 
+            について設定 <emphasis>されえます</emphasis> し、<emphasis>できます</emphasis>。
+            またフラグは、<quote>利用不可</quote> のボックスに表示されるプロダクト
+            には表示 <emphasis>されません</emphasis> (ので設定もできません)。
+            <emphasis>重要: 利用不可は、利用可能を上書きします。</emphasis>
           </para>
 
           <para>
-            You may select a Product without selecting a specific Component,
-            but you can't select a Component without a Product, or to select a
-            Component that does not belong to the named Product. If you do so,
-            Bugzilla will display an error message, even if all your products
-            have a component by that name.
+            特定のコンポーネントとともにプロダクトを指定できますが、プロダクト
+            なしにコンポーネントを指定できません。もしくは、名前付きプロダクトに
+            属さないコンポーネントについても同様です。そのようなコンポーネントに
+            設定しようとした場合、全てのプロダクトが指定した名前のコンポーネントを
+            持っていたとしても、Bugzilla はエラーメッセージを表示します。
           </para>
 
-          <para><emphasis>Example:</emphasis> Let's say you have a product called 
-            <quote>Jet Plane</quote> that has thousands of components. You want
-            to be able to ask if a problem should be fixed in the next model of 
-            plane you release. We'll call the flag <quote>fixInNext</quote>.
-            But, there's one component in <quote>Jet Plane,</quote> 
-            called <quote>Pilot.</quote> It doesn't make sense to release a 
-            new pilot, so you don't want to have the flag show up in that component.
-            So, you include <quote>Jet Plane:__Any__</quote> and you exclude 
-            <quote>Jet Plane:Pilot</quote>.
+          <para><emphasis>例:</emphasis> 数千のコンポーネントを持つプロダクト
+            <quote>Jet Plane</quote> を想定します。発生した問題が次にリリースされる
+            航空機のモデルで修正されるかどうかを問い合わせられるようにしたいでしょう。
+            これをフラグ <quote>fixInNext</quote> と呼びます。しかしながら、
+            <quote>Jst Plane</quote> にコンポーネント <quote>Pilot</quote>
+            があるとします。このコンポーネントについては、新しいパイロットの
+            リリースは意味を成しませんので、このコンポーネントについてはフラグを
+            表示しないようにするでしょう。この場合、<quote>Jet Plane:__どれでも__</quote>
+            を利用可能にし、<quote>Jet Plane:Pilot</quote> を利用不可にするでしょう。
           </para>
         </section>
 
         <section id="flags-create-field-sortkey">
-          <title>Sort Key</title>
+          <title>ソートキー</title>
           <para>
-            Flags normally show up in alphabetical order. If you want them to 
-            show up in a different order, you can use this key set the order on each flag. 
-            Flags with a lower sort key will appear before flags with a higher
-            sort key. Flags that have the same sort key will be sorted alphabetically,
-            but they will still be after flags with a lower sort key, and before flags
-            with a higher sort key.
+            フラグは通常アルファベット順に表示されます。他の順序で表示したい場合、
+            このキーをフラグの並べ順を設定するために利用できます。
+            低いソート順の番号を持つフラグは、高い番号を持つフラグより前に表示されます。
+            同じソート順を持つフラグはアルファベット順に表示されますが、
+            低いソート順の番号を持つフラグより後、高い番号を持つフラグより前に
+            は表示されます。
           </para>
           <para>
-            <emphasis>Example:</emphasis> I have AFlag (Sort Key 100), BFlag (Sort Key 10), 
-            CFlag (Sort Key 10), and DFlag (Sort Key 1). These show up in
-            the order: DFlag, BFlag, CFlag, AFlag.
+            <emphasis>例:</emphasis> フラグが () 内のソート順番号を持つとします。
+            AFlag (100), BFlag (10), CFlag (10), DFlag (1)
+            この場合、DFlag, BFlag, CFlag, AFlag の順に表示されます。
           </para>
         </section>
 
         <section id="flags-create-field-active">
-          <title>Active</title>
+          <title>有効</title>
           <para>
-            Sometimes, you might want to keep old flag information in the 
-            Bugzilla database, but stop users from setting any new flags of this type.
-            To do this, uncheck <quote>active</quote>. Deactivated
-            flags will still show up in the UI if they are ?, +, or -, but they
-            may only be cleared (unset), and cannot be changed to a new value.
-            Once a deactivated flag is cleared, it will completely disappear from a 
-            bug/attachment, and cannot be set again.
+            古いラグの情報を Bugzilla データベースに保存しておきたいけれども、
+            ユーザが新たにフラグを設定することを止めたいということもあるでしょう。
+            この時、<quote>有効</quote> のチェックボックスを外してください。
+            無効化されたフラグは、?/+/- のステータスを持っていれば UI に表示され
+            ますが、いったん解除されれば新しい値を設定できなくなります。
+            無効化されたフラグが解除されれば、バグや添付からは一切消え去り、
+            再度設定することはできなくなります。
           </para>
         </section>
 
         <section id="flags-create-field-requestable">
-          <title>Requestable</title>
+          <title>要求可能</title>
           <para>
-            New flags are, by default, <quote>requestable</quote>, meaning that they
-            offer users the <quote>?</quote> option, as well as <quote>+</quote>
-            and <quote>-</quote>.
-            To remove the ? option, uncheck <quote>requestable</quote>.
+            新規フラグは既定で <quote>要求可能</quote> になっており、ユーザが
+            <quote>?</quote> オプションを <quote>+</quote> や <quote>-</quote> 
+            などと同様に利用できることを意味します。
+            <quote>?</quote> を利用できなくするには、<quote>要求可能</quote> 
+            のチェックボックスを外してください。
           </para>
         </section>
 
         <section id="flags-create-field-specific">
-          <title>Specifically Requestable</title>
+          <title>特定のユーザにリクエスト可能</title>
           <para>
-            By default this box is checked for new flags, meaning that users may make
-            flag requests of specific individuals. Unchecking this box will remove the
-            text box next to a flag; if it is still requestable, then requests may
-            only be made <quote>to the wind.</quote> Removing this after specific
-            requests have been made will not remove those requests; that data will
-            stay in the database (though it will no longer appear to the user).
+            新規フラグでは既定でチェックされており、ユーザはフラグの設定を特定のユーザ
+            に対して要請できることを意味します。このチェックボックスを解除すると、
+            フラグの横にテキストボックスが表示されなくなり、フラグを要請できますが
+            <quote>ユーザ誰でも</quote> に対してしかできなくなります。特定のユーザへの
+            フラグの要請が行われた後にチェックボックスを外しても、リクエストは解除され
+            ませんし、データベースにも残ります。(が、ユーザには表示されません。)
           </para>
         </section>
 
         <section id="flags-create-field-multiplicable">
-          <title>Multiplicable</title>
+          <title>複数のユーザに対してリクエスト可能</title>
           <para>
-            Any flag with <quote>Multiplicable</quote> set (default for new flags is 'on')
-            may be set more than once. After being set once, an unset flag
-            of the same type will appear below it with <quote>addl.</quote> (short for 
-            <quote>additional</quote>) before the name. There is no limit to the number of
-            times a Multiplicable flags may be set on the same bug/attachment.
+            <quote>複数のユーザに対してリクエスト可能</quote> が設定されているフラグ
+            (新規フラグでは既定で 'on' です) は複数回設定可能です。一度設定したあとも、
+            未設定の同じ項目が <quote>addl.</quote> (<quote>追加</quote> の略)とともに
+            表示されます。複数リクエスト可能なフラグについて、同じバグ・添付に対して
+            つけられるフラグの数に制限はありません。
           </para>
         </section>
 
 	<section id="flags-create-field-cclist">
-          <title>CC List</title>
+          <title>CC リスト</title>
 
           <para>
-            If you want certain users to be notified every time this flag is 
-            set to ?, -, +, or unset, add them here. This is a comma-separated 
-            list of email addresses that need not be restricted to Bugzilla usernames.
+            フラグが ?/-/+ に設定・解除されたもしくは追加された際に、特定のユーザに
+            毎回通知を送りたい場合に利用します。カンマ区切りのメールアドレスのリスト
+            が指定でき、Bugzilla のユーザ名には制限されません。
           </para>
         </section>
 
         <section id="flags-create-grant-group">
-          <title>Grant Group</title>
+          <title>承認できるグループ</title>
           <para>
-            When this field is set to some given group, only users in the group
-            can set the flag to <quote>+</quote> and <quote>-</quote>. This
-            field does not affect who can request or cancel the flag. For that,
-            see the <quote>Request Group</quote> field below. If this field
-            is left blank, all users can set or delete this flag. This field is
-            useful for restricting which users can approve or reject requests.
+            このフィールドが特定のグループに対して設定されていれば、
+            グループのユーザのみが <quote>+</quote> と <quote>-</quote> に設定
+            可能になります。ただし、フラグの要請とキャンセルには影響しません。
+            要請・キャンセルについては <quote>要求できるグループ</quote> 
+            を参照してください。このフィールドが空白なら、誰でもフラグを設定・
+            削除可能になります。このフィールドは要請を許可・却下できるユーザを
+            限定するのに有用です。
           </para>
         </section>
 
         <section id="flags-create-request-group">
-          <title>Request Group</title>
+          <title>要求できるグループ</title>
           <para>
-            When this field is set to some given group, only users in the group
-            can request or cancel this flag. Note that this field has no effect
-            if the <quote>grant group</quote> field is empty. You can set the
-            value of this field to a different group, but both fields have to be
-            set to a group for this field to have an effect.
+            このフィールドが特定のグループに設定されていれば、
+            グループのユーザのみがフラグの要請・キャンセルを行えます。
+            ただし <quote>承認できるグループ</quote> フィールドが空白の場合は
+            影響しません。二つのフィールドは別の値に設定できますが、このフィールド
+            を有効にするには両方とものフィールドを設定する必要があります。
           </para>
         </section>
       </section> <!-- flags-create -->
 
       <section id="flags-delete">
-        <title>Deleting a Flag</title>
+        <title>フラグの削除</title>
 
         <para>
-          When you are at the <quote>Administer Flag Types</quote> screen,
-          you will be presented with a list of Bug flags and a list of Attachment
-          Flags.
+          <quote>フラグタイプの管理</quote> 画面で、たくさんのバグについてのフラグと
+          添付についてのフラグが表示されるでしょう。
         </para>
         <para>
-          To delete a flag, click on the <quote>Delete</quote> link next to
-          the flag description.
+          フラグを削除するには、フラグの説明の次に表示されている 
+          <quote>削除</quote> リンクをクリックしてください。
         </para>
         <warning>
           <para>
-            Once you delete a flag, it is <emphasis>gone</emphasis> from
-            your Bugzilla. All the data for that flag will be deleted.
-            Everywhere that flag was set, it will disappear,
-            and you cannot get that data back. If you want to keep flag data,
-            but don't want anybody to set any new flags or change current flags,
-            unset <quote>active</quote> in the flag Edit form.
+            いったんフラグを削除すると、Bugzilla から <emphasis>消え去って</emphassi>
+            しまいます。全てのフラグについてのデータが削除されます。
+            フラグが設定されていた全ての場所で、データが消滅し、復旧は不可能です。
+            新しくフラグを設定されたり、変更されたりされないように、フラグデータを
+            保存しておきたければ、フラグ編集フォームの <quote>有効</quote> 
+            を外してください。
           </para>
         </warning>
       </section>
@@ -2236,114 +2221,109 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
   </section> <!-- flags -->
 
   <section id="keywords">
-    <title>Keywords</title>
+    <title>キーワード</title>
 
     <para>
-    The administrator can define keywords which can be used to tag and
-    categorise bugs. For example, the keyword "regression" is commonly used.
-    A company might have a policy stating all regressions
-    must be fixed by the next release - this keyword can make tracking those
-    bugs much easier.
+    バグへのタグ付けやカテゴリ付けのために利用できるキーワードを定義できます。
+    例えば、キーワード "regression" などが一般的に利用されています。
+    全てのレグレッションを次期リリースまでに修正することをポリシーとする
+    会社があるとすると、このキーワードを利用することでより簡単に追跡できる
+    ようになります。
     </para>
     <para>
-    Keywords are global, rather than per-product. If the administrator changes
-    a keyword currently applied to any bugs, the keyword cache must be rebuilt
-    using the <xref linkend="sanitycheck"/> script. Currently keywords can not
-    be marked obsolete to prevent future usage.
+    キーワードはプロダクトごとでなくてグローバルです。管理者がすでにバグに適用
+    されているキーワードを変更すると、キーワードキャッシュを
+    <xref linkend="sanitycheck"/> により再構築する必要があります。
+    将来再利用されるのを防ぐために、キーワードは現状では廃止に指定できません。
     </para>
     <para>
-    Keywords can be created, edited or deleted by clicking the "Keywords"
-    link in the admin page. There are two fields for each keyword - the keyword
-    itself and a brief description. Once created, keywords can be selected
-    and applied to individual bugs in that bug's "Details" section.
+    キーワードは管理画面の "キーワード" リンクから作成・編集・削除可能です。
+    一つのキーワードには二つの項目があり、キーワードそのものとその簡単な説明
+    を入力します。いったん作成されると、それぞれのバグの "詳細" セクションで
+    キーワードを選択・設定できるようになります。
     </para>
   </section>
 
   <section id="custom-fields">
-    <title>Custom Fields</title>
+    <title>カスタムフィールド</title>
 
     <para>
-      The release of Bugzilla 3.0 added the ability to create Custom Fields. 
-      Custom Fields are treated like any other field - they can be set in bugs
-      and used for search queries. Administrators should keep in mind that
-      adding too many fields can make the user interface more complicated and
-      harder to use. Custom Fields should be added only when necessary and with 
-      careful consideration.
+      Bugzilla 3.0 のリリースで、カスタムフィールドの機能が追加されました。
+      カスタムフィールドは他のフィールドと同様に取り扱われ、バグに設定できますし、
+      検索でも利用できます。管理者は、フィールドを追加しすぎると、ユーザインターフェース
+      が非常に複雑になり利用するのが難しくなることを気にかける必要があります。
+      カスタムフィールドは十分検討してから必要なときに追加すべきです。
     </para>
     <tip>
       <para>
-        Before adding a Custom Field, make sure that Bugzilla can not already
-        do the desired behavior. Many Bugzilla options are not enabled by 
-        default, and many times Administrators find that simply enabling
-        certain options that already exist is sufficient. 
+        カスタムフィールドを追加する前に、必要とする機能が Bugzilla に本当に
+        存在しないのかを確認してください。さまざまな Bugzilla のオプションは
+        既定では無効になっており、管理者はそれらの機能をオプションを有効にする
+        だけで効率的に利用し始めることができます。
       </para>
     </tip>
     <para>
-      Administrators can manage Custom Fields using the
-      <quote>Custom Fields</quote> link on the Administration page. The Custom
-      Fields administration page displays a list of Custom Fields, if any exist,
-      and a link to "Add a new custom field". 
+      カスタムフィールドは、管理画面の <quote>カスタムフィールド</quote> 
+      リンクで表示される画面で管理できます。カスタムフィールドの管理ページは、
+      存在していればカスタムフィールドのリストと、
+      "新規カスタムフィールド追加" のリンクを表示します。
     </para>
 
     <section id="add-custom-fields">
-      <title>Adding Custom Fields</title>
+      <title>カスタムフィールドの追加</title>
 
       <para>
-        To add a new Custom Field, click the "Add a new custom field" link. This
-        page displays several options for the new field, described below.
+        新しいカスタムフィールドの追加は、"新規カスタムフィールド追加" 
+        リンクから行えます。このページでは以下のような新規フィールドのための
+        いくつかのオプションのフィールドが表示されます。
       </para>
 
       <para>
-        The following attributes must be set for each new custom field:
+        全てのカスタムフィールドで以下の全ての属性を設定する必要があります。
         <itemizedlist>
           <listitem>
             <para>
-              <emphasis>Name:</emphasis>
-              The name of the field in the database, used internally. This name 
-              MUST begin with <quote>cf_</quote> to prevent confusion with 
-              standard fields. If this string is omitted, it will
-              be automatically added to the name entered. 
+              <emphasis>名前:</emphasis>
+              データベース上でのフィールド名で、内部的に利用されます。
+              この名前は標準フィールドと区別するために <quote>cf_</quote> 
+              で始まっていなければなりません。先頭についていなければ、
+              自動的に付加されます。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Description:</emphasis>
-              A brief string which is used as the label for this Custom Field.
-              That is the string that users will see, and should be
-              short and explicit.
+              <emphasis>説明:</emphasis>
+              カスタムフィールドのラベルとして利用される簡単な説明です。
+              ユーザが実際に見るものになりますので、短くて正確なものにすべきです。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Type:</emphasis>
-              The type of field to create. There are
-              several types available:
+              <emphasis>型:</emphasis>
+              フィールドの型です。いくつかのタイプがあります。
                <simplelist>
                  <member>
-                   Large Text Box: A multiple line box for entering free text.
+                   広い入力エリア: 複数行の自由記入ができるテキストボックスです。
                  </member>
                  <member>
-                   Free Text: A single line box for entering free text.
+                   テキスト: 自由記入ができる1行ボックスです。
                  </member>
                  <member>
-                   Multiple-Selection Box: A list box where multiple options 
-                   can be selected. After creating this field, it must be edited
-                   to add the selection options. See 
-                   <xref linkend="edit-values-list" /> for information about 
-                   editing legal values.
+                   複数選択ボックス: 複数の選択肢を選べるリストボックスです。
+                   フィールド作成後、選択肢を追加・編集できるようになります。
+                   利用可能な値への制限については、
+                   <xref linkend="edit-values-list" /> を参照してください。
                  </member>
                  <member>
-                   Drop Down: A list box where only one option can be selected.
-                   After creating this field, it must be edited to add the
-                   selection options. See 
-                   <xref linkend="edit-values-list" /> for information about 
-                   editing legal values.
+                   ドロップダウン: 一つのオプションのみが選択可能なリストボックス
+                   です。フィールド作成後、選択肢を追加・編集できるようになります。
+                   利用可能な値への制限については、
                  </member>
                  <member>
-                   Date/Time: A date field. This field appears with a 
-                   calendar widget for choosing the date.
+                   日時: 日付フィールドです。日付を選択するためのカレンダー
+                   ウィジェットが表示されます。
                  </member>
                </simplelist>
             </para>
@@ -2351,37 +2331,37 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
 
           <listitem>
             <para>
-              <emphasis>Sortkey:</emphasis>
-              Integer that determines in which order Custom Fields are
-              displayed in the User Interface, especially when viewing a bug. 
-              Fields with lower values are displayed first.
+              <emphasis>ソート順:</emphasis>
+              特にバグ表示画面で、カスタムフィールドがユーザ画面に表示される表示
+              順を決定します。
+              小さな値が設定されているフィールドが先に表示されます。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Can be set on bug creation:</emphasis>
-              Boolean that determines whether this field can be set on
-              bug creation. If not selected, then a bug must be created 
-              before this field can be set. See <xref linkend="bugreports" /> 
-              for information about filing bugs.
+              <emphasis>bug 作成時に設定可能:</emphasis>
+              バグ作成時にこのフィールドを設定可能とするかどうかを決定します。
+              非選択の場合、バグを作成するまではフィールドに値を設定することが
+              できなくなります。バグ作成については、<xref linkend="bugreports" /> 
+              を参照してください。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Displayed in bugmail for new bugs:</emphasis>
-              Boolean that determines whether the value set on this field
-              should appear in bugmail when the bug is filed. This attribute
-              has no effect if the field cannot be set on bug creation.
+              <emphasis>bug 作成時に bug メールに表示:</emphasis>
+              フィールドをバグ作成時に送信されるバグメールに表示するかどうか
+              を決定します。この項目は、バグ作成時に設定可能になっていなければ
+              無視されます。
             </para>
           </listitem>
 
           <listitem>
             <para>
-              <emphasis>Is obsolete:</emphasis>
-              Boolean that determines whether this field should
-              be displayed at all. Obsolete Custom Fields are hidden.
+              <emphasis>用済み:</emphasis>
+              このフィールドを表示するかどうかを決定します。
+              用済みとされたフィールドは表示されません。
             </para>
           </listitem>
         </itemizedlist>
@@ -2389,340 +2369,331 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     </section>
 
     <section id="edit-custom-fields">
-      <title>Editing Custom Fields</title>
+      <title>カスタムフィールドの編集</title>
 
       <para>
-        As soon as a Custom Field is created, its name and type cannot be
-        changed. If this field is a drop down menu, its legal values can
-        be set as described in <xref linkend="edit-values-list" />. All
-        other attributes can be edited as described above.
+        カスタムフィールド作成後、名前と型は変更できません。
+        フィールドがドロップダウンメニューを利用する型の場合、有効な値は
+        <xref linkend="edit-values-list" /> の条件にあうものになります。
+        他の属性については上述と同様に編集可能です。
       </para>
     </section>
 
     <section id="delete-custom-fields">
-      <title>Deleting Custom Fields</title>
+      <title>カスタムフィールドの削除</title>
 
       <para>
-        Only custom fields which are marked as obsolete, and which never
-        have been used, can be deleted completely (else the integrity
-        of the bug history would be compromised). For custom fields marked
-        as obsolete, a "Delete" link will appear in the <quote>Action</quote>
-        column. If the custom field has been used in the past, the deletion
-        will be rejected. But marking the field as obsolete is sufficient
-        to hide it from the user interface entirely.
+        用済みにされており、そして利用されていないカスタムフィールドのみが
+        完全に削除できます。(バグの履歴に存在している場合、履歴が不完全に
+        なります。)用済みとされているカスタムフィールドには、<quote>操作</quote>
+        カラムに "削除" リンクが表示されます。過去に利用されたことのある
+        カスタムフィールドについては、削除操作はできません。
+        しかしながら、用済みにしておくことでもユーザインターフェースから
+        完全に隠されます。
       </para>
     </section>
   </section>
 
   <section id="edit-values">
-    <title>Legal Values</title>
+    <title>有効な値</title>
 
     <para>
-      Since Bugzilla 2.20 RC1, legal values for Operating Systems, platforms,
-      bug priorities and severities can be edited from the User Interface
-      directly. This means that it is no longer required to manually edit
-      <filename>localconfig</filename>. Starting with Bugzilla 2.23.3, 
-      the list of valid resolutions can be customized from the same interface.
-      Since Bugzilla 3.1.1 the list of valid bug statuses can be customized
-      as well.
+      Bugzilla 2.20 RC1 以降、OS、プラットフォーム、バグの優先度と重要度
+      フィールドの値はユーザインターフェースから直接編集できるようになりました。
+      これは、<filename>localconfig</filename> から直接編集しなくても
+      よくなったともいえます。Bugzilla 2.23.3 以降、有効な解決方法のリストも
+      同じ画面から編集できるようになりました。
+      そして、Bugzilla 3.1.1 からはバグのステータスについても同様に編集
+      できるようになりました。
     </para>
 
     <section id="edit-values-list">
-      <title>Viewing/Editing legal values</title>
+      <title>有効な値の参照・編集方法</title>
       <para>
-        Editing legal values requires <quote>admin</quote> privileges.
-        Select "Legal Values" from the Administration page. A list of all
-        fields, both system fields and Custom Fields, for which legal values
-        can be edited appears. Click a field name to edit its legal values.
+        有効な値の編集は <quote>admin</quote> 権限が必要です。
+        管理ページの "フィールド値" を選択してください。
+        有効な値のリストを編集可能なシステムフィールドおよびカスタムフィールドの
+        全てのフィールドがリスト表示されます。有効な値を編集するには、
+        フィールド名をクリックしてください。
       </para>
       <para>
-        There is no limit to how many values a field can have, but each value 
-        must be unique to that field. The sortkey is important to display these
-        values in the desired order.
+        フィールドが持つことができる値の数に制限はありませんが、全ての値は
+        フィールド内で唯一でなければなりません。ソート順は値がどのような順で
+        表示されるかを決定する重要な値です。
       </para>
     </section>
 
     <section id="edit-values-delete">
-      <title>Deleting legal values</title>
+      <title>有効な値の削除</title>
       <para>
-        Legal values from Custom Fields can be deleted, but only if the 
-        following two conditions are respected:
+        カスタムフィールドの有効な値は削除可能ですが、
+        以下の二つの条件を満たしていなければ削除できません。
       </para>
 
       <orderedlist>
         <listitem>
-	  <para>The value is not used by default for the field.</para>
-	</listitem>
+          <para>値がフィールドの既定値でない場合。</para>
+        </listitem>
 
-	<listitem>
-	  <para>No bug is currently using this value.</para>
+        <listitem>
+          <para>値がバグで利用されていない場合。</para>
         </listitem>
       </orderedlist>
 
       <para>
-        If any of these conditions is not respected, the value cannot be deleted.
-	The only way to delete these values is to reassign bugs to another value
-	and to set another value as default for the field.
+        これらの条件のひとつでも満たされない場合、値を削除できません。
+        そのような値を削除する方法は、該当のバグを他の値を利用するように変更し、
+        かつフィールドの既定値から外すしかありません。
       </para>
     </section>
   </section>
 
   <section id="bug_status_workflow">
-    <title>Bug Status Workflow</title>
+    <title>バグステータスワークフロー</title>
 
     <para>
-      The bug status workflow is no longer hardcoded but can be freely customized
-      from the web interface. Only one bug status cannot be renamed nor deleted,
-      UNCONFIRMED, but the workflow involving it is free. The configuration
-      page displays all existing bug statuses twice, first on the left for bug
-      statuses we come from and on the top for bug statuses we move to.
-      If the checkbox is checked, then the transition between the two bug statuses
-      is legal, else it's forbidden independently of your privileges. The bug status
-      used for the "duplicate_or_move_bug_status" parameter must be part of the
-      workflow as that is the bug status which will be used when duplicating or
-      moving a bug, so it must be available from each bug status.
+      バグステータスワークフローはハードコードではなくなり、ウェブインターフェース
+      より自由に編集できるようになりました。一つのステータス値 UNCONFIRMED 
+      だけは削除も名前の変更もできませんが、ワークフローは自由になりました。
+      設定ページには全てのステータスが2つずつ表示され、一つは左側に変更元の、
+      もう一つは上に変更先のステータスが表示されます。ユーザの権限で独立に制限
+      されていない限り、チェックボックスがオンの対応でのみバグのステータスを変更
+      することができます。"duplicate_or_move_bug_status" パラメータで利用されている
+      バグのステータスは必ずワークフローに含まれていなければならず、バグを重複と
+      する際や移動する際に利用されますので、全てのステータスから遷移できなければ
+      なりません。
     </para>
     <para>
-      When the workflow is set, the "View Current Triggers" link below the table
-      lets you set which transitions require a comment from the user.
+      ワークフローを設定後、下の "現在のトリガーを見る" リンクから遷移時にユーザ
+      にコメントを求める関係を指定できます。
     </para>
   </section>
 
   <section id="voting">
-    <title>Voting</title>
+    <title>投票</title>
 
-    <para>Voting allows users to be given a pot of votes which they can allocate
-    to bugs, to indicate that they'd like them fixed. 
-    This allows developers to gauge
-    user need for a particular enhancement or bugfix. By allowing bugs with
-    a certain number of votes to automatically move from "UNCONFIRMED" to
-    "CONFIRMED", users of the bug system can help high-priority bugs garner
-    attention so they don't sit for a long time awaiting triage.</para>
+    <para>
+      投票機能により、ユーザは自分が修正を望んでいることを示すために、バグ
+      に対して票を投じることができます。これにより、開発者にとってはどのバグ
+      や機能要望が望まれているのかを知ることができます。ある票数を獲得した
+      バグを "UNCONFIRMED" から "CONFIRMED" に自動的に変更することにより、
+      重要度の高いバグをシステムにより把握できるようになり、ユーザが長期間
+      対処を待たなくてすむようになります。</para>
 
-    <para>To modify Voting settings:</para>
+    <para>投票設定の変更方法:</para>
 
     <orderedlist>
       <listitem>
-        <para>Navigate to the "Edit product" screen for the Product you
-        wish to modify</para>
+        <para>"プロダクトの編集" 画面から編集したいプロダクトを選択してください</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Maximum Votes per person</emphasis>:
-        Setting this field to "0" disables voting.</para>
+        <para><emphasis>ユーザあたりの最大投票数</emphasis>:
+        "0" にすると投票機能は無効になります。</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Maximum Votes a person can put on a single
-         bug</emphasis>: 
-         It should probably be some number lower than the
-        "Maximum votes per person". Don't set this field to "0" if
-        "Maximum votes per person" is non-zero; that doesn't make
-        any sense.</para>
+        <para><emphasis>単一バグに投じることができる最大票数</emphasis>: 
+        "ユーザあたりの最大投票数" よりも小さい値であるべきでしょう。
+        "ユーザあたりの最大投票数" が 0 でなければ "0" にしないでください。
+        その設定は意味をなしません。</para>
       </listitem>
 
       <listitem>
-        <para><emphasis>Number of votes a bug in this product needs to
-        automatically get out of the UNCONFIRMED state</emphasis>: 
-        Setting this field to "0" disables the automatic move of
-        bugs from UNCONFIRMED to CONFIRMED. 
+        <para><emphasis>このプロダクトで自動的に UNCONFIRMED 
+        状態から変更されるのに必要な票数</emphasis>: 
+        "0" に設定すると自動的に UNCONFIRMED から CONFIRMED 
+        に変更されなくなります。
         </para>
       </listitem>
 
       <listitem>
-        <para>Once you have adjusted the values to your preference, click
-        "Update".</para>
+        <para>値を設定したら、"更新" をクリックしてください。</para>
       </listitem>
     </orderedlist>
   </section>
 
   <section id="quips">
-    <title>Quips</title>
+    <title>quip</title>
 
     <para>
-      Quips are small text messages that can be configured to appear
-      next to search results. A Bugzilla installation can have its own specific
-      quips. Whenever a quip needs to be displayed, a random selection
-      is made from the pool of already existing quips.
+      "quip" は検索結果の画面で表示することができる短いテキストメッセージです。
+      Bugzilla の各サイトでは独自の "quip" を利用することができます。
+      "quip" を表示する場合には、既存のプールからランダムに選択されます。
     </para>
   
     <para>
-      Quips are controlled by the <emphasis>enablequips</emphasis> parameter.
-      It has several possible values: on, approved, frozen or off.
-      In order to enable quips approval you need to set this parameter
-      to "approved". In this way, users are free to submit quips for
-      addition but an administrator must explicitly approve them before
-      they are actually used.
+      "quip" は <emphasis>enablequips</emphasis> パラメータにより制御されます。
+      いくつかの値から選択できます: on, approved, frozen, off
+      承認された "quip" を有効にするにはパラメータを "approved" にします。
+      この設定では、ユーザは自由に "quip" を投稿できますが、管理者が明示的に
+      承認を与えない限り実際には利用されません。
     </para>
 
     <para>
-      In order to see the user interface for the quips, it is enough to click
-      on a quip when it is displayed together with the search results. Or
-      it can be seen directly in the browser by visiting the quips.cgi URL
-      (prefixed with the usual web location of the Bugzilla installation).
-      Once the quip interface is displayed, it is enough to click the
-      "view and edit the whole quip list" in order to see the administration
-      page. A page with all the quips available in the database will
-      be displayed.
+      "quip" のユーザインターフェースを表示するには、検索結果とともに表示
+      されている際に "quip" をクリックすると表示されます。もしくは、quips.cgi 
+      URL (先頭に Bugzilla サイトの通常の先頭部分を追加してください) に
+      直接アクセスすることでも表示されます。"quip" の画面が表示されれば、
+      "すべての quip のリストを表示・編集する" をクリックして、管理画面に
+      移動してください。データベースに格納されている全ての quip が表示されます。
     </para>
 
     <para>
-      Next to each tip there is a checkbox, under the
-      "Approved" column. Quips who have this checkbox checked are
-      already approved and will appear next to the search results.
-      The ones that have it unchecked are still preserved in the
-      database but they will not appear on search results pages.
-      User submitted quips have initially the checkbox unchecked.
+      それぞれの quip の隣、"承認" カラムにチェックボックスが表示されます。
+      このチェックボックスがチェックされている quip が承認されたもので、
+      検索結果に表示されます。チェックされていないものもデータベースに保存
+      されますが、検索結果の画面には表示されません。
+      ユーザが登録したばかりの quip はチェックボックスが外れています。
     </para>
   
     <para>
-      Also, there is a delete link next to each quip,
-      which can be used in order to permanently delete a quip.
+      また、それぞれの quip には削除リンクがあり、完全に削除できるように
+      なっています。
     </para>
   </section>
 
   <section id="groups">
-    <title>Groups and Group Security</title>
+    <title>グループとグループセキュリティー</title>
 
     <para>
-    Groups allow for separating bugs into logical divisions.
-    Groups are typically used to
-    to isolate bugs that should only be seen by certain people. For
-    example, a company might create a different group for each one of its customers
-    or partners. Group permissions could be set so that each partner or customer would
-    only have access to their own bugs. Or, groups might be used to create
-    variable access controls for different departments within an organization.
-    Another common use of groups is to associate groups with products,
-    creating isolation and access control on a per-product basis.
+    グループによりバグを論理的な区分に分割できます。
+    グループは特定の人にのみ見えるような独立したバグのためによく利用されます。
+    たとえば、顧客やパートナー単位で異なるグループを作成する会社を考えましょう。
+    グループ権限はそれぞれの顧客やパートナーが各自のバグにのみアクセスできるよう
+    に設定できます。もしくは、グループを組織内の異なる部門に対する細かい
+    アクセス制限に利用することも可能です。もう一つの一般的な用途として、
+    プロダクトに関連するグループを作成し、プロダクトごとの分離とアクセス制限
+    を行うこともできます。
     </para>
 
     <para>
-    Groups and group behaviors are controlled in several places:
+    グループとグループの動作は複数の場所で制御します:
     </para>
 
       <orderedlist>
 
          <listitem>
            <para>
-             The group configuration page. To view or edit existing groups, or to
-             create new groups, access the "Groups" link from the "Administration"
-             page. This section of the manual deals primarily with the aspect of
-             group controls accessed on this page.  
+             グループ設定ページ。既存のグループを表示・編集する、もしくは新規
+             グループを作成するには、"管理" ページの "グループ" リンクにアクセス
+             してください。マニュアルのこの節では、基本的にこのページから編集
+             できるグループ制限の方法を解説します。
            </para>
          </listitem> 
 
         <listitem>
           <para>
-            Global configuration parameters. Bugzilla has several parameters 
-            that control the overall default group behavior and restriction
-            levels. For more information on the parameters that control 
-            group behavior globally, see <xref linkend="param-group-security"/>.
+            グローバル設定パラメータ。Bugzilla は既定のグループの動作や制限レベル
+            に関するいくつかのパラメータを持ちます。
+            グローバルなグループの動作を制御するパラメータについての詳細は、
+            <xref linkend="param-group-security"/> を参照してください。
           </para>
 
          </listitem>
 
          <listitem>
           <para>
-            Product association with groups. Most of the functionality of groups
-            and group security is controlled at the product level. Some aspects
-            of group access controls for products are discussed in this section,
-            but for more detail see <xref linkend="product-group-controls"/>.
+            プロダクトに関連したグループ。大半のグループの機能とグループセキュリティー
+            はプロダクトレベルで制御されます。プロダクトに対するグループアクセス制限
+            のいくつかの機能についてこの節で紹介されますが、より詳細については
+            <xref linkend="product-group-controls"/> を参照してください。
           </para>
          </listitem>
 
          <listitem>
           <para>
-            Group access for users. See <xref linkend="users-and-groups"/> for
-            details on how users are assigned group access.
+            ユーザに対するグループ制限。グループに対してユーザをどう割り当てるか
+            についての詳細は <xref linkend="users-and-groups"/> 
+            を参照してください。
           </para>
          </listitem>
 
       </orderedlist>
 
     <para>
-      Group permissions are such that if a bug belongs to a group, only members
-      of that group can see the bug. If a bug is in more than one group, only
-      members of <emphasis>all</emphasis> the groups that the bug is in can see
-      the bug. For information on granting read-only access to certain people and
-      full edit access to others, see <xref linkend="product-group-controls"/>.
+      バグがグループに属し、グループのメンバーしか見ることができないようにする
+      グループ権限を設定できます。複数のグループに設定されているバグは、
+      <emphasis>全ての</emphasis> グループのメンバーでなければ、バグを見ることが
+      できなくなります。より詳細な、特定ユーザの表示アクセス権限や他の編集権限
+      については、<xref linkend="product-group-controls"/> を参照してください。
      </para> 
 
      <note>
       <para>
-        By default, bugs can also be seen by the Assignee, the Reporter, and 
-        by everyone on the CC List, regardless of whether or not the bug would 
-        typically be viewable by them. Visibility to the Reporter and CC List can 
-        be overridden (on a per-bug basis) by bringing up the bug, finding the 
-        section that starts with <quote>Users in the roles selected below...</quote>
-        and un-checking the box next to either 'Reporter' or 'CC List' (or both).
+        既定では、バグは担当者・報告者とCCリストの全員にも、バグの表示権限が
+        付与されているかどうかによらず表示されます。
+        報告者とCCリストに対する表示は (バグごとに) 上書きすることができ、
+        <quote>以下の担当になっているユーザは常にこの bug を見ることができます</quote> 
+        で始まる部分の '報告者' や 'CC リスト' のチェックボックスを外すことで
+        行えます。
       </para>
     </note> 
 
     <section id="create-groups">
-      <title>Creating Groups</title>
+      <title>グループの作成</title>
 
       <para>
-        To create a new group, follow the steps below:
+        新規グループ作成は以下の方法で行えます:
       </para>
   
       <orderedlist>
 
         <listitem>
           <para>
-            Select the <quote>Administration</quote> link in the page footer, 
-            and then select the <quote>Groups</quote> link from the 
-            Administration page.
+            ページフッタの <quote>管理</quote> リンクから、管理ページの
+            <quote>グループ</quote> リンクをクリックしてください。
           </para>
         </listitem>
   
         <listitem>
           <para>
-            A table of all the existing groups is displayed. Below the table is a
-            description of all the fields. To create a new group, select the 
-            <quote>Add Group</quote> link under the table of existing groups.
+            全ての既存グループのテーブルが表示されます。
+            テーブルの下にフィールドの説明が表示されます。
+            新規グループ作成には、既存グループの表の下にある
+            <quote>グループ追加</quote> リンクを選択してください。
           </para>
         </listitem>
   
         <listitem>
           <para>
-            There are five fields to fill out. These fields are documented below
-            the form. Choose a name and description for the group. Decide whether
-            this group should be used for bugs (in all likelihood this should be
-            selected). Optionally, choose a regular expression that will
-            automatically add any matching users to the group, and choose an
-            icon that will help identify user comments for the group. The regular
-            expression can be useful, for example, to automatically put all users
-            from the same company into one group (if the group is for a specific
-            customer or partner). 
+            5つの項目を埋める必要があります。フォームの下に解説があります。
+            まず、グループの名前と説明を入力してください。そして、グループが
+            バグで利用されるかどうか (ほぼ全ての状況でこれを選択するでしょう)
+            を決めてください。また、自動的にグループにユーザを追加するための
+            正規表現での条件と、ユーザがグループに所属していることを判断する
+            ためのアイコンを指定できます。
+            正規表現は有用で、たとえば、同一会社に所属する全てのユーザを
+            自動的に一つのグループに所属させることもできます。
+            (グループが特定の顧客やパートナーのためのものである場合。)
           </para>
             <note>
              <para>
-               If <quote>User RegExp</quote> is filled out, users whose email 
-               addresses match the regular expression will automatically be 
-               members of the group as long as their email addresses continue 
-               to match the regular expression. If their email address changes
-               and no longer matches the regular expression, they will be removed
-               from the group. Versions 2.16 and older of Bugzilla did not automatically
-               remove users who's email addresses no longer matched the RegExp.
+               もし <quote>含める正規表現</quote> が設定されていれば、
+               メールアドレスがこの正規表現に該当するユーザは、メールアドレスが
+               正規表現に該当し続ける限り、自動的に
+               グループのメンバーに含まれるようになります。
+               メールアドレスが変更され、正規表現に合わなくなれば、グループから
+               外されます。2.16 とそれ以前の Bugzilla では自動的に外す機能
+               はありませんでした。
              </para>
             </note>
             <warning>
              <para>
-               If specifying a domain in the regular expression, end
-               the regexp with a "$". Otherwise, when granting access to 
-               "@mycompany\.com", access will also be granted to 
-               'badperson@mycompany.com.cracker.net'. Use the syntax,
-               '@mycompany\.com$' for the regular expression.
+               正規表現にドメインを設定する場合、最後を "$" にしてください。
+               そうでなければ、"@mycompany\.com" は
+               'badperson@mycompany.com.cracker.net' にも該当してしまいます。
+               '@mycompany\.com$' と設定してください。
              </para>
             </warning>
         </listitem>
 
         <listitem>
           <para>
-          After the new group is created, it can be edited for additional options. 
-          The "Edit Group" page allows for specifying other groups that should be included
-          in this group and which groups should be permitted to add and delete
-          users from this group. For more details, see <xref linkend="edit-groups"/>.
+          新規グループを作成後、他のオプションを設定できます。
+          "グループの編集" ページでこのグループのメンバーとして含まれる他のグループ
+          の設定や、このグループにユーザを追加・削除できるグループなどを設定できます。
+          詳細については、<xref linkend="edit-groups"/> を参照してください。
           </para>
         </listitem>
       </orderedlist>
@@ -2730,35 +2701,33 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     </section>
  
     <section id="edit-groups">
-      <title>Editing Groups and Assigning Group Permissions</title>
+      <title>グループの編集とグループ権限の割り当て</title>
 
       <para>
-        To access the "Edit Groups" page, select the 
-        <quote>Administration</quote> link in the page footer, 
-        and then select the <quote>Groups</quote> link from the Administration page.
-        A table of all the existing groups is displayed. Click on a group name
-        you wish to edit or control permissions for.
+        "グループの編集" 画面には、ページフッタの <quote>管理</quote> リンクから
+        表示される管理ページの <quote>グループ</quote> リンクを選択してください。
+        既存の全てのグループの表が表示されます。権限を編集・管理したい
+        グループ名をクリックしてください。
       </para>
 
       <para>
-       The "Edit Groups" page contains the same five fields present when 
-       creating a new group. Below that are two additional sections, "Group
-       Permissions," and "Mass Remove". The "Mass Remove" option simply removes
-       all users from the group who match the regular expression entered. The
-       "Group Permissions" section requires further explanation.
+       "グループの編集" ページでは新規グループを作成する際と同じ5つのフィールドが
+       表示されます。それに加えて、"グループの権限" と "大量削除" の二つの
+       部分が表示されます。"大量削除" オプションは、単純に入力した正規表現に
+       合致する全てのユーザをグループから削除します。
+       "グループの権限" の部分はより説明が必要でしょう。
       </para>
 
       <para>
-       The "Group Permissions" section on the "Edit Groups" page contains four sets
-       of permissions that control the relationship of this group to other
-       groups. If the 'usevisibilitygroups' parameter is in use (see
-       <xref linkend="parameters"/>) two additional sets of permissions are displayed. 
-       Each set consists of two select boxes. On the left, a select box
-       with a list of all existing groups. On the right, a select box listing
-       all groups currently selected for this permission setting (this box will
-       be empty for new groups). The way these controls allow groups to relate
-       to one another is called <emphasis>inheritance</emphasis>. 
-       Each of the six permissions is described below.
+       "グループの編集" ページの "グループの権限" 部分では、グループと他のグループ
+       の関係を決める4つの値を設定できます。'usevisibilitygroups' パラメータが有効
+       になっている (<xref linkend="parameters"/> を参照してください) 場合、
+       権限についての2つの追加の設定が表示されます。それぞれの設定には二つの
+       選択ボックスが表示されています。左側のボックスは全ての既存のグループのリスト
+       になっています。右側は権限設定に現在設定されているグループ
+       のリストが表示されます (新規グループでは空白のはずです)。
+       これらのボックスは他のグループに対して <emphasis>継承</emphasis> の関係を
+       設定するものです。次に6つの詳細を説明します。
       </para>
 
       <variablelist>
@@ -2766,14 +2735,14 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
         <varlistentry>
 
           <term>
-            <emphasis>Groups That Are a Member of This Group</emphasis>
+            <emphasis>このグループのメンバーとなるグループ</emphasis>
           </term>
 
           <listitem>
             <para> 
-              Members of any groups selected here will automatically have 
-              membership in this group. In other words, members of any selected 
-              group will inherit membership in this group. 
+              選択されたどのグループのメンバーに対してもこのグループの権限が付与
+              されます。言い換えれば、選択されたどのグループのメンバーについても、
+              このグループの権限を継承します。
             </para>
           </listitem>
 
@@ -2782,18 +2751,17 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
         <varlistentry>
 
           <term>
-            <emphasis>Groups That This Group Is a Member Of</emphasis>
+            <emphasis>このグループがメンバーであるグループ</emphasis>
           </term>
 
           <listitem>
             <para>
-              Members of this group will inherit membership to any group 
-              selected here. For example, suppose the group being edited is
-              an Admin group. If there are two products  (Product1 and Product2) 
-              and each product has its
-              own group (Group1 and Group2), and the Admin group 
-              should have access to both products, 
-              simply select both Group1 and Group2 here. 
+              編集中のグループのメンバーになっていれば、ここで選択されたグループ
+              の権限も継承します。たとえば、"Admin" グループを編集中とします。
+              プロダクトが二つ (Product1, Product2) あり、それぞれがオーナーと
+              なるグループ (Group1, Group2) を持つとき、"Admin" グループにも
+              それらにアクセスさせようと思った場合、ここで Group1, Group2 
+              を選択してください。
            </para>
           </listitem>
 
@@ -2802,13 +2770,13 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
         <varlistentry>
 
           <term>
-            <emphasis>Groups That Can Grant Membership in This Group</emphasis>
+            <emphasis>このグループにメンバーを追加することができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             The members of any group selected here will be able add users
-             to this group, even if they themselves are not in this group.
+             ここで選択されたグループのメンバーは、このグループに所属していなくても
+             このグループにメンバーを追加できます。
            </para>
           </listitem>
 
@@ -2817,13 +2785,13 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
         <varlistentry>
 
           <term>
-            <emphasis>Groups That This Group Can Grant Membership In</emphasis>
+            <emphasis>このグループがメンバーを追加することができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             Members of this group can add users to any group selected here,
-             even if they themselves are not in the selected groups.  
+             このグループに所属するメンバーは、ここで選択されたどのグループに
+             対しても所属しているかどうかにかかわらずユーザを追加できます。
            </para>
           </listitem>
 
@@ -2832,15 +2800,15 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
         <varlistentry>
 
           <term>
-            <emphasis>Groups That Can See This Group</emphasis>
+            <emphasis>このグループを見ることができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             Members of any selected group can see the users in this group.
-             This setting is only visible if the 'usevisibilitygroups' parameter
-             is enabled on the Bugzilla Configuration page. See
-             <xref linkend="parameters"/> for information on configuring Bugzilla.
+             ここで選択されたグループのメンバーはこのグループのユーザを見ることができます。
+             この設定は Bugzilla 設定ページで 'usevisibilitygroups' が有効の場合にのみ
+             表示されます。Bugzilla の設定方法に関しては
+             <xref linkend="parameters"/> を参照してください。
            </para>
           </listitem>
 
@@ -2849,15 +2817,16 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
         <varlistentry>
 
           <term>
-            <emphasis>Groups That This Group Can See</emphasis>
+            <emphasis>このグループのメンバーが見ることができるグループ</emphasis>
           </term>
 
           <listitem>
            <para>
-             Members of this group can see members in any of the selected groups.
-             This setting is only visible if the 'usevisibilitygroups' parameter
-             is enabled on the the Bugzilla Configuration page. See
-             <xref linkend="parameters"/> for information on configuring Bugzilla.               
+             このグループに所属するユーザは、選択されているグループのメンバーを
+             一覧できます。
+             この設定は Bugzilla 設定ページで 'usevisibilitygroups' が有効の場合にのみ
+             表示されます。Bugzilla の設定方法に関しては
+             <xref linkend="parameters"/> を参照してください。
            </para>
           </listitem>
 
@@ -2868,45 +2837,44 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     </section>
 
     <section id="users-and-groups">
-      <title>Assigning Users to Groups</title>
+      <title>ユーザをグループに所属させる</title>
 
       <para>
-        A User can become a member of a group in several ways:
+        ユーザをグループのメンバーとするにはいくつかの方法があります:
       </para>
 
       <orderedlist>
 
         <listitem>
           <para>
-            The user can be explicitly placed in the group by editing
-            the user's profile. This can be done by accessing the "Users" page
-            from the "Administration" page. Use the search form to find the user
-            you want to edit group membership for, and click on their email
-            address in the search results to edit their profile. The profile
-            page lists all the groups, and indicates if the user is a member of
-            the group either directly or indirectly. More information on indirect
-            group membership is below. For more details on User administration,
-            see <xref linkend="useradmin"/>.
+            ユーザのプロファイルを編集することで明示的にグループに所属させられます。
+            "管理" ページの "ユーザ" ページからアクセスできます。
+            グループ権限を設定したいユーザを検索画面から検索し、
+            検索結果からメールアドレスをクリックして、プロファイルを編集します。
+            プロファイルには全てのグループが表示され、そのユーザがどのグループに
+            直接もしくは継承されて所属しているかが表示されます。
+            継承によるグループ権限については後ほど説明します。
+            ユーザ管理の詳細については、 <xref linkend="useradmin"/> を参照してください。
           </para>
         </listitem>
 
         <listitem>
           <para>
-           The group can include another group of which the user is
-           a member. This is indicated by square brackets around the checkbox  
-           next to the group name in the user's profile. 
-           See <xref linkend="edit-groups"/> for details on group inheritance.
+           グループはユーザがメンバーとなっているグループを含むこともあります。
+           この場合、ユーザプロファイル画面のグループ名の次に表示されるチェック
+           ボックスの周りにかぎ括弧が表示されます。
+           グループの継承の詳細については <xref linkend="edit-groups"/> を参照してください。
           </para>
         </listitem>
 
         <listitem>
           <para>
-            The user's email address can match the regular expression
-            that has been specified to automatically grant membership to
-            the group. This is indicated by "*" around the check box by the
-            group name in the user's profile.
-            See <xref linkend="create-groups"/> for details on 
-            the regular expression option when creating groups.
+            グループに対する権限付与を、正規表現に合致するメールアドレスを持つ
+            ユーザに対して自動的に行うこともできます。
+            これは、ユーザのプロファイルでは、グループ名の隣にある
+            チェックボックスの周りに "*" で表示されます。
+            グループ作成時の正規表現のオプションについての詳細は
+            <xref linkend="create-groups"/> を参照してください。
            </para>
         </listitem>
 
@@ -2915,50 +2883,49 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     </section>
 
     <section>
-     <title>Assigning Group Controls to Products</title>
+     <title>プロダクトへのグループによる制限の設定</title>
 
      <para>
-     The primary functionality of groups is derived from the relationship of 
-     groups to products. The concepts around segregating access to bugs with
-     product group controls can be confusing. For details and examples on this
-     topic, see <xref linkend="product-group-controls" />.
+     グループの基本的な機能はプロダクトに対するグループの関係によるものです。
+     プロダクト・グループ制御によるバグへのアクセスの制約のコンセプトは非常に
+     難解です。この部分の詳細については、
+     <xref linkend="product-group-controls" /> を参照してください。
      </para>
 
     </section>
   </section>
 
   <section id="sanitycheck">
-    <title>Checking and Maintaining Database Integrity</title>
+    <title>データベース整合性の確認と維持</title>
 
     <para>
-    Over time it is possible for the Bugzilla database to become corrupt
-    or to have anomalies.
-    This could happen through normal usage of Bugzilla, manual database
-    administration outside of the Bugzilla user interface, or from some
-    other unexpected event. Bugzilla includes a "Sanity Check" script that
-    can perform several basic database checks, and repair certain problems or
-    inconsistencies. 
+    長く利用していると、Bugzilla データベースが破損したり不整合を起こす可能性
+    が高くなります。
+    Bugzilla ユーザインターフェース以外からのデータベース管理作業や、予期しな
+    い事態が発生したなど、Bugzilla を普通に利用していても起こりえることです。
+    Bugzilla には "整合性確認" スクリプトが含まれており、いくつかの基本的な
+    データベースの確認やよく知られた問題や不整合を修復することもできます。
     </para>
     <para>
-    To run the "Sanity Check" script, log in as an Administrator and click the
-    "Sanity Check" link in the admin page. Any problems that are found will be
-    displayed in red letters. If the script is capable of fixing a problem,
-    it will present a link to initiate the fix. If the script can not
-    fix the problem it will require manual database administration or recovery.
+    "整合性確認" スクリプトを実行するには、管理者としてログインし、管理ページ
+    にある "整合性確認" のリンクをクリックしてください。何らかの問題が発見
+    された場合、赤く表示されます。スクリプトに問題を修復する機能がある場合、
+    修正を実行するためのリンクが表示されます。スクリプトが問題を修正
+    できない場合は、データベースを手動で修復する必要があります。
     </para>
     <para>
-    The "Sanity Check" script can also be run from the command line via the perl
-    script <filename>sanitycheck.pl</filename>. The script can also be run as
-    a <command>cron</command> job. Results will be delivered by email.
+    "整合性確認" スクリプトは Perl スクリプト <filename>sanitycheck.pl</filename>
+    を利用してコマンドラインからも実行できます。このスクリプトは <command>cron</command>
+    ジョブとしても設定できます。実行結果はメールで届きます。
     </para>
     <para>
-    The "Sanity Check" script should be run on a regular basis as a matter of
-    best practice.
+    最大の効果を得るために、"整合性確認" スクリプトは日常作業として走らせてお
+    くべきです。
     </para>
     <warning>
       <para>
-      The "Sanity Check" script is no substitute for a competent database
-      administrator. It is only designed to check and repair basic database
+      "整合性確認" はデータベース管理者になるように設計されていません。
+      基本的なデータベースの問題を確認し修復するように設計されています。
       problems.
       </para>
     </warning>

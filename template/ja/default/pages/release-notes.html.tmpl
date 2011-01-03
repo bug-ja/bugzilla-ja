@@ -93,8 +93,8 @@
 <h3 id="v40_req_modules">必須 Perl モジュール</h3>
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES
-                     new = ['List-MoreUtils']
-                     updated = ['Email-MIME', 'CGI.pm'] %]
+                     new = ['List-MoreUtils', 'Win32-API']
+                     updated = ['Email-MIME', 'CGI.pm', 'Apache-SizeLimit'] %]
 
 <h3 id="v40_req_optional_mod">オプションの Perl モジュール</h3>
 
@@ -634,6 +634,10 @@
     かわりに <kbd>List::MoreUtils</kbd> の <kbd>firstidx</kbd> 
     を利用してください。</li>
   <li>[% terms.Bugzilla %] には YUI 2.8.2 が同梱されるようになりました。</li>
+  <li><kbd>long_list.cgi</kbd>、<kbd>showattachment.cgi</kbd>、
+    <kbd>xml.cgi</kbd> は [% terms.Bugzilla %] 2.19 以降長い間あまり使われて
+    おらず廃止予定でした。このスクリプトは [% terms.Bugzilla %] 4.2 
+    で削除されます。</li>
 </ul>
 
 
@@ -1585,7 +1589,7 @@
     リンクにならない問題がありました。
    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=514703">[% terms.Bug %] 514703</a>)
   </li>
-  <li>Windows で checksetup.pl を実行したときに、OCI.dll に関するエラーが表示されなく
+  <li>Windows で <kbd>checksetup.pl</kbd> を実行したときに、OCI.dll に関するエラーが表示されなく
     なりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=480968">[% terms.Bug %] 480968</a>)
   </li>
@@ -2345,7 +2349,7 @@
 
   <li>Perl モジュール SOAP::Lite のバージョンによってはモジュール自体に問題があり、
     [% terms.Bugzilla %] の XML-RPC サービスが壊れます。
-    <code>checksetup.pl</code> を更新し、
+    <kbd>checksetup.pl</kbd> を更新し、
     問題のあるバージョンを検出しエラーを出すようにしました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=468009">[% terms.Bug %] 468009</a>)</li>
 
@@ -3012,7 +3016,7 @@
      <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=413672">[% terms.Bug %] 413672</a>, and
      <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=431721">[% terms.Bug %] 431721</a>)</li>
 
-  <li>checksetup.pl now handles UTF-8 conversion more reliably during upgrades.
+  <li><kbd>checksetup.pl</kbd> now handles UTF-8 conversion more reliably during upgrades.
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=374951">[% terms.Bug %] 374951</a>)</li>
 
   <li>Comments written in CJK languages are now correctly word-wrapped.
@@ -3772,7 +3776,7 @@
     will tell you when this is, and it will give you certain instructions
     at that time, that you have to follow before you can complete
     the upgrade. Don't do the conversion yourself manually--follow
-    the instructions of checksetup.pl.</li>
+    the instructions of <kbd>checksetup.pl</kbd>.</li>
   <li>If you ever ran 2.23.3, 2.23.4, or 3.0rc1, you will have to run
     <kbd>./collectstats.pl --regenerate</kbd> at the command line, because
     the data for your Old Charts is corrupted. This can take several days,
@@ -3912,7 +3916,7 @@ sub y { $var++ }</pre>
 <h3 id="v30_code_other">Other Changes</h3>
 
 <ul>
-  <li><code>checksetup.pl</code> has been completely re-written, and most
+  <li><kbd>checksetup.pl</kbd> has been completely re-written, and most
     of its code moved into modules in the <kbd>Bugzilla::Install</kbd>
     namespace. See the
     <a href="[% docs_urlbase FILTER html %]api/checksetup.html">checksetup
