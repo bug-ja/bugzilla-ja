@@ -554,7 +554,7 @@
       [% FOREACH param = param_changed %]
         <em>[% param FILTER html %]</em> パラメータ更新<br>
         [% IF param == 'utf8' && Param('utf8') %]
-          <strong>checksetup.pl を再実行する必要があります</strong><br>
+          <strong><kbd>checksetup.pl</kbd> を再実行する必要があります</strong><br>
         [% END %]
       [% END %]
     [% ELSE %]

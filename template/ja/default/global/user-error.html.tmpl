@@ -831,6 +831,16 @@
     フラグステータス <em>[% status FILTER html %]</em>
     は無効です。
 
+  [% ELSIF error == "flag_type_cannot_deactivate" %]
+    [% title = "フラグタイプを無効にできません" %]
+    フラグタイプ '[% flagtype.name FILTER html %]' はあなたから見ることができない
+    プロダクトでも利用されており、無効化することはできません。
+
+  [% ELSIF error == "flag_type_cannot_delete" %]
+    [% title = "フラグタイプの削除は許可されておりません" %]
+    フラグタイプ '[% flagtype.name FILTER html %]' はあなたから見ることができない
+    プロダクトでも利用されており、削除することはできません。
+
   [% ELSIF error == "flag_type_cc_list_invalid" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.bug_cc_list FILTER html %] が適当ではありません [% END %]
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
@@ -851,6 +861,11 @@
     [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
     [% jawords.flag_name FILTER html %] <em>[% name FILTER html %]</em> は 1 ～ 50 文字で、
     スペースやカンマを含むことはできません。
+
+  [% ELSIF error == "flag_type_not_editable" %]
+    [% title = "フラグタイプを編集できません" %]
+    フラグタイプ '[% flagtype.name FILTER html %]' の属性を編集できません。
+    このフラグタイプはあなたが管理できるプロダクトに対しては提供されていません。
 
   [% ELSIF error == "flag_type_not_multiplicable" %]
     [% docslinks = {'flags-overview.html' => 'フラグについて',
@@ -892,11 +907,10 @@
     0 と [% constants.MAX_SMALLINT FILTER none %] の間の整数でなければなりません。
 
   [% ELSIF error == "freetext_too_long" %]
-    [% title = BLOCK %] [% jawords.text FILTER html %] が長すぎます [% END %]
-    入力された [% jawords.text FILTER html %] が長すぎます
-    (最長、[% constants.MAX_FREETEXT_LENGTH FILTER none %] ですが、
-    [% text.length FILTER html %] 文字入力されています):
-    <p><em>[% text FILTER html %]</em></p>
+    [% title = "文章が長すぎます" %]
+    [% field_descs.$field FILTER html %] に入力した文章が長すぎます。
+    (最長 [%+ constants.MAX_FREETEXT_LENGTH FILTER none %] 文字が制限ですが、
+    [% text.length FILTER html %] 文字入力されています。)
 
   [% ELSIF error == "group_cannot_delete" %]
     [% title = BLOCK %]グループを削除できません[% END %]
@@ -1487,6 +1501,7 @@
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 文字以上にしてください。
 
   [% ELSIF error == "product_access_denied" %]
+    [% title = "プロダクトにはアクセスできません" %]
     プロダクト
     [%+ IF id.defined %]
       ID [% id FILTER html %]
@@ -1562,6 +1577,16 @@
     [% admindocslinks = {'products.html' => 'プロダクトの管理',
                          'versions.html' => 'バージョンの管理'} %]
     新規プロダクトには有効なバージョンを追加する必要があります。
+
+  [% ELSIF error == "product_unknown_component" %]
+    [% title = "コンポーネントが存在しません" %]
+    プロダクト '[% product FILTER html %]' には
+    [% IF comp_id %]
+      ID [% comp_id FILTER html %].
+    [% ELSE %]
+      名前 '[% comp FILTER html %]'
+    [% END %]
+    というコンポーネントは存在しません。
 
   [% ELSIF error == "query_name_exists" %]
     [% title = BLOCK %] 指定された [% jawords.search_name FILTER html %] は既に利用されています [% END %]

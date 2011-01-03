@@ -77,7 +77,8 @@
         <a href="editversions.cgi">バージョン</a>、
         <a href="editmilestones.cgi">マイルストーン</a> も直接編集できます。</dd>
 
-        [% class = user.in_group('editcomponents') ? "" : "forbidden" %]
+        [% class = (user.in_group('editcomponents')
+                   || user.get_products_by_permission('editcomponents').size) ? "" : "forbidden" %]
         <dt id="flags" class="[% class %]"><a href="editflagtypes.cgi">フラグ</a></dt>
         <dd class="[% class %]">フラグは、[% terms.bugs %] や添付につけることができる
         4 状態を持つ編集可能な属性です。状態としては、承認、拒否、要求、未定義があります。

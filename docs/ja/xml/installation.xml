@@ -521,78 +521,80 @@
       <title>メール転送エージェント (MTA)</title>
     
       <para>
-        Bugzilla is dependent on the availability of an e-mail system for its 
-        user authentication and for other tasks.
+        Bugzilla はユーザ認証や他のタスクで、メールシステムが利用可能であること
+        が必要です。
       </para>
 
       <note>
         <para>
-          This is not entirely true.  It is possible to completely disable 
-          email sending, or to have Bugzilla store email messages in a 
-          file instead of sending them.  However, this is mainly intended 
-          for testing, as disabling or diverting email on a production 
-          machine would mean that users could miss important events (such 
-          as bug changes or the creation of new accounts).
+          これは完全には正しくありません。メール送信を完全に無効にする、
+          もしくは送信する代わりに Bugzilla にファイルに全て出力させるのは可能
+          です。しかしながら、これは主にテスト用の機能であり、実際の運用下で
+          メール送信を無効にすることは、ユーザが重要なイベント (たとえば、
+          バグへの変更や新規アカウントの作成時など)を見逃す可能性も意味します。
         </para>
 
         <para>
-          For more information, see the <quote>mail_delivery_method</quote> parameter
-          in <xref linkend="parameters" />.
+          より詳細については、<quote>mail_delivery_method</quote> パラメータについて
+          <xref linkend="parameters" /> を参照してください。
         </para>
       </note>
     
       <para>
-        On Linux, any Sendmail-compatible MTA (Mail Transfer Agent) will 
-        suffice.  Sendmail, Postfix, qmail and Exim are examples of common 
-        MTAs. Sendmail is the original Unix MTA, but the others are easier to 
-        configure, and therefore many people replace Sendmail with Postfix or 
-        Exim. They are drop-in replacements, so Bugzilla will not 
-        distinguish between them.
+        Linux では、Sendmail 互換の MTA のどれでも利用可能です。
+        Sendmail, Postfix, qmail, exim はよく利用される MTA の一例です。
+        Sendmail は初期から利用されている Unix での MTA ですが、
+        他のものはより設定しやすくできていたため、Sendmail から Postfix や
+        Exim に移っていきました。これらは完全に入れ替え可能で、
+        Bugzilla はどれが利用されているかを判別しません。
       </para>
 
       <para>
-        If you are using Sendmail, version 8.7 or higher is required.
-        If you are using a Sendmail-compatible MTA, it must be congruent with 
-        at least version 8.7 of Sendmail.
+        Sendmail を利用している場合、バージョン 8.7 以上が必要です。
+        Sendmail 互換の MTA を利用している場合、最低でも Sendmail 
+        バージョン 8.7 以上と互換でなくてはなりません。
       </para>
 
       <para>
-        Consult the manual for the specific MTA you choose for detailed 
-        installation instructions. Each of these programs will have their own 
-        configuration files where you must configure certain parameters to 
-        ensure that the mail is delivered properly. They are implemented 
-        as services, and you should ensure that the MTA is in the auto-start 
-        list of services for the machine.
+        詳細なインストール方法については、選択した MTA のマニュアルを参照
+        してください。それぞれのソフトウェアには独自の設定ファイルが定義されて
+        おり、メールをどのように配送するかの設定を行う特定のパラメータを定義
+        することになるでしょう。また、それらはサービスとして実装されているはずで、
+        MTA をマシンの起動時に自動起動されるサービスのリストに追加しておく
+        必要があるでしょう。
       </para>
 
       <para>
-        If a simple mail sent with the command-line 'mail' program 
-        succeeds, then Bugzilla should also be fine.
+        シンプルなコマンドラインからのメール送信プログラム 'mail' 
+        が正しく動作すれば Bugzilla でも正常に動作するでしょう。
       </para>
 
     </section>  
     <section id="using-mod_perl-with-bugzilla">
-      <title>Installing Bugzilla on mod_perl</title>
-      <para>It is now possible to run the Bugzilla software under <literal>mod_perl</literal> on
-      Apache. <literal>mod_perl</literal> has some additional requirements to that of running
-      Bugzilla under <literal>mod_cgi</literal> (the standard and previous way).</para>
+      <title>Bugzilla を mod_perl で運用する</title>
+      <para>Apache 環境下では Bugzilla を <literal>mod_perl</literal> 
+      上で動作させることも可能です。<literal>mod_perl</literal> 
+      は (標準的だが古い方法の) <literal>mod_cgi</literal> 下で Bugzilla 
+      を動作させることに比べて追加の必要項目があります。</para>
       
-      <para>Bugzilla requires <literal>mod_perl</literal> to be installed, which can be
-      obtained from <ulink url="http://perl.apache.org"/> - Bugzilla requires
-      version &min-mod_perl2-ver; (AKA 2.0.0-RC5) to be installed.</para>
+      <para>Bugzilla については <literal>mod_perl</literal> のインストールが必要で、
+      <ulink url="http://perl.apache.org"/> から入手できます。
+      &min-mod_perl2-ver; (AKA 2.0.0-RC5) 以上のバージョンがインストールされている
+      必要があります。</para>
     </section>
   </section>
   
   <section id="configuration">
-    <title>Configuration</title>
+    <title>設定</title>
 
     <warning>
       <para>
-        Poorly-configured MySQL and Bugzilla installations have
-        given attackers full access to systems in the past. Please take the
-        security parts of these guidelines seriously, even for Bugzilla 
-        machines hidden away behind your firewall. Be certain to read
-        <xref linkend="security"/> for some important security tips.
+        うまく設定されていない MySQL と Bugzilla のサイトでシステムへの完全な
+        アクセスを取られるような攻撃が過去にありました。Bugzilla サーバが
+        ファイアーウォールの後ろに設置されている場合でも、ガイドラインの
+        セキュリティーに関する部分を真剣に受け止めてください。
+        また、いくつかの重要なセキュリティー面の情報が
+        <xref linkend="security"/> にもあります。
       </para>      
     </warning>
 
@@ -600,35 +602,38 @@
       <title>localconfig</title>
       
       <para>
-        You should now run <filename>checksetup.pl</filename> again, this time
-        without the <literal>--check-modules</literal> switch.
+        <filename>checksetup.pl</filename> を再度
+        <literal>--check-modules</literal> オプションなしで実行してください。
       </para>
       <screen><prompt>bash#</prompt> ./checksetup.pl</screen>
       <para>
-        This time, <filename>checksetup.pl</filename> should tell you that all
-        the correct modules are installed and will display a message about, and
-        write out a  file called, <filename>localconfig</filename>. This file
-        contains the default settings for a number of Bugzilla parameters.
+        この <filename>checksetup.pl</filename> 実行時には、全ての必要なモジュ
+        ールがインストールされているはずで、インストールされているメッセージが
+        表示され、<filename>localconfig</filename> というファイルが作成されます。
+        このファイルは Bugzilla のさまざまなパラメータの既定の値が書き込まれて
+        います。
       </para>
       
       <para>
-        Load this file in your editor. The only two values you
-        <emphasis>need</emphasis> to change are $db_driver and $db_pass,
-        respectively the type of the database and the password for
-        the user you will create for your database. Pick a strong
-        password (for simplicity, it should not contain single quote
-        characters) and put it here. $db_driver can be either 'mysql',
-        'Pg' or 'oracle'.
+        ファイルを編集ソフトで開いてください。最低二つの値を編集する
+        <emphasis>必要が</emphasis> あり、$db_driver と $db_pass で、
+        それぞれデータベースの種類とデータベースに書き込むためのパスワード
+        です。強力なパスワード (ただし、面倒を引き起こさないために、
+        単一引用符 "'" を含まないパスワードにしておくべきでしょう)
+        を選択して入力してください。$db_driver には 'mysql'、'Pg'、
+        'oracle' の何れかが選択可能です。(注: 大文字小文字は無視されます)
       </para>
 
       <note>
         <para>
-          In Oracle, <literal>$db_name</literal> should actually be 
-          the SID name of your database (e.g. "XE" if you are using Oracle XE).
+          Oracle を利用する場合、<literal>$db_name</literal> はデータベースの
+          SID 名にする必要があります。 (たとえば、Oracle XE を利用している場合は
+          "XE" です。)
         </para>
       </note>
 
       <para>
+        
         You may need to change the value of 
         <emphasis>webservergroup</emphasis> if your web server does not 
         run in the "apache" group.  On Debian, for example, Apache runs in 
@@ -1132,7 +1137,7 @@ max_allowed_packet=4M
                 </warning> 
                 
                 <programlisting>
-    PerlSwitches -I/var/www/html/bugzilla -I/var/www/html/bugzilla/lib -w -T
+    PerlSwitches -w -T
     PerlConfigRequire /var/www/html/bugzilla/mod_perl.pl
                 </programlisting>
             </step>
