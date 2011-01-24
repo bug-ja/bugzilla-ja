@@ -633,54 +633,52 @@
       </note>
 
       <para>
-        
-        You may need to change the value of 
-        <emphasis>webservergroup</emphasis> if your web server does not 
-        run in the "apache" group.  On Debian, for example, Apache runs in 
-        the "www-data" group.  If you are going to run Bugzilla on a 
-        machine where you do not have root access (such as on a shared web 
-        hosting account), you will need to leave
-        <emphasis>webservergroup</emphasis> empty, ignoring the warnings 
-        that <filename>checksetup.pl</filename> will subsequently display 
-        every time it is run.
+        ウェブサーバが "apache" グループで動作していない場合など、
+        <emphasis>webservergroup</emphasis> を変更する必要がある場合があります。
+        たとえば、Debian では、Apache は "www-data" グループで動いています。
+        Bugzilla を root 権限を持たないサーバで動作させる場合
+        (たとえば、共有ホスティングのウェブサーバなど)、
+        <emphasis>webservergroup</emphasis> を空白のままにして、
+        走らせるたびに表示される <filename>checksetup.pl</filename> 
+        による警告を無視する必要があるでしょう。
       </para>
       
       <caution>
         <para>
-          If you are using suexec, you should use your own primary group
-          for <emphasis>webservergroup</emphasis> rather than leaving it
-          empty, and see the additional directions in the suexec section
-          <xref linkend="suexec" />.
+          suexec を利用している場合、<emphasis>webservergroup</emphasis> 
+          を空白にするのではなくあなたの所属グループにしておく必要があります。
+          追加の手順の詳細については suexec の節
+          <xref linkend="suexec" /> をご覧ください。
         </para>
       </caution>
 
       <para>
-        The other options in the <filename>localconfig</filename> file
-        are documented by their accompanying comments. If you have a slightly
-        non-standard database setup, you may wish to change one or more of
-        the other "$db_*" parameters.
+        <filename>localconfig</filename> のほかのオプションは、それぞれの
+        コメントとして記載されています。通常の手順から離れたデータベースの
+        セットアップ手順を取りたいなら、他の "$db_*" パラメータも一つ以上
+        変更する必要があるでしょう。
       </para>
     </section>
     
     <section id="database-engine">
-      <title>Database Server</title>
+      <title>データベースサーバ</title>
       <para>
-        This section deals with configuring your database server for use
-        with Bugzilla. Currently, MySQL (<xref linkend="mysql"/>),
-        PostgreSQL (<xref linkend="postgresql"/>) and Oracle (<xref linkend="oracle"/>)
-        are available.
+        この節では、Bugzilla で利用するデータベースサーバについての設定の詳細
+        を示します。現状では、MySQL (<xref linkend="mysql"/>)、
+        PostgreSQL (<xref linkend="postgresql"/>)、Oracle (<xref linkend="oracle"/>)
+        がサポートされています。
       </para>
 
       <section id="database-schema">
-        <title>Bugzilla Database Schema</title>
+        <title>Bugzilla データベーススキーマ</title>
 
         <para>
-          The Bugzilla database schema is available at
-          <ulink url="http://www.ravenbrook.com/project/p4dti/tool/cgi/bugzilla-schema/">Ravenbrook</ulink>.
-          This very valuable tool can generate a written description of
-          the Bugzilla database schema for any version of Bugzilla. It
-          can also generate a diff between two versions to help someone
-          see what has changed.
+          Bugzilla のデータベーススキーマは
+          <ulink url="http://www.ravenbrook.com/project/p4dti/tool/cgi/bugzilla-schema/">Ravenbrook</ulink>
+          で見られます。この非常に高機能なツールは、どのバージョンの Bugzilla 
+          についてもそのデータベーススキーマを表示できます。
+          また、どの点が変更されたかを把握するための助けになるような、
+          二つのバージョン間での変更点も生成できます。
         </para>
       </section>
 
@@ -689,7 +687,7 @@
 
         <caution>
           <para>
-            MySQL's default configuration is insecure.
+            MySQL の初期設定は安全ではありません。
             We highly recommend to run <filename>mysql_secure_installation</filename>
             on Linux or the MySQL installer on Windows, and follow the instructions.
             Important points to note are:
