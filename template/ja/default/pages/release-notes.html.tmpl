@@ -60,6 +60,39 @@
 
 <h2 id="v36_point">3.6.x リリースでの更新点</h2>
 
+<h3>3.6.4</h3>
+
+<p>このリリースではいくつかの重要なセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.2.9/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下のようないくつかの重要な修正や変更が行われました。</p>
+
+<ul>
+  <li>セキュリティー修正の一つの影響で、[% terms.Bugzilla %] 3.6.4 は、
+    以前の [% terms.Bugzilla %] リリースより新しいバージョンの CGI.pm Perl 
+    モジュールを要求するようになりました。<kbd>checksetup.pl</kbd>
+    を実行したときに、CGI.pm をアップグレードするように通知されるでしょう。
+  </li>
+  <li>"attachment 1234 [details]" のようなリンクを含むコメントに返答した際に、
+    "[details]" リンクが再び追加されることがなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=474766">[% terms.Bug %] 474766</a>)
+  </li>
+  <li>簡易検索を利用するのに <kbd>List::MoreUtils</kbd> がインストールされている
+    必要がなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=611129">[% terms.Bug %] 611129</a>)
+  </li>
+  <li><a href="config.cgi?ctype=rdf">config.cgi?ctype=rdf</a> を利用して、
+    プロダクトの情報を取得する場合に <kbd>allows_unconfirmed</kbd> が含まれる
+    ようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=610217">[% terms.Bug %] 610217</a>)
+  </li>
+  <li>表形式のレポートを利用する際、ピリオドもしくは下線から始まる値が表示され
+    ていませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=617684">[% terms.Bug %] 617684</a>)
+  </li>
+</ul>
+
 <h3>3.6.3</h3>
 
 <p>このリリースではいくつかの重要なセキュリティー問題への修正を含みます。詳細に関しては、
@@ -227,7 +260,7 @@
 <h3 id="v36_req_modules">必須 Perl モジュール</h3>
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES
-                     new = [] updated = [] %]
+                     new = [] updated = ['CGI.pm'] %]
 
 <h3 id="v36_req_optional_mod">推奨 Perl モジュール</h3>
 
@@ -235,7 +268,7 @@
   [% terms.Bugzilla %]のさまざまな機能が有効になります。</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
-                     new  = ['JSON-RPC', 'Test-Taint']
+                     new  = ['JSON-RPC', 'Test-Taint', 'Math-Random-Secure']
                      updated = ['Chart']
                      include_feature = 1 %]
 
