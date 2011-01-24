@@ -57,6 +57,12 @@
 
 <h2><a name="v34_point"></a>3.4.x リリースでの更新点</h2>
 
+<h3>3.4.10</h3>
+
+<p>このリリースではいくつかの重要なセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.2.9/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
 <h3>3.4.9</h3>
 
 <p>このリリースではいくつかの重要なセキュリティー問題への修正を含みます。詳細に関しては、
@@ -314,7 +320,8 @@
   [% terms.Bugzilla %]の機能が有効になります。</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
-                     new  = ['TheSchwartz', 'Daemon-Generic']
+                     new  = ['TheSchwartz', 'Daemon-Generic', 'CGI.pm',
+                             'Math-Random-Secure']
                      updated = []
                      include_feature = 1 %]
 
