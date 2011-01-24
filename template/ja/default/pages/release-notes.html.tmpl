@@ -93,7 +93,7 @@
 <h3 id="v40_req_modules">必須 Perl モジュール</h3>
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES
-                     new = ['List-MoreUtils', 'Win32-API']
+                     new = ['List-MoreUtils']
                      updated = ['Email-MIME', 'CGI.pm', 'Apache-SizeLimit'] %]
 
 <h3 id="v40_req_optional_mod">オプションの Perl モジュール</h3>
@@ -102,8 +102,8 @@
   いくつかの [% terms.Bugzilla %] の機能が有効になります:</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
-                     new  = ['JSON-XS']
-                     updated = []
+                     new  = ['JSON-XS', 'Win32-API', 'Math-Random-Secure']
+                     updated = ['Apache-SizeLimit', 'SOAP-Lite']
                      include_feature = 1 %]
 
 <h3 id="v40_req_apache">オプションの Apache モジュール</h3>
@@ -468,6 +468,11 @@
     このテストを利用して変更が正しく行えているかを確認することもできます。
     テストの実行に関しての詳細については、コマンドラインから
     <kbd>perldoc xt/search.t</kbd> を実行すると見ることができます。</li>
+  <li>[% terms.Bugzilla %] は
+    <a href="https://developer.mozilla.org/en/the_x-frame-options_response_header"><code>X-Frame-Options: SAMEORIGIN</code></a> ヘッダ
+    を "クリックジャック" 攻撃を防ぐために全てのページリクエストに追加するようになりました。
+    このヘッダにより [% terms.Bugzilla %] を HTML フレームを利用して他の
+    ドメインのページ内で動作させることを防ぐことができます。</li> 
 </ul>
 
 <h4 id="v40_feat_ws_changes">ウェブサービスの変更点</h4>
@@ -545,10 +550,11 @@
 
 <h3>重要: Apache の設定の変更</h3>
 
-<p>(注: [% terms.Bugzilla %] を mod_perl とともに動かしている場合や、Apache
-  以外のウェブサーバで動かしている場合は、この部分は適用しないでください。)</p>
+<h4>mod_cgi</h4>
 
-<p>Apache の [%+ terms.Bugzilla %] 用の設定を更新する必要があります。
+<p>[% terms.Bugzilla %] を mod_cgi (大多数が利用する一般的な設定で、Apache 
+  設定ファイルの &lt;Directory&gt; 内に記述します) で動かしている場合、
+  Apache の [%+ terms.Bugzilla %] 用の設定を更新する必要があります。
   特に、次の [% terms.Bugzilla %] に関連する <kbd>&lt;Directory&gt;</kbd> 
   の部分を変更してください:</p>
 
@@ -562,6 +568,20 @@
   [% terms.Bugzilla %] ガイドの
   <a href="[% docs_urlbase FILTER html %]configuration.html#http-apache">設定</a>
   の章を参照してください。</p>
+
+<h4>mod_perl</h4>
+
+<p>[% terms.Bugzilla %] を mod_perl 上で動かしている場合、Apache で必要な設定は
+  より簡単になりました。これまでの設定は以下のようなものでした:</p>
+
+<blockquote><code>PerlSwitches -w -T -I/var/www/html/bugzilla 
+    -I/var/www/html/bugzilla/lib</code></blockquote>
+
+<p>が、新しい設定は次のようになります:</p>
+
+<blockquote><code>PerlSwitches -w -T</code></blockquote>
+
+<p>ただし、<code>PerlConfigRequire</code> はそのままにしておく必要があります。</p>
 
 <h3>新しい .htaccess ファイル</h3>
 
