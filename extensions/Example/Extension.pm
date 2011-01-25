@@ -28,6 +28,7 @@ use Bugzilla::Constants;
 use Bugzilla::Error;
 use Bugzilla::Group;
 use Bugzilla::User;
+use Bugzilla::User::Setting;
 use Bugzilla::Util qw(diff_arrays html_quote);
 use Bugzilla::Status qw(is_open_state);
 
@@ -243,13 +244,6 @@ sub bugmail_relationships {
     $relationships->{+REL_EXAMPLE} = 'Example';
 }
 
-sub colchange_columns {
-    my ($self, $args) = @_;
-    
-    my $columns = $args->{'columns'};
-    push (@$columns, "example")
-}
-
 sub config {
     my ($self, $args) = @_;
 
@@ -273,9 +267,14 @@ sub config_modify_panels {
     my $auth_params = $panels->{'auth'}->{params};
     my ($info_class)   = grep($_->{name} eq 'user_info_class', @$auth_params);
     my ($verify_class) = grep($_->{name} eq 'user_verify_class', @$auth_params);
-    
+
     push(@{ $info_class->{choices} },   'CGI,Example');
     push(@{ $verify_class->{choices} }, 'Example');
+
+    push(@$auth_params, { name => 'param_example',
+                          type => 't',
+                          default => 0,
+                          checker => \&check_numeric });    
 }
 
 sub email_in_before_parse {
@@ -391,6 +390,36 @@ sub group_end_of_update {
 sub install_before_final_checks {
     my ($self, $args) = @_;
     print "Install-before_final_checks hook\n" unless $args->{silent};
+    
+    # Add a new user setting like this:
+    #
+    # add_setting('product_chooser',           # setting name
+    #             ['pretty', 'full', 'small'], # options
+    #             'pretty');                   # default
+    #
+    # To add descriptions for the setting and choices, add extra values to 
+    # the hash defined in global/setting-descs.none.tmpl. Do this in a hook: 
+    # hook/global/setting-descs-settings.none.tmpl .
+}
+
+#sub install_update_db_fielddefs {
+#    my $dbh = Bugzilla->dbh;
+#    $dbh->bz_add_column('fielddefs', 'example_column', 
+#                        {TYPE => 'MEDIUMTEXT', NOTNULL => 1, DEFAULT => ''});
+#}
+
+sub job_map {
+    my ($self, $args) = @_;
+    
+    my $job_map = $args->{job_map};
+    
+    # This adds the named class (an instance of TheSchwartz::Worker) as a
+    # handler for when a job is added with the name "some_task".
+    $job_map->{'some_task'} = 'Bugzilla::Extension::Example::Job::SomeClass';
+    
+    # Schedule a job like this:
+    # my $queue = Bugzilla->job_queue();
+    # $queue->insert('some_task', { some_parameter => $some_variable });
 }
 
 sub mailer_before_send {

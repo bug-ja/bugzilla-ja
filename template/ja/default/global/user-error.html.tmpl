@@ -1500,6 +1500,23 @@
     入力された [% jawords.account_password FILTER html %] は短すぎます。
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 文字以上にしてください。
 
+  [% ELSIF error == "password_not_complex" %]
+     [% title = "パスワードが要求された基準を満たしていません" %]
+     [% passregex = Param('password_complexity') %]
+     パスワードには以下の文字を最低一文字含む必要があります:
+     <ul>
+       [% IF passregex.search('letters') %]
+         <li>大文字</li>
+         <li>小文字</li>
+       [% END %]
+       [% IF passregex.search('numbers') %]
+         <li>数字</li>
+       [% END %]
+       [% IF passregex.search('specialchars') %]
+         <li>特殊文字</li>
+       [% END %]
+     </ul>
+
   [% ELSIF error == "product_access_denied" %]
     [% title = "プロダクトにはアクセスできません" %]
     プロダクト

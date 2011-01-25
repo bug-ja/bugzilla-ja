@@ -255,6 +255,7 @@
                  value="[% urlquerypart FILTER html %][% "&order=$qorder" FILTER html IF order %]">
           <input type="hidden" name="cmdtype" value="doit">
           <input type="hidden" name="remtype" value="asnamed">
+          <input type="hidden" name="token" value="[% issue_hash_token(['savedsearch']) FILTER html %]">
         </form> 
       </td>
     [% END %]  

@@ -63,6 +63,7 @@
         <input type="hidden" name="cmdtype" value="doit">
         <input type="hidden" name="remtype" value="asnamed">
         <input type="hidden" name="list_of_bugs" value="1">
+        <input type="hidden" name="token" value="[% issue_hash_token(['savedsearch']) FILTER html %]">
 
         [% IF Param('docs_urlbase') %]
           <a href="[% docs_urlbase FILTER html %]query.html#individual-buglists">名前付きタグ</a>

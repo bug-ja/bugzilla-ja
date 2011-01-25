@@ -494,6 +494,14 @@ as though he were on the CC list:
 (We use C<+> in front of C<REL_CC> so that Perl interprets it as a constant
 instead of as a string.)
 
+=item C<users>
+
+This is a hash of L<Bugzilla::User> objects, keyed by id. This is so you can
+find out more information about any of the user ids in the C<recipients> hash.
+Every id in the incoming C<recipients> hash will have an object in here. 
+(But if you add additional recipients to the C<recipients> hash, you are 
+B<not> required to add them to this hash.)
+
 =back
 
 
@@ -710,6 +718,15 @@ during an installation or upgrade. If you need to modify your custom
 schema or add new columns to existing tables, do it here. No params are
 passed.
 
+=head2 install_update_db_fielddefs
+
+This is used to update the schema of the fielddefs table before
+any other schema changes take place. No params are passed.
+
+This hook should only be used for updating the schema of the C<fielddefs>
+table. Do not modify any other table in this hook. To modify other tables, use
+the L</install_update_db> hook.
+
 =head2 db_schema_abstract_schema
 
 This allows you to add tables to Bugzilla. Note that we recommend that you 
@@ -727,6 +744,23 @@ Params:
 L<Bugzilla::DB::Schema/ABSTRACT_SCHEMA>. Add new hash keys to make new table
 definitions. F<checksetup.pl> will automatically add these tables to the
 database when run.
+
+=back
+
+=head2 job_map
+
+Bugzilla has a system - L<Bugzilla::JobQueue> - for running jobs 
+asynchronously, if the administrator has set it up. This hook allows the 
+addition of mappings from job names to handler classes, so an extension can 
+fire off jobs.
+
+Params:
+
+=over
+
+=item C<job_map> - The job map hash. Key: the name of the job, as should be 
+passed to Bugzilla->job_queue->insert(). Value: the name of the Perl module 
+which implements the task (an instance of L<TheSchwartz::Worker>). 
 
 =back
 

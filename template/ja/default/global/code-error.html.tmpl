@@ -298,7 +298,8 @@
   [% ELSIF error == "jobqueue_no_job_mapping" %]
     <code>Bugzilla::JobQueue</code> はジョブ "[% job FILTER html %]" 
     を処理するように設定されていません。ジョブタイプを <code>Bugzilla::JobQueue</code>
-    の <code>JOB_MAP</code> 定数に追加する必要があります。
+    の <code>JOB_MAP</code> 定数に追加するか、 'job_map' 
+    フックを設定する必要があります。
 
   [% ELSIF error == "ldap_bind_failed" %]
     LDAP サーバへの接続に失敗しました。エラーメッセージは次のとおりです。
