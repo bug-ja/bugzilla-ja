@@ -69,6 +69,7 @@ END
     feature_mod_perl          => 'mod_perl',
     feature_moving            => 'サイト間バグ移動',
     feature_patch_viewer      => 'パッチビューア',
+    feature_rand_security     => 'クッキーとトークンのセキュリティーの改善',
     feature_smtp_auth         => 'SMTP 認証でのメール送信',
     feature_updates           => 'システム更新通知',
     feature_xmlrpc            => 'XML-RPC インターフェース',
