@@ -856,6 +856,18 @@
       保存されているクッキーは削除しました。
     [% END %]
 
+  [% ELSIF message_tag == "tag_updated" %]
+    [% title = "タグを更新しました" %]
+    '[% tag FILTER html %]' タグを
+    [%+ buglist.size > 1 ? terms.bugs : terms.bug %]
+    [%+ buglist.join(", ") FILTER html %] から
+    [% IF action == "add" %]
+      追加
+    [% ELSE %]
+      削除
+    [% END %]
+    しました。
+
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
 

@@ -439,6 +439,9 @@
         <li>launchpad.net の b[% %]ug</li>
         <li>code.google.com の issue</li>
         <li>b[% %]ugs.debian.org の b[% %]ug</li>
+        <li>JIRA サイトの issue</li>
+        <li>Trac サイトのチケット</li>
+        <li>MantisBT サイトの b[% %]ug</li>
       </ul>
     [% ELSIF reason == 'id' %]
       有効な [% terms.bug %] ID が URL に含まれていません。
@@ -1390,25 +1393,9 @@
     [% END %]
     [% terms.bugs %] が選択されていません。
 
-  [% ELSIF error == "no_bug_ids" %]
-    [% title = BLOCK %][% terms.Bugs %] が選択されていません[% END %]
-    タグ [% tag FILTER html %] を
-    [% IF action == "add" %] 追加 [% ELSE %] 削除 [% END %]
-    する [% terms.Bugs %] が選択されていません。
-
-  [% ELSIF error == "no_bugs_in_list" %]
-    [% title = BLOCK %] タグを削除して良いですか? [% END %]
-    タグ <em>[% name FILTER html %]</em> から全ての [% terms.bugs %] を削除します。
-    この操作を実行すると、完全にタグを削除します(やり直すことはできません)。
-    本当に実行するかを確認してから
-    <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- name FILTER uri %]&amp;token=
-    [%- issue_hash_token([query_id, name]) FILTER uri %]">削除を実行</a>
-    してください。
-
-  [% ELSIF error == "no_bugs_to_remove" %]
+  [% ELSIF error == "no_tag_to_edit" %]
     [% title = BLOCK %] [% jawords.tag FILTER html %] が選択されていません [% END %]
-    [% terms.bugs %] から削除する [% jawords.tag FILTER html %] が選択されていません。
+    名前を指定せずにタグを作成・削除しようとしました。
 
   [% ELSIF error == "no_initial_bug_status" %]
     [% title = BLOCK %] [% terms.Bug %] [% jawords.bug_status FILTER html %] の初期値がありません [% END %]
@@ -1605,15 +1592,6 @@
     [% END %]
     というコンポーネントは存在しません。
 
-  [% ELSIF error == "query_name_exists" %]
-    [% title = BLOCK %] 指定された [% jawords.search_name FILTER html %] は既に利用されています [% END %]
-    [% jawords.search_name FILTER html %] <em>[% name FILTER html %]</em> は既に利用されています。
-    この [% jawords.search_name FILTER html %] を利用したい場合、保存されている同名の
-    [% jawords.search_saved_search FILTER html %] を
-    <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
-    [%- name FILTER uri %]&amp;token=
-    [% issue_hash_token([query_id, name]) FILTER uri %]">削除</a> してください。
-
   [% ELSIF error == "query_name_missing" %]
     [% title = BLOCK %] $jaword.search_name が入力されていません [% END %]
     [% docslinks = {'query.html#list' => "$terms.Bug lists"} %]
@@ -1767,6 +1745,10 @@
     [% title = BLOCK %] [% jawords.user FILTER html %] は保護されています [% END %]
     [% jawords.user FILTER html %] [% login FILTER html %] は
     [% jawords.sudo FILTER html %] の対象にはできません。
+
+  [% ELSIF error == "tag_name_too_long" %]
+    [% title = "タグ名が長すぎます" %]
+    タグ名は [% constants.MAX_LEN_QUERY_NAME FILTER html %] 文字以下である必要があります。
 
   [% ELSIF error == "token_does_not_exist" %]
     [% title = BLOCK %] 入力された [% jawords.token FILTER html %] は存在していません [% END %]

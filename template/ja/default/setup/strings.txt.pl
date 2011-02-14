@@ -415,6 +415,7 @@ Quip は外部ファイルでなくデータベースに保存されるように
 ルは ##data##/comments.bak に変更されています。全ての quip が移動済みであ
 ると確認できれば、このファイルを消して大丈夫です。
 END
+    update_queries_to_tags => "新しいタグ用テーブルを追加:",
     webdot_bad_htaccess => <<END,
 警告: 依存関係グラフの画像にアクセスできなくなっています。
 ##dir##/.htaccess ファイルを消し、checksetup.pl を再実行してください。

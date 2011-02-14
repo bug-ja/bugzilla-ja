@@ -37,7 +37,7 @@
   <p>
     <font color="red">
       あなたの警句 '<tt>[% added_quip FILTER html %]</tt>' は追加されました。
-      [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('admin') %]
+      [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('bz_quip_moderators') %]
         認証され次第利用されます。
       [% END %]
     </font>
@@ -65,7 +65,7 @@
   <p>
     警句のリストを拡張できます。何かいい、愉快、退屈なものを入力
     (ただし、節度を欠いたものや攻撃的なものはやめてください) し、登録してください。
-    [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('admin') %]
+    [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('bz_quip_moderators') %]
       あなたの警句は認証されるまで利用されません。
     [% END %]
   </p>
@@ -85,7 +85,7 @@
 [% END %]
 
 [% IF show_quips %]
-  [% IF !user.in_group('admin') %]
+  [% IF !user.in_group('bz_quip_moderators') %]
     <h2>
       既存の警句:
     </h2>
@@ -162,7 +162,7 @@
   <p>
     ネタが理解できるのであれば、全ての警句のリストを
     <a href="quips.cgi?action=show">見る
-    [% IF user.in_group('admin') %]
+    [% IF user.in_group('bz_quip_moderators') %]
         そして編集する
     [% END %]
     ことが可能です。</a>

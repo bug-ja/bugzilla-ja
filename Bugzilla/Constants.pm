@@ -82,9 +82,6 @@ use Memoize;
     DEFAULT_QUERY_NAME
     DEFAULT_MILESTONE
 
-    QUERY_LIST
-    LIST_OF_BUGS
-
     SAVE_NUM_SEARCHES
 
     COMMENT_COLS
@@ -277,8 +274,8 @@ use constant MAILTO_GROUP => 1;
 
 # The default list of columns for buglist.cgi
 use constant DEFAULT_COLUMN_LIST => (
-    "bug_severity", "priority", "op_sys","assigned_to",
-    "bug_status", "resolution", "short_desc"
+    "product", "component", "assigned_to",
+    "bug_status", "resolution", "short_desc", "changeddate"
 );
 
 # Used by query.cgi and buglist.cgi as the named-query name
@@ -287,10 +284,6 @@ use constant DEFAULT_QUERY_NAME => '(Default query)';
 
 # The default "defaultmilestone" created for products.
 use constant DEFAULT_MILESTONE => '---';
-
-# The possible types for saved searches.
-use constant QUERY_LIST => 0;
-use constant LIST_OF_BUGS => 1;
 
 # How many of the user's most recent searches to save.
 use constant SAVE_NUM_SEARCHES => 10;

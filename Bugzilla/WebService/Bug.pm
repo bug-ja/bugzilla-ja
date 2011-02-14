@@ -2402,9 +2402,8 @@ C<string> A comment to add along with this attachment.
 =item C<is_patch>
 
 C<boolean> True if Bugzilla should treat this attachment as a patch.
-If you specify this, the C<content_type> should be C<text/plain>.
-(Future versions of Bugzilla will force the C<content_type> setting
-to C<text/plain> for patches and you will not have to specify it manually.)
+If you specify this, you do not need to specify a C<content_type>.
+The C<content_type> of the attachment will be forced to C<text/plain>.
 
 Defaults to False if not specified.
 
@@ -2445,6 +2444,10 @@ You did not specify a valid for the C<file_name> argument.
 =item 604 (Summary Required)
 
 You did not specify a value for the C<summary> argument.
+
+=item 606 (Empty Data)
+
+You set the "data" field to an empty string.
 
 =back
 

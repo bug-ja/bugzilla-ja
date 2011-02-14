@@ -57,10 +57,10 @@
   <tr>
     <td>
       <dl>
-        <dt>
+        <dt class="unconfirmed">
           [% display_value("bug_status", "UNCONFIRMED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="unconfirmed">
           この [% terms.bug %] は最近データベースに追加されました。
           誰もまだ [% terms.bug %] が有効かを確認していません。
           "canconfirm" 権限を持つユーザはこの [% terms.bug %] を承認でき、
@@ -69,10 +69,10 @@
           とすることも可能です。
         </dd>
 
-        <dt>
+        <dt class="confirmed">
           [% display_value("bug_status", "CONFIRMED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="confirmed">
           この [% terms.bug %] は有効なもので最近追加されました。
           このステータスの [%+ terms.Bugs %] は、誰かがこれについて作業を始めた時に
           <b>[% display_value("bug_status", "IN_PROGRESS") FILTER html %]</b> 
@@ -81,16 +81,18 @@
           となるでしょう。
         </dd>
 
-        <dt>
+        <dt class="in_progress">
           [% display_value("bug_status", "IN_PROGRESS") FILTER html %]
         </dt>
-        <dd>
+        <dd class="in_progress">
           この [% terms.bug %] は未解決ですが、この [% terms.bug %] 
           について作業をしている、ある担当者に割り当てられています。
           この段階からは、[% terms.bugs %] は他の担当者に再割り当てされ、
           <b>[% display_value("bug_status", "CONFIRMED") FILTER html %]</b> となるか、
           解決され <b>[% display_value("bug_status", "RESOLVED") FILTER html %]</b> となるでしょう。
         </dd>
+        
+        [% Hook.process('open-status') %]
       </dl>
     </td>
 
@@ -106,67 +108,71 @@
   <tr>
     <td>
       <dl>
-        <dt>
+        <dt class="resolved">
           [% display_value("bug_status", "RESOLVED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="resolved">
           解決策が適用され、QA の確認待ちの状態です。
           この段階からは、[% terms.bugs %] は再開され活動中の状態になるか、確認され
           QA による確認の後に
           <b>[% display_value("bug_status", "VERIFIED") FILTER html %]</b> となるかでしょう。
         </dd>
 
-        <dt>
+        <dt class="verified">
           [% display_value("bug_status", "VERIFIED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="verified">
           QA が [% terms.bug %] の解決方法を確認し、とられた解決方法に同意しました。
           これが [% terms.bugs %] にとっての最後のステータスとなります。
         </dd>
+        
+        [% Hook.process('closed-status') %]
       </dl>
     </td>
 
     <td>
       <dl>
-        <dt>
+        <dt class="fixed">
           [% display_value("resolution", "FIXED") FILTER html %]
         </dt>
-        <dd>
+        <dd class="fixed">
           この [% terms.bug %] の解決策はツリーにチェックインされ試験されました。
         </dd>
 
-        <dt>
+        <dt class="invalid">
           [% display_value("resolution", "INVALID") FILTER html %]
         </dt>
-        <dd>
+        <dd class="invalid">
           述べられている問題は [% terms.abug %] ではありません。
         </dd>
 
-        <dt>
+        <dt class="wontfix">
           [% display_value("resolution", "WONTFIX") FILTER html %]
         </dt>
-        <dd>
+        <dd class="wontfix">
           述べられている問題は [% terms.abug %] ですが修正されることはありません。
         </dd>
 
-        <dt>
+        <dt class="duplicate">
          [% display_value("resolution", "DUPLICATE") FILTER html %]
         </dt>
-        <dd>
+        <dd class="duplicate">
           [% terms.abug %] が
           <b>[% display_value("resolution", "DUPLICATE") FILTER html %]</b>
           とされた場合、どの [% terms.bug %] の重複となったかが、
           解決方法の次に表示されます。
         </dd>
 
-        <dt>
+        <dt class="worksforme">
           [% display_value("resolution", "WORKSFORME") FILTER html %]
         </dt>
-        <dd>
+        <dd class="worksforme">
           この [% terms.bug %] を再現しようとする試みは全て失敗し、
           コードからも述べられた動作が起こる原因が判明しませんでした。
           より情報が出てくれば、[% terms.bug %] が再開されることもあります。
         </dd>
+        
+        [% Hook.process('resolution') %]
       </dl>
     </td>
   </tr>

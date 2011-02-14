@@ -688,20 +688,21 @@
         <caution>
           <para>
             MySQL の初期設定は安全ではありません。
-            We highly recommend to run <filename>mysql_secure_installation</filename>
-            on Linux or the MySQL installer on Windows, and follow the instructions.
-            Important points to note are:
+            Linux では <filename>mysql_secure_installation</filename> を実行、
+            もしくは Windows では MySQL インストーラで行い、その後以下の項目を
+            実行することを強く推奨します。
+            重要な点は以下のようになります。
             <orderedlist>
               <listitem>
-                <para>Be sure that the root account has a secure password set.</para>
+                <para>root アカウントに十分なパスワードが設定されていること。</para>
               </listitem>
               <listitem>
-                <para>Do not create an anonymous account, and if it exists, say "yes"
-                to remove it.</para>
+                <para>匿名アカウントを作成しないこと。もし存在していれば、
+                削除しておくこと。</para>
               </listitem>
               <listitem>
-                <para>If your web server and MySQL server are on the same machine,
-                you should disable the network access.</para>
+                <para>ウェブサーバと MySQL サーバが同じマシンで動いている場合、
+                ネットワーク経由でのアクセスを無効にしておくこと。</para>
               </listitem>
             </orderedlist>
           </para>
