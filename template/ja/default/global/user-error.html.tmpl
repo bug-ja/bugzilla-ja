@@ -1800,12 +1800,6 @@
        あなたが何をしたいのかわかりません。
     [% END %]
   
-  [% ELSIF error == "unknown_keyword" %]
-    [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は存在していません [% END %]
-    <code>[% keyword FILTER html %]</code> は登録された [% jawords.keyword FILTER html %] ではありません。
-    利用可能な [% jawords.keyword FILTER html %] は
-    <a href="describekeywords.cgi">[% jawords.help FILTER html %] にリストアップ</a> されています。
-
   [% ELSIF error == "unknown_tab" %]
     [% title = BLOCK %] 指定された [% jawords.tab FILTER html %] は存在していません [% END %]
     <code>[% current_tab_name FILTER html %]</code> は有効な [% jawords.tab_name FILTER html %] ではありません。
@@ -1999,6 +1993,8 @@
     フィールド
   [% ELSIF class == "Bugzilla::Group" %]
     グループ
+  [% ELSIF class == "Bugzilla::Keyword" %]
+    キーワード
   [% ELSIF class == "Bugzilla::Product" %]
     プロダクト
   [% ELSIF class == "Bugzilla::Search::Recent" %]
