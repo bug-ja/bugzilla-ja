@@ -1493,6 +1493,10 @@
     [% IF class == "Bugzilla::User" %]
       入力した [% jawords.account_login_name FILTER html %] が間違えているか、その人は [% terms.Bugzilla %] にはアカウントを登録していないのかもしれません。
     [% END %]
+    [% IF class == "Bugzilla::Keyword" %]
+      有効なキーワード名は <a href="describekeywords.cgi">リストされている</a> 
+      もののみです。
+    [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
     [% title = BLOCK %] [% jawords.account_current_password FILTER html %] が違います [% END %]
@@ -2015,6 +2019,8 @@
     フィールド
   [% ELSIF class == "Bugzilla::Group" %]
     グループ
+  [% ELSIF class == "Bugzilla::Keyword" %]
+    キーワード
   [% ELSIF class == "Bugzilla::Product" %]
     プロダクト
   [% ELSIF class == "Bugzilla::Search::Saved" %]
