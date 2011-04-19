@@ -127,8 +127,11 @@ my @axis_fields = ($row_field || EMPTY_COLUMN,
 
 # Clone the params, so that Bugzilla::Search can modify them
 my $params = new Bugzilla::CGI($cgi);
-my $search = new Bugzilla::Search('fields' => \@axis_fields, 
-                                  'params' => scalar $params->Vars);
+my $search = new Bugzilla::Search(
+    fields => \@axis_fields, 
+    params => scalar $params->Vars,
+    allow_unlimited => 1,
+);
 my $query = $search->sql;
 
 $::SIG{TERM} = 'DEFAULT';
@@ -309,9 +312,11 @@ $template->process("$format->{'template'}", $vars)
 
 sub get_names {
     my ($names, $isnumeric, $field_name) = @_;
-    
     my ($field, @sorted);
-    $field = Bugzilla::Field->check($field_name) if $field_name;
+    # _realname fields aren't real Bugzilla::Field objects, but they are a
+    # valid axis, so we don't vailidate them as Bugzilla::Field objects.
+    $field = Bugzilla::Field->check($field_name) 
+        if ($field_name && $field_name !~ /_realname$/);
     
     if ($field && $field->is_select) {
         foreach my $value (@{$field->legal_values}) {

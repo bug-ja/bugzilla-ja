@@ -49,6 +49,8 @@ use Bugzilla::Constants;
 use Bugzilla::Group;
 use Bugzilla::User;
 use Bugzilla::Field;
+use Bugzilla::Search::Clause;
+use Bugzilla::Search::Condition qw(condition);
 use Bugzilla::Status;
 use Bugzilla::Keyword;
 
@@ -125,10 +127,12 @@ use Storable qw(dclone);
 # bar@blah.org
 # --------------------------------------------------------------
 
-
 #############
 # Constants #
 #############
+
+# When doing searches, NULL datetimes are treated as this date.
+use constant EMPTY_DATETIME => '1970-01-01 00:00:00';
 
 # This is the regex for real numbers from Regexp::Common, modified to be
 # more readable.
@@ -220,6 +224,22 @@ use constant NON_NUMERIC_OPERATORS => qw(
     notregexp
 );
 
+use constant MULTI_SELECT_OVERRIDE => {
+    notequals      => \&_multiselect_negative,
+    notregexp      => \&_multiselect_negative,
+    notsubstring   => \&_multiselect_negative,
+    nowords        => \&_multiselect_negative,
+    nowordssubstr  => \&_multiselect_negative,
+    
+    allwords       => \&_multiselect_multiple,
+    allwordssubstr => \&_multiselect_multiple,
+    anyexact       => \&_multiselect_multiple,
+    anywords       => \&_multiselect_multiple,
+    anywordssubstr => \&_multiselect_multiple,
+    
+    _non_changed    => \&_multiselect_nonchanged,
+};
+
 use constant OPERATOR_FIELD_OVERRIDE => {
     # User fields
     'attachments.submitter' => {
@@ -248,22 +268,13 @@ use constant OPERATOR_FIELD_OVERRIDE => {
     },
     
     # General Bug Fields
-    alias => {
-        _non_changed => \&_alias_nonchanged,
-    },
-    'attach_data.thedata' => {
-        _non_changed => \&_attach_data_thedata,
-    },
+    alias        => { _non_changed => \&_nullable },
+    'attach_data.thedata' => MULTI_SELECT_OVERRIDE,
     # We check all attachment fields against this.
-    'attachments' => {
-        _non_changed => \&_attachments,
-    },
-    blocked => {
-        _non_changed => \&_blocked_nonchanged,
-    },
-    bug_group => {
-        _non_changed => \&_bug_group_nonchanged,
-    },
+    attachments  => MULTI_SELECT_OVERRIDE,
+    blocked      => MULTI_SELECT_OVERRIDE,
+    bug_file_loc => { _non_changed => \&_nullable },
+    bug_group    => MULTI_SELECT_OVERRIDE,
     classification => {
         _non_changed => \&_classification_nonchanged,
     },
@@ -278,31 +289,14 @@ use constant OPERATOR_FIELD_OVERRIDE => {
     days_elapsed => {
         _default => \&_days_elapsed,
     },
-    dependson => {
-        _non_changed => \&_dependson_nonchanged,
-    },
-    keywords => {
-        equals       => \&_keywords_exact,
-        anyexact     => \&_keywords_exact,
-        anyword      => \&_keywords_exact,
-        allwords     => \&_keywords_exact,
-
-        notequals     => \&_multiselect_negative,
-        notregexp     => \&_multiselect_negative,
-        notsubstring  => \&_multiselect_negative,
-        nowords       => \&_multiselect_negative,
-        nowordssubstr => \&_multiselect_negative,
-
-        _non_changed  => \&_keywords_nonchanged,
-    },
-    'flagtypes.name' => {
-        _default => \&_flagtypes_name,
-    },    
+    dependson        => MULTI_SELECT_OVERRIDE,
+    keywords         => MULTI_SELECT_OVERRIDE,
+    'flagtypes.name' => MULTI_SELECT_OVERRIDE,
     longdesc => {
+        %{ MULTI_SELECT_OVERRIDE() },
         changedby     => \&_long_desc_changedby,
         changedbefore => \&_long_desc_changedbefore_after,
         changedafter  => \&_long_desc_changedbefore_after,
-        _default      => \&_long_desc,
     },
     'longdescs.count' => {
         changedby     => \&_long_desc_changedby,
@@ -312,9 +306,7 @@ use constant OPERATOR_FIELD_OVERRIDE => {
         changedto     => \&_invalid_combination,
         _default      => \&_long_descs_count,
     },
-    'longdescs.isprivate' => {
-        _default => \&_longdescs_isprivate,
-    },
+    'longdescs.isprivate' => MULTI_SELECT_OVERRIDE,
     owner_idle_time => {
         greaterthan   => \&_owner_idle_time_greater_less,
         greaterthaneq => \&_owner_idle_time_greater_less,
@@ -322,27 +314,13 @@ use constant OPERATOR_FIELD_OVERRIDE => {
         lessthaneq    => \&_owner_idle_time_greater_less,
         _default      => \&_invalid_combination,
     },
-    
     product => {
         _non_changed => \&_product_nonchanged,
     },
-    
-    # Custom multi-select fields
-    _multi_select => {
-        notequals      => \&_multiselect_negative,
-        notregexp      => \&_multiselect_negative,
-        notsubstring   => \&_multiselect_negative,
-        nowords        => \&_multiselect_negative,
-        nowordssubstr  => \&_multiselect_negative,
-        
-        allwords       => \&_multiselect_multiple,
-        allwordssubstr => \&_multiselect_multiple,
-        anyexact       => \&_multiselect_multiple,
-        
-        _non_changed    => \&_multiselect_nonchanged,
-    },
+    tag => MULTI_SELECT_OVERRIDE,
     
     # Timetracking Fields
+    deadline => { _non_changed => \&_deadline },
     percentage_complete => {
         _non_changed => \&_percentage_complete,
     },
@@ -353,6 +331,13 @@ use constant OPERATOR_FIELD_OVERRIDE => {
         _default      => \&_work_time,
     },
     
+    # Custom Fields
+    FIELD_TYPE_FREETEXT, { _non_changed => \&_nullable },
+    FIELD_TYPE_BUG_ID,   { _non_changed => \&_nullable_int },
+    FIELD_TYPE_DATETIME, { _non_changed => \&_nullable_datetime },
+    FIELD_TYPE_TEXTAREA, { _non_changed => \&_nullable },
+    FIELD_TYPE_MULTI_SELECT, MULTI_SELECT_OVERRIDE,
+    FIELD_TYPE_BUG_URLS,     MULTI_SELECT_OVERRIDE,    
 };
 
 # These are fields where special action is taken depending on the
@@ -406,6 +391,7 @@ use constant USER_FIELDS => {
 # Backwards compatibility for times that we changed the names of fields
 # or URL parameters.
 use constant FIELD_MAP => {
+    'attachments.thedata' => 'attach_data.thedata',
     bugidtype => 'bug_id_type',
     changedin => 'days_elapsed',
     long_desc => 'longdesc',
@@ -414,10 +400,6 @@ use constant FIELD_MAP => {
 # A SELECTed expression that we use as a placeholder if somebody selects
 # <none> for the X, Y, or Z axis in report.cgi.
 use constant EMPTY_COLUMN => '-1';
-
-# A special value that is pushed into charts during _params_to_charts to
-# represent that the particular chart we're dealing with should be negated.
-use constant NEGATE => 'NOT';
 
 # Some fields are not sorted on themselves, but on other fields. 
 # We need to have a list of these fields and what they map to.
@@ -709,14 +691,11 @@ sub sql {
     return $self->{sql} if $self->{sql};
     my $dbh = Bugzilla->dbh;
     
-    my ($joins, $having_terms, $where_terms) = $self->_charts_to_conditions();
-
+    my ($joins, $clause) = $self->_charts_to_conditions();
     my $select = join(', ', $self->_sql_select);
     my $from = $self->_sql_from($joins);
-    my $where = $self->_sql_where($where_terms);
+    my $where = $self->_sql_where($clause);
     my $group_by = $dbh->sql_group_by($self->_sql_group_by);
-    my $having = @$having_terms
-                 ? "\nHAVING " . join(' AND ', @$having_terms) : '';
     my $order_by = $self->_sql_order_by
                    ? "\nORDER BY " . join(', ', $self->_sql_order_by) : '';
     my $limit = $self->_sql_limit;
@@ -726,7 +705,7 @@ sub sql {
 SELECT $select
   FROM $from
  WHERE $where
-$group_by$having$order_by$limit
+$group_by$order_by$limit
 END
     $self->{sql} = $query;
     return $self->{sql};
@@ -929,7 +908,13 @@ sub _sql_limit {
     my ($self) = @_;
     my $limit = $self->_params->{limit};
     my $offset = $self->_params->{offset};
-    if (defined $offset and not defined $limit) {
+    
+    my $max_results = Bugzilla->params->{'max_search_results'};
+    if (!$self->{allow_unlimited} && (!$limit || $limit > $max_results)) {
+        $limit = $max_results;
+    }
+    
+    if (defined($offset) && !$limit) {
         $limit = INT_MAX;
     }
     if (defined $limit) {
@@ -954,6 +939,8 @@ sub _sql_limit {
 
 sub _column_join {
     my ($self, $field) = @_;
+    # The _realname fields require the same join as the username fields.
+    $field =~ s/_realname$//;
     my $join_info = COLUMN_JOINS->{$field};
     if ($join_info) {
         # Don't allow callers to modify the constant.
@@ -1142,13 +1129,15 @@ sub _standard_where {
     my $user = $self->_user;
     if ($user->id) {
         my $userid = $user->id;
+        # This indentation makes the resulting SQL more readable.
         $security_term .= <<END;
- OR (bugs.reporter_accessible = 1 AND bugs.reporter = $userid)
- OR (bugs.cclist_accessible = 1 AND security_cc.who IS NOT NULL)
- OR bugs.assigned_to = $userid
+
+        OR (bugs.reporter_accessible = 1 AND bugs.reporter = $userid)
+        OR (bugs.cclist_accessible = 1 AND security_cc.who IS NOT NULL)
+        OR bugs.assigned_to = $userid
 END
         if (Bugzilla->params->{'useqacontact'}) {
-            $security_term.= " OR bugs.qa_contact = $userid";
+            $security_term.= "        OR bugs.qa_contact = $userid";
         }
         $security_term = "($security_term)";
     }
@@ -1159,10 +1148,15 @@ END
 }
 
 sub _sql_where {
-    my ($self, $where_terms) = @_;
+    my ($self, $main_clause) = @_;
     # The newline and this particular spacing makes the resulting
     # SQL a bit more readable for debugging.
-    return join("\n   AND ", $self->_standard_where, @$where_terms);
+    my $where = join("\n   AND ", $self->_standard_where);
+    my $clause_sql = $main_clause->as_string;
+    if ($clause_sql) {
+        $where .= "\n   AND " . $clause_sql;
+    }
+    return $where;
 }
 
 ################################
@@ -1231,35 +1225,6 @@ sub _convert_old_params {
     }
 }
 
-sub _convert_special_params_to_chart_params {
-    my ($self) = @_;
-    my $params = $self->_params;
-    
-    my @special_charts = $self->_special_charts();
-    
-    # First we delete any sign of "Chart #-1" from the input parameters,
-    # because we want to guarantee the user didn't hide something there.
-    my @badcharts = grep { /^(field|type|value)-1-/ } keys %$params;
-    foreach my $field (@badcharts) {
-        delete $params->{$field};
-    }
-
-    # now we take our special chart and stuff it into the form hash
-    my $chart = -1;
-    my $and = 0;
-    foreach my $or_array (@special_charts) {
-        my $or = 0;
-        while (@$or_array) {
-            my $identifier = "$chart-$and-$or";
-            $params->{"field$identifier"} = shift @$or_array;
-            $params->{"type$identifier"}  = shift @$or_array;
-            $params->{"value$identifier"} = shift @$or_array;
-            $or++;
-        }
-        $and++;
-    }
-}
-
 # This parses all the standard search parameters except for the boolean
 # charts.
 sub _special_charts {
@@ -1267,11 +1232,12 @@ sub _special_charts {
     $self->_convert_old_params();
     $self->_special_parse_bug_status();
     $self->_special_parse_resolution();
-    my @charts = $self->_parse_basic_fields();
-    push(@charts, $self->_special_parse_email());
-    push(@charts, $self->_special_parse_chfield());
-    push(@charts, $self->_special_parse_deadline());
-    return @charts;
+    my $clause = new Bugzilla::Search::Clause();
+    $clause->add( $self->_parse_basic_fields()     );
+    $clause->add( $self->_special_parse_email()    );
+    $clause->add( $self->_special_parse_chfield()  );
+    $clause->add( $self->_special_parse_deadline() );
+    return $clause;
 }
 
 sub _parse_basic_fields {
@@ -1279,7 +1245,7 @@ sub _parse_basic_fields {
     my $params = $self->_params;
     my $chart_fields = $self->_chart_fields;
     
-    my @charts;
+    my $clause = new Bugzilla::Search::Clause();
     foreach my $field_name (keys %$chart_fields) {
         # CGI params shouldn't have periods in them, so we only accept
         # period-separated fields with underscores where the periods go.
@@ -1303,9 +1269,9 @@ sub _parse_basic_fields {
         else {
             $pass_value = join(',', @values);
         }
-        push(@charts, [$field_name, $operator, $pass_value]);
+        $clause->add($field_name, $operator, $pass_value);
     }
-    return @charts;
+    return $clause;
 }
 
 sub _special_parse_bug_status {
@@ -1365,7 +1331,8 @@ sub _special_parse_chfield {
 
     @fields = map { $_ eq '[Bug creation]' ? 'creation_ts' : $_ } @fields;
 
-    my @charts;
+    my $clause = new Bugzilla::Search::Clause();
+
     # It is always safe and useful to push delta_ts into the charts
     # if there is a "from" date specified. It doesn't conflict with
     # searching [Bug creation], because a bug's delta_ts is set to
@@ -1373,7 +1340,7 @@ sub _special_parse_chfield {
     # database an additional index to possibly choose, on a table that
     # is smaller than bugs_activity.
     if ($date_from ne '') {
-        push(@charts, ['delta_ts', 'greaterthaneq', $date_from]);
+        $clause->add('delta_ts', 'greaterthaneq', $date_from);
     }
     # It's not normally safe to do it for "to" dates, though--"chfieldto" means
     # "a field that changed before this date", and delta_ts could be either
@@ -1382,7 +1349,7 @@ sub _special_parse_chfield {
     # chfield, means "just search delta_ts", and so we still want that to
     # work.
     if ($date_to ne '' and !@fields and $value_to eq '') {
-        push(@charts, ['delta_ts', 'lessthaneq', $date_to]);
+        $clause->add('delta_ts', 'lessthaneq', $date_to);
     }
 
     # Basically, we construct the chart like:
@@ -1397,29 +1364,29 @@ sub _special_parse_chfield {
     # change date of the fields.
     
     if ($value_to ne '') {
-        my @value_chart;
+        my $value_clause = new Bugzilla::Search::Clause('OR');
         foreach my $field (@fields) {
-            push(@value_chart, $field, 'changedto', $value_to);
+            $value_clause->add($field, 'changedto', $value_to);
         }
-        push(@charts, \@value_chart) if @value_chart;
+        $clause->add($value_clause);
     }
 
     if ($date_from ne '') {
-        my @date_from_chart;
+        my $from_clause = new Bugzilla::Search::Clause('OR');
         foreach my $field (@fields) {
-            push(@date_from_chart, $field, 'changedafter', $date_from);
+            $from_clause->add($field, 'changedafter', $date_from);
         }
-        push(@charts, \@date_from_chart) if @date_from_chart;
+        $clause->add($from_clause);
     }
     if ($date_to ne '') {
-        my @date_to_chart;
+        my $to_clause = new Bugzilla::Search::Clause('OR');
         foreach my $field (@fields) {
-            push(@date_to_chart, $field, 'changedbefore', $date_to);
+            $to_clause->add($field, 'changedbefore', $date_to);
         }
-        push(@charts, \@date_to_chart) if @date_to_chart;
+        $clause->add($to_clause);
     }
 
-    return @charts;
+    return $clause;
 }
 
 sub _special_parse_deadline {
@@ -1427,15 +1394,15 @@ sub _special_parse_deadline {
     return if !$self->_user->is_timetracker;
     my $params = $self->_params;
     
-    my @charts;
+    my $clause = new Bugzilla::Search::Clause();
     if (my $from = $params->{'deadlinefrom'}) {
-        push(@charts, ['deadline', 'greaterthaneq', $from]);
+        $clause->add('deadline', 'greaterthaneq', $from);
     }
     if (my $to = $params->{'deadlineto'}) {
-        push(@charts, ['deadline', 'lessthaneq', $to]);
+        $clause->add('deadline', 'lessthaneq', $to);
     }
     
-    return @charts;
+    return $clause;
 }
 
 sub _special_parse_email {
@@ -1444,7 +1411,7 @@ sub _special_parse_email {
     
     my @email_params = grep { $_ =~ /^email\d+$/ } keys %$params;
     
-    my @charts;
+    my $clause = new Bugzilla::Search::Clause();
     foreach my $param (@email_params) {
         $param =~ /(\d+)$/;
         my $id = $1;
@@ -1453,20 +1420,20 @@ sub _special_parse_email {
         my $type = $params->{"emailtype$id"} || 'anyexact';
         $type = "anyexact" if $type eq "exact";
 
-        my @or_charts;
+        my $or_clause = new Bugzilla::Search::Clause('OR');
         foreach my $field (qw(assigned_to reporter cc qa_contact)) {
             if ($params->{"email$field$id"}) {
-                push(@or_charts, $field, $type, $email);
+                $or_clause->add($field, $type, $email);
             }
         }
         if ($params->{"emaillongdesc$id"}) {
-            push(@or_charts, "commenter", $type, $email);
+            $or_clause->add("commenter", $type, $email);
         }
-
-        push(@charts, \@or_charts);
+        
+        $clause->add($or_clause);
     }
     
-    return @charts;
+    return $clause;
 }
 
 sub _special_parse_resolution {
@@ -1503,107 +1470,132 @@ sub _valid_values {
 
 sub _charts_to_conditions {
     my ($self) = @_;
-    my @charts = $self->_params_to_charts();
     
-    my (@joins, @having, @where_terms);
-    
-    foreach my $chart (@charts) {
-        my @and_terms;
-        my $negate;
-        foreach my $and_item (@$chart) {
-            if (!ref $and_item and $and_item eq NEGATE) {
-                $negate = 1;
-                next;
-            }
-            my @or_terms;
-            foreach my $or_item (@$and_item) {
-                if ($or_item->{term} ne '') {
-                    push(@or_terms, $or_item->{term});
-                }
-                push(@joins, @{ $or_item->{joins} });
-                push(@having, @{ $or_item->{having} });
-            }
-
-            if (@or_terms) {
-                # If a term contains ANDs, we need to put parens around the
-                # condition. This is a pretty weak test, but it's actually OK
-                # to put parens around too many things.
-                @or_terms = map { $_ =~ /\bAND\b/i ? "($_)" : $_ } @or_terms;
-                my $or_sql = join(' OR ', @or_terms);
-                push(@and_terms, $or_sql);
-            }
-        }
-        # And here we need to paren terms that contain ORs.
-        @and_terms = map { $_ =~ /\bOR\b/i ? "($_)" : $_ } @and_terms;
-        my $and_sql = join(' AND ', @and_terms);
-        if ($negate and $and_sql ne '') {
-            $and_sql = "NOT ($and_sql)";
-        }
-        push(@where_terms, $and_sql) if $and_sql ne '';
-    }
-
-    return (\@joins, \@having, \@where_terms);
+    my $clause = $self->_charts;
+    my @joins;
+    $clause->walk_conditions(sub {
+        my ($condition) = @_;
+        return if !$condition->translated;
+        push(@joins, @{ $condition->translated->{joins} });
+    });
+    return (\@joins, $clause);
 }
 
-sub _params_to_charts {
+sub _charts {
     my ($self) = @_;
+    
+    my $clause = $self->_params_to_data_structure();
+    my $chart_id = 0;
+    $clause->walk_conditions(sub { $self->_handle_chart($chart_id++, @_) });
+    return $clause;
+}
+
+sub _params_to_data_structure {
+    my ($self) = @_;
+    
+    # First we get the "special" charts, representing all the normal
+    # field son the search page. This may modify _params, so it needs to
+    # happen first.
+    my $clause = $self->_special_charts;
+
+    # Then we process the old Boolean Charts input format.
+    $clause->add( $self->_boolean_charts );
+    
+    # And then process the modern "custom search" format.
+    $clause->add( $self->_custom_search );
+   
+    return $clause;
+}
+
+sub _boolean_charts {
+    my ($self) = @_;
+    
     my $params = $self->_params;
-    $self->_convert_special_params_to_chart_params();
     my @param_list = keys %$params;
     
     my @all_field_params = grep { /^field-?\d+/ } @param_list;
     my @chart_ids = map { /^field(-?\d+)/; $1 } @all_field_params;
     @chart_ids = sort { $a <=> $b } uniq @chart_ids;
     
-    my $sequence = 0;
-    my @charts;
+    my $clause = new Bugzilla::Search::Clause();
     foreach my $chart_id (@chart_ids) {
         my @all_and = grep { /^field$chart_id-\d+/ } @param_list;
         my @and_ids = map { /^field$chart_id-(\d+)/; $1 } @all_and;
         @and_ids = sort { $a <=> $b } uniq @and_ids;
         
-        my @and_charts;
+        my $and_clause = new Bugzilla::Search::Clause();
         foreach my $and_id (@and_ids) {
             my @all_or = grep { /^field$chart_id-$and_id-\d+/ } @param_list;
             my @or_ids = map { /^field$chart_id-$and_id-(\d+)/; $1 } @all_or;
             @or_ids = sort { $a <=> $b } uniq @or_ids;
             
-            my @or_charts;
+            my $or_clause = new Bugzilla::Search::Clause('OR');
             foreach my $or_id (@or_ids) {
-                my $info = $self->_handle_chart($chart_id, $and_id, $or_id);
-                # $info will be undefined if _handle_chart returned early,
-                # meaning that the field, value, or operator were empty.
-                push(@or_charts, $info) if defined $info;
+                my $identifier = "$chart_id-$and_id-$or_id";
+                my $field = $params->{"field$identifier"};
+                my $operator = $params->{"type$identifier"};
+                my $value = $params->{"value$identifier"};                
+                $or_clause->add($field, $operator, $value);
             }
-            if ($params->{"negate$chart_id"}) {
-                push(@and_charts, NEGATE);
-            }
-            push(@and_charts, \@or_charts);
+            $and_clause->add($or_clause);
+            $and_clause->negate(1) if $params->{"negate$chart_id"};
         }
-        push(@charts, \@and_charts);
+        $clause->add($and_clause);
     }
     
-    return @charts;
+    return $clause;
+}
+
+sub _custom_search {
+    my ($self) = @_;
+    my $params = $self->_params;
+    my @param_list = keys %$params;
+    
+    my @field_params = grep { /^f\d+$/ } @param_list;
+    my @field_ids = map { /(\d+)/; $1 } @field_params;
+    @field_ids = sort { $a <=> $b } @field_ids;
+    
+    my $current_clause = new Bugzilla::Search::Clause();
+    my @clause_stack;
+    foreach my $id (@field_ids) {
+        my $field = $params->{"f$id"};
+        if ($field eq 'OP') {
+            my $joiner = $params->{"j$id"};
+            my $new_clause = new Bugzilla::Search::Clause($joiner);
+            $new_clause->negate($params->{"n$id"});
+            $current_clause->add($new_clause);
+            push(@clause_stack, $current_clause);
+            $current_clause = $new_clause;
+            next;
+        }
+        if ($field eq 'CP') {
+            $current_clause = pop @clause_stack;
+            ThrowCodeError('search_cp_without_op', { id => $id })
+                if !$current_clause;
+            next;
+        }
+        
+        my $operator = $params->{"o$id"};
+        my $value = $params->{"v$id"};
+        my $condition = condition($field, $operator, $value);
+        $condition->negate($params->{"n$id"});
+        $current_clause->add($condition);
+    }
+    
+    # We allow people to specify more OPs than CPs, so at the end of the
+    # loop our top clause may be still in the stack instead of being
+    # $current_clause.
+    return $clause_stack[0] || $current_clause;
 }
 
 sub _handle_chart {
-    my ($self, $chart_id, $and_id, $or_id) = @_;
+    my ($self, $chart_id, $condition) = @_;
     my $dbh = Bugzilla->dbh;
     my $params = $self->_params;
-    
-    my $sql_chart_id = $chart_id;
-    if ($chart_id < 0) {
-        $sql_chart_id = "default_" . abs($chart_id);
-    }
-    
-    my $identifier = "$chart_id-$and_id-$or_id";
-    
-    my $field = $params->{"field$identifier"};
-    my $operator = $params->{"type$identifier"};
-    my $value = $params->{"value$identifier"};
+    my ($field, $operator, $value) = $condition->fov;
 
     return if (!defined $field or !defined $operator or !defined $value);
-
+    
     my $string_value;
     if (ref $value eq 'ARRAY') {
         # Trim input and ignore blank values.
@@ -1633,15 +1625,14 @@ sub _handle_chart {
     # on multiple values, like anyexact.
     
     my %search_args = (
-        chart_id   => $sql_chart_id,
-        sequence   => $or_id,
+        chart_id   => $chart_id,
+        sequence   => $chart_id,
         field      => $field,
         full_field => $full_field,
         operator   => $operator,
         value      => $string_value,
         all_values => $value,
         joins      => [],
-        having     => [],
     );
     $search_args{quoted} = $self->_quote_unless_numeric(\%search_args);
     # This should add a "term" selement to %search_args.
@@ -1655,7 +1646,7 @@ sub _handle_chart {
         value => $string_value, term => $search_args{term},
     });
     
-    return \%search_args;
+    $condition->translated(\%search_args);
 }
 
 ##################################
@@ -1681,16 +1672,15 @@ sub do_search_function {
     
     my $operator_field_override = $self->_get_operator_field_override();
     my $override = $operator_field_override->{$actual_field};
+    # Attachment fields get special handling, if they don't have a specific
+    # individual override.
+    if (!$override and $actual_field =~ /^attachments\./) {
+        $override = $operator_field_override->{attachments};
+    }
+    # If there's still no override, check for an override on the field's type.
     if (!$override) {
-        # Multi-select fields get special handling.
-        if ($self->_multi_select_fields->{$actual_field}) {
-            $override = $operator_field_override->{_multi_select};
-        }
-        # And so do attachment fields, if they don't have a specific
-        # individual override.
-        elsif ($actual_field =~ /^attachments\./) {
-            $override = $operator_field_override->{attachments};
-        }
+        my $field_obj = $self->_chart_fields->{$actual_field};
+        $override = $operator_field_override->{$field_obj->type};
     }
     
     if ($override) {
@@ -1890,40 +1880,58 @@ sub _timestamp_translate {
 
 sub SqlifyDate {
     my ($str) = @_;
+    my $fmt = "%Y-%m-%d %H:%M:%S";
     $str = "" if !defined $str;
     if ($str eq "") {
         my ($sec, $min, $hour, $mday, $month, $year, $wday) = localtime(time());
         return sprintf("%4d-%02d-%02d 00:00:00", $year+1900, $month+1, $mday);
     }
 
-    if ($str =~ /^(-|\+)?(\d+)([hHdDwWmMyY])$/) {   # relative date
-        my ($sign, $amount, $unit, $date) = ($1, $2, lc $3, time);
+    if ($str =~ /^(-|\+)?(\d+)([hdwmy])(s?)$/i) {   # relative date
+        my ($sign, $amount, $unit, $startof, $date) = ($1, $2, lc $3, lc $4, time);
         my ($sec, $min, $hour, $mday, $month, $year, $wday)  = localtime($date);
         if ($sign && $sign eq '+') { $amount = -$amount; }
+        $startof = 1 if $amount == 0;
         if ($unit eq 'w') {                  # convert weeks to days
-            $amount = 7*$amount + $wday;
+            $amount = 7*$amount;
+            $amount += $wday if $startof;
             $unit = 'd';
         }
         if ($unit eq 'd') {
-            $date -= $sec + 60*$min + 3600*$hour + 24*3600*$amount;
-            return time2str("%Y-%m-%d %H:%M:%S", $date);
+            if ($startof) {
+              $fmt = "%Y-%m-%d 00:00:00";
+              $date -= $sec + 60*$min + 3600*$hour;
+            }
+            $date -= 24*3600*$amount;
+            return time2str($fmt, $date);
         }
         elsif ($unit eq 'y') {
-            return sprintf("%4d-01-01 00:00:00", $year+1900-$amount);
+            if ($startof) {
+                return sprintf("%4d-01-01 00:00:00", $year+1900-$amount);
+            } 
+            else {
+                return sprintf("%4d-%02d-%02d %02d:%02d:%02d", 
+                               $year+1900-$amount, $month+1, $mday, $hour, $min, $sec);
+            }
         }
         elsif ($unit eq 'm') {
             $month -= $amount;
             while ($month<0) { $year--; $month += 12; }
-            return sprintf("%4d-%02d-01 00:00:00", $year+1900, $month+1);
+            if ($startof) {
+                return sprintf("%4d-%02d-01 00:00:00", $year+1900, $month+1);
+            }
+            else {
+                return sprintf("%4d-%02d-%02d %02d:%02d:%02d", 
+                               $year+1900, $month+1, $mday, $hour, $min, $sec);
+            }
         }
         elsif ($unit eq 'h') {
-            # Special case 0h for 'beginning of this hour'
-            if ($amount == 0) {
-                $date -= $sec + 60*$min;
-            } else {
-                $date -= 3600*$amount;
-            }
-            return time2str("%Y-%m-%d %H:%M:%S", $date);
+            # Special case for 'beginning of an hour'
+            if ($startof) {
+                $fmt = "%Y-%m-%d %H:00:00";
+            } 
+            $date -= 3600*$amount;
+            return time2str($fmt, $date);
         }
         return undef;                      # should not happen due to regexp at top
     }
@@ -1931,7 +1939,7 @@ sub SqlifyDate {
     if (!defined($date)) {
         ThrowUserError("illegal_date", { date => $str });
     }
-    return time2str("%Y-%m-%d %H:%M:%S", $date);
+    return time2str($fmt, $date);
 }
 
 ######################################
@@ -2256,7 +2264,7 @@ sub _content_matches {
     $rterm2 = $term2 if !$rterm2;
 
     # The term to use in the WHERE clause.
-    my $term = "$term1 > 0 OR $term2 > 0";
+    my $term = "$term1 OR $term2";
     if ($operator =~ /not/i) {
         $term = "NOT($term)";
     }
@@ -2276,31 +2284,6 @@ sub _content_matches {
     COLUMNS->{'relevance'}->{name} = $select_term;
 }
 
-sub _join_longdescs {
-    my ($self, $args) = @_;
-    my ($chart_id, $joins) = @$args{qw(chart_id joins)};
-    
-    my $table = "longdescs_$chart_id";
-    my $extra = $self->_user->is_insider ? [] : ["$table.isprivate = 0"];
-    my $join = {
-        table => 'longdescs',
-        as    => $table,
-        extra => $extra,
-    };
-    # We only want to do an INNER JOIN if we're not checking isprivate.
-    # Otherwise we'd exclude all bugs with only private comments from
-    # the search entirely.
-    $join->{join} = 'INNER' if $self->_user->is_insider;
-    push(@$joins, $join);
-    return $table;
-}
-
-sub _long_desc {
-    my ($self, $args) = @_;
-    my $table = $self->_join_longdescs($args);
-    $args->{full_field} = "$table.thetext";
-}
-
 sub _long_descs_count {
     my ($self, $args) = @_;
     my ($chart_id, $joins) = @$args{qw(chart_id joins)};
@@ -2313,12 +2296,6 @@ sub _long_descs_count {
     };
     push(@$joins, $join);
     $args->{full_field} = "${table}.num";
-}
-
-sub _longdescs_isprivate {
-    my ($self, $args) = @_;
-    my $table = $self->_join_longdescs($args);
-    $args->{full_field} = "$table.isprivate";
 }
 
 sub _work_time_changedby {
@@ -2367,149 +2344,6 @@ sub _percentage_complete {
     $self->_add_extra_column('actual_time');
 }
 
-sub _bug_group_nonchanged {
-    my ($self, $args) = @_;
-    my ($chart_id, $joins, $field) = @$args{qw(chart_id joins field)};
-    
-    my $map_table = "bug_group_map_$chart_id";
-    
-    push(@$joins, { table => 'bug_group_map', as => $map_table });
-    
-    my $groups_table = "groups_$chart_id";
-    my $full_field = "$groups_table.name";
-    $args->{full_field} = $full_field;
-    $self->_do_operator_function($args);
-    my $term = $args->{term};
-    my $groups_join = {
-        table => 'groups',
-        as    => $groups_table,
-        from  => "$map_table.group_id",
-        to    => 'id',
-        extra => [$term],
-    };
-    push(@$joins, $groups_join);
-    $args->{term} = "$full_field IS NOT NULL";
-}
-
-sub _attach_data_thedata {
-    my ($self, $args) = @_;
-    my ($chart_id, $joins) = @$args{qw(chart_id joins)};
-    
-    my $attach_table = "attachments_$chart_id";
-    my $data_table = "attachdata_$chart_id";
-    my $extra = $self->_user->is_insider
-                ? [] : ["$attach_table.isprivate = 0"];
-    my $attachments_join = {
-        table => 'attachments',
-        as    => $attach_table,
-        extra => $extra,
-    };
-    my $data_join = {
-        table => 'attach_data',
-        as    => $data_table,
-        from  => "$attach_table.attach_id",
-        to    => "id",
-    };
-    push(@$joins, $attachments_join, $data_join);
-    $args->{full_field} = "$data_table.thedata";
-}
-
-sub _attachments {
-    my ($self, $args) = @_;
-    my ($chart_id, $joins, $field) =
-        @$args{qw(chart_id joins field)};
-    my $dbh = Bugzilla->dbh;
-    
-    my $table = "attachments_$chart_id";
-    my $extra = $self->_user->is_insider ? [] : ["$table.isprivate = 0"];
-    my $join = {
-        table => 'attachments',
-        as    => $table,
-        extra => $extra,
-    };
-    push(@$joins, $join);
-    $field =~ /^attachments\.(.+)$/;
-    my $attach_field = $1;
-    
-    $args->{full_field} = "$table.$attach_field";
-}
-
-sub _join_flag_tables {
-    my ($self, $args) = @_;
-    my ($joins, $chart_id) = @$args{qw(joins chart_id)};
-    
-    my $attach_table = "attachments_$chart_id";
-    my $flags_table = "flags_$chart_id";
-    my $extra = $self->_user->is_insider
-                ? [] : ["$attach_table.isprivate = 0"];
-    my $attachments_join = {
-        table => 'attachments',
-        as    => $attach_table,
-        extra => $extra,
-    };
-    # We join both the bugs and the attachments table in separately,
-    # and then the join code will later combine the terms.
-    my $flags_join = {
-        table => 'flags',
-        as    => $flags_table,
-        extra => ["($flags_table.attach_id = $attach_table.attach_id "
-                  . " OR $flags_table.attach_id IS NULL)"],
-    };
-    
-    push(@$joins, $attachments_join, $flags_join);
-}
-
-sub _flagtypes_name {
-    my ($self, $args) = @_;
-    my ($chart_id, $operator, $joins, $field, $having) = 
-        @$args{qw(chart_id operator joins field having)};
-    my $dbh = Bugzilla->dbh;
-    
-    # Matches bugs by flag name/status.
-    # Note that--for the purposes of querying--a flag comprises
-    # its name plus its status (i.e. a flag named "review" 
-    # with a status of "+" can be found by searching for "review+").
-    
-    # Don't do anything if this condition is about changes to flags,
-    # as the generic change condition processors can handle those.
-    return if $operator =~ /^changed/;
-    
-    # Add the flags and flagtypes tables to the query.  We do 
-    # a left join here so bugs without any flags still match 
-    # negative conditions (f.e. "flag isn't review+").
-    $self->_join_flag_tables($args);
-    my $flags = "flags_$chart_id";
-    my $flagtypes = "flagtypes_$chart_id";
-    my $flagtypes_join = {
-        table => 'flagtypes',
-        as    => $flagtypes,
-        from  => "$flags.type_id",
-        to    => 'id',
-    };
-    push(@$joins, $flagtypes_join);
-    
-    my $full_field = $dbh->sql_string_concat("$flagtypes.name",
-                                             "$flags.status");
-    $args->{full_field} = $full_field;
-    $self->_do_operator_function($args);
-    my $term = $args->{term};
-    
-    # If this is a negative condition (f.e. flag isn't "review+"),
-    # we only want bugs where all flags match the condition, not 
-    # those where any flag matches, which needs special magic.
-    # Instead of adding the condition to the WHERE clause, we select
-    # the number of flags matching the condition and the total number
-    # of flags on each bug, then compare them in a HAVING clause.
-    # If the numbers are the same, all flags match the condition,
-    # so this bug should be included.
-    if ($operator =~ /^not/) {
-       push(@$having,
-            "SUM(CASE WHEN $full_field IS NOT NULL THEN 1 ELSE 0 END) = " .
-            "SUM(CASE WHEN $term THEN 1 ELSE 0 END)");
-       $args->{term} = '';
-    }
-}
-
 sub _days_elapsed {
     my ($self, $args) = @_;
     my $dbh = Bugzilla->dbh;
@@ -2554,103 +2388,32 @@ sub _classification_nonchanged {
         "classifications.id", "classifications", $term);
 }
 
-sub _keywords_exact {
+sub _nullable {
     my ($self, $args) = @_;
-    my ($chart_id, $joins, $value, $operator) =
-        @$args{qw(chart_id joins value operator)};
-    my $dbh = Bugzilla->dbh;
-    
-    my @keyword_ids;
-    foreach my $word (split(/[\s,]+/, $value)) {
-        next if $word eq '';
-        my $keyword = Bugzilla::Keyword->check($word);
-        push(@keyword_ids, $keyword->id);
-    }
-    
-    # XXX We probably should instead throw an error here if there were
-    # just commas in the field.
-    if (!@keyword_ids) {
-        $args->{term} = '';
-        return;
-    }
-    
-    # This is an optimization for anywords and anyexact, since we already know
-    # the keyword id from having checked it above.
-    if ($operator eq 'anywords' or $operator eq 'anyexact') {
-        my $table = "keywords_$chart_id";
-        $args->{term} = $dbh->sql_in("$table.keywordid", \@keyword_ids);
-        push(@$joins, { table => 'keywords', as => $table });
-        return;
-    }
-    
-    $self->_keywords_nonchanged($args);
+    my $field = $args->{full_field};
+    $args->{full_field} = "COALESCE($field, '')";
 }
 
-sub _keywords_nonchanged {
+sub _nullable_int {
     my ($self, $args) = @_;
-    my ($chart_id, $joins) =
-        @$args{qw(chart_id joins)};
-
-    my $k_table = "keywords_$chart_id";
-    my $kd_table = "keyworddefs_$chart_id";
-    
-    push(@$joins, { table => 'keywords', as => $k_table });
-    my $defs_join = {
-        table => 'keyworddefs',
-        as    => $kd_table,
-        from  => "$k_table.keywordid",
-        to    => 'id',
-    };
-    push(@$joins, $defs_join);
-    
-    $args->{full_field} = "$kd_table.name";
+    my $field = $args->{full_field};
+    $args->{full_field} = "COALESCE($field, 0)";
 }
 
-# XXX This should be combined with blocked_nonchanged.
-sub _dependson_nonchanged {
+sub _nullable_datetime {
     my ($self, $args) = @_;
-    my ($chart_id, $joins, $field, $operator) =
-        @$args{qw(chart_id joins field operator)};
-    
-    my $table = "dependson_$chart_id";
-    my $full_field = "$table.$field";
-    $args->{full_field} = $full_field;
-    $self->_do_operator_function($args);
-    my $term = $args->{term};
-    my $dep_join = {
-        table => 'dependencies',
-        as    => $table,
-        to    => 'blocked',
-        extra => [$term],
-    };
-    push(@$joins, $dep_join);
-    $args->{term} = "$full_field IS NOT NULL";
+    my $field = $args->{full_field};
+    my $empty = Bugzilla->dbh->quote(EMPTY_DATETIME);
+    $args->{full_field} = "COALESCE($field, $empty)";
 }
 
-sub _blocked_nonchanged {
+sub _deadline {
     my ($self, $args) = @_;
-    my ($chart_id, $joins, $field, $operator) =
-        @$args{qw(chart_id joins field operator)};
-
-    my $table = "blocked_$chart_id";
-    my $full_field = "$table.$field";
-    $args->{full_field} = $full_field;
-    $self->_do_operator_function($args);
-    my $term = $args->{term};
-    my $dep_join = {
-        table => 'dependencies',
-        as    => $table,
-        to    => 'dependson',
-        extra => [$term],
-    };
-    push(@$joins, $dep_join);
-    $args->{term} = "$full_field IS NOT NULL";
-}
-
-sub _alias_nonchanged {
-    my ($self, $args) = @_;
-    $args->{full_field} = "COALESCE(bugs.alias, '')";
-    $self->_do_operator_function($args);
+    my $field = $args->{full_field};
+    # This makes "equals" searches work on all DBs (even on MySQL, which
+    # has a bug: http://bugs.mysql.com/bug.php?id=60324).
+    $args->{full_field} = Bugzilla->dbh->sql_date_format($field, '%Y-%m-%d');
+    $self->_nullable_datetime($args);
 }
 
 sub _owner_idle_time_greater_less {
@@ -2694,21 +2457,8 @@ sub _multiselect_negative {
     my ($self, $args) = @_;
     my ($field, $operator) = @$args{qw(field operator)};
 
-    my $table;
-    if ($field eq 'keywords') {
-        $table = "keywords LEFT JOIN keyworddefs"
-                 . " ON keywords.keywordid = keyworddefs.id";
-        $args->{full_field} = "keyworddefs.name";
-    }
-    else { 
-        $table = "bug_$field";
-        $args->{full_field} = "$table.value";
-    }
     $args->{operator} = $self->_reverse_operator($operator);
-    $self->_do_operator_function($args);
-    my $term = $args->{term};
-    $args->{term} =
-        "bugs.bug_id NOT IN (SELECT bug_id FROM $table WHERE $term)";
+    $args->{term} = $self->_multiselect_term($args, 1);
 }
 
 sub _multiselect_multiple {
@@ -2717,23 +2467,26 @@ sub _multiselect_multiple {
         = @$args{qw(chart_id field operator value)};
     my $dbh = Bugzilla->dbh;
     
-    my $table = "bug_$field";
-    $args->{full_field} = "$table.value";
+    # We want things like "cf_multi_select=two+words" to still be
+    # considered a search for two separate words, unless we're using
+    # anyexact. (_all_values would consider that to be one "word" with a
+    # space in it, because it's not in the Boolean Charts).
+    my @words = $operator eq 'anyexact' ? $self->_all_values($args)
+                                        : split(/[\s,]+/, $value);
     
     my @terms;
-    foreach my $word (split(/[\s,]+/, $value)) {
+    foreach my $word (@words) {
         $args->{value} = $word;
-        $args->{quoted} = $dbh->quote($value);
-        $self->_do_operator_function($args);
-        my $term = $args->{term};
-        push(@terms, "bugs.bug_id IN (SELECT bug_id FROM $table WHERE $term)");
+        $args->{quoted} = $dbh->quote($word);
+        push(@terms, $self->_multiselect_term($args));
     }
     
-    if ($operator eq 'anyexact') {
-        $args->{term} = join(" OR ", @terms);
+    # The spacing in the joins helps make the resulting SQL more readable.
+    if ($operator =~ /^any/) {
+        $args->{term} = join("\n        OR ", @terms);
     }
     else {
-        $args->{term} = join(" AND ", @terms);
+        $args->{term} = join("\n        AND ", @terms);
     }
 }
 
@@ -2741,10 +2494,81 @@ sub _multiselect_nonchanged {
     my ($self, $args) = @_;
     my ($chart_id, $joins, $field, $operator) =
         @$args{qw(chart_id joins field operator)};
+    $args->{term} = $self->_multiselect_term($args)
+}
 
-    my $table = "${field}_$chart_id";
-    $args->{full_field} = "$table.value";
-    push(@$joins, { table => "bug_$field", as => $table });
+sub _multiselect_table {
+    my ($self, $args) = @_;
+    my ($field, $chart_id) = @$args{qw(field chart_id)};
+    my $dbh = Bugzilla->dbh;
+    
+    if ($field eq 'keywords') {
+        $args->{full_field} = 'keyworddefs.name';
+        return "keywords INNER JOIN keyworddefs".
+                               " ON keywords.keywordid = keyworddefs.id";
+    }
+    elsif ($field eq 'tag') {
+        $args->{full_field} = 'tags.name';
+        return "bug_tag INNER JOIN tags ON bug_tag.tag_id = tags.id"
+                                       . " AND user_id = " . $self->_user->id;
+    }
+    elsif ($field eq 'bug_group') {
+        $args->{full_field} = 'groups.name';
+        return "bug_group_map INNER JOIN groups
+                                      ON bug_group_map.group_id = groups.id";
+    }
+    elsif ($field eq 'blocked' or $field eq 'dependson') {
+        my $select = $field eq 'blocked' ? 'dependson' : 'blocked';
+        $args->{_select_field} = $select;
+        $args->{full_field} = $field;
+        return "dependencies";
+    }
+    elsif ($field eq 'longdesc') {
+        $args->{_extra_where} = " AND isprivate = 0"
+            if !$self->_user->is_insider;
+        $args->{full_field} = 'thetext';
+        return "longdescs";
+    }
+    elsif ($field eq 'longdescs.isprivate') {
+        ThrowUserError('auth_failure', { action => 'search',
+                                         object => 'bug_fields',
+                                         field => 'longdescs.isprivate' })
+            if !$self->_user->is_insider;
+        $args->{full_field} = 'isprivate';
+        return "longdescs";
+    }
+    elsif ($field =~ /^attachments/) {
+        $args->{_extra_where} = " AND isprivate = 0"
+            if !$self->_user->is_insider;
+        $field =~ /^attachments\.(.+)$/;
+        $args->{full_field} = $1;
+        return "attachments";
+    }
+    elsif ($field eq 'attach_data.thedata') {
+        $args->{_extra_where} = " AND attachments.isprivate = 0"
+            if !$self->_user->is_insider;
+        return "attachments INNER JOIN attach_data "
+               . " ON attachments.attach_id = attach_data.id"
+    }
+    elsif ($field eq 'flagtypes.name') {
+        $args->{full_field} = $dbh->sql_string_concat("flagtypes.name",
+                                                      "flags.status");
+        return "flags INNER JOIN flagtypes ON flags.type_id = flagtypes.id";
+    }
+    my $table = "bug_$field";
+    $args->{full_field} = "bug_$field.value";
+    return $table;
+}
+
+sub _multiselect_term {
+    my ($self, $args, $not) = @_;
+    my $table = $self->_multiselect_table($args);
+    $self->_do_operator_function($args);
+    my $term = $args->{term};
+    $term .= $args->{_extra_where} || '';
+    my $select = $args->{_select_field} || 'bug_id';
+    my $not_sql = $not ? "NOT " : '';
+    return "bugs.bug_id ${not_sql}IN (SELECT $select FROM $table WHERE $term)";
 }
 
 ###############################

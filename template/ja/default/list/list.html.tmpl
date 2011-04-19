@@ -52,9 +52,9 @@
   doc_section = "query.html#list"
 %]
 
-<div class="bz_query_head" align="center">
+<div class="bz_query_head">
   <span class="bz_query_timestamp">
-    <b>[% currenttime FILTER time('%a %b %e %Y %T %Z') FILTER html %]</b><br>
+    [% currenttime FILTER time('%a %b %e %Y %T %Z') FILTER html %]<br>
   </span>
 
   [% IF debug %]
@@ -67,7 +67,7 @@
   [% IF user.settings.display_quips.value == 'on' %]
     [% DEFAULT quip = "$terms.Bugzilla はランダムな警句をここに表示しようとしていますが、まだ登録されていません。" %]
     <span class="bz_quip">
-      <a href="quips.cgi"><i>[% quip FILTER html %]</i></a>
+      <a href="quips.cgi"><em>[% quip FILTER html %]</em></a>
     </span>
   [% END %]
 
@@ -110,9 +110,7 @@
 [%############################################################################%]
 
 [% IF bugs.size > 9 %]
-  <span class="bz_result_count">
-    [% bugs.size %] [%+ terms.bugs %] が見つかりました。
-  </span>
+  [% PROCESS num_results %]
 [% END %]
 
 [%############################################################################%]
@@ -134,15 +132,7 @@
 [%# Succeeding Status Line                                                   #%]
 [%############################################################################%]
 
-<span class="bz_result_count">
-  [% IF bugs.size == 0 %]
-    <span class="zero_results">[% terms.zeroSearchResults %].</span>
-  [% ELSIF bugs.size == 1 %]
-    1つの [% terms.bug %] が見つかりました。
-  [% ELSE %]
-    [% bugs.size %] [%+ terms.bugs %] が見つかりました。
-  [% END %]
-</span>
+[% PROCESS num_results %]
 
 [% IF bugs.size == 0 %]
   <ul class="zero_result_links">
@@ -204,7 +194,7 @@
       
       <td valign="middle" class="bz_query_links">
         <a href="buglist.cgi?
-        [% urlquerypart FILTER html %]&amp;ctype=csv">CSV</a> |
+        [% urlquerypart FILTER html %]&amp;ctype=csv&human=1">CSV</a> |
         <a href="buglist.cgi?
         [% urlquerypart FILTER html %]&amp;title=
         [%- title FILTER html %]&amp;ctype=atom">Atom フィード</a> |
@@ -252,7 +242,7 @@
                  value="[% defaultsavename FILTER html %]"> として
           <input type="submit" id="remember" value="検索条件を保存">
           <input type="hidden" name="newquery" 
-                 value="[% urlquerypart FILTER html %][% "&order=$qorder" FILTER html IF order %]">
+                 title="新しい検索条件名" value="[% defaultsavename FILTER html %]"> 
           <input type="hidden" name="cmdtype" value="doit">
           <input type="hidden" name="remtype" value="asnamed">
           <input type="hidden" name="token" value="[% issue_hash_token(['savedsearch']) FILTER html %]">
@@ -274,6 +264,10 @@
 
 [% PROCESS global/footer.html.tmpl %]
 
+[%##########%]
+[%# Blocks #%]
+[%##########%]
+
 [% BLOCK edit_search_url %]
   [% editqueryname = searchname OR defaultsavename OR '' %]
   query.cgi?[% urlquerypart FILTER html %]
@@ -291,4 +285,22 @@
      [% END %]
      新規 [% terms.bug %] の登録
    </a>
+[% END %]
+
+[% BLOCK num_results %]
+  <span class="bz_result_count">
+    [% IF bugs.size == 0 %]
+      <span class="zero_results">[% terms.zeroSearchResults %]</span>
+    [% ELSIF default_limited AND bugs.size >= Param('default_search_limit') %]
+      検索結果は [% Param('default_search_limit') FILTER html %] 件の
+      [%+ terms.bugs %] に制限されています。
+      <a href="buglist.cgi?[% urlquerypart FILTER html %]
+              [%- "&order=$qorder" FILTER html IF order %]&limit=0">
+        この条件での全ての検索結果を見る</a>。
+    [% ELSIF bugs.size == 1 %]
+      1 件の [% terms.bug %] を発見。
+    [% ELSE %]
+      [% bugs.size %] 件の [%+ terms.bugs %] を発見。
+    [% END %]
+  </span>
 [% END %]

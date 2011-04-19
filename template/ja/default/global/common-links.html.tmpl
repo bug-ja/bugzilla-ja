@@ -35,7 +35,7 @@
                   { alert('ひとつ以上の検索語を入力してください。');
                     return false; } return true;">
     <input class="txt" type="text" id="quicksearch[% qs_suffix FILTER html %]" name="quicksearch" 
-           value="[% quicksearch FILTER html %]">
+           title="簡易検索" value="[% quicksearch FILTER html %]">
     <input class="btn" type="submit" value="検索" 
            id="find[% qs_suffix FILTER html %]">
     [%-# Work around FF bug: keep this on one line %]</form>

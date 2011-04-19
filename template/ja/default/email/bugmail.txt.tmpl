@@ -69,7 +69,7 @@
            項目    |削除                        |追加 
 ----------------------------------------------------------------------------
 [%+ END %][%# End of IF. This indentation is intentional! ~%]
-    [% PROCESS "email/bugmail-common.txt.html"%]
+    [% PROCESS "email/bugmail-common.txt.tmpl"%]
     [%~ IF isnew %]
       [% format_columns(2, field_label _ ":", new_value) -%]
     [% ELSE %]

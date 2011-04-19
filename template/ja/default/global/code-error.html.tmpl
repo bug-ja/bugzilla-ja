@@ -402,6 +402,13 @@
     [%+ ELSIF fld == "z" %]複数テーブル・イメージ
     [%+ ELSE %]レポート軸[% END %] フィールドとして無効値です。
 
+  [% ELSIF error == "search_cp_without_op" %]
+    検索条件 f[% id FILTER html %] は "CP" になりますが、
+    その前に該当する "OP" が存在しません。
+
+  [% ELSIF error == "search_invalid_joiner" %]
+    '[% joiner FILTER html %]' は検索条件の有効な接続詞ではありません。
+
   [% ELSIF error == "setting_info_invalid" %]
     新しい設定を作成するには、名前、値とソート順のペア、既定の値が必要です。
 

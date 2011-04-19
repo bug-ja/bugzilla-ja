@@ -46,6 +46,7 @@ our @EXPORT_OK = qw(
     extension_package_directory
     extension_requirement_packages
     extension_template_directory
+    extension_web_directory
     indicate_progress
     install_string
     include_languages
@@ -214,6 +215,14 @@ sub extension_template_directory {
     return "$base_dir/template";
 }
 
+# Used in this file and in Bugzilla::Extension.
+sub extension_web_directory {
+    my $extension = shift;
+    my $class = ref($extension) || $extension;
+    my $base_dir = extension_package_directory($class);
+    return "$base_dir/web";
+}
+
 # For extensions that are in the extensions/ dir, this both sets and fetches
 # the name of the directory that stores an extension's "stuff". We need this
 # when determining the template directory for extensions (or other things
@@ -222,8 +231,14 @@ sub extension_package_directory {
     my ($invocant, $file) = @_;
     my $class = ref($invocant) || $invocant;
 
+    # $file is set on the first invocation, store the value in the extension's
+    # package for retrieval on subsequent calls
     my $var;
-    { no strict 'refs'; $var = \${"${class}::EXTENSION_PACKAGE_DIR"}; }
+    {
+        no warnings 'once';
+        no strict 'refs';
+        $var = \${"${class}::EXTENSION_PACKAGE_DIR"};
+    }
     if ($file) {
         $$var = dirname($file);
     }

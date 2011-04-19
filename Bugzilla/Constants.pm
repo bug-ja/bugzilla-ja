@@ -189,6 +189,9 @@ use Memoize;
     PRIVILEGES_REQUIRED_REPORTER
     PRIVILEGES_REQUIRED_ASSIGNEE
     PRIVILEGES_REQUIRED_EMPOWERED
+
+    AUDIT_CREATE
+    AUDIT_REMOVE
 );
 
 @Bugzilla::Constants::EXPORT_OK = qw(contenttypes);
@@ -196,7 +199,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.1";
+use constant BUGZILLA_VERSION => "4.1.1+";
 
 # These are unique values that are unlikely to match a string or a number,
 # to be used in criteria for match() functions and other things. They start
@@ -484,6 +487,8 @@ use constant DB_MODULE => {
                     version => '4.001',
                 },
                 name => 'MySQL'},
+    # Also see Bugzilla::DB::Pg::bz_check_server_version, which has special
+    # code to require DBD::Pg 2.17.2 for PostgreSQL 9 and above.
     'pg'    => {db => 'Bugzilla::DB::Pg', db_version => '8.03.0000',
                 dbd => {
                     package => 'DBD-Pg',
@@ -572,6 +577,11 @@ use constant PRIVILEGES_REQUIRED_NONE      => 0;
 use constant PRIVILEGES_REQUIRED_REPORTER  => 1;
 use constant PRIVILEGES_REQUIRED_ASSIGNEE  => 2;
 use constant PRIVILEGES_REQUIRED_EMPOWERED => 3;
+
+# Special field values used in the audit_log table to mean either
+# "we just created this object" or "we just deleted this object".
+use constant AUDIT_CREATE => '__create__';
+use constant AUDIT_REMOVE => '__remove__';
 
 sub bz_locations {
     # We know that Bugzilla/Constants.pm must be in %INC at this point.

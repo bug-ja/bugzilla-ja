@@ -184,7 +184,7 @@
     </table>
   [% END %]
 
-  <input type="submit" value="グループを更新">
+  <input type="submit" id="update-group" value="グループを更新">
   <input type="hidden" name="token" value="[% token FILTER html %]">
 </form>
   
@@ -198,7 +198,7 @@
   <fieldset>
     <legend>ログイン名が次の正規表現と一致するユーザをグループから削除します:</legend>
     <input type="text" size="20" name="regexp">
-    <input type="submit" value="メンバーを削除">
+    <input type="submit" id="remove-membership" value="メンバーを削除">
 
     <p>もし、空白のままで実行すると、このグループから全てのメンバーが削除されます。</p>
 

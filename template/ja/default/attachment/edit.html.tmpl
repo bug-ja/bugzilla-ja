@@ -70,13 +70,13 @@
           [% END %]
         </div>
         <div class="details">
-          [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %])
+          [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %]),
           [% IF attachment.datasize %]
             [%+ attachment.datasize FILTER unitconvert %]
           [% ELSE %]
             <em>削除済</em>
           [% END %] による添付 [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
-          [% IF attachment.isprivate %]
+          [% IF attachment.isprivate %];
             <span class="bz_private"><strong>[% Param('insidergroup') FILTER html %]</strong> グループのメンバーのみ閲覧可</span>
           [% END %]
         </div>

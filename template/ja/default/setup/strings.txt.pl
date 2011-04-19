@@ -108,6 +108,7 @@ END
     feature_smtp_auth         => 'SMTP 認証でのメール送信',
     feature_updates           => 'システム更新通知',
     feature_xmlrpc            => 'XML-RPC インターフェース',
+    feature_detect_charset    => 'テキスト添付での自動文字コード検出',
 
     file_remove => 'ファイル ##name## を削除中...',
     file_rename => 'ファイル名を ##from## から ##to## へ変更中...',

@@ -323,6 +323,8 @@
       [% END %]
     [% ELSIF object == "bugs" %]
       [%+ terms.bugs %]
+    [% ELSIF object == "bug_fields" %]
+      [% field_descs.$field FILTER html %] フィールド
     [% ELSIF object == "charts" %]
       新規 [% jawords.chart FILTER html %] の追加機能
     [% ELSIF object == "classifications" %]
@@ -388,6 +390,8 @@
       実行
     [% ELSIF action == "schedule" %]
       スケジューリング
+    [% ELSIF action == "search" %]
+      検索
     [% ELSIF action == "use" %]
       利用
     [% ELSIF action == "approve" %]
@@ -442,6 +446,7 @@
         <li>JIRA サイトの issue</li>
         <li>Trac サイトのチケット</li>
         <li>MantisBT サイトの b[% %]ug</li>
+        <li>sourceforge.net の b[% %]ug</li>
       </ul>
     [% ELSIF reason == 'id' %]
       有効な [% terms.bug %] ID が URL に含まれていません。

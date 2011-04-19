@@ -121,18 +121,22 @@
                   <option value="[% comp FILTER html %]">[% comp FILTER html %]</option>
                 [% END %]
               </select><br>
-              <input type="submit" name="categoryAction-include" value="利用可能">
-              <input type="submit" name="categoryAction-exclude" value="利用不可">
+              <input type="submit" id="categoryAction-include" 
+                                   name="categoryAction-include" value="利用可能">
+              <input type="submit" id="categoryAction-exclude"
+                                   name="categoryAction-exclude" value="利用不可">
             </td>
             <td style="vertical-align: top;">
               <b>利用可能:</b><br>
               [% PROCESS category_select name="inclusion_to_remove" categories = inclusions %]<br>
-              <input type="submit" name="categoryAction-removeInclusion" value="利用可能から削除">
+              <input type="submit" id="categoryAction-removeInclusion" 
+                                   name="categoryAction-removeInclusion" value="利用可能から削除">
             </td>
             <td style="vertical-align: top;">
               <b>利用不可:</b><br>
               [% PROCESS category_select name="exclusion_to_remove" categories = exclusions %]<br>
-              <input type="submit" name="categoryAction-removeExclusion" value="利用不可から削除">
+              <input type="submit" id="categoryAction-removeExclusion" 
+                                   name="categoryAction-removeExclusion" value="利用不可から削除">
             </td>
           </tr>
         </table>

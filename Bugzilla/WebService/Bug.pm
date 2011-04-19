@@ -569,6 +569,10 @@ sub create {
 
 sub legal_values {
     my ($self, $params) = @_;
+
+    defined $params->{field} 
+        or ThrowCodeError('param_required', { param => 'field' });
+
     my $field = Bugzilla::Bug::FIELD_MAP->{$params->{field}} 
                 || $params->{field};
 
@@ -870,7 +874,8 @@ sub _bug_to_hash {
         $item{'qa_contact'} = $self->type('string', $qa_login);
     }
     if (filter_wants $params, 'see_also') {
-        my @see_also = map { $self->type('string', $_) } @{ $bug->see_also };
+        my @see_also = map { $self->type('string', $_->name) }
+                       @{ $bug->see_also };
         $item{'see_also'} = \@see_also;
     }
 

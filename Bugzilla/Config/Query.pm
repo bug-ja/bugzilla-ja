@@ -71,8 +71,21 @@ sub get_param_list {
    name => 'specific_search_allow_empty_words',
    type => 'b',
    default => 1
-  }
-  
+  },
+
+  {
+    name => 'default_search_limit',
+    type => 't',
+    default => '500',
+    checker => \&check_numeric
+  },
+
+  {
+    name => 'max_search_results',
+    type => 't',
+    default => '10000',
+    checker => \&check_numeric
+  },
   );
   return @param_list;
 }

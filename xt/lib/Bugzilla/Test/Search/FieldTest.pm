@@ -191,13 +191,6 @@ sub _known_broken {
         $value_name .= "-$extra_name";
     }    
     
-    if (!$skip_pg_check and Bugzilla->dbh->isa('Bugzilla::DB::Pg')) {
-        my $field_broken = PG_BROKEN->{$field}->{$operator};
-        return $field_broken if $field_broken;
-        my $pg_value_broken = PG_BROKEN->{$field}->{$value_name};
-        return $pg_value_broken if $pg_value_broken;
-    }
-    
     my $value_broken = $constant->{$value_name}->{$field};
     $value_broken ||= $constant->{$value_name}->{$type};
     return $value_broken if $value_broken;
@@ -349,6 +342,9 @@ sub _field_values_for_bug {
     }
     elsif ($field eq 'see_also') {
         @values = $self->_values_for($number, 'see_also', 'name');
+    }
+    elsif ($field eq 'tag') {
+        @values = $self->_values_for($number, 'tags');
     }
     # Bugzilla::Bug truncates creation_ts, but we need the full value
     # from the database. This has no special value for changedfrom,
