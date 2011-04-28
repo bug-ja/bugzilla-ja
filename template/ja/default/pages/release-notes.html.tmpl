@@ -60,6 +60,39 @@
 
 <h2 id="v36_point">3.6.x リリースでの更新点</h2>
 
+<h3>3.6.5</h3>
+
+<p>3.6.x ブランチはすでにセキュリティー更新にのみ限定されてはいますが、
+  いくつかのバグ修正がセキュリティー更新に限定される前にこのブランチに対して
+  行われています。これらの修正が 3.6.5 と同様にリリースされています。</p>
+
+<ul>
+  <li>インストール中に CPAN モジュール Math::Random::Secure が場合によって、
+    <kbd>Math::Random::Secure::irand</kbd> についてのエラーで失敗することが
+    ありました。現在では、<kbd>install-module.pl</kbd> を利用して 
+    Math::Random::Secure をインストールしようとしても問題は発生しません。
+    この問題が現在発生していて 3.6.4 をインストールできない状況にある場合、
+    <kbd>lib/</kbd> ディレクトリから Math::Random::Secure を
+    <p><kbd>rm -rf lib/Math/Random/Secure*</kbd></p>
+    などとして削除してください。
+    <p>(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=646578">[% terms.Bug %] 646578</a>)</p>
+  </li>
+  <li>キーワードフィールドで "全ての語を含む" 検索が正しく動作するように
+    修正されました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=490322">[% terms.Bug %] 490322</a>)
+  </li>
+  <li>4KB を超える BUGLIST クッキーを作成することがあり、ウェブサーバで
+    そのクッキーを含むリクエストが拒否されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=480044">[% terms.Bug %] 480044</a>)
+  <li><kbd>whine.pl</kbd> が PostgreSQL 8.4 とそれ以降で動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=616981">[% terms.Bug %] 616981</a>)
+  </li>
+  <li>[% terms.Bugzilla %] の <kbd>lib/</kbd> ディレクトリに Math::Random::Secure 
+    をインストールしている場合、mod_perl 環境では動作しなくなっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=621597">[% terms.Bug %] 621597</a>)
+  </li>
+</ul>
+
 <h3>3.6.4</h3>
 
 <p>このリリースではいくつかの重要なセキュリティー問題への修正を含みます。詳細に関しては、
