@@ -1875,6 +1875,15 @@
     [% jawords.user FILTER html %] ID '[% userid FILTER html %]'
     は妥当な整数でなくてはいけません。
 
+  [% ELSIF error == "extern_id_exists" %]
+    [% title = "アカウントはすでに存在します" %]
+    外部ログイン ID "[% extern_id FILTER html %]" を持つ
+    アカウント名
+    [% IF existing_login_name %]
+      ([% existing_login_name FILTER html %])
+    [% END %]
+    はすでに存在します。
+
   [% ELSE %]
 
     [%# Try to find hooked error messages %]

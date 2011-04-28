@@ -28,6 +28,7 @@
 
 <ul class="bz_toc">
   <li><a href="#v40_introduction">導入</a></li>
+  <li><a href="#v40_point">4.0.x リリースでの更新点</a></li>
   <li><a href="#v40_req">動作環境</a></li>
   <li><a href="#v40_feat">新機能と改善点</a></li>
   <li><a href="#v40_issues">既知の問題点</a></li>
@@ -63,6 +64,44 @@
   <a href="http://www.ibm.com/linux/ltc/">IBM Linux Technology Center</a>、
   <a href="http://www.redhat.com/">Red Hat</a> に対して、このバージョンの
   [% terms.Bugzilla %] における新機能の開発や改良に対する資金拠出に感謝します。</p>
+
+<h2 id="v40_point">4.0.x リリースでの更新点</h2>
+
+<h3>4.0.1</h3>
+
+<ul>
+  <li>インストール中に CPAN モジュール Math::Random::Secure が場合によって、
+    <kbd>Math::Random::Secure::irand</kbd> についてのエラーで失敗することが
+    ありました。現在では、<kbd>install-module.pl</kbd> を利用して 
+    Math::Random::Secure をインストールしようとしても問題は発生しません。
+    この問題が現在発生していて 3.6.4 をインストールできない状況にある場合、
+    <kbd>lib/</kbd> ディレクトリから Math::Random::Secure を
+    <p><kbd>rm -rf lib/Math/Random/Secure*</kbd></p>
+    などとして削除してください。
+    <p>(<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=646578">[% terms.Bug %] 646578</a>)</p>
+  </li>
+  <li>[% terms.bug %] 登録ページの "ブックマーク可能なテンプレートとして値を
+    記憶する" ボタンが、必須フィールドのいくつかが空白でも動作するようになり
+    ました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=640719">[% terms.Bug %] 640719</a>)</li>
+  <li>依存関係とフラグのメール通知が間違ったタイムスタンプで送信されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=643910">[% terms.Bug %] 643910</a>
+    と <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=652165">[% terms.Bug %] 652165</a>)</li>
+  <li>全般的な設定で "UTC" を有効なタイムゾーンとして選択できるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=646209">[% terms.Bug %] 646209</a>)</li>
+  <li>自動重複検出が PostgreSQL でも動作するようになりました。
+    (他の DB と同様には高性能に動作はしませんが。)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=634144">[% terms.Bug %] 634144</a>)</li>
+   <li>"emailsuffix" オプションを利用している環境下でも自動ユーザ補完機能が
+     動作するようになりました。
+     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=641519">[% terms.Bug %] 641519</a>)</li>
+   <li>新規チャート作成でシリーズを作成ようとしたときに JavaScript エラーが
+     発生していましたが、修正されました。
+     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=644285">[% terms.Bug %] 644285</a>)</li>
+    <li>投票拡張機能を利用している環境下で、"票数を表示" ページが動作するように
+      なりました。
+      (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=652381">[% terms.Bug %] 652381</a>)</li> 
+</ul>
 
 <h2 id="v40_req">動作環境</h2>
 

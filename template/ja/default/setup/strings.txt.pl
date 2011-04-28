@@ -130,6 +130,12 @@ EOT
 EOT
     install_module => '##module## バージョン ##version## をインストール中...',
     installation_failed => '*** インストールが中止されました。上記のメッセージをご覧ください。 ***',
+    install_no_compiler => <<END,
+エラー: install-module.pl を利用するには gcc のようなコンパイラが必要です。
+END
+    install_no_make => <<END,
+エラー: install-module.pl を利用するには "make" が必要です。
+END
     lc_new_vars => <<'END',
 このバージョンの Bugzilla ではいくつかの新しい変数が追加されており、ローカル
 で設定を変更する必要があるかもしれません。##localconfig## ファイルを編集して、

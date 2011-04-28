@@ -15,8 +15,8 @@
   # Copyright (C) 1998 Netscape Communications Corporation. All
   # Rights Reserved.
   #
-  # Contributor(s): André Batosti <batosti@async.com.br>
-  #                 Frédéric Buclin <LpSolit@gmail.com>
+  # Contributor(s): Andre Batosti <batosti@async.com.br>
+  #                 Frederic Buclin <LpSolit@gmail.com>
   #                 Guy Pyrzak <guy.pyrzak@gmail.com>
   #%]
   
@@ -27,7 +27,7 @@
 From: [% Param('mailfrom') %]
 To: [% to_user.email %]
 Subject: [[% terms.Bug %] [%+ bug.id %]] [% 'New: ' IF isnew %][%+ bug.short_desc %]
-Date: [% delta_ts || bug.delta_ts FILTER time("%a, %d %b %Y %T %z", to_user.timezone) %]
+Date: [% date %]
 X-Bugzilla-Reason: [% reasonsheader %]
 X-Bugzilla-Type: [% isnew ? 'new' : 'changed' %]
 X-Bugzilla-Watch-Reason: [% reasonswatchheader %]

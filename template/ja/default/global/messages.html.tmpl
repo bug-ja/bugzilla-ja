@@ -58,6 +58,8 @@
               パスワードが更新されました。
             [% ELSIF field == 'disabledtext' %]
               無効化テキストが更新されました。
+            [% ELSIF field == 'extern_id' %]
+              ユーザの外部ログイン ID は変更されています。
             [% ELSIF field == 'disable_mail' %]
               [% IF otheruser.email_disabled %]
                 [% terms.Bug %] メールが無効化されました。
