@@ -211,8 +211,8 @@
     有効な [% field FILTER html %] が指定されていません。
 
   [% ELSIF error == "inactive_group" %]
-    [% terms.bugs %] には利用されていない、
-    '[% name FILTER html %]' グループへの [% terms.bug %] の追加操作を行おうとしました。
+    [% terms.bugs %] には利用されていない、グループ ID [% group_id FILTER html %] 
+    への [% terms.abug %] の追加操作を行おうとしました。
 
   [% ELSIF error == "invalid_attach_id_to_obsolete" %]
     用済みにマークしようとした添付ファイルのひとつ [% attach_id FILTER html %] 

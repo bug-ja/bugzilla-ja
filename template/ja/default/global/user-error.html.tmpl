@@ -318,6 +318,11 @@
     [% terms.Bug FILTER html %] の [% jawords.bug_alias FILTER html %] は 20 文字 (byte) 以上にはできません。
     より短いものにしてください。
 
+  [% ELSIF error == "attachment_bug_id_mismatch" %]
+    [% title = "無効な添付" %]
+    異なる [% terms.bugs %] の添付を操作しようとしました。
+    この操作は添付が属する [% terms.bug %] から行う必要があります。
+
   [% ELSIF error == "auth_cant_create_account" %]
     [% title = BLOCK %] アカウントを作成できません [% END %]
     このサイトが利用している認証サービスは、新規アカウント登録を許可していません。
