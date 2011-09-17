@@ -222,7 +222,8 @@ sub quoteUrls {
 
     # mailto:
     # Use |<nothing> so that $1 is defined regardless
-    $text =~ s~\b(mailto:|)?([\w\.\-\+\=]+\@[\w\-]+(?:\.[\w\-]+)+)\b
+    # &#64; is the encoded '@' character.
+    $text =~ s~\b(mailto:|)?([\w\.\-\+\=]+&\#64;[\w\-]+(?:\.[\w\-]+)+)\b
               ~<a href=\"mailto:$2\">$1$2</a>~igx;
 
     # attachment links
@@ -256,8 +257,10 @@ sub quoteUrls {
               ~get_bug_link($1, $1)
               ~egmx;
 
-    # Now remove the encoding hacks
-    $text =~ s/\0\0(\d+)\0\0/$things[$1]/eg;
+    # Now remove the encoding hacks in reverse order
+    for (my $i = $#things; $i >= 0; $i--) {
+        $text =~ s/\0\0($i)\0\0/$things[$i]/eg;
+    }
     $text =~ s/$chr1\0/\0/g;
 
     return $text;
@@ -685,6 +688,9 @@ sub create {
             # as prefix. In addition it replaces a ' ' by a '_'.
             css_class_quote => \&Bugzilla::Util::css_class_quote ,
 
+            # Removes control characters and trims extra whitespace.
+            clean_text => \&Bugzilla::Util::clean_text ,
+
             quoteUrls => [ sub {
                                my ($context, $bug, $comment) = @_;
                                return sub {
@@ -918,6 +924,10 @@ sub create {
             # it only once per-language no matter how many times
             # $template->process() is called.
             'field_descs' => sub { return template_var('field_descs') },
+
+            # Calling bug/field-help.none.tmpl once per label is very
+            # expensive, so we generate it once per-language.
+            'help_html' => sub { return template_var('help_html') },
 
             'install_string' => \&Bugzilla::Install::Util::install_string,
 

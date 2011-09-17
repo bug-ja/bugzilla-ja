@@ -19,11 +19,13 @@
   #                 Max Kanat-Alexander <mkanat@bugzilla.org>
   #%]
 
-[%# This file describes both bug fields and search fields. %]
+[%# This file describes both bug fields and search fields.
+  # As calling this template once per label is very expensive,
+  # it is called only by Template.pm. %]
 
-[% PROCESS "global/field-descs.none.tmpl" %]
+[% RETURN UNLESS in_template_var %]
 
-[% help_html = {
+[% vars.help_html = {
 
 # Note that all these keys here are in alphabetical order, though
 # search-specific fields are at the bottom.
@@ -98,7 +100,7 @@ op_sys =>
 
 percentage_complete =>
   "この $terms.bug 作業がどの程度完了に近いかを、
-   ${field_descs.estimated_time} と $field_descs.work_time の比較で示しています。",
+   ${vars.field_descs.estimated_time} と $vars.field_descs.work_time の比較で示しています。",
 
 priority =>
   "技術者が、$terms.bugs の順位付けをこのフィールドで行います。",
@@ -113,7 +115,7 @@ qa_contact =>
 
 remaining_time =>
   "$terms.bug の修正に必要な残り時間で、
-   ${field_descs.estimated_time} から投稿された $field_descs.work_time
+   ${vars.field_descs.estimated_time} から投稿された $vars.field_descs.work_time
    を減算することで計算しています。",
 
 rep_platform => 
@@ -133,8 +135,8 @@ see_also =>
    複数の URL をカンマで区切って一度に入力することも可能です。
 
    <p>通常<em>ほかの</em>サイトの $terms.bugs への参照をここでは利用してください。
-   このサイトの $terms.bugs に関しては、$field_descs.dependson や
-     $field_descs.blocked フィールドを利用してください。</p>",
+   このサイトの $terms.bugs に関しては、$vars.field_descs.dependson や
+     $vars.field_descs.blocked フィールドを利用してください。</p>",
 
 short_desc =>
   "$terms.bug の要約はこの $terms.bug が何であるかの短い説明です。",
@@ -144,7 +146,7 @@ status_whiteboard =>
    タグ付け、ステータス状況説明に利用可能です。",
 
 target_milestone =>
-   "$field_descs.target_milestone フィールドは、技術者がこの $terms.bug 
+   "$vars.field_descs.target_milestone フィールドは、技術者がこの $terms.bug 
     をどのバージョンで修正できるかを示すものです。",
 
 version =>
@@ -177,7 +179,7 @@ chfieldvalue =>
   "この値は指定した期間中に変更されたフィールドを定義します。",
 
 content =>
-  "Google のような $field_descs.short_desc および $field_descs.longdesc 
+  "Google のような $vars.field_descs.short_desc および $vars.field_descs.longdesc 
    に対する '全文検索' を行うためのフィールドです。",
 
 # Duplicated to email2 below, also.
@@ -187,10 +189,10 @@ email1 =>
 
 } %]
 
-[% help_html.email2 = help_html.email1 %]
-[% help_html.chfieldto = help_html.chfieldfrom %]
-[% help_html.deadlinefrom = help_html.deadline %]
-[% help_html.deadlineto = help_html.deadline %]
+[% vars.help_html.email2 = vars.help_html.email1 %]
+[% vars.help_html.chfieldto = vars.help_html.chfieldfrom %]
+[% vars.help_html.deadlinefrom = vars.help_html.deadline %]
+[% vars.help_html.deadlineto = vars.help_html.deadline %]
 
 [% help_all_note = BLOCK %]
   <strong>注:</strong> 検索の際、オプション "All" を選択すると、
@@ -198,33 +200,33 @@ email1 =>
   を検索します。
 [% END %]
 [% FOREACH all_field = ['op_sys', 'rep_platform'] %]
-  [% help_html.$all_field = help_html.$all_field _ ' ' _ help_all_note %]
+  [% vars.help_html.$all_field = vars.help_html.$all_field _ ' ' _ help_all_note %]
 [% END %]
 
 [% IF Param('useclassification') %]
-  [% help_html.product = help_html.product 
+  [% vars.help_html.product = vars.help_html.product 
       _ " Classification を選択すればリストが限定されます。" %]
 [% END %]
 
 [% FOREACH help_field = bug_fields.keys %]
 
   [%# Add help for custom fields. %]
-  [% IF !help_html.${help_field}.defined %]
+  [% IF !vars.help_html.${help_field}.defined %]
     [% SET field_type = bug_fields.${help_field}.type %]
     [% field_type_desc = BLOCK -%]
       [% field_types.$field_type FILTER html %]
     [%- END %]
-    [% help_html.${help_field} = 
+    [% vars.help_html.${help_field} = 
       "この ${terms.Bugzilla} サイトの"
       _  "カスタムフィールド $field_type_desc です。" %]
   [% END %]
 
   [%# Add help for the search types, for query.cgi. %]
   [% type_desc = BLOCK %]
-    [% field_descs.${help_field} FILTER html %] の型での検索も可能です。
+    [% vars.field_descs.${help_field} FILTER html %] の型での検索も可能です。
   [% END %]
   [% SET type_name = help_field _ '_type' %]
-  [% help_html.$type_name = type_desc %]
+  [% vars.help_html.$type_name = type_desc %]
 [% END %]
 
 [% Hook.process("end") %]

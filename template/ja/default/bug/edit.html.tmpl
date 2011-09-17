@@ -1100,12 +1100,23 @@
     [%# For logged-out users %]
     [% ELSE %]
       <table><tr><td><fieldset>
-        <legend>メモ</legend>
-        この [% terms.bug %] にコメントしたり変更を加える前に
+        <legend></legend>
         <a href="show_bug.cgi?id=
-                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a>
-        が必要です。
+                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1"></a>
       </fieldset></table><tr></td>
+      <table>
+        <tr>
+          <td>
+            <fieldset>
+              <legend>メモ</legend>
+              この [% terms.bug %] にコメントしたり変更を加える前に
+              <a href="show_bug.cgi?id=
+                      [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a>
+              が必要です。
+            </fieldset>
+          </td>
+        </tr> 
+      </table>
     [% END %]
   </div>
 [% END %]

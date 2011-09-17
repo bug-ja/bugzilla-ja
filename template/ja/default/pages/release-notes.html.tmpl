@@ -67,6 +67,49 @@
 
 <h2 id="v40_point">4.0.x リリースでの更新点</h2>
 
+<h3>4.0.2</h3>
+
+<p>このリリースでは一つのセキュリティー問題への修正を含みます。
+  詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.4.11/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下の重要な修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li><kdb>B[% %]ug.create</kdb> ウェブサービスは、対象とするグループ名が存在しない
+    場合にエラーを返すようになりました。[% terms.Bugzila %] 4.0 と 4.0.1 では、
+    グループ名は単純に無視されており、[% terms.bug %] にほかのグループが定義されて
+    いなかった場合に安全ではありませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=653341">[% terms.Bug %] 653341</a>)</li>
+  <li>複数の [% terms.bugs %] をほかのプロダクトに移動しようとした際、
+    同じ確認ページが何度も表示され、実際の変更が行われませんでした。
+    (4.0 での退行 [% terms.bug %] です)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=663208">[% terms.Bug %] 663208</a>)</li>
+  <li>[% terms.abug %] を重複とする操作が Internet Explorer 9 でも動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=656769">[% terms.Bug %] 656769</a>)</li>
+  <li><kdb>importxml.pl</kdb> はキーワードを含むインポートでもクラッシュしなくなりました。
+    (4.0 での退行 [% terms.bug %] です)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=657707">[% terms.Bug %] 657707</a>)</li>
+  <li>新規 [% terms.bug %] 報告の際に入力されたデータが、ブラウザで "戻る" 
+    操作をした際に失われることがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=652427">[% terms.Bug %] 652427</a>)</li>
+  <li>ウェブサービスは [% terms.bug %] で未定義のフィールドを空文字列で返すのではなく、
+    未定義で返すようになりました。この変更は、[% terms.Bugzilla %] 4.2
+    の動作と同じです。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=657561">[% terms.Bug %] 657561</a>)</li>
+  <li>XML-RPC インターフェースが mod_perl でも SOAP::Lite 0.711 と 0.712 
+    の元で動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=600810">[% terms.Bug %] 600810</a>)</li>
+  <li>LWP 6.00 とそれ以上のバージョンは Perl 5.8.8 以上を要求します。
+    <kdb>install-module.pl</kdb> を利用して 5.8.8 以下の Perl でインストールを行おう
+    とすると、LWP 5.837 が代わりにインストールされます。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=655912">[% terms.Bug %] 655912</a>)</li>
+  <li>多数のカスタムフィールドを利用しているサイトでの [% terms.abug %] 
+    報告の閲覧が非常に高速化されました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=634812">[% terms.Bug %] 634812</a>)</li>
+</ul>
+
 <h3>4.0.1</h3>
 
 <ul>
