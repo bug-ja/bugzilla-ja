@@ -82,6 +82,7 @@ use constant DEFAULT_USER => {
     'showmybugslink' => 0,
     'disabledtext'   => '',
     'disable_mail'   => 0,
+    'is_enabled'     => 1, 
 };
 
 use constant DB_TABLE => 'profiles';
@@ -98,6 +99,7 @@ use constant DB_COLUMNS => (
     'profiles.disabledtext',
     'profiles.disable_mail',
     'profiles.extern_id',
+    'profiles.is_enabled', 
 );
 use constant NAME_FIELD => 'login_name';
 use constant ID_FIELD   => 'userid';
@@ -110,6 +112,7 @@ use constant VALIDATORS => {
     login_name    => \&check_login_name_for_creation,
     realname      => \&_check_realname,
     extern_id     => \&_check_extern_id,
+    is_enabled    => \&_check_is_enabled, 
 };
 
 sub UPDATE_COLUMNS {
@@ -120,10 +123,17 @@ sub UPDATE_COLUMNS {
         login_name
         realname
         extern_id
+        is_enabled
     );
     push(@cols, 'cryptpassword') if exists $self->{cryptpassword};
     return @cols;
 };
+
+use constant VALIDATOR_DEPENDENCIES => {
+    is_enabled => ['disabledtext'], 
+};
+
+use constant EXTRA_REQUIRED_FIELDS => qw(is_enabled);
 
 ################################################################################
 # Functions
@@ -178,7 +188,7 @@ sub update {
 
     # XXX Can update profiles_activity here as soon as it understands
     #     field names like login_name.
-
+    
     return $changes;
 }
 
@@ -238,11 +248,20 @@ sub _check_password {
 
 sub _check_realname { return trim($_[1]) || ''; }
 
+sub _check_is_enabled {
+    my ($invocant, $is_enabled, undef, $params) = @_;
+    # is_enabled is set automatically on creation depending on whether 
+    # disabledtext is empty (enabled) or not empty (disabled).
+    # When updating the user, is_enabled is set by calling set_disabledtext().
+    # Any value passed into this validator is ignored.
+    my $disabledtext = ref($invocant) ? $invocant->disabledtext : $params->{disabledtext};
+    return $disabledtext ? 0 : 1;
+}
+
 ################################################################################
 # Mutators
 ################################################################################
 
-sub set_disabledtext { $_[0]->set('disabledtext', $_[1]); }
 sub set_disable_mail { $_[0]->set('disable_mail', $_[1]); }
 sub set_extern_id    { $_[0]->set('extern_id', $_[1]); }
 
@@ -261,6 +280,10 @@ sub set_name {
 
 sub set_password { $_[0]->set('cryptpassword', $_[1]); }
 
+sub set_disabledtext {
+    $_[0]->set('disabledtext', $_[1]);
+    $_[0]->set('is_enabled', $_[1] ? 0 : 1);
+}
 
 ################################################################################
 # Methods
@@ -272,7 +295,7 @@ sub login { $_[0]->{login_name}; }
 sub extern_id { $_[0]->{extern_id}; }
 sub email { $_[0]->login . Bugzilla->params->{'emailsuffix'}; }
 sub disabledtext { $_[0]->{'disabledtext'}; }
-sub is_disabled { $_[0]->disabledtext ? 1 : 0; }
+sub is_enabled { $_[0]->{'is_enabled'} ? 1 : 0; }
 sub showmybugslink { $_[0]->{showmybugslink}; }
 sub email_disabled { $_[0]->{disable_mail}; }
 sub email_enabled { !($_[0]->{disable_mail}); }
@@ -570,11 +593,16 @@ sub settings {
     return $self->{'settings'};
 }
 
+sub setting {
+    my ($self, $name) = @_;
+    return $self->settings->{$name}->{'value'};
+}
+
 sub timezone {
     my $self = shift;
 
     if (!defined $self->{timezone}) {
-        my $tz = $self->settings->{timezone}->{value};
+        my $tz = $self->setting('timezone');
         if ($tz eq 'local') {
             # The user wants the local timezone of the server.
             $self->{timezone} = Bugzilla->local_timezone;
@@ -976,11 +1004,15 @@ sub can_enter_product {
         ThrowUserError('product_disabled', { product => $product });
     }
     # It could have no components...
-    elsif (!@{$product->components}) {
+    elsif (!@{$product->components}
+           || !grep { $_->is_active } @{$product->components})
+    {
         ThrowUserError('missing_component', { product => $product });
     }
     # It could have no versions...
-    elsif (!@{$product->versions}) {
+    elsif (!@{$product->versions}
+           || !grep { $_->is_active } @{$product->versions})
+    {
         ThrowUserError ('missing_version', { product => $product });
     }
 
@@ -996,28 +1028,29 @@ sub get_enterable_products {
     }
 
      # All products which the user has "Entry" access to.
-     my @enterable_ids =@{$dbh->selectcol_arrayref(
+     my $enterable_ids = $dbh->selectcol_arrayref(
            'SELECT products.id FROM products
          LEFT JOIN group_control_map
                    ON group_control_map.product_id = products.id
                       AND group_control_map.entry != 0
                       AND group_id NOT IN (' . $self->groups_as_string . ')
             WHERE group_id IS NULL
-                  AND products.isactive = 1') || []};
+                  AND products.isactive = 1');
 
-    if (@enterable_ids) {
+    if (scalar @$enterable_ids) {
         # And all of these products must have at least one component
         # and one version.
-        @enterable_ids = @{$dbh->selectcol_arrayref(
+        $enterable_ids = $dbh->selectcol_arrayref(
                'SELECT DISTINCT products.id FROM products
             INNER JOIN components ON components.product_id = products.id
             INNER JOIN versions ON versions.product_id = products.id
-                 WHERE products.id IN (' . (join(',', @enterable_ids)) .
-            ')') || []};
+                 WHERE products.id IN (' . join(',', @$enterable_ids) . ')
+                   AND components.isactive = 1
+                   AND versions.isactive = 1');
     }
 
     $self->{enterable_products} =
-         Bugzilla::Product->new_from_list(\@enterable_ids);
+         Bugzilla::Product->new_from_list($enterable_ids);
     return $self->{enterable_products};
 }
 
@@ -1341,7 +1374,7 @@ sub match {
                       "AND group_id IN(" .
                       join(', ', (-1, @{$user->visible_groups_inherited})) . ") ";
         }
-        $query    .= " AND disabledtext = '' " if $exclude_disabled;
+        $query    .= " AND is_enabled = 1 " if $exclude_disabled;
         $query    .= $dbh->sql_limit($limit) if $limit;
 
         # Execute the query, retrieve the results, and make them into
@@ -1376,7 +1409,7 @@ sub match {
                       " AND group_id IN(" .
                 join(', ', (-1, @{$user->visible_groups_inherited})) . ") ";
         }
-        $query     .= " AND disabledtext = '' " if $exclude_disabled;
+        $query     .= " AND is_enabled = 1 " if $exclude_disabled;
         $query     .= $dbh->sql_limit($limit) if $limit;
         my $user_ids = $dbh->selectcol_arrayref($query, undef, ($str, $str));
         @users = @{Bugzilla::User->new_from_list($user_ids)};
@@ -1781,7 +1814,7 @@ sub get_userlist {
                   "AND group_id IN(" .
                   join(', ', (-1, @{$self->visible_groups_inherited})) . ")";
     }
-    $query    .= " WHERE disabledtext = '' ";
+    $query    .= " WHERE is_enabled = 1 ";
     $query    .= $dbh->sql_group_by('userid', 'login_name, realname');
 
     my $sth = $dbh->prepare($query);
@@ -2217,6 +2250,10 @@ value          - the value of this setting for this user. Will be the same
                  is_default is true.
 is_default     - a boolean to indicate whether the user has chosen to make
                  a preference for themself or use the site default.
+
+=item C<setting(name)>
+
+Returns the value for the specified setting.
 
 =item C<timezone>
 

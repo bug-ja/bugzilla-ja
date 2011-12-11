@@ -47,6 +47,7 @@ use base qw(Exporter);
                              detect_encoding);
 
 use Bugzilla::Constants;
+use Bugzilla::RNG qw(irand);
 
 use Date::Parse;
 use Date::Format;
@@ -55,7 +56,6 @@ use DateTime::TimeZone;
 use Digest;
 use Email::Address;
 use List::Util qw(first);
-use Math::Random::Secure qw(irand);
 use Scalar::Util qw(tainted blessed);
 use Template::Filters;
 use Text::Wrap;
@@ -243,14 +243,11 @@ sub xml_quote {
     return $var;
 }
 
-# This function must not be relied upon to return a valid string to pass to
-# the DB or the user in UTF-8 situations. The only thing you  can rely upon
-# it for is that if you url_decode a string, it will url_encode back to the 
-# exact same thing.
 sub url_decode {
     my ($todecode) = (@_);
     $todecode =~ tr/+/ /;       # pluses become spaces
     $todecode =~ s/%([0-9a-fA-F]{2})/pack("c",hex($1))/ge;
+    utf8::decode($todecode) if Bugzilla->params->{'utf8'};
     return $todecode;
 }
 

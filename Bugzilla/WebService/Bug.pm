@@ -175,8 +175,9 @@ sub _legal_field_values {
             my $product_name = $value->product->name;
             if ($user->can_see_product($product_name)) {
                 push(@result, {
-                    name    => $self->type('string', $value->name),
-                    sortkey => $self->type('int', $sortkey),
+                    name     => $self->type('string', $value->name),
+                    sort_key => $self->type('int', $sortkey),
+                    sortkey  => $self->type('int', $sortkey), # deprecated
                     visibility_values => [$self->type('string', $product_name)],
                 });
             }
@@ -200,9 +201,10 @@ sub _legal_field_values {
             }
 
             push (@result, {
-               name          => $self->type('string', $status->name),
-               is_open       => $self->type('boolean', $status->is_open),
-               sortkey       => $self->type('int', $status->sortkey),
+               name     => $self->type('string', $status->name),
+               is_open  => $self->type('boolean', $status->is_open),
+               sort_key => $self->type('int', $status->sortkey),
+               sortkey  => $self->type('int', $status->sortkey), # depricated
                can_change_to => \@can_change_to,
                visibility_values => [],
             });
@@ -214,8 +216,9 @@ sub _legal_field_values {
         foreach my $value (@values) {
             my $vis_val = $value->visibility_value;
             push(@result, {
-                name              => $self->type('string', $value->name),
-                sortkey           => $self->type('int'   , $value->sortkey),
+                name     => $self->type('string', $value->name),
+                sort_key => $self->type('int'   , $value->sortkey),
+                sortkey  => $self->type('int'   , $value->sortkey), # depricated
                 visibility_values => [
                     defined $vis_val ? $self->type('string', $vis_val->name) 
                                      : ()
@@ -1110,10 +1113,14 @@ Each hash has the following keys:
 C<string> The actual value--this is what you would specify for this
 field in L</create>, etc.
 
-=item C<sortkey>
+=item C<sort_key>
 
 C<int> Values, when displayed in a list, are sorted first by this integer
 and then secondly by their name.
+
+=item C<sortkey>
+
+B<DEPRECATED> - Use C<sort_key> instead.
 
 =item C<visibility_values>
 
@@ -1170,6 +1177,8 @@ You specified an invalid field name or id.
 =item Added in Bugzilla B<3.6>.
 
 =item The C<is_mandatory> return value was added in Bugzilla B<4.0>.
+
+=item C<sortkey> was renamed to C<sort_key> in Bugzilla B<4.2>.
 
 =back
 
@@ -2267,9 +2276,8 @@ is private, otherwise it is assumed to be public.
 =item C<groups> (array) - An array of group names to put this
 bug into. You can see valid group names on the Permissions
 tab of the Preferences screen, or, if you are an administrator,
-in the Groups control panel. Note that invalid group names or
-groups that the bug can't be restricted to are silently ignored. If
-you don't specify this argument, then a bug will be added into
+in the Groups control panel.
+If you don't specify this argument, then the bug will be added into
 all the groups that are set as being "Default" for this product. (If
 you want to avoid that, you should specify C<groups> as an empty array.)
 
@@ -2330,6 +2338,11 @@ You didn't specify a summary for the bug.
 You specified values in the C<blocks> or C<depends_on> fields
 that would cause a circular dependency between bugs.
 
+=item 120 (Group Restriction Denied)
+
+You tried to restrict the bug to a group which does not exist, or which
+you cannot use with this product.
+
 =item 504 (Invalid User)
 
 Either the QA Contact, Assignee, or CC lists have some invalid user
@@ -2346,7 +2359,9 @@ B<Required>, due to a bug in Bugzilla.
 
 =item The C<groups> argument was added in Bugzilla B<4.0>. Before
 Bugzilla 4.0, bugs were only added into Mandatory groups by this
-method.
+method. Since Bugzilla B<4.0.2>, passing an illegal group name will
+throw an error. In Bugzilla 4.0 and 4.0.1, illegal group names were
+silently ignored.
 
 =item The C<comment_is_private> argument was added in Bugzilla B<4.0>.
 Before Bugzilla 4.0, you had to use the undocumented C<commentprivacy>

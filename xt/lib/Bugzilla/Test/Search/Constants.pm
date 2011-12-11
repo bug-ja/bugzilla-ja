@@ -36,6 +36,7 @@ our @EXPORT = qw(
     COLUMN_TRANSLATION
     COMMENT_FIELDS
     CUSTOM_FIELDS
+    CUSTOM_SEARCH_TESTS
     FIELD_SIZE
     FIELD_SUBSTR_SIZE
     FLAG_FIELDS
@@ -45,7 +46,6 @@ our @EXPORT = qw(
     KNOWN_BROKEN
     NUM_BUGS
     NUM_SEARCH_TESTS
-    OR_BROKEN
     SKIP_FIELDS
     SPECIAL_PARAM_TESTS
     SUBSTR_NO_FIELD_ADD
@@ -298,10 +298,10 @@ use constant KNOWN_BROKEN => {
         CHANGED_VALUE_BROKEN,
         # All fields should have a way to search for "changing
         # from a blank value" probably.
-        blocked   => { contains => [3,4,5] },
-        dependson => { contains => [2,4,5] },
+        blocked   => { contains => [3,4,5], no_criteria => 1 },
+        dependson => { contains => [2,4,5], no_criteria => 1 },
         work_time => { contains => [1] },
-        FIELD_TYPE_BUG_ID, { contains => [5] },
+        FIELD_TYPE_BUG_ID, { contains => [5], no_criteria => 1 },
     },
     # changeto doesn't find remaining_time changes (possibly due to us not
     # tracking that data properly).
@@ -940,39 +940,6 @@ use constant INJECTION_TESTS => (
     { value => '/*STAR_COMMENT_TEST' }
 );
 
-# This overrides KNOWN_BROKEN for OR configurations.
-# It indicates that these combinations are broken in some way that they
-# aren't broken when alone, because they don't return what they logically
-# should when put into an OR.
-use constant OR_BROKEN => {
-    # Multi-value fields search on individual values, so "equals" OR "notequals"
-    # returns nothing, when it should instead logically return everything.
-    'blocked-equals' => {
-        'blocked-notequals' => { contains => [1,2,3,4,5] },
-    },
-    'dependson-equals' => {
-        'dependson-notequals' => { contains => [1,2,3,4,5] },
-    },
-    'bug_group-equals' => {
-        'bug_group-notequals' => { contains => [1,2,3,4,5] },
-    },
-    'cc-equals' => {
-        'cc-notequals' => { contains => [1,2,3,4,5] },
-    },
-    'commenter-equals' => {
-        'commenter-notequals' => { contains => [1,2,3,4,5] },
-        'longdesc-notequals'  => { contains => [2,3,4,5] },
-        'longdescs.isprivate-notequals' => { contains => [2,3,4,5] },
-        'work_time-notequals' => { contains => [2,3,4,5] },
-    },
-    'commenter-notequals' => {
-        'commenter-equals' => { contains => [1,2,3,4,5] },
-        'longdesc-equals'  => { contains => [1] },
-        'longdescs.isprivate-equals' => { contains => [1] },
-        'work_time-equals' => { contains => [1] },
-    },
-};
-
 #################
 # Special Tests #
 #################
@@ -1019,6 +986,145 @@ use constant SPECIAL_PARAM_TESTS => (
       value => '%group.<1-bug_group>%', contains => [1,2,3,4] },
     { field => 'commenter', operator => 'equals',
       value => '%group.<1-bug_group>%', contains => [1,2,3,4,5] },
+);
+
+use constant CUSTOM_SEARCH_TESTS => (
+    { name => 'OP without CP', contains => [1],
+      params => [
+          { f => 'OP' },
+          { f => 'bug_id', o => 'equals', v => '<1>' },
+      ]
+    },
+
+    { name => 'Empty OP/CP pair before criteria', contains => [1],
+      params => [
+          { f => 'OP' }, { f => 'CP' },
+          { f => 'bug_id', o => 'equals', v => '<1>' },
+      ]
+    },
+
+    { name => 'Empty OP/CP pair after criteria', contains => [1],
+      params => [
+          { f => 'bug_id', o => 'equals', v => '<1>' },
+          { f => 'OP' }, { f => 'CP' },
+      ]
+    },
+
+    { name  => 'empty OP/CP mid criteria', contains => [1],
+      columns => ['assigned_to'],
+      params => [
+          { f => 'bug_id', o => 'equals', v => '<1>' },
+          { f => 'OP' }, { f => 'CP' },
+          { f => 'assigned_to', o => 'substr', v => '@' },
+      ]
+    },
+
+    { name  => 'bug_id = 1 AND assigned_to contains @', contains => [1],
+      columns => ['assigned_to'],
+      params => [
+          { f => 'bug_id',      o => 'equals', v => '<1>' },
+          { f => 'assigned_to', o => 'substr', v => '@' },
+      ]
+    },
+
+    { name  => 'NOT(bug_id = 1) AND NOT(assigned_to = 2)',
+      contains => [3,4,5],
+      columns => ['assigned_to'],
+      params => [
+          { n => 1, f => 'bug_id',      o => 'equals', v => '<1>' },
+          { n => 1, f => 'assigned_to', o => 'equals', v => '<2>' },
+      ]
+    },
+
+    { name  => 'bug_id = 1 OR assigned_to = 2', contains => [1,2],
+      columns => ['assigned_to'], top_params => { j_top => 'OR' },
+      params => [
+          { f => 'bug_id',      o => 'equals', v => '<1>' },
+          { f => 'assigned_to', o => 'equals', v => '<2>' },
+      ]
+    },
+
+    { name => 'NOT(bug_id = 1 AND assigned_to = 1)', contains => [2,3,4,5],
+      columns => ['assigned_to'],
+      params => [
+          { f => 'OP', n => 1 },
+            { f => 'bug_id',      o => 'equals', v => '<1>' },
+            { f => 'assigned_to', o => 'equals', v => '<1>' },
+          { f => 'CP' },
+      ]
+    },
+
+
+    { name  => '(bug_id = 1 AND assigned_to contains @) '
+               . ' OR (bug_id = 2 AND assigned_to contains @)',
+      contains => [1,2], columns => ['assigned_to'],
+      top_params => { j_top => 'OR' },
+      params => [
+          { f => 'OP' },
+            { f => 'bug_id',      o => 'equals', v => '<1>' },
+            { f => 'assigned_to', o => 'substr', v => '@' },
+          { f => 'CP' },
+          { f => 'OP' },
+            { f => 'bug_id',      o => 'equals', v => '<2>' },
+            { f => 'assigned_to', o => 'substr', v => '@' },
+          { f => 'CP' },
+      ]
+    },
+
+    { name  => '(bug_id = 1 OR assigned_to = 2) '
+               . ' AND (bug_id = 2 OR assigned_to = 1)',
+      contains => [1,2], columns => ['assigned_to'],
+      params => [
+          { f => 'OP', j => 'OR' },
+            { f => 'bug_id',      o => 'equals', v => '<1>' },
+            { f => 'assigned_to', o => 'equals', v => '<2>' },
+          { f => 'CP' },
+          { f => 'OP', j => 'OR' },
+            { f => 'bug_id',      o => 'equals', v => '<2>' },
+            { f => 'assigned_to', o => 'equals', v => '<1>' },
+          { f => 'CP' },
+      ]
+    },
+
+    { name  => 'bug_id = 3 OR ( (bug_id = 1 OR assigned_to = 2) '
+               . ' AND (bug_id = 2 OR assigned_to = 1) )',
+      contains => [1,2,3], columns => ['assigned_to'],
+      top_params => { j_top => 'OR' },
+      params => [
+          { f => 'bug_id', o => 'equals', v => '<3>' },
+          { f => 'OP' },
+            { f => 'OP', j => 'OR' },
+              { f => 'bug_id',      o => 'equals', v => '<1>' },
+              { f => 'assigned_to', o => 'equals', v => '<2>' },
+            { f => 'CP' },
+            { f => 'OP', j => 'OR' },
+              { f => 'bug_id',      o => 'equals', v => '<2>' },
+              { f => 'assigned_to', o => 'equals', v => '<1>' },
+            { f => 'CP' },
+          { f => 'CP' },
+      ]
+    },
+
+    { name  => 'bug_id = 3 OR ( (bug_id = 1 OR assigned_to = 2) '
+               . ' AND (bug_id = 2 OR assigned_to = 1) ) OR bug_id = 4',
+      contains => [1,2,3,4], columns => ['assigned_to'],
+      top_params => { j_top => 'OR' },
+      params => [
+          { f => 'bug_id', o => 'equals', v => '<3>' },
+          { f => 'OP' },
+            { f => 'OP', j => 'OR' },
+              { f => 'bug_id',      o => 'equals', v => '<1>' },
+              { f => 'assigned_to', o => 'equals', v => '<2>' },
+            { f => 'CP' },
+            { f => 'OP', j => 'OR' },
+              { f => 'bug_id',      o => 'equals', v => '<2>' },
+              { f => 'assigned_to', o => 'equals', v => '<1>' },
+            { f => 'CP' },
+          { f => 'CP' },
+          { f => 'bug_id', o => 'equals', v => '<4>' },
+      ]
+    },
+
 );
 
 1;

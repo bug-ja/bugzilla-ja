@@ -36,8 +36,6 @@ use strict;
 package Bugzilla::Search;
 use base qw(Exporter);
 @Bugzilla::Search::EXPORT = qw(
-    EMPTY_COLUMN
-
     IsValidQueryType
     split_order_term
     translate_old_column
@@ -397,11 +395,7 @@ use constant FIELD_MAP => {
     long_desc => 'longdesc',
 };
 
-# A SELECTed expression that we use as a placeholder if somebody selects
-# <none> for the X, Y, or Z axis in report.cgi.
-use constant EMPTY_COLUMN => '-1';
-
-# Some fields are not sorted on themselves, but on other fields. 
+# Some fields are not sorted on themselves, but on other fields.
 # We need to have a list of these fields and what they map to.
 use constant SPECIAL_ORDER => {
     'target_milestone' => {
@@ -644,7 +638,7 @@ sub REPORT_COLUMNS {
 # These are fields that never go into the GROUP BY on any DB. bug_id
 # is here because it *always* goes into the GROUP BY as the first item,
 # so it should be skipped when determining extra GROUP BY columns.
-use constant GROUP_BY_SKIP => EMPTY_COLUMN, qw(
+use constant GROUP_BY_SKIP => qw(
     bug_id
     flagtypes.name
     keywords
@@ -723,6 +717,25 @@ sub search_description {
         $self->sql;
     }
     return $self->{'search_description'};
+}
+
+sub boolean_charts_to_custom_search {
+    my ($self, $cgi_buffer) = @_;
+    my @as_params = $self->_boolean_charts->as_params;
+
+    # We need to start our new ids after the last custom search "f" id.
+    # We can just pick the last id in the array because they are sorted
+    # numerically.
+    my $last_id = ($self->_field_ids)[-1];
+    my $count = defined($last_id) ? $last_id + 1 : 0;
+    foreach my $param_set (@as_params) {
+        foreach my $name (keys %$param_set) {
+            my $value = $param_set->{$name};
+            next if !defined $value;
+            $cgi_buffer->param($name . $count, $value);
+        }
+        $count++;
+    }
 }
 
 ######################
@@ -828,8 +841,7 @@ sub _sql_select {
         my $alias = $column;
         # Aliases cannot contain dots in them. We convert them to underscores.
         $alias =~ s/\./_/g;
-        my $sql = ($column eq EMPTY_COLUMN)
-                  ? EMPTY_COLUMN : COLUMNS->{$column}->{name} . " AS $alias";
+        my $sql = COLUMNS->{$column}->{name} . " AS $alias";
         push(@sql_fields, $sql);
     }
     return @sql_fields;
@@ -1549,15 +1561,10 @@ sub _boolean_charts {
 sub _custom_search {
     my ($self) = @_;
     my $params = $self->_params;
-    my @param_list = keys %$params;
-    
-    my @field_params = grep { /^f\d+$/ } @param_list;
-    my @field_ids = map { /(\d+)/; $1 } @field_params;
-    @field_ids = sort { $a <=> $b } @field_ids;
-    
-    my $current_clause = new Bugzilla::Search::Clause();
+
+    my $current_clause = new Bugzilla::Search::Clause($params->{j_top});
     my @clause_stack;
-    foreach my $id (@field_ids) {
+    foreach my $id ($self->_field_ids) {
         my $field = $params->{"f$id"};
         if ($field eq 'OP') {
             my $joiner = $params->{"j$id"};
@@ -1588,11 +1595,24 @@ sub _custom_search {
     return $clause_stack[0] || $current_clause;
 }
 
+sub _field_ids {
+    my ($self) = @_;
+    my $params = $self->_params;
+    my @param_list = keys %$params;
+    
+    my @field_params = grep { /^f\d+$/ } @param_list;
+    my @field_ids = map { /(\d+)/; $1 } @field_params;
+    @field_ids = sort { $a <=> $b } @field_ids;
+    return @field_ids;
+}
+
 sub _handle_chart {
     my ($self, $chart_id, $condition) = @_;
     my $dbh = Bugzilla->dbh;
     my $params = $self->_params;
     my ($field, $operator, $value) = $condition->fov;
+
+    $field = FIELD_MAP->{$field} || $field;
 
     return if (!defined $field or !defined $operator or !defined $value);
     
@@ -1659,10 +1679,7 @@ sub do_search_function {
     my ($self, $args) = @_;
     my ($field, $operator) = @$args{qw(field operator)};
     
-    my $actual_field = FIELD_MAP->{$field} || $field;
-    $args->{field} = $actual_field;
-    
-    if (my $parse_func = SPECIAL_PARSING->{$actual_field}) {
+    if (my $parse_func = SPECIAL_PARSING->{$field}) {
         $self->$parse_func($args);
         # Some parsing functions set $term, though most do not.
         # For the ones that set $term, we don't need to do any further
@@ -1671,15 +1688,15 @@ sub do_search_function {
     }
     
     my $operator_field_override = $self->_get_operator_field_override();
-    my $override = $operator_field_override->{$actual_field};
+    my $override = $operator_field_override->{$field};
     # Attachment fields get special handling, if they don't have a specific
     # individual override.
-    if (!$override and $actual_field =~ /^attachments\./) {
+    if (!$override and $field =~ /^attachments\./) {
         $override = $operator_field_override->{attachments};
     }
     # If there's still no override, check for an override on the field's type.
     if (!$override) {
-        my $field_obj = $self->_chart_fields->{$actual_field};
+        my $field_obj = $self->_chart_fields->{$field};
         $override = $operator_field_override->{$field_obj->type};
     }
     
@@ -1990,7 +2007,7 @@ sub _contact_exact_group {
     my $user = $self->_user;
     
     $value =~ /\%group\.([^%]+)%/;
-    my $group = Bugzilla::Group->check($1);
+    my $group = Bugzilla::Group->check({ name => $1, _error => 'invalid_group_name' });
     $group->check_members_are_visible();
     $user->in_group($group)
       || ThrowUserError('invalid_group_name', {name => $group->name});
@@ -2037,7 +2054,7 @@ sub _cc_exact_group {
     my $dbh = Bugzilla->dbh;
     
     $value =~ m/%group\.([^%]+)%/;
-    my $group = Bugzilla::Group->check($1);
+    my $group = Bugzilla::Group->check({ name => $1, _error => 'invalid_group_name' });
     $group->check_members_are_visible();
     $user->in_group($group)
       || ThrowUserError('invalid_group_name', {name => $group->name});

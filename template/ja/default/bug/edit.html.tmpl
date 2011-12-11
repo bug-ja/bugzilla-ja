@@ -826,16 +826,26 @@
             </div>
           [% END %]
           [% IF bug.cc %]
-            <select id="cc" name="cc" multiple="multiple" size="5">
+            <select id="cc" multiple="multiple" size="5"
+              [% IF bug.user.canedit %]name="cc"[% END %]>
               [% FOREACH c = bug.cc %]
                 <option value="[% c FILTER email FILTER html %]">
                   [% c FILTER email FILTER html %]</option>
               [% END %]
             </select>
-            [% IF user.id %]
+            [% IF user.id && !bug.user.canedit %]
+              <input type="hidden" name="cc" value="[% user.login FILTER email FILTER html %]">
+            [% END %]
+            [% IF user.id AND (bug.user.canedit OR bug.cc.contains(user.login)) %]
               <br>
               <input type="checkbox" id="removecc" name="removecc">
-              [%%]<label for="removecc">選択した CC を削除</label>
+              <label for="removecc">
+                [% IF bug.user.canedit %]
+                  選択した CC を削除
+                [% ELSE %]
+                  CC から自分を削除
+                [% END %]
+              </label>
               <br>
             [% END %]
           [% END %]
@@ -1096,13 +1106,19 @@
 
     [%# For logged-out users %]
     [% ELSE %]
-      <table><tr><td><fieldset>
-        <legend>メモ</legend>
-        この [% terms.bug %] にコメントしたり変更を加える前に
-        <a href="show_bug.cgi?id=
-                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a>
-        が必要です。
-      </fieldset></table><tr></td>
+      <table>
+        <tr>
+          <td>
+            <fieldset>
+              <legend>注</legend>
+              この [% terms.bug %] にコメントを追加したり変更する前に、
+              <a href="show_bug.cgi?id=
+                      [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a>
+              が必要です。
+            </fieldset>
+          </td>
+        </tr> 
+      </table>
     [% END %]
   </div>
 [% END %]

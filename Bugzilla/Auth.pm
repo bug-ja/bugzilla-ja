@@ -86,7 +86,7 @@ sub login {
 
     # Make sure the user isn't disabled.
     my $user = $login_info->{user};
-    if ($user->disabledtext) {
+    if (!$user->is_enabled) {
         return $self->_handle_login_result({ failure => AUTH_DISABLED,
                                               user    => $user }, $type);
     }
@@ -404,7 +404,7 @@ Returns:     C<true> if users are allowed to create new Bugzilla accounts,
              C<false> otherwise.
 
 =item C<extern_id_used>
-  
+
 Description: Whether or not current login system uses extern_id.
 
 =item C<can_change_email>

@@ -400,7 +400,8 @@ TUI_hide_default('information_query');
   <li>
     <label for="chfieldfrom">期間:</label>
     <input name="chfieldfrom" id="chfieldfrom" size="10" 
-           value="[% default.chfieldfrom.0 FILTER html %]" onchange="updateCalendarFromField(this)"> 
+                 value="[% default.chfieldto.0 || "現在" FILTER html %]" 
+                 onchange="updateCalendarFromField(this)">
            <button type="button" class="calendar_button"
                           id="button_calendar_chfieldfrom"
                           onclick="showCalendar('chfieldfrom')"><span>カレンダー</span></button>

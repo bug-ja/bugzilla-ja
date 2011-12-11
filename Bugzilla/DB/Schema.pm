@@ -494,6 +494,8 @@ use constant ABSTRACT_SCHEMA => {
 
     bug_see_also => {
         FIELDS => [
+            id     => {TYPE => 'MEDIUMSERIAL', NOTNULL => 1,
+                       PRIMARYKEY => 1},
             bug_id => {TYPE => 'INT3', NOTNULL => 1,
                        REFERENCES => {TABLE  => 'bugs',
                                       COLUMN => 'bug_id',
@@ -883,6 +885,8 @@ use constant ABSTRACT_SCHEMA => {
             mybugslink     => {TYPE => 'BOOLEAN', NOTNULL => 1,
                                DEFAULT => 'TRUE'},
             extern_id      => {TYPE => 'varchar(64)'},
+            is_enabled     => {TYPE => 'BOOLEAN', NOTNULL => 1, 
+                               DEFAULT => 'TRUE'}, 
         ],
         INDEXES => [
             profiles_login_name_idx => {FIELDS => ['login_name'],
@@ -2172,8 +2176,8 @@ sub get_add_column_ddl {
         if defined $init_value;
 
     if (defined $definition->{REFERENCES}) {
-        push(@statements, $self->get_add_fk_sql($table, $column,
-                                                $definition->{REFERENCES}));
+        push(@statements, $self->get_add_fks_sql($table, { $column =>
+                                                           $definition->{REFERENCES} }));
     }
 
     return (@statements);

@@ -55,7 +55,10 @@ my $vars = {};
 ######################################################################
 
 # redirect to enter_bug if no field is passed.
-print $cgi->redirect(correct_urlbase() . 'enter_bug.cgi') unless $cgi->param();
+unless ($cgi->param()) {
+    print $cgi->redirect(correct_urlbase() . 'enter_bug.cgi');
+    exit;
+}
 
 # Detect if the user already used the same form to submit a bug
 my $token = trim($cgi->param('token'));
@@ -256,8 +259,11 @@ foreach my $dep (@{$bug->dependson || []}, @{$bug->blocked || []}) {
 }
 $vars->{sentmail} = \@all_mail_results;
 
+$format = $template->get_format("bug/create/created",
+                                 scalar($cgi->param('created-format')),
+                                 "html");
 print $cgi->header();
-$template->process("bug/create/created.html.tmpl", $vars)
+$template->process($format->{'template'}, $vars)
     || ThrowTemplateError($template->error());
 
 1;

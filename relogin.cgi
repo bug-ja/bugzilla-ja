@@ -45,6 +45,7 @@ my $target;
 if (!$action) {
     # redirect to index.cgi if no action is defined.
     print $cgi->redirect(correct_urlbase() . 'index.cgi');
+    exit;
 }
 # prepare-sudo: Display the sudo information & login page
 elsif ($action eq 'prepare-sudo') {
@@ -163,7 +164,7 @@ elsif ($action eq 'begin-sudo') {
 
     # Go ahead and send out the message now
     my $message;
-    my $mail_template = Bugzilla->template_inner($target_user->settings->{'lang'}->{'value'});
+    my $mail_template = Bugzilla->template_inner($target_user->setting('lang'));
     $mail_template->process('email/sudo.txt.tmpl', { reason => $reason }, \$message);
     MessageToMTA($message);
 

@@ -961,7 +961,7 @@ sub update {
     $_->insert_create_data($_) foreach @$added_see;
 
     # If any changes were found, record it in the activity log
-    if (scalar $removed_see || scalar $added_see) {
+    if (scalar @$removed_see || scalar @$added_see) {
         $changes->{see_also} = [join(', ', map { $_->name } @$removed_see),
                                 join(', ', map { $_->name } @$added_see)];
     }
@@ -1622,6 +1622,8 @@ sub _check_dup_id {
 
 sub _check_groups {
     my ($invocant, $group_names, undef, $params) = @_;
+
+    my $bug_id = blessed($invocant) ? $invocant->id : undef;
     my $product = blessed($invocant) ? $invocant->product_obj 
                                      : $params->{product};
     my %add_groups;
@@ -1640,12 +1642,13 @@ sub _check_groups {
             if !ref $group_names;
 
         # First check all the groups they chose to set.
+        my %args = ( product => $product->name, bug_id => $bug_id, action => 'add' );
         foreach my $name (@$group_names) {
-            # We don't want to expose the existence or non-existence of groups,
-            # so instead of doing check(), we just do "next" on an invalid
-            # group.
-            my $group = new Bugzilla::Group({ name => $name }) or next;
-            next if !$product->group_is_settable($group);
+            my $group = Bugzilla::Group->check_no_disclose({ %args, name => $name });
+
+            if (!$product->group_is_settable($group)) {
+                ThrowUserError('group_restriction_not_allowed', { %args, name => $name });
+            }
             $add_groups{$group->id} = $group;
         }
     }
@@ -2137,7 +2140,13 @@ sub _set_global_validator {
 # other_bugs to set_all in order for it to behave properly.
 sub set_all {
     my $self = shift;
-    my ($params) = @_;
+    my ($input_params) = @_;
+    
+    # Clone the data as we are going to alter it, and this would affect
+    # subsequent bugs when calling set_all() again, as some fields would
+    # be modified or no longer defined.
+    my $params = {};
+    %$params = %$input_params;
 
     # You cannot mark bugs as duplicate when changing several bugs at once
     # (because currently there is no way to check for duplicate loops in that
@@ -2503,20 +2512,18 @@ sub _set_product {
             $self->set_target_milestone($tm_name);
         }
     }
-    
+
     if ($product_changed) {
-        # Remove groups that can't be set in the new product, or that aren't
-        # active.
-        #
+        # Remove groups that can't be set in the new product.
         # We copy this array because the original array is modified while we're
         # working, and that confuses "foreach".
         my @current_groups = @{$self->groups_in};
         foreach my $group (@current_groups) {
-            if (!$group->is_active or !$product->group_is_valid($group)) {
+            if (!$product->group_is_valid($group)) {
                 $self->remove_group($group);
             }
         }
-    
+
         # Make sure the bug is in all the mandatory groups for the new product.
         foreach my $group (@{$product->groups_mandatory}) {
             $self->add_group($group);
@@ -2655,6 +2662,10 @@ sub remove_cc {
     my ($self, $user_or_name) = @_;
     my $user = ref $user_or_name ? $user_or_name
                                  : Bugzilla::User->check($user_or_name);
+    my $currentUser = Bugzilla->user;
+    if (!$self->user->{'canedit'} && $user->id != $currentUser->id) {
+        ThrowUserError('cc_remove_denied');
+    }
     my $cc_users = $self->cc_users;
     @$cc_users = grep { $_->id != $user->id } @$cc_users;
 }
@@ -2744,18 +2755,25 @@ sub modify_keywords {
 
 sub add_group {
     my ($self, $group) = @_;
-    # Invalid ids are silently ignored. (We can't tell people whether
-    # or not a group exists.)
-    $group = Bugzilla::Group->check($group) if !blessed $group;
 
-    return if !$group->is_active or !$group->is_bug_group;
+    # If the user enters "FoO" but the DB has "Foo", $group->name would
+    # return "Foo" and thus revealing the existence of the group name.
+    # So we have to store and pass the name as entered by the user to
+    # the error message, if we have it.
+    my $group_name = blessed($group) ? $group->name : $group;
+    my $args = { name => $group_name, product => $self->product,
+                 bug_id => $self->id, action => 'add' };
+
+    $group = Bugzilla::Group->check_no_disclose($args) if !blessed $group;
+
+    # If the bug is already in this group, then there is nothing to do.
+    return if $self->in_group($group);
+
 
     # Make sure that bugs in this product can actually be restricted
     # to this group by the current user.
     $self->product_obj->group_is_settable($group)
-         || ThrowUserError('group_invalid_restriction',
-                { product => $self->product, group => $group,
-                  bug => $self });
+         || ThrowUserError('group_restriction_not_allowed', $args);
 
     # OtherControl people can add groups only during a product change,
     # and only when the group is not NA for them.
@@ -2764,37 +2782,38 @@ sub add_group {
         if (!$self->{_old_product_name}
             || $controls->{othercontrol} == CONTROLMAPNA)
         {
-            ThrowUserError('group_change_denied',
-                           { bug => $self, group => $group });
+            ThrowUserError('group_restriction_not_allowed', $args);
         }
     }
 
     my $current_groups = $self->groups_in;
-    if (!grep($group->id == $_->id, @$current_groups)) {
-        push(@$current_groups, $group);
-    }
+    push(@$current_groups, $group);
 }
 
 sub remove_group {
     my ($self, $group) = @_;
-    $group = Bugzilla::Group->check($group) if !blessed $group;
-    
-    # First, check if this is a valid group for this product.
-    # You can *always* remove a group that is not valid for this product
-    # or that is not active, so we don't do any other checks if either of
-    # those are the case. (Users might remove inactive groups, and set_product
-    # removes groups that aren't valid for this product.)
-    #
-    # This particularly happens when isbuggroup is no longer 1, and we're
-    # moving a bug to a new product.
-    if ($group->is_active and $self->product_obj->group_is_valid($group)) {
+
+    # See add_group() for the reason why we store the user input.
+    my $group_name = blessed($group) ? $group->name : $group;
+    my $args = { name => $group_name, product => $self->product,
+                 bug_id => $self->id, action => 'remove' };
+
+    $group = Bugzilla::Group->check_no_disclose($args) if !blessed $group;
+
+    # If the bug isn't in this group, then either the name is misspelled,
+    # or the group really doesn't exist. Let the user know about this problem.
+    $self->in_group($group) || ThrowUserError('group_invalid_removal', $args);
+
+    # Check if this is a valid group for this product. You can *always*
+    # remove a group that is not valid for this product (set_product does this).
+    # This particularly happens when we're moving a bug to a new product.
+    # You still have to be a member of an inactive group to remove it.
+    if ($self->product_obj->group_is_valid($group)) {
         my $controls = $self->product_obj->group_controls->{$group->id};
 
-        # Nobody can ever remove a Mandatory group.
-        if ($controls->{membercontrol} == CONTROLMAPMANDATORY) {
-            ThrowUserError('group_invalid_removal',
-                { product => $self->product, group => $group,
-                  bug => $self });
+        # Nobody can ever remove a Mandatory group, unless it became inactive.
+        if ($controls->{membercontrol} == CONTROLMAPMANDATORY && $group->is_active) {
+            ThrowUserError('group_invalid_removal', $args);
         }
 
         # OtherControl people can remove groups only during a product change,
@@ -2804,12 +2823,11 @@ sub remove_group {
                 || $controls->{othercontrol} == CONTROLMAPMANDATORY
                 || $controls->{othercontrol} == CONTROLMAPNA)
             {
-                ThrowUserError('group_change_denied',
-                               { bug => $self, group => $group });
+                ThrowUserError('group_invalid_removal', $args);
             }
         }
     }
-    
+
     my $current_groups = $self->groups_in;
     @$current_groups = grep { $_->id != $group->id } @$current_groups;
 }
@@ -3287,7 +3305,7 @@ sub comments {
     my @comments = @{ $self->{'comments'} };
 
     my $order = $params->{order} 
-        || Bugzilla->user->settings->{'comment_sort_order'}->{'value'};
+        || Bugzilla->user->setting('comment_sort_order');
     if ($order ne 'oldest_to_newest') {
         @comments = reverse @comments;
         if ($order eq 'newest_to_oldest_desc_first') {
@@ -3514,6 +3532,11 @@ sub groups_in {
         undef, $self->id);
     $self->{'groups_in'} = Bugzilla::Group->new_from_list($group_ids);
     return $self->{'groups_in'};
+}
+
+sub in_group {
+    my ($self, $group) = @_;
+    return grep($_->id == $group->id, @{$self->groups_in}) ? 1 : 0;
 }
 
 sub user {

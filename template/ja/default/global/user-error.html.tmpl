@@ -290,6 +290,11 @@
     [% terms.Bug FILTER html %] の [% jawords.bug_alias FILTER html %] は 20 文字 (byte) 以上にはできません。
     より短いものにしてください。
 
+  [% ELSIF error == "attachment_bug_id_mismatch" %]
+    [% title = "無効な添付" %]
+    異なる [% terms.bugs %] から添付を投稿しようとしています。
+    同じ [% terms.bug %] から添付は投稿しなければなりません。
+
   [% ELSIF error == "auth_cant_create_account" %]
     [% title = BLOCK %] アカウントを作成できません [% END %]
     このサイトが利用している認証サービスは、新規アカウント登録を許可していません。
@@ -372,6 +377,8 @@
       バージョン
     [% ELSIF object == "workflow" %]
       ワークフロー
+    [% ELSE %]
+      [%+ Hook.process('auth_failure_object') %]
     [% END %]
 
     [% IF action == "access" %]
@@ -464,6 +471,10 @@
                     'query.html#list' => "$terms.Bug リスト"} %]
     [% jawords.search_term FILTER html %] 無しでは、[% jawords.search FILTER html %]
     や [%jawords.search_saved_search_creation FILTER html %] はできません。
+
+  [% ELSIF error == "cc_remove_denied" %]
+    [% title = "変更不可" %]
+    CC リストからほかのユーザを削除する許可がありません。
 
   [% ELSIF error == "chart_too_large" %]
     [% title = BLOCK %] %jawords.chart が大きすぎます [% END %]
@@ -929,12 +940,6 @@
     から参照されています。
     先にこのグループへの全ての参照を削除してください。
 
-  [% ELSIF error == "group_change_denied" %]
-    [% title = BLOCK %] グループを追加、または削除できません [% END %]
-    '[% group.name FILTER html %]' グループを
-    [% terms.bug %] [%+ bug.id FILTER html %]
-    から削除しようとしましたが、あなたはこの権限を持っていません。
-
   [% ELSIF error == "group_exists" %]
     [% title = BLOCK %] [% jawords.group FILTER html %] は既に存在しています [% END %]
     [% jawords.group FILTER html %] [% name FILTER html %] は既に存在しています。
@@ -947,16 +952,17 @@
     を参照するように [% jawords.param FILTER html %] を変更してください。
 
   [% ELSIF error == "group_invalid_removal" %]
-    '[% group.name FILTER html %]' グループから
-    [% terms.bug %] [%+ bug.id FILTER html %] を削除しようとしましたが、
-    [% jawords.product FILTER html %] '[% product FILTER html %]' の [% terms.bugs FILTER html %]
-    はその [% jawords.group FILTER html %] から削除できません。
+    '[% name FILTER html %]' グループから [% terms.bug %] [%+ bug.id FILTER html %] 
+    を削除しようとしましたが、
+    グループが存在していないか、もしくは '[% product FILTER html %]' 
+    プロダクトでこのグループを [% terms.bugs %] から削除する権限がありません。
 
-  [% ELSIF error == "group_invalid_restriction" %]
-    [% terms.bug %] [%+ bug.id FILTER html %] を
-    '[% group.name FILTER html %]' グループに制限しようとしましたが、
-    '[% product FILTER html %]' [% jawords.product FILTER html %] の [% terms.bugs FILTER html %]
-    を指定された [% jawords.group FILTER html %] に制限することはできません。
+  [% ELSIF error == "group_restriction_not_allowed" %]
+    [% title = "グループ制限は許可されていません" %]
+    [% bug_id ? "$terms.bug $bug_id" : terms.abug FILTER html %] を '[% name FILTER html %]' 
+    グループに制限しようとしましたが、このグループが存在しないか、もしくは
+    '[% product FILTER html %]' プロダクトの [% terms.bugs %] 
+    をこのグループに制限する許可がありません。
 
   [% ELSIF error == "group_not_specified" %]
     [% title = BLOCK %] [% jawords.group FILTER html %] が指定されていません [% END %]
@@ -1300,7 +1306,7 @@
     [% admindocslinks = {'products.html'   => 'プロダクトの管理',
                          'components.html' => 'コンポーネントの作成'} %]
     [% jawords.product FILTER html %] <em>[% product.name FILTER html %]</em> に [% terms.abug %]
-    を登録するためには、最低一つは [% jawords.component FILTER html %] が存在していなくてはいけません。<br>
+    を登録するためには、最低一つは活動中の [% jawords.component FILTER html %] が存在していなくてはいけません。<br>
     [% IF user.in_group("editcomponents", product.id) %]
       <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER uri %]">[% jawords.component FILTER html %] を作成してください</a>。
     [% ELSE %]
@@ -1364,7 +1370,7 @@
     [% admindocslinks = {'versions.html' => 'バージョンの指定'} %]
     [% terms.abug %] を登録するには、[% jawords.product FILTER html %]
     <em>[% product.name FILTER html %]</em>
-    にバージョンが最低、一つは必要です。<br>
+    に最低一つの活動中のバージョンが必要です。<br>
     [% IF user.in_group("editcomponents", product.id) %]
       <a href="editversions.cgi?action=add&amp;product=[% product.name FILTER uri %]">新しいバージョンを作成してください</a>。
     [% ELSE %]
@@ -1484,7 +1490,7 @@
     あなたの現在のパスワードは
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 文字より短く、
     新しいパスワードの長さの制限を満たしていません。
-    ログインする前に <a href="token.cgi?a=reqpw&loginname=[% locked_user.email FILTER html %]">
+    ログインする前に <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]">
     新しいパスワードの申請</a> が必要です。
 
   [% ELSIF error == "password_too_short" %]
@@ -1734,17 +1740,17 @@
     [% title = BLOCK %] [% jawords.account_password FILTER html %] が必要です [% END %]
     [% jawords.sudo_session FILTER html %] を開始するには、あなたの
     [% terms.Bugzilla %] の [% jawords.account_password FILTER html %] が必要です。
-    <a href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">[% jawords.login_page FILTER html %]</a>で、あなたの
-    [% jawords.account_password FILTER html %] を入力してください。
+    <a href="relogin.cgi?action=prepare-sudo&amp;target_login=
+    [%- target_login FILTER html %]&amp;reason=
+    [%- reason FILTER uri %]">[% jawords.login_page FILTER html %]</a>で、
+    あなたのパスワードを入力してください。
 
   [% ELSIF error == "sudo_preparation_required" %]
     [% title = BLOCK %] 準備が必要です [% END %]
     [% jawords.sudo_session FILTER html %] を直接開始することはできません。
-    <a href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">通常の [% jawords.session FILTER html %] を開始してから</a> 実行してください。
+    <a href="relogin.cgi?action=prepare-sudo&amp;target_login=
+    [%- target_login FILTER html %]&amp;reason=
+    [%- reason FILTER uri %]">通常のセッションを開始してから</a> 実行してください。
 
   [% ELSIF error == "sudo_protected" %]
     [% title = BLOCK %] [% jawords.user FILTER html %] は保護されています [% END %]
@@ -1948,7 +1954,7 @@
                   
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        、もしくは <a href="query.cgi?[% q.url FILTER html %]">編集</a>
+        、もしくは <a href="query.cgi?[% q.url FILTER uri %]">編集</a>
       [% END %]
     [% END %]
     することも可能です。
@@ -1990,4 +1996,5 @@
     [% SET field_name = matches.0 %]
     [% field_descs.$field_name FILTER html %]
   [% END %]
+  [% Hook.process('end_object_name', 'global/user-error.html.tmpl') %]
 [% END %]

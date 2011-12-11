@@ -58,6 +58,8 @@
               パスワードが更新されました。
             [% ELSIF field == 'disabledtext' %]
               無効化テキストが更新されました。
+            [% ELSIF field == 'is_enabled' %]
+              ユーザは [% otheruser.is_enabled ? '有効化' : '無効化' %] されました。
             [% ELSIF field == 'extern_id' %]
               ユーザの外部ログイン ID は変更されています。
             [% ELSIF field == 'disable_mail' %]
@@ -860,7 +862,8 @@
 
   [% ELSIF message_tag == "tag_updated" %]
     [% title = "タグを更新しました" %]
-    '[% tag FILTER html %]' タグを
+    '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
+    タグを
     [%+ buglist.size > 1 ? terms.bugs : terms.bug %]
     [%+ buglist.join(", ") FILTER html %] から
     [% IF action == "add" %]
