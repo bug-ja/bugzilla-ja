@@ -67,6 +67,56 @@
 
 <h2 id="v40_point">4.0.x リリースでの更新点</h2>
 
+<h3>4.0.3</h3>
+
+<p>このリリースでは二つのセキュリティー問題への修正を含みます。
+  詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.4.12/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下の重要な修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li>あなたのサーバに Perl モジュール <kdb>DBD::Pg</kdb> がインストールされており
+    <kdb>version.pm</kdb> が 0.92 かより新しい場合、<kdb>version.pm</kdb> 0.92
+    で行われた非互換な変更により、[% terms.Bugzilla %] のインストール・
+    アップグレードができない状態になっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=678772">[% terms.Bug %] 678772</a>)</li>
+  <li>新規 [% terms.bug %] をガイド付きフォームから登録しようとした場合に、
+    既定で選択されるべきグループが無視され、別途指定されない限り [% terms.bug %] 
+    が誰からも見られる状態になっていました。これは修正され、グループが指定され、
+    [% terms.bug %] はそれらのグループに制限されるようになりました。
+    通常のフォームからの新規 [% terms.bugs %] 登録には影響しません。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=460074">[% terms.Bug %] 460074</a>)</li>
+  <li>新しいパラメータ 'ajax_user_autocompletion' が導入され、管理者がユーザフィールド
+    への入力時に行われる自動補間を無効にすることができるようになりました。
+    このパラメータは、この機能による負荷に耐えられないサイトの場合にのみ無効に
+    すべきです。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=685552">[% terms.Bug %] 685552</a>)</li>
+  <li>[% terms.Bugzilla %] のメンテナにアカウントロック通知が送信されていませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=707594">[% terms.Bug %] 707594</a>)</li>
+  <li>重複 [% terms.bug %] 検出、簡単な検索、簡易検索が Oracle データベースでは
+    動作していませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=654496">[% terms.Bug %] 654496</a>
+    と <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=582209">[% terms.bug %] 582209</a>)</li>
+  <li>プロダクトにコンポーネントが定義されていない場合、そのプロダクトを詳細検索で
+    指定すると間違ったコンポーネントのリストが表示されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=622487">[% terms.Bug %] 622487</a>)</li>
+  <li>他のフィールドの値に依存して表示されるカスタムフィールドの値が、
+    [% terms.abug %] 編集後に残されていませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=707428">[% terms.Bug %] 707428</a>)</li>
+  <li><kdb>importxml.pl</kdb> によって [% terms.bugs %] のインポートができなくなって
+    いました。(4.0.1 でのレグレッション)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=691845">[% terms.Bug %] 691845</a>)</li>
+  <li><kdb>migrate.pl</kdb> は動作しませんでした。(4.0 でのレグレッション)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=682203">[% terms.Bug %] 682203</a>)</li>
+  <li><kdb>whine.pl</kdb> は保存した検索がエラーを出した場合に失敗していました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=277073">[% terms.Bug %] 277073</a>)</li>
+  <li><kdb>whine.pl</kdb> によるメールで担当者のメールアドレスが省略されるか、
+    完全に消えていました。(3.4 でのレグレッション)現在では完全に表示されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=550299">[% terms.Bug %] 550299</a>)</li>
+</ul>
+
 <h3>4.0.2</h3>
 
 <p>このリリースでは一つのセキュリティー問題への修正を含みます。

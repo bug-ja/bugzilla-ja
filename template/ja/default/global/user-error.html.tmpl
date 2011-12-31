@@ -1134,8 +1134,9 @@
     [% jawords.attachment_content_type FILTER html %] <em>[% contenttype FILTER html %]</em> は無効です。
     [% jawords.attachment_content_type FILTER html %] は <em>foo/bar</em> の形式で、<em>foo</em> には
     <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>.
-    のいずれかでなくてはいけません。
-    
+    のいずれかでなくてはなりませんし、<em>bar</em> は特殊文字 ("=", "?") を含んでは
+    いけません。
+
   [% ELSIF error == "invalid_context" %]
     [% title = BLOCK %] コンテキストが無効です [% END %]
     コンテキスト [% context FILTER html %] は無効です (有効な値は数値か、
@@ -1979,6 +1980,10 @@
     添付
   [% ELSIF class == "Bugzilla::User" %]
     ユーザ
+  [% ELSIF class == "Bugzilla::Classification" %]
+    classification
+  [% ELSIF class == "Bugzilla::Product" %]
+    プロダクト
   [% ELSIF class == "Bugzilla::Component" %]
     [% jawords.component FILTER html %]
   [% ELSIF class == "Bugzilla::Version" %]
@@ -1997,8 +2002,6 @@
     グループ
   [% ELSIF class == "Bugzilla::Keyword" %]
     キーワード
-  [% ELSIF class == "Bugzilla::Product" %]
-    プロダクト
   [% ELSIF class == "Bugzilla::Search::Recent" %]
     最近の検索
   [% ELSIF class == "Bugzilla::Search::Saved" %]

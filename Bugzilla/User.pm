@@ -448,26 +448,21 @@ sub save_last_search {
 
     return if !@$bug_ids;
 
+    my $search;
     if ($self->id) {
         on_main_db {
-            my $search;
             if ($list_id) {
-                # Use eval so that people can still use old search links or
-                # links that don't belong to them.
-                $search = eval { Bugzilla::Search::Recent->check(
-                                    { id => $list_id }) };
+                $search = Bugzilla::Search::Recent->check_quietly({ id => $list_id });
             }
 
             if ($search) {
-                # We only update placeholders. (Placeholders are
-                # Saved::Search::Recent objects with empty bug lists.)
-                # Otherwise, we could just keep creating new searches
-                # for the same refreshed list over and over.
-                if (!@{ $search->bug_list }) {
-                    $search->set_list_order($order);
+                if (join(',', @{$search->bug_list}) ne join(',', @$bug_ids)) {
                     $search->set_bug_list($bug_ids);
-                    $search->update();
                 }
+                if (!$search->list_order || $order ne $search->list_order) {
+                    $search->set_list_order($order);
+                }
+                $search->update();
             }
             else {
                 # If we already have an existing search with a totally
@@ -480,10 +475,13 @@ sub save_last_search {
                     user_id => $self->id, bug_list => $list_string });
            
                 if (!scalar(@$existing_search)) {
-                    Bugzilla::Search::Recent->create({
+                    $search = Bugzilla::Search::Recent->create({
                         user_id    => $self->id,
                         bug_list   => $bug_ids,
                         list_order => $order });
+                }
+                else {
+                    $search = $existing_search->[0];
                 }
             }
         };
@@ -506,6 +504,7 @@ sub save_last_search {
             $vars->{'toolong'} = 1;
         }
     }
+    return $search;
 }
 
 sub settings {
@@ -1853,6 +1852,32 @@ sub is_available_username {
     return 1;
 }
 
+sub check_account_creation_enabled {
+    my $self = shift;
+
+    # If we're using e.g. LDAP for login, then we can't create a new account.
+    $self->authorizer->user_can_create_account
+      || ThrowUserError('auth_cant_create_account');
+
+    Bugzilla->params->{'createemailregexp'}
+      || ThrowUserError('account_creation_disabled');
+}
+
+sub check_and_send_account_creation_confirmation {
+    my ($self, $login) = @_;
+
+    $login = $self->check_login_name_for_creation($login);
+    my $creation_regexp = Bugzilla->params->{'createemailregexp'};
+
+    if ($login !~ /$creation_regexp/i) {
+        ThrowUserError('account_creation_restricted');
+    }
+
+    # Create and send a token for this new account.
+    require Bugzilla::Token;
+    Bugzilla::Token::issue_new_user_account_token($login);
+}
+
 sub login_to_id {
     my ($login, $throw_error) = @_;
     my $dbh = Bugzilla->dbh;
@@ -2316,12 +2341,6 @@ Returns true if the user wants mail for a given set of events. This method is
 more general than C<wants_bug_mail>, allowing you to check e.g. permissions
 for flag mail.
 
-=item C<is_mover>
-
-Returns true if the user is in the list of users allowed to move bugs
-to another database. Note that this method doesn't check whether bug
-moving is enabled.
-
 =item C<is_insider>
 
 Returns true if the user can access private comments and attachments,
@@ -2361,6 +2380,17 @@ Params: login_name - B<Required> The login name for the new user.
 
 Takes a username as its only argument. Throws an error if there is no
 user with that username. Returns a C<Bugzilla::User> object.
+
+=item C<check_account_creation_enabled>
+
+Checks that users can create new user accounts, and throws an error
+if user creation is disabled.
+
+=item C<check_and_send_account_creation_confirmation($login)>
+
+If the user request for a new account passes validation checks, an email
+is sent to this user for confirmation. Otherwise an error is thrown
+indicating why the request has been rejected.
 
 =item C<is_available_username>
 

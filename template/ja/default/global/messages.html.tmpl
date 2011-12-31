@@ -819,6 +819,10 @@
       バージョン <em>[% version.name FILTER html %]</em> は更新されませんでした。
     [% END %]
 
+  [% ELSIF message_tag == "whine_query_failed" %]
+    [% author.login FILTER html %] によるクエリ '[% query_name FILTER html %]' 
+    は失敗しました: [% reason FILTER html %]
+
   [% ELSIF message_tag == "workflow_updated" %]
     ワークフローが更新されました。
 
