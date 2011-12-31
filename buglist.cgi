@@ -68,19 +68,6 @@ if (length($buffer) == 0) {
     ThrowUserError("buglist_parameters_required");
 }
 
-# If a parameter starts with cmd-, this means the And or Or button has been
-# pressed in the advanced search page with JS turned off.
-if (grep { $_ =~ /^cmd\-/ } $cgi->param()) {
-    my $url = "query.cgi?$buffer#chart";
-    print $cgi->redirect(-location => $url);
-    # Generate and return the UI (HTML page) from the appropriate template.
-    $vars->{'message'} = "buglist_adding_field";
-    $vars->{'url'} = $url;
-    $template->process("global/message.html.tmpl", $vars)
-      || ThrowTemplateError($template->error());
-    exit;
-}
-
 $cgi->redirect_search_url();
 
 # Determine whether this is a quicksearch query.
@@ -95,7 +82,7 @@ if (defined($searchstring)) {
 # If configured to not allow empty words, reject empty searches from the
 # Find a Specific Bug search form, including words being a single or 
 # several consecutive whitespaces only.
-if (!Bugzilla->params->{'specific_search_allow_empty_words'}
+if (!Bugzilla->params->{'search_allow_no_criteria'}
     && defined($cgi->param('content')) && $cgi->param('content') =~ /^\s*$/)
 {
     ThrowUserError("buglist_parameters_required");
@@ -177,14 +164,13 @@ my $params;
 # If the user is retrieving the last bug list they looked at, hack the buffer
 # storing the query string so that it looks like a query retrieving those bugs.
 if (my $last_list = $cgi->param('regetlastlist')) {
-    my ($bug_ids, $order);
+    my $bug_ids;
 
     # Logged-out users use the old cookie method for storing the last search.
     if (!$user->id or $last_list eq 'cookie') {
-        $cgi->cookie('BUGLIST') || ThrowUserError("missing_cookie");
-        $order = "reuse last sort" unless $order;
-        $bug_ids = $cgi->cookie('BUGLIST');
+        $bug_ids = $cgi->cookie('BUGLIST') or ThrowUserError("missing_cookie");
         $bug_ids =~ s/[:-]/,/g;
+        $order ||= "reuse last sort";
     }
     # But logged in users store the last X searches in the DB so they can
     # have multiple bug lists available.
@@ -192,10 +178,11 @@ if (my $last_list = $cgi->param('regetlastlist')) {
         my $last_search = Bugzilla::Search::Recent->check(
             { id => $last_list });
         $bug_ids = join(',', @{ $last_search->bug_list });
-        $order   = $last_search->list_order if !$order;
+        $order ||= $last_search->list_order;
     }
     # set up the params for this new query
     $params = new Bugzilla::CGI({ bug_id => $bug_ids, order => $order });
+    $params->param('list_id', $last_list);
 }
 
 # Figure out whether or not the user is doing a fulltext search.  If not,
@@ -402,7 +389,7 @@ if ($cmdtype eq "dorem") {
         # so that it can be modified easily.
         $vars->{'searchname'} = $cgi->param('namedcmd');
         if (!$cgi->param('sharer_id') ||
-            $cgi->param('sharer_id') == Bugzilla->user->id) {
+            $cgi->param('sharer_id') == $user->id) {
             $vars->{'searchtype'} = "saved";
             $vars->{'search_id'} = $query_id;
         }
@@ -603,7 +590,7 @@ else {
 
 # Remove the timetracking columns if they are not a part of the group
 # (happens if a user had access to time tracking and it was revoked/disabled)
-if (!Bugzilla->user->is_timetracker) {
+if (!$user->is_timetracker) {
    @displaycolumns = grep($_ ne 'estimated_time', @displaycolumns);
    @displaycolumns = grep($_ ne 'remaining_time', @displaycolumns);
    @displaycolumns = grep($_ ne 'actual_time', @displaycolumns);
@@ -711,75 +698,45 @@ if (!$order || $order =~ /^reuse/i) {
     }
 }
 
+my @order_columns;
 if ($order) {
     # Convert the value of the "order" form field into a list of columns
     # by which to sort the results.
     ORDER: for ($order) {
         /^Bug Number$/ && do {
-            $order = "bug_id";
+            @order_columns = ("bug_id");
             last ORDER;
         };
         /^Importance$/ && do {
-            $order = "priority,bug_severity";
+            @order_columns = ("priority", "bug_severity");
             last ORDER;
         };
         /^Assignee$/ && do {
-            $order = "assigned_to,bug_status,priority,bug_id";
+            @order_columns = ("assigned_to", "bug_status", "priority",
+                              "bug_id");
             last ORDER;
         };
         /^Last Changed$/ && do {
-            $order = "changeddate,bug_status,priority,assigned_to,bug_id";
+            @order_columns = ("changeddate", "bug_status", "priority",
+                              "assigned_to", "bug_id");
             last ORDER;
         };
         do {
-            my (@order, @invalid_fragments);
-
-            # A custom list of columns.  Make sure each column is valid.
-            foreach my $fragment (split(/,/, $order)) {
-                $fragment = trim($fragment);
-                next unless $fragment;
-                my ($column_name, $direction) = split_order_term($fragment);
-                $column_name = translate_old_column($column_name);
-
-                # Special handlings for certain columns
-                next if $column_name eq 'relevance' && !$fulltext;
-                                
-                if (exists $columns->{$column_name}) {
-                    $direction = " $direction" if $direction;
-                    push(@order, "$column_name$direction");
-                }
-                else {
-                    push(@invalid_fragments, $fragment);
-                }
-            }
-            if (scalar @invalid_fragments) {
-                $vars->{'message'} = 'invalid_column_name';
-                $vars->{'invalid_fragments'} = \@invalid_fragments;
-            }
-
-            $order = join(",", @order);
-            # Now that we have checked that all columns in the order are valid,
-            # detaint the order string.
-            trick_taint($order) if $order;
+            # A custom list of columns. Bugzilla::Search will validate items.
+            @order_columns = split(/\s*,\s*/, $order);
         };
     }
 }
 
-if (!$order) {
+if (!scalar @order_columns) {
     # DEFAULT
-    $order = "bug_status,priority,assigned_to,bug_id";
-}
-
-my @orderstrings = split(/,\s*/, $order);
-
-if ($fulltext and grep { /^relevance/ } @orderstrings) {
-    $vars->{'message'} = 'buglist_sorted_by_relevance'
+    @order_columns = ("bug_status", "priority", "assigned_to", "bug_id");
 }
 
 # In the HTML interface, by default, we limit the returned results,
 # which speeds up quite a few searches where people are really only looking
 # for the top results.
-if ($format->{'extension'} eq 'html' && !defined $cgi->param('limit')) {
+if ($format->{'extension'} eq 'html' && !defined $params->param('limit')) {
     $params->param('limit', Bugzilla->params->{'default_search_limit'});
     $vars->{'default_limited'} = 1;
 }
@@ -787,9 +744,19 @@ if ($format->{'extension'} eq 'html' && !defined $cgi->param('limit')) {
 # Generate the basic SQL query that will be used to generate the bug list.
 my $search = new Bugzilla::Search('fields' => \@selectcolumns, 
                                   'params' => scalar $params->Vars,
-                                  'order' => \@orderstrings);
+                                  'order' => \@order_columns);
 my $query = $search->sql;
 $vars->{'search_description'} = $search->search_description;
+$order = join(',', $search->order);
+
+if (scalar @{$search->invalid_order_columns}) {
+    $vars->{'message'} = 'invalid_column_name';
+    $vars->{'invalid_fragments'} = $search->invalid_order_columns;
+}
+
+if ($fulltext and grep { /^relevance/ } $search->order) {
+    $vars->{'message'} = 'buglist_sorted_by_relevance'
+}
 
 # We don't want saved searches and other buglist things to save
 # our default limit.
@@ -806,7 +773,7 @@ if ($cgi->param('debug')) {
     # out how many hidden bugs are in a particular product (by doing
     # searches and looking at the number of rows the explain says it's
     # examining).
-    if (Bugzilla->user->in_group('admin')) {
+    if ($user->in_group('admin')) {
         $vars->{'query_explain'} = $dbh->bz_explain($query);
     }
 }
@@ -985,22 +952,14 @@ if ($format->{'extension'} eq 'ics') {
     }
 }
 
-# The list of query fields in URL query string format, used when creating
-# URLs to the same query results page with different parameters (such as
-# a different sort order or when taking some action on the set of query
-# results).  To get this string, we call the Bugzilla::CGI::canoncalise_query
-# function with a list of elements to be removed from the URL.
-$vars->{'urlquerypart'} = $params->canonicalise_query('order',
-                                                      'cmdtype',
-                                                      'query_based_on');
 $vars->{'order'} = $order;
 $vars->{'caneditbugs'} = 1;
 $vars->{'time_info'} = $time_info;
 
-if (!Bugzilla->user->in_group('editbugs')) {
+if (!$user->in_group('editbugs')) {
     foreach my $product (keys %$bugproducts) {
         my $prod = new Bugzilla::Product({name => $product});
-        if (!Bugzilla->user->in_group('editbugs', $prod->id)) {
+        if (!$user->in_group('editbugs', $prod->id)) {
             $vars->{'caneditbugs'} = 0;
             last;
         }
@@ -1008,7 +967,7 @@ if (!Bugzilla->user->in_group('editbugs')) {
 }
 
 my @bugowners = keys %$bugowners;
-if (scalar(@bugowners) > 1 && Bugzilla->user->in_group('editbugs')) {
+if (scalar(@bugowners) > 1 && $user->in_group('editbugs')) {
     my $suffix = Bugzilla->params->{'emailsuffix'};
     map(s/$/$suffix/, @bugowners) if $suffix;
     my $bugowners = join(",", @bugowners);
@@ -1037,7 +996,7 @@ elsif (my @product_input = $cgi->param('product')) {
 }
 # We only want the template to use it if the user can actually 
 # enter bugs against it.
-if ($one_product && Bugzilla->user->can_enter_product($one_product)) {
+if ($one_product && $user->can_enter_product($one_product)) {
     $vars->{'one_product'} = $one_product;
 }
 
@@ -1056,7 +1015,7 @@ if ($dotweak && scalar @bugs) {
     $vars->{'token'} = issue_session_token('buglist_mass_change');
     Bugzilla->switch_to_shadow_db();
 
-    $vars->{'products'} = Bugzilla->user->get_enterable_products;
+    $vars->{'products'} = $user->get_enterable_products;
     $vars->{'platforms'} = get_legal_field_values('rep_platform');
     $vars->{'op_sys'} = get_legal_field_values('op_sys');
     $vars->{'priorities'} = get_legal_field_values('priority');
@@ -1126,16 +1085,19 @@ my $contenttype;
 my $disposition = "inline";
 
 if ($format->{'extension'} eq "html" && !$agent) {
-    if (!$cgi->param('regetlastlist')) {
-        Bugzilla->user->save_last_search(
-            { bugs => \@bugidlist, order => $order, vars => $vars,
-              list_id => scalar $cgi->param('list_id') });
-    }
+    my $list_id = $cgi->param('list_id') || $cgi->param('regetlastlist');
+    my $search = $user->save_last_search(
+        { bugs => \@bugidlist, order => $order, vars => $vars, list_id => $list_id });
+    $cgi->param('list_id', $search->id) if $search;
     $contenttype = "text/html";
 }
 else {
     $contenttype = $format->{'ctype'};
 }
+
+# Set 'urlquerypart' once the buglist ID is known.
+$vars->{'urlquerypart'} = $params->canonicalise_query('order', 'cmdtype',
+                                                      'query_based_on');
 
 if ($format->{'extension'} eq "csv") {
     # We set CSV files to be downloaded, as they are designed for importing

@@ -201,10 +201,6 @@ textarea.bz_private {
     display: block;  
 }
 
-textarea {
-    font-family: monospace;
-}
-
 div#update_container {
     clear: both; 
     padding: 1.5em 0; 
@@ -239,4 +235,8 @@ div#update_container {
    width: 75%; 
    margin: 0  auto; 
    font-weight: bold
+}
+
+#description {
+    resize: vertical;
 }

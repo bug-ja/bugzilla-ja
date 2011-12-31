@@ -26,9 +26,6 @@
   # release: a hash containing data about new releases, if any.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
-
 [% PROCESS global/header.html.tmpl
    title = "$terms.Bugzilla メインページ"
    header = "メインページ" 
@@ -95,18 +92,25 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
       <a href="editparams.cgi?section=general#upgrade_notification_desc">パラメータ</a> 
         ページから設定できます。</p>
     [% ELSIF release.error == "cannot_download" %]
-      <p>ローカルに XML ファイル '[% release.xml_file FILTER html %]' を作成できません。
-      ウェブサーバの設定を見直して、ディレクトリに書き込み可能でサーバからウェブに接続可能かを確認してください。
-      プロキシの内部にあるサーバの場合は、
-      <a href="editparams.cgi?section=advanced#proxy_url_desc">proxy_url</a> パラメータが正しいか確認してください。</p>
+      <p>リモートの <a href="[% constants.REMOTE_FILE FILTER html %]">
+      [%~ constants.REMOTE_FILE FILTER html %]</a> がダウンロードできませんでした
+      (理由: [% release.reason FILTER html %])。<br>
+      リモート側に一時的に問題が発生しているか、
+      あなたのウェブサーバからアクセスできていないかのどちらかです。
+      プロキシがある環境の場合は、
+       <a href="editparams.cgi?section=advanced#proxy_url_desc">proxy_url</a> パラメータを正しく設定してください。</p>
+    [% ELSIF release.error == "no_write" %]
+      <p>サーバローカルに '[% constants.LOCAL_FILE FILTER html %]' を作成できませんでした
+      (理由: [% release.reason FILTER html %])。<br>
+      ウェブサーバがこのディレクトリに書き込めることを確認してください。
     [% ELSIF release.error == "no_update" %]
-      <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' をアップデートできません。
+      <p>ローカルの XML ファイル '[% constants.LOCAL_FILE FILTER html %]' をアップデートできません。
       ウェブサーバがこのファイルを編集できることを確認してください。</p>
     [% ELSIF release.error == "no_access" %]
-      <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' を読み込めません。
+      <p>ローカルの XML ファイル '[% constants.LOCAL_FILE FILTER html %]' を読み込めません。
       このファイルのパーミッションが正しく設定されているか確認してください。</p>
     [% ELSIF release.error == "corrupted" %]
-      <p>ローカルの XML ファイル '[% release.xml_file FILTER html %]' は無効な XML 形式です。
+      <p>ローカルの XML ファイル '[% constants.LOCAL_FILE FILTER html %]' は無効な XML 形式です。
       ファイルを消去し、このページを再読み込みしてください。</p>
     [% ELSIF release.error == "unknown_parameter" %]
       <p>'[% Param("upgrade_notification") FILTER html %]' は有効な通知の設定ではありません。
@@ -122,22 +126,30 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
       <td>
         <h1 id="welcome">[% terms.Bugzilla %] へようこそ</h1>
         <div class="intro">[% Hook.process('intro') %]</div>
-        <a id="enter_bug" class="bz_common_actions"
-           href="enter_bug.cgi"><span>[% terms.aBug %] 登録</span></a>
-      
-        <a id="query" class="bz_common_actions" 
-           href="query.cgi"><span>検索</span></a>
-      
-        <a id="account" class="bz_common_actions"
-          [% IF user.id %]
-            href="userprefs.cgi"><span>ユーザ設定</span></a>
-          [% ELSIF Param('createemailregexp')
-                   && user.authorizer.user_can_create_account 
-          %]
-            href="createaccount.cgi"><span>新アカウント登録</span></a>
-          [% ELSE %]
-            href="?GoAheadAndLogIn=1"><span>ログイン</span></a>
-          [% END %]
+
+        <div class="bz_common_actions">
+          <ul>
+            <li>
+              <a id="enter_bug" href="enter_bug.cgi"><span>
+              [%= terms.aBug %] を登録</span></a>
+            </li>
+            <li>
+              <a id="query" href="query.cgi"><span>検索</span></a>
+            </li>
+            <li>
+              <a id="account"
+                 [% IF user.id %]
+                   href="userprefs.cgi"><span>ユーザ設定</span></a>
+                 [% ELSIF Param('createemailregexp')
+                          && user.authorizer.user_can_create_account 
+                 %]
+                   href="createaccount.cgi"><span>新規アカウント作成</span></a>
+                 [% ELSE %]
+                   href="?GoAheadAndLogIn=1"><span>ログイン</span></a>
+                 [% END %]
+            </li>
+          </ul>
+        </div>
 
         <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi"
               onsubmit="return checkQuicksearch(this);">

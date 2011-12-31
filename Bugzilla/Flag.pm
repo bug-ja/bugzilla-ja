@@ -282,7 +282,7 @@ sub count {
 sub set_flag {
     my ($class, $obj, $params) = @_;
 
-    my ($bug, $attachment);
+    my ($bug, $attachment, $obj_flag, $requestee_changed);
     if (blessed($obj) && $obj->isa('Bugzilla::Attachment')) {
         $attachment = $obj;
         $bug = $attachment->bug;
@@ -320,13 +320,14 @@ sub set_flag {
             ($obj_flagtype) = grep { $_->id == $flag->type_id } @{$obj->flag_types};
             push(@{$obj_flagtype->{flags}}, $flag);
         }
-        my ($obj_flag) = grep { $_->id == $flag->id } @{$obj_flagtype->{flags}};
+        ($obj_flag) = grep { $_->id == $flag->id } @{$obj_flagtype->{flags}};
         # If the flag has the correct type but cannot be found above, this means
         # the flag is going to be removed (e.g. because this is a pending request
         # and the attachment is being marked as obsolete).
         return unless $obj_flag;
 
-        $class->_validate($obj_flag, $obj_flagtype, $params, $bug, $attachment);
+        ($obj_flag, $requestee_changed) =
+            $class->_validate($obj_flag, $obj_flagtype, $params, $bug, $attachment);
     }
     # Create a new flag.
     elsif ($params->{type_id}) {
@@ -358,11 +359,20 @@ sub set_flag {
             }
         }
 
-        $class->_validate(undef, $obj_flagtype, $params, $bug, $attachment);
+        ($obj_flag, $requestee_changed) =
+            $class->_validate(undef, $obj_flagtype, $params, $bug, $attachment);
     }
     else {
         ThrowCodeError('param_required', { function => $class . '->set_flag',
                                            param    => 'id/type_id' });
+    }
+
+    if ($obj_flag
+        && $requestee_changed
+        && $obj_flag->requestee_id
+        && $obj_flag->requestee->setting('requestee_cc') eq 'on')
+    {
+        $bug->add_cc($obj_flag->requestee);
     }
 }
 
@@ -383,23 +393,25 @@ sub _validate {
     $obj_flag->_set_status($params->{status});
     $obj_flag->_set_requestee($params->{requestee}, $attachment, $params->{skip_roe});
 
+    # The requestee ID can be undefined.
+    my $requestee_changed = ($obj_flag->requestee_id || 0) != ($old_requestee_id || 0);
+
     # The setter field MUST NOT be updated if neither the status
     # nor the requestee fields changed.
-    if (($obj_flag->status ne $old_status)
-        # The requestee ID can be undefined.
-        || (($obj_flag->requestee_id || 0) != ($old_requestee_id || 0)))
-    {
+    if (($obj_flag->status ne $old_status) || $requestee_changed) {
         $obj_flag->_set_setter($params->{setter});
     }
 
     # If the flag is deleted, remove it from the list.
     if ($obj_flag->status eq 'X') {
         @{$flag_type->{flags}} = grep { $_->id != $obj_flag->id } @{$flag_type->{flags}};
+        return;
     }
     # Add the newly created flag to the list.
     elsif (!$obj_flag->id) {
         push(@{$flag_type->{flags}}, $obj_flag);
     }
+    return wantarray ? ($obj_flag, $requestee_changed) : $obj_flag;
 }
 
 =pod
@@ -970,7 +982,7 @@ sub notify {
     # use the default language for email notifications.
     my $default_lang;
     if (grep { !$_ } values %recipients) {
-        $default_lang = Bugzilla::User->new()->settings->{'lang'}->{'value'};
+        $default_lang = Bugzilla::User->new()->setting('lang');
     }
 
     foreach my $to (keys %recipients) {
@@ -987,11 +999,11 @@ sub notify {
                      'threadingmarker' => build_thread_marker($bug->id, $thread_user_id) };
 
         my $lang = $recipients{$to} ?
-          $recipients{$to}->settings->{'lang'}->{'value'} : $default_lang;
+          $recipients{$to}->setting('lang') : $default_lang;
 
         my $template = Bugzilla->template_inner($lang);
         my $message;
-        $template->process("request/email.txt.tmpl", $vars, \$message)
+        $template->process("email/flagmail.txt.tmpl", $vars, \$message)
           || ThrowTemplateError($template->error());
 
         MessageToMTA($message);

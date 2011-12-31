@@ -23,8 +23,6 @@
   # types in Bugzilla.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% PROCESS global/header.html.tmpl
   title = "Reporting and Charting Kitchen"
   doc_section = "reporting.html"
@@ -57,6 +55,10 @@
       line graphs, bar and pie charts.
     </li>
   [% END %]
+  <li id="report_duplicates">
+    <strong><a href="duplicates.cgi">Duplicates</a></strong> -
+    list of most frequently reported [% terms.bugs %].
+  </li>
   [% Hook.process('current_state') %]
 </ul>
 

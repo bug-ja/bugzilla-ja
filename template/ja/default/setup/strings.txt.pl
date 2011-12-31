@@ -106,6 +106,7 @@ END
     feature_moving            => 'サイト間バグ移動',
     feature_patch_viewer      => 'パッチビューア',
     feature_smtp_auth         => 'SMTP 認証でのメール送信',
+    feature_smtp_ssl          => 'SMTP 送信での SSL 利用',
     feature_updates           => 'システム更新通知',
     feature_xmlrpc            => 'XML-RPC インターフェース',
     feature_detect_charset    => 'テキスト添付での自動文字コード検出',

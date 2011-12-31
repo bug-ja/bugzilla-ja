@@ -24,8 +24,6 @@
   #                 Elliotte Martin <emartin@everythingsolved.com>
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% PROCESS bug/time.html.tmpl %]
@@ -33,71 +31,6 @@
   <script type="text/javascript">
   <!--
   
-  /* Outputs a link to call replyToComment(); used to reduce HTML output */
-  function addReplyLink(id, real_id) {
-      /* XXX this should really be updated to use the DOM Core's
-       * createElement, but finding a container isn't trivial.
-       */
-      [% IF user.settings.quote_replies.value != 'off' %]
-        document.write('[<a href="#add_comment" onclick="replyToComment(' + 
-                       id + ',' + real_id + '); return false;">返信<' + '/a>]');
-      [% END %]
-  }
-
-  /* Adds the reply text to the `comment' textarea */
-  function replyToComment(id, real_id) {
-      var prefix = "(comment #" + id + " への返信)\n";
-      var replytext = "";
-      [% IF user.settings.quote_replies.value == 'quoted_reply' %]
-        /* pre id="comment_name_N" */
-        var text_elem = document.getElementById('comment_text_'+id);
-        var text = getText(text_elem);
-        replytext = prefix + wrapReplyText(text);
-      [% ELSIF user.settings.quote_replies.value == 'simple_reply' %]
-        replytext = prefix;
-      [% END %]
-
-    [% IF user.is_insider %]
-      if (document.getElementById('isprivate_' + real_id).checked) {
-          document.getElementById('newcommentprivacy').checked = 'checked';
-          updateCommentTagControl(document.getElementById('newcommentprivacy'), 'comment'); 
-      }
-    [% END %]
-
-      /* <textarea id="comment"> */
-      var textarea = document.getElementById('comment');
-      textarea.value += replytext;
-
-      textarea.focus();
-  }
-
-  if (typeof Node == 'undefined') {
-      /* MSIE doesn't define Node, so provide a compatibility object */
-      window.Node = {
-          TEXT_NODE: 3,
-          ENTITY_REFERENCE_NODE: 5
-      };
-  }
-
-  /* Concatenates all text from element's childNodes. This is used
-   * instead of innerHTML because we want the actual text (and
-   * innerText is non-standard).
-   */
-  function getText(element) {
-      var child, text = "";
-      for (var i=0; i < element.childNodes.length; i++) {
-          child = element.childNodes[i];
-          var type = child.nodeType;
-          if (type == Node.TEXT_NODE || type == Node.ENTITY_REFERENCE_NODE) {
-              text += child.nodeValue;
-          } else {
-              /* recurse into nodes of other types */
-              text += getText(child);
-          }
-      }
-      return text;
-  }
-
 [% IF user.is_timetracker %]
   var fRemainingTime = [% bug.remaining_time %]; // holds the original value
   function adjustRemainingTime() {
@@ -164,8 +97,10 @@
           [% PROCESS section_url_keyword_whiteboard %]
           
           [% PROCESS section_spacer %]
-          
-          [%# *** Dependencies *** %]
+
+          [%# *** Dependencies and duplicates *** %]
+          [% PROCESS section_duplicates %]
+
           [% PROCESS section_dependson_blocks %]
           
         </table>
@@ -362,7 +297,8 @@
     [%############%]    
     <tr>
       <td class="field_label">
-        <label for="rep_platform" accesskey="h"><b>プラットフォーム</b></label>:
+        <label for="rep_platform" accesskey="h">
+          <b>[% field_descs.rep_platform FILTER html %]</b></label>:
       </td>
       <td class="field_value">
        [% INCLUDE bug/field.html.tmpl
@@ -556,15 +492,11 @@
 [%############################################################################%]
 [% BLOCK section_url_keyword_whiteboard %]
   <tr>
-    <td class="field_label">
-      <label for="bug_file_loc" accesskey="u"><b>
-        [% IF is_safe_url(bug.bug_file_loc) %]
-          <a href="[% bug.bug_file_loc FILTER html %]"><u>U</u>RL</a>
-        [% ELSE %]
-          <u>U</u>RL
-        [% END %]
-      [%%]</b></label>:
-    </td>
+    [% INCLUDE "bug/field-label.html.tmpl"
+      field = bug_fields.bug_file_loc
+      editable = 1
+      accesskey = "u"
+    %]
     <td>
       [% IF bug.check_can_change_field("bug_file_loc", 0, 1) %]
         <span id="bz_url_edit_container" class="bz_default_hidden"> 
@@ -625,8 +557,31 @@
 [% END %]
 
 [%############################################################################%]
-[%# Block for Depends On / Blocks                                              #%]
+[%# Block for Duplicates                                                     #%]
 [%############################################################################%]
+
+[% BLOCK section_duplicates %]
+  [% RETURN UNLESS bug.duplicates.size %]
+  <tr>
+    <td class="field_label">
+      <label for="duplicates">重複</label>:
+    </td>
+    <td class="field_value" colspan="2">
+      <span id="duplicates">
+        [% FOREACH dupe = bug.duplicates %]
+          [% dupe.id FILTER bug_link(dupe, use_alias => 1) FILTER none %][% " " %]
+        [% END %]
+      </span>
+      (<a href="buglist.cgi?bug_id=[% bug.duplicate_ids.join(",") FILTER html %]">
+       [%- terms.bug %] リストとしてみる</a>)
+    </td>
+  </tr>
+[% END %]
+
+[%############################################################################%]
+[%# Block for Depends On / Blocks                                            #%]
+[%############################################################################%]
+
 [% BLOCK section_dependson_blocks %]
   <tr>
     [% INCLUDE dependencies 
@@ -826,16 +781,26 @@
             </div>
           [% END %]
           [% IF bug.cc %]
-            <select id="cc" name="cc" multiple="multiple" size="5">
+            <select id="cc" multiple="multiple" size="5"
+              [% IF bug.user.canedit %]name="cc"[% END %]>
               [% FOREACH c = bug.cc %]
                 <option value="[% c FILTER email FILTER html %]">
                   [% c FILTER email FILTER html %]</option>
               [% END %]
             </select>
-            [% IF user.id %]
+            [% IF user.id && !bug.user.canedit %]
+              <input type="hidden" name="cc" value="[% user.login FILTER email FILTER html %]">
+            [% END %]
+            [% IF user.id AND (bug.user.canedit OR bug.cc.contains(user.login)) %]
               <br>
               <input type="checkbox" id="removecc" name="removecc">
-              [%%]<label for="removecc">選択した CC を削除</label>
+              <label for="removecc">
+                [% IF bug.user.canedit %]
+                  選択した CC を削除
+                [% ELSE %]
+                  自分を CC から削除
+                [% END %]
+              </label>
               <br>
             [% END %]
           [% END %]
@@ -1096,13 +1061,18 @@
 
     [%# For logged-out users %]
     [% ELSE %]
-      <table><tr><td><fieldset>
-        <legend>メモ</legend>
-        この [% terms.bug %] にコメントしたり変更を加える前に
-        <a href="show_bug.cgi?id=
-                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a>
-        が必要です。
-      </fieldset></table><tr></td>
+      <table>
+        <tr>
+          <td>
+            <fieldset>
+              <legend>注</legend>
+               この [% terms.bug %] にコメントしたり変更を加える前に
+               <a href="show_bug.cgi?id=
+                 [%- bug.bug_id %]&amp;GoAheadAndLogIn=1">ログイン</a> が必要です。
+            </fieldset>
+          </td>
+        </tr> 
+      </table>
     [% END %]
   </div>
 [% END %]

@@ -80,7 +80,7 @@ function expand_comment(link, comment) {
 function wrapReplyText(text) {
     // This is -3 to account for "\n> "
     var maxCol = BUGZILLA.constant.COMMENT_COLS - 3;
-    var text_lines = text.split("\n");
+    var text_lines = text.replace(/[\s\n]+$/, '').split("\n");
     var wrapped_lines = new Array();
 
     for (var i = 0; i < text_lines.length; i++) {
@@ -121,7 +121,7 @@ function wrapReplyText(text) {
         replace_lines.push(paragraph);
         wrapped_lines.push("> " + replace_lines.join("\n> "));
     }
-    return wrapped_lines.join("\n");
+    return wrapped_lines.join("\n") + "\n\n";
 }
 
 /* This way, we are sure that browsers which do not support JS
@@ -144,4 +144,31 @@ function goto_add_comments( anchor ){
         document.getElementById('comment').focus();
     },10);
     return false;
+}
+
+if (typeof Node == 'undefined') {
+    /* MSIE doesn't define Node, so provide a compatibility object */
+    window.Node = {
+        TEXT_NODE: 3,
+        ENTITY_REFERENCE_NODE: 5
+    };
+}
+
+/* Concatenates all text from element's childNodes. This is used
+ * instead of innerHTML because we want the actual text (and
+ * innerText is non-standard).
+ */
+function getText(element) {
+    var child, text = "";
+    for (var i=0; i < element.childNodes.length; i++) {
+        child = element.childNodes[i];
+        var type = child.nodeType;
+        if (type == Node.TEXT_NODE || type == Node.ENTITY_REFERENCE_NODE) {
+            text += child.nodeValue;
+        } else {
+            /* recurse into nodes of other types */
+            text += getText(child);
+        }
+    }
+    return text;
 }

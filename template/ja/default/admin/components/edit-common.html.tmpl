@@ -22,16 +22,21 @@
   # comp: object; Bugzilla::Component object.
   #%]
 
+[%# When called from the "New Product" page, the component description field
+  # must have a name different from the product description field. %]
+[% DEFAULT desc_name = "description" %]
+
 <tr>
-  <td valign="top">コンポーネント:</td>
-  <td><input size="64" maxlength="64" name="component"
+  <th class="field_label"><label for="component">コンポーネント:</label></th>
+  <td><input size="64" maxlength="64" name="component" id="component"
              value="[%- comp.name FILTER html %]"></td>
 </tr>
 <tr>
-  <td valign="top">コンポーネントの説明:</td>
+  <th class="field_label"><label for="[% desc_name FILTER html %]">コンポーネントの説明:</label></th>
   <td>
     [% INCLUDE global/textarea.html.tmpl
-      name           = 'description'
+      name           = desc_name
+      id             = desc_name
       minrows        = 4
       cols           = 64
       wrap           = 'virtual'
@@ -40,7 +45,7 @@
   </td>
 </tr>
 <tr>
-  <td valign="top"><label for="initialowner">既定の担当者:</label></td>
+  <th class="field_label"><label for="initialowner">既定の担当者:</label></td>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name => "initialowner"
@@ -52,7 +57,7 @@
 </tr>
 [% IF Param('useqacontact') %]
   <tr>
-    <td valign="top"><label for="initialqacontact">既定の QA コンタクト:</label></td>
+    <th class="field_label"><label for="initialqacontact">既定の QA コンタクト:</label></td>
     <td>
       [% INCLUDE global/userselect.html.tmpl
          name => "initialqacontact"
@@ -65,9 +70,7 @@
   </tr>
 [% END %]
 <tr>
-  <td valign="top">
-    <label for="initialcc">既定の CC リスト:</label>
-  </td>
+  <th class="field_label"><label for="initialcc">既定の CC リスト:</label></th>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name     => "initialcc"

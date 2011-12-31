@@ -23,8 +23,6 @@
   # the interfaces of the templates it contains.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% js_data = BLOCK %]
 var queryform = "reportform"
 [% END %]
@@ -34,7 +32,7 @@ var queryform = "reportform"
   onload = "doOnSelectProduct(0)"
   yui = [ 'autocomplete', 'calendar' ]
   javascript = js_data
-  javascript_urls = [ "js/util.js", "js/productform.js", "js/TUI.js", "js/field.js" ]
+  javascript_urls = [ "js/util.js", "js/TUI.js", "js/field.js" ]
   style_urls = [ "skins/standard/search_form.css" ]
   doc_section = "reporting.html#reports"
 %]

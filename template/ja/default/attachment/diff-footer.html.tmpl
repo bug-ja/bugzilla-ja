@@ -23,8 +23,6 @@
 [% IF headers %]
 
   <br>
-
-  [% PROCESS global/variables.none.tmpl %]                                     
   <span>[% "$terms.bug $bugid" FILTER bug_link(bugid) FILTER none %] に戻る</span>                                                                          
                                                                                
   [% PROCESS global/footer.html.tmpl %]

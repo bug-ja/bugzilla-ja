@@ -92,8 +92,9 @@ sub issue_new_user_account_token {
 }
 
 sub IssueEmailChangeToken {
-    my ($user, $old_email, $new_email) = @_;
+    my ($user, $new_email) = @_;
     my $email_suffix = Bugzilla->params->{'emailsuffix'};
+    my $old_email = $user->login;
 
     my ($token, $token_ts) = _create_token($user->id, 'emailold', $old_email . ":" . $new_email);
 
@@ -101,7 +102,7 @@ sub IssueEmailChangeToken {
 
     # Mail the user the token along with instructions for using it.
 
-    my $template = Bugzilla->template_inner($user->settings->{'lang'}->{'value'});
+    my $template = Bugzilla->template_inner($user->setting('lang'));
     my $vars = {};
 
     $vars->{'oldemailaddress'} = $old_email . $email_suffix;
@@ -144,7 +145,7 @@ sub IssuePasswordToken {
     my ($token, $token_ts) = _create_token($user->id, 'password', remote_ip());
 
     # Mail the user the token along with instructions for using it.
-    my $template = Bugzilla->template_inner($user->settings->{'lang'}->{'value'});
+    my $template = Bugzilla->template_inner($user->setting('lang'));
     my $vars = {};
 
     $vars->{'token'} = $token;
@@ -245,7 +246,7 @@ sub GenerateUniqueToken {
     $column ||= "token";
 
     my $dbh = Bugzilla->dbh;
-    my $sth = $dbh->prepare("SELECT userid FROM $table WHERE $column = ?");
+    my $sth = $dbh->prepare("SELECT 1 FROM $table WHERE $column = ?");
 
     while ($duplicate) {
         ++$tries;
@@ -292,7 +293,7 @@ sub Cancel {
     $vars->{'cancelaction'} = $cancelaction;
 
     # Notify the user via email about the cancellation.
-    my $template = Bugzilla->template_inner($user->settings->{'lang'}->{'value'});
+    my $template = Bugzilla->template_inner($user->setting('lang'));
 
     my $message;
     $template->process("account/cancel-token.txt.tmpl", $vars, \$message)
@@ -341,7 +342,7 @@ sub GetTokenData {
     trick_taint($token);
 
     return $dbh->selectrow_array(
-        "SELECT userid, " . $dbh->sql_date_format('issuedate') . ", eventdata 
+        "SELECT userid, " . $dbh->sql_date_format('issuedate') . ", eventdata, tokentype
          FROM   tokens 
          WHERE  token = ?", undef, $token);
 }
@@ -359,8 +360,6 @@ sub delete_token {
 
 # Given a token, makes sure it comes from the currently logged in user
 # and match the expected event. Returns 1 on success, else displays a warning.
-# Note: this routine must not be called while tables are locked as it will try
-# to lock some tables itself, see CleanTokenTable().
 sub check_token_data {
     my ($token, $expected_action, $alternate_script) = @_;
     my $user = Bugzilla->user;
@@ -447,7 +446,7 @@ Bugzilla::Token - Provides different routines to manage tokens.
     use Bugzilla::Token;
 
     Bugzilla::Token::issue_new_user_account_token($login_name);
-    Bugzilla::Token::IssueEmailChangeToken($user, $old_email, $new_email);
+    Bugzilla::Token::IssueEmailChangeToken($user, $new_email);
     Bugzilla::Token::IssuePasswordToken($user);
     Bugzilla::Token::DeletePasswordTokens($user_id, $reason);
     Bugzilla::Token::Cancel($token, $cancelaction, $vars);
@@ -460,7 +459,7 @@ Bugzilla::Token - Provides different routines to manage tokens.
 
     my $token = Bugzilla::Token::GenerateUniqueToken($table, $column);
     my $token = Bugzilla::Token::HasEmailChangeToken($user_id);
-    my ($token, $date, $data) = Bugzilla::Token::GetTokenData($token);
+    my ($token, $date, $data, $type) = Bugzilla::Token::GetTokenData($token);
 
 =head1 SUBROUTINES
 
@@ -478,7 +477,7 @@ Bugzilla::Token - Provides different routines to manage tokens.
  Returns:     Nothing. It throws an error if the same user made the same
               request in the last few minutes.
 
-=item C<sub IssueEmailChangeToken($user, $old_email, $new_email)>
+=item C<sub IssueEmailChangeToken($user, $new_email)>
 
  Description: Sends two distinct tokens per email to the old and new email
               addresses to confirm the email address change for the given
@@ -486,7 +485,6 @@ Bugzilla::Token - Provides different routines to manage tokens.
 
  Params:      $user      - User object of the user requesting a new
                            email address.
-              $old_email - The current (old) email address of the user.
               $new_email - The new email address of the user.
 
  Returns:     Nothing.
@@ -561,8 +559,8 @@ Bugzilla::Token - Provides different routines to manage tokens.
 
  Params:      $token - A valid token.
 
- Returns:     The user ID, the date and time when the token was created and
-              the (event)data stored with that token.
+ Returns:     The user ID, the date and time when the token was created,
+              the (event)data stored with that token, and its type.
 
 =back
 

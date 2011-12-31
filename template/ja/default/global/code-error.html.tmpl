@@ -122,7 +122,7 @@
 
   [% ELSIF error == "db_rename_conflict" %]
     名前が衝突しました: [% old FILTER html %] を
-    [% new FILTER html %] に変更できません。[% new FILTER html %] はすでに存在します。
+    [%+ new FILTER html %] に変更できません。[% new FILTER html %] はすでに存在します。
 
   [% ELSIF error == "cookies_need_value" %]
     すべてのクッキーは値を持つ必要があります。
@@ -329,7 +329,7 @@
   [% ELSIF error == "mail_send_error" %]
     メールを '[% mail.header('From') FILTER html %]' から
     '[% mail.header('To') FILTER html %]' に送信する際に問題が発生しました。
-    [% msg FILTER html %]
+    [%+ msg FILTER html %]
 
   [% ELSIF error == "missing_bug_id" %]
     [% terms.bug %] ID が与えられませんでした。
@@ -490,12 +490,15 @@
    admindocslinks = admindocslinks
 %]
 
+<p>
+  未知のエラーが発生しました。これは、一時的な問題か、コードのどこかで何か異常が
+  発生していることによります。もし、問題が続くようなら、このページを
+  <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
+  に、このメッセージが表示される直前に何を行っていたかの詳細とともに送信して
+  ください。
+</p>
+
 <tt>
-  <p>
-    [% terms.Bugzilla %] に内部エラーが発生しました。このページを保存して、
-    [% Param("maintainer") %] まで、メッセージが表示される前にどういう操作を行ったか
-    とともに送信してください。
-  </p>
   <script type="text/javascript"> <!--
     document.write("<p>URL: " + 
                     document.location.href.replace(/&/g,"&amp;")
@@ -516,7 +519,7 @@
 </table>
 
 <p>トレースバック:</p>
-<pre>[% traceback FILTER html_linebreak %]</pre>
+<pre>[% traceback FILTER html %]</pre>
 
 [% IF variables %]
   <pre>

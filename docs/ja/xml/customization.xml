@@ -1,4 +1,10 @@
-<!-- <!DOCTYPE appendix PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                      "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+    <!ENTITY % myents SYSTEM "bugzilla.ent">
+    %myents;
+]>
+
 <chapter id="customization">
   <title>Bugzilla のカスタマイズ</title>
 
@@ -14,7 +20,7 @@
 
    <para>
       拡張を作成する方法に関しては
-      <ulink url="api/Bugzilla/Extension.html">Bugzilla 拡張の解説
+      <ulink url="../html/api/Bugzilla/Extension.html">Bugzilla 拡張の解説
       </ulink> を参照してください。
     </para>
   </section>
@@ -383,8 +389,7 @@
 
       <para>  
         このサンプルには mozilla.org の
-        <ulink url="http://landfill.bugzilla.org/bugzilla-tip/enter_bug.cgi?product=WorldControl&amp;format=guided">
-        ガイドつきバグ登録フォーム</ulink> があります。このコードは、
+        <ulink url="http://landfill.bugzilla.org/bugzilla-tip/enter_bug.cgi?product=WorldControl;format=guided">        ガイドつきバグ登録フォーム</ulink> があります。このコードは、
         Bugzilla 配布物の中にサンプルとして含まれています。
         <filename>create-guided.html.tmpl</filename> と
         <filename>comment-guided.html.tmpl</filename> です。

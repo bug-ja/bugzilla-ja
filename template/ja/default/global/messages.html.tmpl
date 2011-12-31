@@ -23,8 +23,6 @@
   # alphabetical order by message tag, and leave a blank line between messages.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% message_tag = message %]
@@ -58,6 +56,8 @@
               パスワードが更新されました。
             [% ELSIF field == 'disabledtext' %]
               無効化テキストが更新されました。
+            [% ELSIF field == 'is_enabled' %]
+              このユーザは [% otheruser.is_enabled ? '有効' : '無効' %] です。
             [% ELSIF field == 'extern_id' %]
               ユーザの外部ログイン ID は変更されています。
             [% ELSIF field == 'disable_mail' %]
@@ -784,10 +784,7 @@
 
   [% ELSIF message_tag == "product_created" %]
     [% title = "プロダクト作成完了" %]
-    プロダクト <em>[% product.name FILTER html %]</em> の作成を完了しました。
-    このプロダクトに対して [% terms.bugs %] を登録できるようにするには、
-    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER uri %]">
-    最低ひとつのコンポーネントを追加</a> する必要があります。
+    プロダクト <em>[% product.name FILTER html %]</em> を作成しました。
 
   [% ELSIF message_tag == "product_deleted" %]
     [% title = "プロダクト削除完了" %]
@@ -860,7 +857,8 @@
 
   [% ELSIF message_tag == "tag_updated" %]
     [% title = "タグを更新しました" %]
-    '[% tag FILTER html %]' タグを
+    '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
+    タグを
     [%+ buglist.size > 1 ? terms.bugs : terms.bug %]
     [%+ buglist.join(", ") FILTER html %] から
     [% IF action == "add" %]
@@ -911,6 +909,10 @@
     [% ELSE %]
       バージョン <em>[% version.name FILTER html %]</em> は更新されませんでした。
     [% END %]
+
+  [% ELSIF message_tag == "whine_query_failed" %]
+    [% author.login FILTER html %] によるクエリ '[% query_name FILTER html %]' 
+    は失敗しました : [% reason FILTER html %]
 
   [% ELSIF message_tag == "workflow_updated" %]
     ワークフローが更新されました。

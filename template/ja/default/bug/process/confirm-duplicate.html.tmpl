@@ -27,7 +27,6 @@
   #   of the original bug can access that bug.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
 [% PROCESS global/header.html.tmpl title="重複処理の警告" %]
 [% orig_bug = "$terms.bug $original_bug_id"
      FILTER bug_link(original_bug_id) %]

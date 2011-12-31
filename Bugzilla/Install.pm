@@ -34,7 +34,7 @@ use Bugzilla::Group;
 use Bugzilla::Product;
 use Bugzilla::User;
 use Bugzilla::User::Setting;
-use Bugzilla::Util qw(get_text);
+use Bugzilla::Util qw(get_text say);
 use Bugzilla::Version;
 
 use constant STATUS_WORKFLOW => (
@@ -90,6 +90,11 @@ sub SETTINGS {
     timezone           => { subclass => 'Timezone', default => 'local' },
     # 2011-02-07 dkl@mozilla.com -- Bug 580490
     quicksearch_fulltext => { options => ['on', 'off'], default => 'on' },
+    # 2011-06-21 glob@mozilla.com -- Bug 589128
+    email_format       => { options => ['html', 'text_only'],
+                            default => 'html' },
+    # 2011-10-11 glob@mozilla.com -- Bug 301656
+    requestee_cc       => { options => ['on', 'off'], default => 'on' },
     }
 };
 
@@ -185,7 +190,7 @@ sub update_settings {
     my $any_settings = $dbh->selectrow_array(
         'SELECT 1 FROM setting ' . $dbh->sql_limit(1));
     if (!$any_settings) {
-        print get_text('install_setting_setup'), "\n";
+        say get_text('install_setting_setup');
     }
 
     my %settings = %{SETTINGS()};
@@ -207,7 +212,7 @@ sub update_system_groups {
     # adding groups.
     my $editbugs_exists = new Bugzilla::Group({ name => 'editbugs' });
     if (!$editbugs_exists) {
-        print get_text('install_groups_setup'), "\n";
+        say get_text('install_groups_setup');
     }
 
     # Create most of the system groups
@@ -278,7 +283,7 @@ sub init_workflow {
     my $has_workflow = $dbh->selectrow_array('SELECT 1 FROM status_workflow');
     return if $has_workflow;
 
-    print get_text('install_workflow_init'), "\n";
+    say get_text('install_workflow_init');
 
     my %status_ids = @{ $dbh->selectcol_arrayref(
         'SELECT value, id FROM bug_status', {Columns=>[1,2]}) };
@@ -313,7 +318,7 @@ sub create_admin {
     my $full_name = $answer{'ADMIN_REALNAME'};
 
     if (!$login || !$password || !$full_name) {
-        print "\n" . get_text('install_admin_setup') . "\n\n";
+        say "\n" . get_text('install_admin_setup') . "\n";
     }
 
     while (!$login) {
@@ -322,7 +327,7 @@ sub create_admin {
         chomp $login;
         eval { Bugzilla::User->check_login_name_for_creation($login); };
         if ($@) {
-            print $@ . "\n";
+            say $@;
             undef $login;
         }
     }
@@ -380,7 +385,7 @@ sub make_admin {
     }
 
     if (Bugzilla->usage_mode == USAGE_MODE_CMDLINE) {
-        print "\n", get_text('install_admin_created', { user => $user }), "\n";
+        say "\n", get_text('install_admin_created', { user => $user });
     }
 }
 
@@ -405,7 +410,7 @@ sub _prompt_for_password {
         chomp $pass2;
         eval { validate_password($password, $pass2); };
         if ($@) {
-            print "\n$@\n";
+            say "\n$@";
             undef $password;
         }
         system("stty","echo") unless ON_WINDOWS;
@@ -427,7 +432,7 @@ sub reset_password {
     my $password = _prompt_for_password($prompt);
     $user->set_password($password);
     $user->update();
-    print "\n", get_text('install_reset_password_done'), "\n";
+    say "\n", get_text('install_reset_password_done');
 }
 
 1;

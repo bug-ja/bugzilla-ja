@@ -1,144 +1,65 @@
-<!-- <!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
+<?xml version="1.0"?>
+<!DOCTYPE section PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                      "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+    <!ENTITY % myents SYSTEM "bugzilla.ent">
+    %myents;
+]>
+
 <section id="conventions">
   <title>文書中の表記</title>
 
-  <indexterm zone="conventions">
-    <primary>凡例</primary>
-  </indexterm>
-
   <para>この文書では以下の表記法が利用されています:</para>
 
-  <informaltable frame="none">
-    <tgroup cols="2">
-      <thead>
-        <row>
-          <entry>意味</entry>
+  <caution>
+    <para>これは警告です。問題が発生しないようにするために読んでください !</para>
+  </caution>
 
-          <entry>表示</entry>
-        </row>
-      </thead>
+  <tip>
+    <para>これはヒントなどで、特に設定項目についてのやり方などです。</para>
+  </tip>
 
-      <tbody>
-        <row>
-          <entry>注意</entry>
+  <note>
+    <para>これはメモで、情報提供のためです。</para>
+  </note>
 
-          <entry>
-            <caution>
-              <para>はさみを持って走らない!</para>
-            </caution>
-          </entry>
-        </row>
+  <warning>
+    <para>これは注意で、注意を払わないといけない点です。</para>
+  </warning>
 
-        <row>
-          <entry>ヒントやチップス</entry>
-
-          <entry>
-            <tip>
-              <para>最適な結果を得るには... </para>
-            </tip>
-          </entry>
-        </row>
-
-        <row>
-          <entry>メモ</entry>
-
-          <entry>
-            <note>
-              <para>Johnへ...</para>
-            </note>
-          </entry>
-        </row>
-
-        <row>
-          <entry>警告</entry>
-
-          <entry>
-            <warning>
-              <para>これを読んでください。さもなくば猫が取ってしまいます。</para>
-            </warning>
-          </entry>
-        </row>
-
-        <row>
-          <entry>ファイルもしくはディレクトリ名</entry>
-
-          <entry>
-            <filename>filename</filename>
-          </entry>
-        </row>
-
-        <row>
-          <entry>入力すべきコマンド</entry>
-
-          <entry>
-            <command>command</command>
-          </entry>
-        </row>
-
-        <row>
-          <entry>アプリケーション名</entry>
-
-          <entry>
-            <application>application</application>
-          </entry>
-        </row>
-
-        <row>
-          <entry>
-          bash シェルでの一般ユーザのプロンプト</entry>
-
-          <entry>bash$</entry>
-        </row>
-
-        <row>
-          <entry>
-          bash シェルでの管理者ユーザのプロンプト</entry>
-
-          <entry>bash#</entry>
-        </row>
-
-        <row>
-          <entry>
-          tcsh シェルでの一般ユーザのプロンプト</entry>
-
-          <entry>tcsh$</entry>
-        </row>
-
-        <row>
-          <entry>環境変数</entry>
-
-          <entry>
-            <envar>VARIABLE</envar>
-          </entry>
-        </row>
-
-        <row>
-          <entry>用語集で見つけられる用語</entry>
-
-          <entry>
-            <glossterm linkend="gloss-bugzilla">Bugzilla</glossterm>
-          </entry>
-        </row>
-
-        <row>
-          <entry>コードサンプル</entry>
-
-          <entry>
-            <programlisting><sgmltag class="starttag">para</sgmltag>
-パラグラフの先頭と末尾
-<sgmltag class="endtag">para</sgmltag></programlisting>
-          </entry>
-        </row>
-      </tbody>
-    </tgroup>
-  </informaltable>
-
-  <para>  
-このドキュメントは DocBook 4.1.2 XML 形式で作成されています。
-変更が必要と思われる場合はプレーンテキストか XML の diff 形式で、
-&bzg-bugs; コンポーネントにバグを登録してください。
+  <para>
+    ファイル名やパス名はこのように表示されます:
+    <filename>/path/to/filename.ext</filename>
   </para>
-  
+
+  <para>
+    シェルに入力するコマンドはこのように表示されます:
+    <command>command --arguments</command>
+  </para>
+
+  <para>bash$ は通常のユーザの bash シェルのコマンドプロンプトを示します</para>
+
+  <para>bash# はルートユーザの bash シェルのコマンドプロンプトを示します</para>
+
+  <para>
+    単語集にある単語はこのように表示されます:
+    <glossterm linkend="gloss-bugzilla">Bugzilla</glossterm>
+  </para>
+
+  <para>
+    コードサンプルはこのように表示されます:
+    <programlisting>
+1行目
+2行目
+...
+    </programlisting>
+  </para>
+
+  <para>
+    このドキュメントは DocBook 4.2 XML 形式でメンテナンスされています。
+    変更点はテキスト形式か XML 形式の diff で
+    <ulink url="&bzg-bugs;">Bugzilla Documentation</ulink> コンポーネントに
+    添付として bug を登録してください。
+  </para>
 </section>
 
 <!-- Keep this comment at the end of the file

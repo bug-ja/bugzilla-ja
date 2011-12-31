@@ -15,8 +15,6 @@
   # Contributor(s): Frederic Buclin <LpSolit@gmail.com>
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% san_message = BLOCK %]
   [% IF san_tag == "checks_start" %]
     整合性確認を実行中です
@@ -228,6 +226,13 @@
 
   [% ELSIF san_tag == "profile_login_start" %]
     ログイン中のプロファイルの確認中。
+
+  [% ELSIF san_tag == "product_alert" %]
+    プロダクト <a href="editproducts.cgi?product=[% name FILTER html%]">
+    [%- name FILTER html %]</a> にはコンポーネント・バージョンの両方ともありません。
+
+  [% ELSIF san_tag == "product_check_start" %]
+    コンポーネントやバージョンが定義されていないプロダクトを確認中です。
 
   [% ELSIF san_tag == "profile_login_alert" %]
     無効なプロファイルのメールアドレス : id=[% id FILTER html %],

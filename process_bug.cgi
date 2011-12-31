@@ -48,8 +48,6 @@ use lib qw(. lib);
 use Bugzilla;
 use Bugzilla::Constants;
 use Bugzilla::Bug;
-use Bugzilla::BugMail;
-use Bugzilla::Mailer;
 use Bugzilla::User;
 use Bugzilla::Util;
 use Bugzilla::Error;
@@ -98,14 +96,14 @@ sub should_set {
 # Create a list of objects for all bugs being modified in this request.
 my @bug_objects;
 if (defined $cgi->param('id')) {
-  my $bug = Bugzilla::Bug->check(scalar $cgi->param('id'));
+  my $bug = Bugzilla::Bug->check_for_edit(scalar $cgi->param('id'));
   $cgi->param('id', $bug->id);
   push(@bug_objects, $bug);
 } else {
     foreach my $i ($cgi->param()) {
         if ($i =~ /^id_([1-9][0-9]*)/) {
             my $id = $1;
-            push(@bug_objects, Bugzilla::Bug->check($id));
+            push(@bug_objects, Bugzilla::Bug->check_for_edit($id));
         }
     }
 }
@@ -189,7 +187,7 @@ $vars->{'title_tag'} = "bug_processed";
 
 my $action;
 if (defined $cgi->param('id')) {
-    $action = $user->settings->{'post_bug_submit_action'}->{'value'};
+    $action = $user->setting('post_bug_submit_action');
 
     if ($action eq 'next_bug') {
         my $bug_list_obj = $user->recent_search_for($first_bug);
@@ -213,15 +211,6 @@ if (defined $cgi->param('id')) {
 else {
     # param('id') is not defined when changing multiple bugs at once.
     $action = 'nothing';
-}
-
-# For each bug, we have to check if the user can edit the bug the product
-# is currently in, before we allow them to change anything.
-foreach my $bug (@bug_objects) {
-    if (!Bugzilla->user->can_edit_product($bug->product_obj->id) ) {
-        ThrowUserError("product_edit_denied",
-                      { product => $bug->product });
-    }
 }
 
 # Component, target_milestone, and version are in here just in case
@@ -303,7 +292,7 @@ if (defined $cgi->param('newcc')
         }
     } else {
         @cc_add = $cgi->param('newcc');
-        push(@cc_add, Bugzilla->user) if $cgi->param('addselfcc');
+        push(@cc_add, $user) if $cgi->param('addselfcc');
 
         # We came from show_bug which uses a select box to determine what cc's
         # need to be removed...
@@ -345,7 +334,17 @@ foreach my $field (@custom_fields) {
     }
 }
 
+# We are going to alter the list of removed groups, so we keep a copy here.
+my @unchecked_groups = @$removed_groups;
 foreach my $b (@bug_objects) {
+    # Don't blindly ask to remove unchecked groups available in the UI.
+    # A group can be already unchecked, and the user didn't try to remove it.
+    # In this case, we don't want remove_group() to complain.
+    my @remove_groups;
+    foreach my $g (@{$b->groups_in}) {
+        push(@remove_groups, $g->name) if grep { $_ eq $g->name } @unchecked_groups;
+    }
+    local $set_all_fields{groups}->{remove} = \@remove_groups;
     $b->set_all(\%set_all_fields);
 }
 
@@ -370,12 +369,15 @@ foreach my $bug (@bug_objects) {
         # status, so we should inform the user about that.
         if (!is_open_state($new_status) && $changes->{'remaining_time'}) {
             $vars->{'message'} = "remaining_time_zeroed"
-              if Bugzilla->user->is_timetracker;
+              if $user->is_timetracker;
         }
     }
 
     $bug->send_changes($changes, $vars);
 }
+
+# Delete the session token used for the mass-change.
+delete_token($token) unless $cgi->param('id');
 
 if (Bugzilla->usage_mode == USAGE_MODE_EMAIL) {
     # Do nothing.

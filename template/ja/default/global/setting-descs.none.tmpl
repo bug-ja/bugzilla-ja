@@ -16,8 +16,6 @@
 
 [%# Remember to PROCESS rather than INCLUDE this template. %]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% setting_descs = { 
    "comment_sort_order"               => "$terms.abug の表示時におけるコメントの表示順",
    "csv_colsepchar"                   => "CSV ファイルの区切り文字",
@@ -49,6 +47,10 @@
    "timezone"                         => "日時を表示するときのタイムゾーン",
    "local"                            => "同一サーバ上",
    "quicksearch_fulltext"             => "簡易検索の際にもコメントを対象に含む (遅くなります)",
+   "email_format"                     => "優先するメール形式",
+   "html"                             => "HTML 形式",
+   "text_only"                        => "テキスト形式",
+   "requestee_cc"                     => "レビューを要請されたとき、$terms.bugs の CC リストに自動的に追加する",
                    } 
 %]
 

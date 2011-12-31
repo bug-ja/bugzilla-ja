@@ -58,6 +58,7 @@ use Bugzilla::FlagType;
 use Bugzilla::Group;
 use Bugzilla::Install ();
 use Bugzilla::Test::Search::Constants;
+use Bugzilla::Test::Search::CustomTest;
 use Bugzilla::Test::Search::FieldTestNormal;
 use Bugzilla::Test::Search::OperatorTest;
 use Bugzilla::User ();
@@ -111,7 +112,8 @@ sub num_tests {
 
     # This @{ [] } thing is the only reasonable way to get a count out of a
     # constant array.
-    my $special_tests = scalar(@{ [SPECIAL_PARAM_TESTS] }) * TESTS_PER_RUN;
+    my $special_tests = scalar(@{ [SPECIAL_PARAM_TESTS, CUSTOM_SEARCH_TESTS] }) 
+                        * TESTS_PER_RUN;
     
     return $operator_field_tests + $sql_injection_tests + $special_tests;
 }
@@ -849,6 +851,20 @@ sub value_translation_cache {
     return $self->{value_translation_cache}->{$test_name};
 }
 
+# When doing AND/OR tests, the value for transformed_value_was_equal
+# (see Bugzilla::Test::Search::FieldTest) won't be recalculated
+# if we pull our values from the value_translation_cache. So we need
+# to also cache the values for transformed_value_was_equal.
+sub was_equal_cache {
+    my ($self, $field_test, $number, $value) = @_;
+    return if !$self->option('long');
+    my $test_name = $field_test->name;
+    if (@_ == 4) {
+        $self->{tvwe_cache}->{$test_name}->{$number} = $value;
+    }
+    return $self->{tvwe_cache}->{$test_name}->{$number};
+}
+
 #############
 # Main Test #
 #############
@@ -882,6 +898,10 @@ sub run {
     # Even though _setup_bugs set us as an admin, we want to be sure at
     # this point that we have an admin with refreshed group memberships.
     Bugzilla->set_user($self->admin);
+    foreach my $test (CUSTOM_SEARCH_TESTS) {
+        my $custom_test = new Bugzilla::Test::Search::CustomTest($test, $self);
+        $custom_test->run();
+    }
     foreach my $test (SPECIAL_PARAM_TESTS) {
         my $operator_test =
             new Bugzilla::Test::Search::OperatorTest($test->{operator}, $self);

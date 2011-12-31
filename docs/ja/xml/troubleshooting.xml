@@ -1,4 +1,9 @@
-<!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"> -->
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                      "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+    <!ENTITY % myents SYSTEM "bugzilla.ent">
+    %myents;
+]>
 
 <appendix id="troubleshooting">
 <title>トラブルシュート</title>
@@ -168,13 +173,13 @@ TEST-OK Webserver is preventing fetch of http://landfill.bugzilla.org/bugzilla-t
 
     <blockquote>
       <literallayout>
-        urlbase は <ulink url="http://bugzilla.mozilla.org/"/>
-        cookiepath は /
+urlbase は http://bugzilla.mozilla.org/
+cookiepath は /
 
-        urlbase は <ulink url="http://tools.mysite.tld/bugzilla/"/>
-                だが http://tools.mysite.tld/someotherapp/ に Bugzilla
-                と認証を共有したいサービスがある場合
-        cookiepath は /
+urlbase は http://tools.mysite.tld/bugzilla/
+  だが http://tools.mysite.tld/someotherapp/ に Bugzilla
+  と認証を共有したいサービスがある場合
+cookiepath は /
       </literallayout>
     </blockquote>
   </example>
@@ -189,11 +194,11 @@ TEST-OK Webserver is preventing fetch of http://landfill.bugzilla.org/bugzilla-t
    <title>ログインクッキーを制限する場合の urlbase/cookiepath ペアの例</title>
       <blockquote>
         <literallayout>
-        urlbase が <ulink url="http://landfill.bugzilla.org/bugzilla-tip/"/>
-        cookiepath は /bugzilla-tip/
+urlbase が http://landfill.bugzilla.org/bugzilla-tip/
+cookiepath は /bugzilla-tip/
 
-        urlbase が <ulink url="http://landfill.bugzilla.org/bugzilla-2.16-branch/"/>
-        cookiepath は /bugzilla-2.16-branch/
+urlbase が http://landfill.bugzilla.org/bugzilla-2.16-branch/
+cookiepath は /bugzilla-2.16-branch/
         </literallayout>
       </blockquote>
     </example>

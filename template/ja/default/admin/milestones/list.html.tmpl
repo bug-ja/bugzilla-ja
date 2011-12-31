@@ -28,8 +28,6 @@
 [% USE Bugzilla %]
 [% cgi = Bugzilla.cgi %]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% title = BLOCK %]プロダクト '[% product.name FILTER html %]' のマイルストーンを選択してください[% END %]
 [% PROCESS global/header.html.tmpl
   title = title

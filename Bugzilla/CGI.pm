@@ -38,16 +38,8 @@ BEGIN {
         # isn't Windows friendly (Bug 248988)
         $ENV{'TMPDIR'} = $ENV{'TEMP'} || $ENV{'TMP'} || "$ENV{'WINDIR'}\\TEMP";
     }
+    *AUTOLOAD = \&CGI::AUTOLOAD;
 }
-
-# CGI.pm uses AUTOLOAD, but explicitly defines a DESTROY sub.
-# We need to do so, too, otherwise perl dies when the object is destroyed
-# and we don't have a DESTROY method (because CGI.pm's AUTOLOAD will |die|
-# on getting an unknown sub to try to call)
-sub DESTROY {
-    my $self = shift;
-    $self->SUPER::DESTROY(@_);
-};
 
 sub _init_bz_cgi_globals {
     my $invocant = shift;
@@ -157,9 +149,18 @@ sub clean_search_url {
             $self->delete("${param}_type");
         }
 
-        # Boolean Chart stuff is empty if it's "noop"
-        if ($param =~ /\d-\d-\d/ && defined $self->param($param)
-            && $self->param($param) eq 'noop')
+        # Custom Search stuff is empty if it's "noop". We also keep around
+        # the old Boolean Chart syntax for backwards-compatibility.
+        if (($param =~ /\d-\d-\d/ || $param =~ /^[[:alpha:]]\d+$/)
+            && defined $self->param($param) && $self->param($param) eq 'noop')
+        {
+            $self->delete($param);
+        }
+        
+        # Any "join" for custom search that's an AND can be removed, because
+        # that's the default.
+        if (($param =~ /^j\d+$/ || $param eq 'j_top')
+            && $self->param($param) eq 'AND')
         {
             $self->delete($param);
         }
@@ -305,6 +306,10 @@ sub header {
         unshift(@_, '-x_frame_options' => 'SAMEORIGIN');
     }
 
+    # Add X-XSS-Protection header to prevent simple XSS attacks
+    # and enforce the blocking (rather than the rewriting) mode.
+    unshift(@_, '-x_xss_protection' => '1; mode=block');
+
     return $self->SUPER::header(@_) || "";
 }
 
@@ -438,7 +443,9 @@ sub redirect_search_url {
 
     $self->clean_search_url();
 
-    if ($user->id) {
+    # Make sure we still have params still after cleaning otherwise we 
+    # do not want to store a list_id for an empty search.
+    if ($user->id && $self->param) {
         # Insert a placeholder Bugzilla::Search::Recent, so that we know what
         # the id of the resulting search will be. This is then pulled out
         # of the Referer header when viewing show_bug.cgi to know what

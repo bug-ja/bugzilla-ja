@@ -21,8 +21,6 @@
   #
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% PROCESS global/header.html.tmpl
   title = "Select Classification"
 %]
@@ -53,6 +51,8 @@
        contentlink => 'editproducts.cgi?action=add&amp;classification=%%name%%' })
   %]
 [% END %]
+
+[% Hook.process('before_table') %]
 
 [% PROCESS admin/table.html.tmpl
      columns = columns

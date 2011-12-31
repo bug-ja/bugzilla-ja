@@ -24,27 +24,16 @@
   # search/boolean-charts.html.tmpl.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% USE Bugzilla %]
 [% cgi = Bugzilla.cgi %]
 
 
-[% js_data = BLOCK %]
-var queryform = "queryform"
-[% END %]
-
 [% PROCESS global/header.html.tmpl
   title = "Search for $terms.bugs"
-  onload = "doOnSelectProduct(0);"
-  javascript = js_data
   yui = [ 'autocomplete', 'calendar' ]
-  javascript_urls = [ "js/productform.js", "js/util.js", "js/TUI.js", "js/field.js"]
+  javascript_urls = [ "js/util.js", "js/TUI.js", "js/field.js"]
   style_urls = [ "skins/standard/search_form.css" ]
   doc_section = "query.html"
-  style = "dl.bug_changes dt {
-             margin-top: 15px;
-           }"
 %]
 
 [% WRAPPER search/tabs.html.tmpl %]
@@ -62,7 +51,6 @@ var queryform = "queryform"
 [% PROCESS search/knob.html.tmpl %]
 
 </form>
-
 
 [% END %]
 

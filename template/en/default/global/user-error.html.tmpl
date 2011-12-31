@@ -39,8 +39,6 @@
   # nobody can guarantee the hook files processing order in the future.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% DEFAULT title = "Error" %]
@@ -108,6 +106,11 @@
     [% title = "Alias Too Long" %]
     [% terms.Bug %] aliases cannot be longer than 20 characters.
     Please choose a shorter alias.
+
+  [% ELSIF error == "attachment_bug_id_mismatch" %]
+    [% title = "Invalid Attachments" %]
+    You tried to perform an action on attachments from different [% terms.bugs %].
+    This operation requires all attachments to be from the same [% terms.bug %].
 
   [% ELSIF error == "auth_cant_create_account" %]
     [% title = "Can't create accounts" %]
@@ -218,6 +221,8 @@
       versions
     [% ELSIF object == "workflow" %]
       the workflow
+    [% ELSE %]
+      [%+ Hook.process('auth_failure_object') %]
     [% END %].
 
     [% Hook.process("auth_failure") %]
@@ -280,6 +285,10 @@
                     'query.html#list' => "$terms.Bug lists"} %]
     You may not search, or create saved searches, without any search terms.
 
+  [% ELSIF error == "cc_remove_denied" %]
+    [% title = "Change Denied" %]
+    You do not have permission to remove other people from the CC list.
+
   [% ELSIF error == "chart_too_large" %]
     [% title = "Chart Too Large" %]
     Sorry, but 2000 x 2000 is the maximum size for a chart.
@@ -297,9 +306,10 @@
   [% ELSIF error == "comment_required" %]
     [% title = "Comment Required" %]
     You have to specify a
-    [% IF old && new %]
-      <b>comment</b> when changing the status of [% terms.abug %] from
-      [%+ old.name FILTER html %] to [% new.name FILTER html %].
+    [% IF old.defined && new.defined %]
+      <b>comment</b> when changing the [% field_descs.$field FILTER html %]
+      of [% terms.abug %] from [% (old || "(empty)") FILTER html %]
+      to [% (new || "(empty)") FILTER html %].
     [% ELSIF new %]
       description for this [% terms.bug %].
     [% ELSE %]
@@ -360,6 +370,11 @@
     There are [% nb FILTER html %] [%+ terms.bugs %] entered for this component!
     You must reassign those [% terms.bugs %] to another component before you
     can delete this one.
+
+  [% ELSIF error == "component_is_last" %]
+    [% title = BLOCK %]Last Component in this Product[% END %]
+    '[% comp.name FILTER html %]' is the last component of the
+    '[% comp.product.name FILTER html %]' product. You cannot delete it.
 
   [% ELSIF error == "component_name_too_long" %]
     [% title = "Component Name Is Too Long" %]
@@ -432,9 +447,8 @@
     [% title = "Email Address Confirmation Failed" %]
     Email address confirmation failed.
 
-  [% ELSIF error == "email_no_text_plain" %]
-    Your message did not contain any text.[% terms.Bugzilla %] does not
-    accept HTML-only email, or HTML email with attachments.
+  [% ELSIF error == "email_no_body" %]
+    Your message did not contain any text, as far as we could tell.
 
   [% ELSIF error == "empty_group_description" %]
     [% title = "The group description can not be empty" %]
@@ -577,7 +591,7 @@
   [% ELSIF error == "fieldvalue_still_has_bugs" %]
     [% title = "You Cannot Delete This Field Value" %]
     You cannot delete the value '[% value.name FILTER html %]' from the 
-    [% field.description FILTER html %] field, because there are still
+    [%+ field.description FILTER html %] field, because there are still
     [%+ value.bug_count FILTER html %] [%+ terms.bugs %] using it.
 
   [% ELSIF error == "fieldvalue_undefined" %]
@@ -587,6 +601,10 @@
   [% ELSIF error == "file_not_specified" %]
     [% title = "No File Specified" %]
     You did not specify a file to attach.
+
+  [% ELSIF error == "filename_not_specified" %]
+    [% title = "No Filename Specified" %]
+    You must specify a filename for this attachment.
 
   [% ELSIF error == "file_too_large" %]
     [% title = "File Too Large" %]
@@ -729,12 +747,6 @@
     in the database which refer to it. All references to this group must
     be removed before you can remove it.
 
-  [% ELSIF error == "group_change_denied" %]
-    [% title = "Cannot Add/Remove That Group" %]
-    You tried to add or remove the '[% group.name FILTER html %]' group
-    from [% terms.bug %] [%+ bug.id FILTER html %], but you do not
-    have permissions to do so.
-
   [% ELSIF error == "group_exists" %]
     [% title = "The group already exists" %]
     The group [% name FILTER html %] already exists.
@@ -755,16 +767,17 @@
 
 
   [% ELSIF error == "group_invalid_removal" %]
-    You tried to remove [% terms.bug %] [%+ bug.id FILTER html %]
-    from the '[% group.name FILTER html %]' group, but [% terms.bugs %]
-     in the '[% product FILTER html %]' product can not be removed from that
-    group.
-    
-  [% ELSIF error == "group_invalid_restriction" %]
-    You tried to restrict [% terms.bug %] [%+ bug.id FILTER html %] to
-    to the '[% group.name FILTER html %]' group, but [% terms.bugs %] in the
-    '[% product FILTER html %]' product can not be restricted to
-    that group.
+    You tried to remove [% terms.bug %] [%+ bug_id FILTER html %]
+    from the '[% name FILTER html %]' group, but either this group does not exist,
+    or you are not allowed to remove [% terms.bugs %] from this group in the
+    '[% product FILTER html %]' product.
+
+  [% ELSIF error == "group_restriction_not_allowed" %]
+    [% title = "Group Restriction Not Allowed" %]
+    You tried to restrict [% bug_id ? "$terms.bug $bug_id" : terms.abug FILTER html %]
+    to the '[% name FILTER html %]' group, but either this group does not exist,
+    or you are not allowed to restrict [% terms.bugs %] to this group in the
+    '[% product FILTER html %]' product.
 
   [% ELSIF error == "group_not_specified" %]
     [% title = "Group not specified" %]
@@ -921,8 +934,9 @@
     [% title = "Invalid Content-Type" %]
     The content type <em>[% contenttype FILTER html %]</em> is invalid.
     Valid types must be of the form <em>foo/bar</em> where <em>foo</em>
-    is one of <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>.
-    
+    is one of <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>
+    and <em>bar</em> must not contain any special characters (such as "=", "?", ...).
+
   [% ELSIF error == "invalid_context" %]
     [% title = "Invalid Context" %]
     The context [% context FILTER html %] is invalid (must be a number,
@@ -1115,7 +1129,7 @@
     [% admindocslinks = {'products.html'   => 'Administering products',
                          'components.html' => 'Creating a component'} %]
     Sorry, the product <em>[% product.name FILTER html %]</em>
-    has to have at least one component in order for you to
+    has to have at least one active component in order for you to
     enter [% terms.abug %] into it.<br>
     [% IF user.in_group("editcomponents", product.id) %]
       <a href="editcomponents.cgi?action=add&amp;product=[% product.name FILTER uri %]">Create
@@ -1182,7 +1196,7 @@
     [% title = "Missing Version" %]
     [% admindocslinks = {'versions.html' => 'Defining versions'} %]
     Sorry, the product <em>[% product.name FILTER html %]</em>
-    has to have at least one version in order for you to
+    has to have at least one active version in order for you to
     enter [% terms.abug %] into it.<br>
     [% IF user.in_group("editcomponents", product.id) %]
       <a href="editversions.cgi?action=add&amp;product=[% product.name FILTER uri %]">Create
@@ -1310,7 +1324,7 @@
     Your password is currently less than
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] characters long,
     which is the new minimum length required for passwords.
-    You must <a href="token.cgi?a=reqpw&loginname=[% locked_user.email FILTER html %]">
+    You must <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]">
     request a new password</a> in order to log in again.
 
   [% ELSIF error == "password_too_short" %]
@@ -1522,7 +1536,11 @@
     
   [% ELSIF error == "still_unresolved_bugs" %]
     [% title = "Unresolved Dependencies" %]
-    [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% IF bug_id %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+       This [% terms.bug %]
+    [% END %]
     has [% dep_count FILTER none %] unresolved
     [% IF dep_count == 1 %]
       dependency
@@ -1557,16 +1575,16 @@
   [% ELSIF error == "sudo_password_required" %]
     [% title = "Password Required" %]
     Your [% terms.Bugzilla %] password is required to begin a sudo 
-    session. Please <a href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">go back</a> and enter your password.
+    session. Please <a href="relogin.cgi?action=prepare-sudo&amp;target_login=
+    [%- target_login FILTER uri %]&amp;reason=
+    [%- reason FILTER uri %]">go back</a> and enter your password.
     
   [% ELSIF error == "sudo_preparation_required" %]
     [% title = "Preparation Required" %]
     You may not start a sudo session directly.  Please
-    <a href="relogin.cgi?action=prepare-sudo&target_login=
-    [%- target_login FILTER html %]&reason=
-    [%- reason FILTER html %]">start your session normally</a>.
+    <a href="relogin.cgi?action=prepare-sudo&amp;target_login=
+    [%- target_login FILTER uri %]&amp;reason=
+    [%- reason FILTER uri %]">start your session normally</a>.
 
   [% ELSIF error == "sudo_protected" %]
     [% title = "User Protected" %]
@@ -1618,6 +1636,11 @@
     There are [% nb FILTER html %] [%+ terms.bugs %] associated with this
     version! You must reassign those [% terms.bugs %] to another version
     before you can delete this one.
+
+  [% ELSIF error == "version_is_last" %]
+    [% title = BLOCK %]Last Version in this Product[% END %]
+    '[% version.name FILTER html %]' is the last version of the
+    '[% version.product.name FILTER html %]' product. You cannot delete it.
 
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = "Deletion not activated" %]
@@ -1768,7 +1791,7 @@
                   
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        or <a href="query.cgi?[% q.url FILTER html %]">edit</a>
+        or <a href="query.cgi?[% q.url FILTER uri %]">edit</a>
       [% END %]
     [% END %]
     
@@ -1783,6 +1806,10 @@
     attachment
   [% ELSIF class == "Bugzilla::User" %]
     user
+  [% ELSIF class == "Bugzilla::Classification" %]
+    classification
+  [% ELSIF class == "Bugzilla::Product" %]
+    product
   [% ELSIF class == "Bugzilla::Component" %]
     component
   [% ELSIF class == "Bugzilla::Version" %]
@@ -1801,8 +1828,6 @@
     group
   [% ELSIF class == "Bugzilla::Keyword" %]
     keyword
-  [% ELSIF class == "Bugzilla::Product" %]
-    product
   [% ELSIF class == "Bugzilla::Search::Recent" %]
     recent search
   [% ELSIF class == "Bugzilla::Search::Saved" %]
@@ -1811,4 +1836,5 @@
     [% SET field_name = matches.0 %]
     [% field_descs.$field_name FILTER html %]
   [% END %]
+  [% Hook.process('end_object_name', 'global/user-error.html.tmpl') %]
 [% END %]

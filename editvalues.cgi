@@ -47,7 +47,7 @@ sub display_field_values {
 ######################################################################
 
 # require the user to have logged in
-Bugzilla->login(LOGIN_REQUIRED);
+my $user = Bugzilla->login(LOGIN_REQUIRED);
 
 my $dbh      = Bugzilla->dbh;
 my $cgi      = Bugzilla->cgi;
@@ -60,10 +60,10 @@ $vars->{'doc_section'} = 'edit-values.html';
 
 print $cgi->header();
 
-Bugzilla->user->in_group('admin') ||
-    ThrowUserError('auth_failure', {group  => "admin",
-                                    action => "edit",
-                                    object => "field_values"});
+$user->in_group('admin')
+  || ThrowUserError('auth_failure', {group  => "admin",
+                                     action => "edit",
+                                     object => "field_values"});
 
 #
 # often-used variables
@@ -181,12 +181,15 @@ if ($action eq 'edit') {
 if ($action eq 'update') {
     check_token_data($token, 'edit_field_value');
     $vars->{'value_old'} = $value->name;
+    my %params = (
+        name    => scalar $cgi->param('value_new'),
+        sortkey => scalar $cgi->param('sortkey'),
+        visibility_value => scalar $cgi->param('visibility_value_id'),
+    );
     if ($cgi->should_set('is_active')) {
-        $value->set_is_active($cgi->param('is_active'));
+        $params{is_active} = $cgi->param('is_active');
     }
-    $value->set_name($cgi->param('value_new'));
-    $value->set_sortkey($cgi->param('sortkey'));
-    $value->set_visibility_value($cgi->param('visibility_value_id'));
+    $value->set_all(\%params);
     $vars->{'changes'} = $value->update();
     delete_token($token);
     $vars->{'message'} = 'field_value_updated';

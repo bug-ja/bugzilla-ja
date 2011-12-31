@@ -20,6 +20,10 @@
   # otheruser: Bugzilla::User object of user to edit
   #%]
 
+<script type="text/javascript">
+  var disable_mail_manually_set = [% (otheruser.email_disabled ? 1 : 0) FILTER js %];
+</script>
+
 <tr>
   <th><label for="login">ログイン名:</label></th>
   <td>
@@ -86,7 +90,8 @@
     <th><label for="disable_mail">[% terms.Bug %] メールの送信を無効にする:</label></th>
     <td>
       <input type="checkbox" name="disable_mail" id="disable_mail" value="1" 
-      [% IF otheruser.email_disabled %] checked="checked" [% END %] />
+             [% IF otheruser.email_disabled %] checked="checked" [% END %] 
+             onchange="disable_mail_manually_set=1;">
       (この設定は [% terms.bug %] メール、whine メール、パスワードの変更(リセット)、それ以外の
       [% terms.bug %] に関係しないメール に影響します。)
     </td>
@@ -102,6 +107,7 @@
          defaultrows    = 10
          cols           = 60
          defaultcontent = otheruser.disabledtext
+         onchange       = "userDisabledTextOnChange(this);"
        %]<br>
       (もし、ここに何らかのテキストを入力すると、このアカウントは無効化されます。
       そしてこのテキストがユーザに表示されます。)

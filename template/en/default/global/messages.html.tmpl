@@ -23,8 +23,6 @@
   # alphabetical order by message tag, and leave a blank line between messages.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% PROCESS "global/field-descs.none.tmpl" %]
 
 [% message_tag = message %]
@@ -60,6 +58,8 @@
               A new password has been set.
             [% ELSIF field == 'disabledtext' %]
               The disable text has been modified.
+            [% ELSIF field == 'is_enabled' %]
+              The user has been [% otheruser.is_enabled ? 'enabled' : 'disabled' %].
             [% ELSIF field == 'extern_id' %]
               The user's External Login ID has been modified.
             [% ELSIF field == 'disable_mail' %]
@@ -710,7 +710,7 @@
   [% ELSIF message_tag == "install_fk_invalid" %]
     ERROR: There are invalid values for the [% column FILTER html %] column in the [% table FILTER html %]
     table. (These values do not exist in the [% foreign_table FILTER html %] table, in the 
-    [% foreign_column FILTER html %] column.)
+    [%+ foreign_column FILTER html %] column.)
 
     Before continuing with checksetup, you will need to fix these values,
     either by deleting these rows from the database, or changing the values
@@ -794,9 +794,7 @@
 
   [% ELSIF message_tag == "product_created" %]
     [% title = "Product Created" %]
-    The product <em>[% product.name FILTER html %]</em> has been created. You will need to
-    <a href="editcomponents.cgi?action=add&product=[% product.name FILTER uri %]">
-    add at least one component</a> before anyone can enter [% terms.bugs %] against this product.
+    The product <em>[% product.name FILTER html %]</em> has been created.
 
   [% ELSIF message_tag == "product_deleted" %]
     [% title = "Product Deleted" %]
@@ -869,7 +867,8 @@
 
   [% ELSIF message_tag == "tag_updated" %]
     [% title = "Tag Updated" %]
-    The '[% tag FILTER html %]' tag has been
+    The '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
+    tag has been
     [% IF action == "add" %]
       added to
     [% ELSE %]
@@ -920,6 +919,10 @@
     [% ELSE %]
       No changes made to version <em>[% version.name FILTER html %]</em>.
     [% END %]
+
+  [% ELSIF message_tag == "whine_query_failed" %]
+    The query '[% query_name FILTER html %]' from [% author.login FILTER html %]
+    failed: [% reason FILTER html %]
 
   [% ELSIF message_tag == "workflow_updated" %]
     The workflow has been updated.

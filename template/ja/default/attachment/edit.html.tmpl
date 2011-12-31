@@ -20,8 +20,6 @@
   #                 Guy Pyrzak <guy.pyrzak@gmail.com>
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [%# Define strings that will serve as the title and header of this page %]
 [% title = BLOCK %]
   [% terms.Bug %] [%+ attachment.bug_id %] の添付 [% attachment.id %] の詳細
@@ -291,6 +289,7 @@
         && attachment.datasize > 0 %]
     | <a href="attachment.cgi?id=[% attachment.id %]&amp;action=delete">削除</a>
   [% END %]
+  [% Hook.process('action') %]
 </div>
 
 <div id="attachment_list">

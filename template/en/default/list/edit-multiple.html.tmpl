@@ -22,8 +22,6 @@
   #                 Reed Loden <reed@reedloden.com>
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% dontchange = "--do_not_change--" %]
 <input type="hidden" name="dontchange" value="[% dontchange FILTER html %]">
 <input type="hidden" name="token" value="[% token FILTER html %]">
@@ -97,7 +95,8 @@
 
     <th>
       <label for="rep_platform">
-        <a href="page.cgi?id=fields.html#rep_platform">Platform</a>:
+        <a href="page.cgi?id=fields.html#rep_platform">
+          [% field_descs.rep_platform FILTER html %]</a>:
       </label>
     </th>
     <td>
@@ -107,7 +106,8 @@
 
     <th>
       <label for="bug_severity">
-        <a href="page.cgi?id=fields.html#bug_severity">Severity</a>:
+        <a href="page.cgi?id=fields.html#bug_severity">
+          [% field_descs.bug_severity FILTER html %]</a>:
       </label>
     </th>
     <td>

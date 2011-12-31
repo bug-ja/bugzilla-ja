@@ -36,11 +36,8 @@ use strict;
 package Bugzilla::Search;
 use base qw(Exporter);
 @Bugzilla::Search::EXPORT = qw(
-    EMPTY_COLUMN
-
     IsValidQueryType
     split_order_term
-    translate_old_column
 );
 
 use Bugzilla::Error;
@@ -57,6 +54,7 @@ use Bugzilla::Keyword;
 use Data::Dumper;
 use Date::Format;
 use Date::Parse;
+use Scalar::Util qw(blessed);
 use List::MoreUtils qw(all part uniq);
 use POSIX qw(INT_MAX);
 use Storable qw(dclone);
@@ -397,11 +395,7 @@ use constant FIELD_MAP => {
     long_desc => 'longdesc',
 };
 
-# A SELECTed expression that we use as a placeholder if somebody selects
-# <none> for the X, Y, or Z axis in report.cgi.
-use constant EMPTY_COLUMN => '-1';
-
-# Some fields are not sorted on themselves, but on other fields. 
+# Some fields are not sorted on themselves, but on other fields.
 # We need to have a list of these fields and what they map to.
 use constant SPECIAL_ORDER => {
     'target_milestone' => {
@@ -515,9 +509,14 @@ use constant COLUMN_JOINS => {
 # and we don't want it to happen at compile time, so we have it as a
 # subroutine.
 sub COLUMNS {
+    my $invocant = shift;
+    my $user = blessed($invocant) ? $invocant->_user : Bugzilla->user;
     my $dbh = Bugzilla->dbh;
     my $cache = Bugzilla->request_cache;
-    return $cache->{search_columns} if defined $cache->{search_columns};
+
+    if (defined $cache->{search_columns}->{$user->id}) {
+        return $cache->{search_columns}->{$user->id};
+    }
 
     # These are columns that don't exist in fielddefs, but are valid buglist
     # columns. (Also see near the bottom of this function for the definition
@@ -555,10 +554,10 @@ sub COLUMNS {
     );
 
     # Backward-compatibility for old field names. Goes new_name => old_name.
-    # These are here and not in translate_old_column because the rest of the
+    # These are here and not in _translate_old_column because the rest of the
     # code actually still uses the old names, while the fielddefs table uses
-    # the new names (which is not the case for the fields handled by 
-    # translate_old_column).
+    # the new names (which is not the case for the fields handled by
+    # _translate_old_column).
     my %old_names = (
         creation_ts => 'opendate',
         delta_ts    => 'changeddate',
@@ -573,10 +572,7 @@ sub COLUMNS {
 
     foreach my $col (@email_fields) {
         my $sql = "map_${col}.login_name";
-        # XXX This needs to be generated inside an accessor instead,
-        #     probably, because it should use $self->_user to determine
-        #     this, not Bugzilla->user.
-        if (!Bugzilla->user->id) {
+        if (!$user->id) {
              $sql = $dbh->sql_string_until($sql, $dbh->quote('@'));
         }
         $special_sql{$col} = $sql;
@@ -611,12 +607,15 @@ sub COLUMNS {
 
     Bugzilla::Hook::process('buglist_columns', { columns => \%columns });
 
-    $cache->{search_columns} = \%columns;
-    return $cache->{search_columns};
+    $cache->{search_columns}->{$user->id} = \%columns;
+    return $cache->{search_columns}->{$user->id};
 }
 
 sub REPORT_COLUMNS {
-    my $columns = dclone(COLUMNS);
+    my $invocant = shift;
+    my $user = blessed($invocant) ? $invocant->_user : Bugzilla->user;
+
+    my $columns = dclone(blessed($invocant) ? $invocant->COLUMNS : COLUMNS);
     # There's no reason to support reporting on unique fields.
     # Also, some other fields don't make very good reporting axises,
     # or simply don't work with the current reporting system.
@@ -631,7 +630,7 @@ sub REPORT_COLUMNS {
 
     # If you're not a time-tracker, you can't use time-tracking
     # columns.
-    if (!Bugzilla->user->is_timetracker) {
+    if (!$user->is_timetracker) {
         push(@no_report_columns, TIMETRACKING_FIELDS);
     }
 
@@ -644,7 +643,7 @@ sub REPORT_COLUMNS {
 # These are fields that never go into the GROUP BY on any DB. bug_id
 # is here because it *always* goes into the GROUP BY as the first item,
 # so it should be skipped when determining extra GROUP BY columns.
-use constant GROUP_BY_SKIP => EMPTY_COLUMN, qw(
+use constant GROUP_BY_SKIP => qw(
     bug_id
     flagtypes.name
     keywords
@@ -725,6 +724,40 @@ sub search_description {
     return $self->{'search_description'};
 }
 
+sub boolean_charts_to_custom_search {
+    my ($self, $cgi_buffer) = @_;
+    my @as_params = $self->_boolean_charts->as_params;
+
+    # We need to start our new ids after the last custom search "f" id.
+    # We can just pick the last id in the array because they are sorted
+    # numerically.
+    my $last_id = ($self->_field_ids)[-1];
+    my $count = defined($last_id) ? $last_id + 1 : 0;
+    foreach my $param_set (@as_params) {
+        foreach my $name (keys %$param_set) {
+            my $value = $param_set->{$name};
+            next if !defined $value;
+            $cgi_buffer->param($name . $count, $value);
+        }
+        $count++;
+    }
+}
+
+sub invalid_order_columns {
+   my ($self) = @_;
+   my @invalid_columns;
+   foreach my $order ($self->_input_order) {
+       next if defined $self->_validate_order_column($order);
+       push(@invalid_columns, $order);
+   }
+   return \@invalid_columns;
+}
+
+sub order {
+   my ($self) = @_;
+   return $self->_valid_order;
+}
+
 ######################
 # Internal Accessors #
 ######################
@@ -790,7 +823,7 @@ sub _extra_columns {
     my ($self) = @_;
     # Everything that's going to be in the ORDER BY must also be
     # in the SELECT.
-    $self->{extra_columns} ||= [ $self->_input_order_columns ];
+    $self->{extra_columns} ||= [ $self->_valid_order_columns ];
     return @{ $self->{extra_columns} };
 }
 
@@ -828,8 +861,7 @@ sub _sql_select {
         my $alias = $column;
         # Aliases cannot contain dots in them. We convert them to underscores.
         $alias =~ s/\./_/g;
-        my $sql = ($column eq EMPTY_COLUMN)
-                  ? EMPTY_COLUMN : COLUMNS->{$column}->{name} . " AS $alias";
+        my $sql = $self->COLUMNS->{$column}->{name} . " AS $alias";
         push(@sql_fields, $sql);
     }
     return @sql_fields;
@@ -842,10 +874,32 @@ sub _sql_select {
 # The "order" that was requested by the consumer, exactly as it was
 # requested.
 sub _input_order { @{ $_[0]->{'order'} || [] } }
-# The input order with just the column names, and no ASC or DESC.
-sub _input_order_columns {
+# Requested order with invalid values removed and old names translated
+sub _valid_order {
     my ($self) = @_;
-    return map { (split_order_term($_))[0] } $self->_input_order;
+    return map { ($self->_validate_order_column($_)) } $self->_input_order;
+}
+# The valid order with just the column names, and no ASC or DESC.
+sub _valid_order_columns {
+    my ($self) = @_;
+    return map { (split_order_term($_))[0] } $self->_valid_order;
+}
+
+sub _validate_order_column {
+    my ($self, $order_item) = @_;
+
+    # Translate old column names
+    my ($field, $direction) = split_order_term($order_item);
+    $field = $self->_translate_old_column($field);
+
+    # Only accept valid columns
+    return if (!exists $self->COLUMNS->{$field});
+
+    # Relevance column can be used only with one or more fulltext searches
+    return if ($field eq 'relevance' && !$self->COLUMNS->{$field}->{name});
+
+    $direction = " $direction" if $direction;
+    return "$field$direction";
 }
 
 # A hashref that describes all the special stuff that has to be done
@@ -877,7 +931,7 @@ sub _sql_order_by {
     my ($self) = @_;
     if (!$self->{sql_order_by}) {
         my @order_by = map { $self->_translate_order_by_column($_) }
-                           $self->_input_order;
+                           $self->_valid_order;
         $self->{sql_order_by} = \@order_by;
     }
     return @{ $self->{sql_order_by} };
@@ -1021,7 +1075,7 @@ sub _select_order_joins {
         my @column_join = $self->_column_join($field);
         push(@joins, @column_join);
     }
-    foreach my $field ($self->_input_order_columns) {
+    foreach my $field ($self->_valid_order_columns) {
         my $join_info = $self->_special_order->{$field}->{join};
         if ($join_info) {
             # Don't let callers modify SPECIAL_ORDER.
@@ -1156,6 +1210,11 @@ sub _sql_where {
     if ($clause_sql) {
         $where .= "\n   AND " . $clause_sql;
     }
+    elsif (!Bugzilla->params->{'search_allow_no_criteria'}
+           && !$self->{allow_unlimited})
+    {
+        ThrowUserError('buglist_parameters_required');
+    }
     return $where;
 }
 
@@ -1173,13 +1232,13 @@ sub _sql_group_by {
     my @extra_group_by;
     foreach my $column ($self->_select_columns) {
         next if $self->_skip_group_by->{$column};
-        my $sql = COLUMNS->{$column}->{name};
+        my $sql = $self->COLUMNS->{$column}->{name};
         push(@extra_group_by, $sql);
     }
 
     # And all items from ORDER BY must be in the GROUP BY. The above loop 
     # doesn't catch items that were put into the ORDER BY from SPECIAL_ORDER.
-    foreach my $column ($self->_input_order_columns) {
+    foreach my $column ($self->_valid_order_columns) {
         my $special_order = $self->_special_order->{$column}->{order};
         next if !$special_order;
         push(@extra_group_by, @$special_order);
@@ -1549,15 +1608,10 @@ sub _boolean_charts {
 sub _custom_search {
     my ($self) = @_;
     my $params = $self->_params;
-    my @param_list = keys %$params;
-    
-    my @field_params = grep { /^f\d+$/ } @param_list;
-    my @field_ids = map { /(\d+)/; $1 } @field_params;
-    @field_ids = sort { $a <=> $b } @field_ids;
-    
-    my $current_clause = new Bugzilla::Search::Clause();
+
+    my $current_clause = new Bugzilla::Search::Clause($params->{j_top});
     my @clause_stack;
-    foreach my $id (@field_ids) {
+    foreach my $id ($self->_field_ids) {
         my $field = $params->{"f$id"};
         if ($field eq 'OP') {
             my $joiner = $params->{"j$id"};
@@ -1588,11 +1642,24 @@ sub _custom_search {
     return $clause_stack[0] || $current_clause;
 }
 
+sub _field_ids {
+    my ($self) = @_;
+    my $params = $self->_params;
+    my @param_list = keys %$params;
+    
+    my @field_params = grep { /^f\d+$/ } @param_list;
+    my @field_ids = map { /(\d+)/; $1 } @field_params;
+    @field_ids = sort { $a <=> $b } @field_ids;
+    return @field_ids;
+}
+
 sub _handle_chart {
     my ($self, $chart_id, $condition) = @_;
     my $dbh = Bugzilla->dbh;
     my $params = $self->_params;
     my ($field, $operator, $value) = $condition->fov;
+
+    $field = FIELD_MAP->{$field} || $field;
 
     return if (!defined $field or !defined $operator or !defined $value);
     
@@ -1659,10 +1726,7 @@ sub do_search_function {
     my ($self, $args) = @_;
     my ($field, $operator) = @$args{qw(field operator)};
     
-    my $actual_field = FIELD_MAP->{$field} || $field;
-    $args->{field} = $actual_field;
-    
-    if (my $parse_func = SPECIAL_PARSING->{$actual_field}) {
+    if (my $parse_func = SPECIAL_PARSING->{$field}) {
         $self->$parse_func($args);
         # Some parsing functions set $term, though most do not.
         # For the ones that set $term, we don't need to do any further
@@ -1671,15 +1735,15 @@ sub do_search_function {
     }
     
     my $operator_field_override = $self->_get_operator_field_override();
-    my $override = $operator_field_override->{$actual_field};
+    my $override = $operator_field_override->{$field};
     # Attachment fields get special handling, if they don't have a specific
     # individual override.
-    if (!$override and $actual_field =~ /^attachments\./) {
+    if (!$override and $field =~ /^attachments\./) {
         $override = $operator_field_override->{attachments};
     }
     # If there's still no override, check for an override on the field's type.
     if (!$override) {
-        my $field_obj = $self->_chart_fields->{$actual_field};
+        my $field_obj = $self->_chart_fields->{$field};
         $override = $operator_field_override->{$field_obj->type};
     }
     
@@ -1990,7 +2054,7 @@ sub _contact_exact_group {
     my $user = $self->_user;
     
     $value =~ /\%group\.([^%]+)%/;
-    my $group = Bugzilla::Group->check($1);
+    my $group = Bugzilla::Group->check({ name => $1, _error => 'invalid_group_name' });
     $group->check_members_are_visible();
     $user->in_group($group)
       || ThrowUserError('invalid_group_name', {name => $group->name});
@@ -2037,7 +2101,7 @@ sub _cc_exact_group {
     my $dbh = Bugzilla->dbh;
     
     $value =~ m/%group\.([^%]+)%/;
-    my $group = Bugzilla::Group->check($1);
+    my $group = Bugzilla::Group->check({ name => $1, _error => 'invalid_group_name' });
     $group->check_members_are_visible();
     $user->in_group($group)
       || ThrowUserError('invalid_group_name', {name => $group->name});
@@ -2277,11 +2341,11 @@ sub _content_matches {
     #
     # We build the relevance SQL by modifying the COLUMNS list directly,
     # which is kind of a hack but works.
-    my $current = COLUMNS->{'relevance'}->{name};
+    my $current = $self->COLUMNS->{'relevance'}->{name};
     $current = $current ? "$current + " : '';
     # For NOT searches, we just add 0 to the relevance.
     my $select_term = $operator =~ /not/ ? 0 : "($current$rterm1 + $rterm2)";
-    COLUMNS->{'relevance'}->{name} = $select_term;
+    $self->COLUMNS->{'relevance'}->{name} = $select_term;
 }
 
 sub _long_descs_count {
@@ -2331,13 +2395,13 @@ sub _work_time_changedbefore_after {
 sub _work_time {
     my ($self, $args) = @_;
     $self->_add_extra_column('actual_time');
-    $args->{full_field} = COLUMNS->{actual_time}->{name};
+    $args->{full_field} = $self->COLUMNS->{actual_time}->{name};
 }
 
 sub _percentage_complete {
     my ($self, $args) = @_;
     
-    $args->{full_field} = COLUMNS->{percentage_complete}->{name};
+    $args->{full_field} = $self->COLUMNS->{percentage_complete}->{name};
 
     # We need actual_time in _select_columns, otherwise we can't use
     # it in the expression for searching percentage_complete.
@@ -2508,8 +2572,8 @@ sub _multiselect_table {
                                " ON keywords.keywordid = keyworddefs.id";
     }
     elsif ($field eq 'tag') {
-        $args->{full_field} = 'tags.name';
-        return "bug_tag INNER JOIN tags ON bug_tag.tag_id = tags.id"
+        $args->{full_field} = 'tag.name';
+        return "bug_tag INNER JOIN tag ON bug_tag.tag_id = tag.id"
                                        . " AND user_id = " . $self->_user->id;
     }
     elsif ($field eq 'bug_group') {
@@ -2785,8 +2849,8 @@ sub split_order_term {
 
 # Used to translate old SQL fragments from buglist.cgi's "order" argument
 # into our modern field IDs.
-sub translate_old_column {
-    my ($column) = @_;
+sub _translate_old_column {
+    my ($self, $column) = @_;
     # All old SQL fragments have a period in them somewhere.
     return $column if $column !~ /\./;
 
@@ -2800,9 +2864,9 @@ sub translate_old_column {
     
     # If it doesn't match the regexps above, check to see if the old 
     # SQL fragment matches the SQL of an existing column
-    foreach my $key (%{ COLUMNS() }) {
-        next unless exists COLUMNS->{$key}->{name};
-        return $key if COLUMNS->{$key}->{name} eq $column;
+    foreach my $key (%{ $self->COLUMNS }) {
+        next unless exists $self->COLUMNS->{$key}->{name};
+        return $key if $self->COLUMNS->{$key}->{name} eq $column;
     }
 
     return $column;

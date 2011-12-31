@@ -26,8 +26,6 @@
 [% USE Bugzilla %]
 [% cgi = Bugzilla.cgi %]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% title = BLOCK %]'[% field.description FILTER html %]' ([% field.name FILTER html %]) フィールドの値を選択してください[% END %]
 [% PROCESS global/header.html.tmpl
   title = title

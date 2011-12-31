@@ -367,7 +367,7 @@ sub mail {
     # Don't send mail to someone whose bugmail notification is disabled.
     return if $addressee->email_disabled;
 
-    my $template = Bugzilla->template_inner($addressee->settings->{'lang'}->{'value'});
+    my $template = Bugzilla->template_inner($addressee->setting('lang'));
     my $msg = ''; # it's a temporary variable to hold the template output
     $args->{'alternatives'} ||= [];
 
@@ -447,12 +447,22 @@ sub run_queries {
         # Bugzilla::Search to execute a saved query.  It's exceedingly weird,
         # but that's how it works.
         my $searchparams = new Bugzilla::CGI($savedquery);
+        my @orderstrings = split(/,\s*/, $searchparams->param('order'));
         my $search = new Bugzilla::Search(
             'fields' => \@searchfields,
             'params' => scalar $searchparams->Vars,
             'user'   => $args->{'recipient'}, # the search runs as the recipient
+            'order'  => \@orderstrings
         );
-        my $sqlquery = $search->sql;
+        # If a query fails for whatever reason, it shouldn't kill the script.
+        my $sqlquery = eval { $search->sql };
+        if ($@) {
+            print STDERR get_text('whine_query_failed', { query_name => $thisquery->{'name'},
+                                                          author => $args->{'author'},
+                                                          reason => $@ }) . "\n";
+            next;
+        }
+
         $sth = $dbh->prepare($sqlquery);
         $sth->execute;
 

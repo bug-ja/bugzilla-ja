@@ -40,6 +40,9 @@ use Memoize;
 @Bugzilla::Constants::EXPORT = qw(
     BUGZILLA_VERSION
 
+    REMOTE_FILE
+    LOCAL_FILE
+
     bz_locations
 
     IS_NULL
@@ -179,6 +182,7 @@ use Memoize;
     MAX_FREETEXT_LENGTH
     MAX_BUG_URL_LENGTH
     MAX_POSSIBLE_DUPLICATES
+    MAX_ATTACH_FILENAME_LENGTH
 
     PASSWORD_DIGEST_ALGORITHM
     PASSWORD_SALT_LENGTH
@@ -199,7 +203,11 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.1.2";
+use constant BUGZILLA_VERSION => "4.3";
+
+# Location of the remote and local XML files to track new releases.
+use constant REMOTE_FILE => 'http://updates.bugzilla.org/bugzilla-update.xml';
+use constant LOCAL_FILE  => 'bugzilla-update.xml'; # Relative to datadir.
 
 # These are unique values that are unlikely to match a string or a number,
 # to be used in criteria for match() functions and other things. They start
@@ -429,8 +437,8 @@ use constant MAX_STS_AGE => 604800;
 
 # Protocols which are considered as safe.
 use constant SAFE_PROTOCOLS => ('afs', 'cid', 'ftp', 'gopher', 'http', 'https',
-                                'irc', 'mid', 'news', 'nntp', 'prospero', 'telnet',
-                                'view-source', 'wais');
+                                'irc', 'ircs', 'mid', 'news', 'nntp', 'prospero',
+                                'telnet', 'view-source', 'wais');
 
 # Valid MIME types for attachments.
 use constant LEGAL_CONTENT_TYPES => ('application', 'audio', 'image', 'message',
@@ -438,15 +446,16 @@ use constant LEGAL_CONTENT_TYPES => ('application', 'audio', 'image', 'message',
 
 use constant contenttypes =>
   {
-   "html"=> "text/html" ,
-   "rdf" => "application/rdf+xml" ,
-   "atom"=> "application/atom+xml" ,
-   "xml" => "application/xml" ,
-   "js"  => "application/x-javascript" ,
-   "json"=> "application/json" ,
-   "csv" => "text/csv" ,
-   "png" => "image/png" ,
-   "ics" => "text/calendar" ,
+   "html" => "text/html" ,
+   "rdf"  => "application/rdf+xml" ,
+   "atom" => "application/atom+xml" ,
+   "xml"  => "application/xml" ,
+   "dtd"  => "application/xml-dtd" , 
+   "js"   => "application/x-javascript" ,
+   "json" => "application/json" ,
+   "csv"  => "text/csv" ,
+   "png"  => "image/png" ,
+   "ics"  => "text/calendar" ,
   };
 
 # Usage modes. Default USAGE_MODE_BROWSER. Use with Bugzilla->usage_mode.
@@ -515,7 +524,7 @@ use constant DB_MODULE => {
 };
 
 # True if we're on Win32.
-use constant ON_WINDOWS => ($^O =~ /MSWin32/i);
+use constant ON_WINDOWS => ($^O =~ /MSWin32/i) ? 1 : 0;
 # True if we're using ActiveState Perl (as opposed to Strawberry) on Windows.
 use constant ON_ACTIVESTATE => eval { &Win32::BuildNumber };
 
@@ -554,6 +563,11 @@ use constant MAX_BUG_URL_LENGTH => 255;
 # The largest number of possible duplicates that Bug::possible_duplicates
 # will return.
 use constant MAX_POSSIBLE_DUPLICATES => 25;
+
+# Maximum length of filename stored in attachments table (longer ones will
+# be truncated to this value). Do not increase above 255 without making the
+# necessary schema changes to store longer names.
+use constant MAX_ATTACH_FILENAME_LENGTH => 255;
 
 # This is the name of the algorithm used to hash passwords before storing
 # them in the database. This can be any string that is valid to pass to

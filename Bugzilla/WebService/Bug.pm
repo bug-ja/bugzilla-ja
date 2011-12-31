@@ -175,8 +175,9 @@ sub _legal_field_values {
             my $product_name = $value->product->name;
             if ($user->can_see_product($product_name)) {
                 push(@result, {
-                    name    => $self->type('string', $value->name),
-                    sortkey => $self->type('int', $sortkey),
+                    name     => $self->type('string', $value->name),
+                    sort_key => $self->type('int', $sortkey),
+                    sortkey  => $self->type('int', $sortkey), # deprecated
                     visibility_values => [$self->type('string', $product_name)],
                 });
             }
@@ -200,9 +201,10 @@ sub _legal_field_values {
             }
 
             push (@result, {
-               name          => $self->type('string', $status->name),
-               is_open       => $self->type('boolean', $status->is_open),
-               sortkey       => $self->type('int', $status->sortkey),
+               name     => $self->type('string', $status->name),
+               is_open  => $self->type('boolean', $status->is_open),
+               sort_key => $self->type('int', $status->sortkey),
+               sortkey  => $self->type('int', $status->sortkey), # deprecated
                can_change_to => \@can_change_to,
                visibility_values => [],
             });
@@ -214,8 +216,9 @@ sub _legal_field_values {
         foreach my $value (@values) {
             my $vis_val = $value->visibility_value;
             push(@result, {
-                name              => $self->type('string', $value->name),
-                sortkey           => $self->type('int'   , $value->sortkey),
+                name     => $self->type('string', $value->name),
+                sort_key => $self->type('int'   , $value->sortkey),
+                sortkey  => $self->type('int'   , $value->sortkey), # deprecated
                 visibility_values => [
                     defined $vis_val ? $self->type('string', $vis_val->name) 
                                      : ()
@@ -300,6 +303,7 @@ sub _translate_comment {
         is_private => $self->type('boolean', $comment->is_private),
         text       => $self->type('string', $comment->body_full),
         attachment_id => $self->type('int', $attach_id),
+        count      => $self->type('int', $comment->count),
     };
 }
 
@@ -477,7 +481,7 @@ sub update {
     my $ids = delete $params->{ids};
     defined $ids || ThrowCodeError('param_required', { param => 'ids' });
 
-    my @bugs = map { Bugzilla::Bug->check($_) } @$ids;
+    my @bugs = map { Bugzilla::Bug->check_for_edit($_) } @$ids;
 
     my %values = %$params;
     $values{other_bugs} = \@bugs;
@@ -493,11 +497,6 @@ sub update {
     delete $values{flags};
 
     foreach my $bug (@bugs) {
-        if (!$user->can_edit_product($bug->product_obj->id) ) {
-            ThrowUserError("product_edit_denied",
-                          { product => $bug->product });
-        }
-
         $bug->set_all(\%values);
     }
 
@@ -628,17 +627,16 @@ sub add_attachment {
     defined $params->{data}
         || ThrowCodeError('param_required', { param => 'data' });
 
-    my @bugs = map { Bugzilla::Bug->check($_) } @{ $params->{ids} };
-    foreach my $bug (@bugs) {
-        Bugzilla->user->can_edit_product($bug->product_id)
-          || ThrowUserError("product_edit_denied", {product => $bug->product});
-    }
+    my @bugs = map { Bugzilla::Bug->check_for_edit($_) } @{ $params->{ids} };
 
     my @created;
     $dbh->bz_start_transaction();
+    my $timestamp = $dbh->selectrow_array('SELECT LOCALTIMESTAMP(0)');
+
     foreach my $bug (@bugs) {
         my $attachment = Bugzilla::Attachment->create({
             bug         => $bug,
+            creation_ts => $timestamp,
             data        => $params->{data},
             description => $params->{summary},
             filename    => $params->{file_name},
@@ -653,7 +651,7 @@ sub add_attachment {
               extra_data => $attachment->id });
         push(@created, $attachment);
     }
-    $_->bug->update($_->attached) foreach @created;
+    $_->bug->update($timestamp) foreach @created;
     $dbh->bz_commit_transaction();
 
     $_->send_changes() foreach @bugs;
@@ -666,10 +664,10 @@ sub add_attachment {
 
 sub add_comment {
     my ($self, $params) = @_;
-    
-    #The user must login in order add a comment
-    Bugzilla->login(LOGIN_REQUIRED);
-    
+
+    # The user must login in order add a comment
+    my $user = Bugzilla->login(LOGIN_REQUIRED);
+
     # Check parameters
     defined $params->{id} 
         || ThrowCodeError('param_required', { param => 'id' }); 
@@ -677,11 +675,8 @@ sub add_comment {
     (defined $comment && trim($comment) ne '')
         || ThrowCodeError('param_required', { param => 'comment' });
     
-    my $bug = Bugzilla::Bug->check($params->{id});
-    
-    Bugzilla->user->can_edit_product($bug->product_id)
-        || ThrowUserError("product_edit_denied", {product => $bug->product});
-    
+    my $bug = Bugzilla::Bug->check_for_edit($params->{id});
+
     # Backwards-compatibility for versions before 3.6    
     if (defined $params->{private}) {
         $params->{is_private} = delete $params->{private};
@@ -703,8 +698,8 @@ sub add_comment {
     $dbh->bz_commit_transaction();
     
     # Send mail.
-    Bugzilla::BugMail::Send($bug->bug_id, { changer => Bugzilla->user });
-    
+    Bugzilla::BugMail::Send($bug->bug_id, { changer => $user });
+
     return { id => $self->type('int', $new_comment_id) };
 }
 
@@ -722,10 +717,7 @@ sub update_see_also {
 
     my @bugs;
     foreach my $id (@{ $params->{ids} }) {
-        my $bug = Bugzilla::Bug->check($id);
-        $user->can_edit_product($bug->product_id)
-            || ThrowUserError("product_edit_denied", 
-                              { product => $bug->product });
+        my $bug = Bugzilla::Bug->check_for_edit($id);
         push(@bugs, $bug);
         if ($remove) {
             $bug->remove_see_also($_) foreach @$remove;
@@ -1018,7 +1010,7 @@ containing the following keys:
 
 =item C<id>
 
-C<int> An integer id uniquely idenfifying this field in this installation only.
+C<int> An integer id uniquely identifying this field in this installation only.
 
 =item C<type>
 
@@ -1110,10 +1102,14 @@ Each hash has the following keys:
 C<string> The actual value--this is what you would specify for this
 field in L</create>, etc.
 
-=item C<sortkey>
+=item C<sort_key>
 
 C<int> Values, when displayed in a list, are sorted first by this integer
 and then secondly by their name.
+
+=item C<sortkey>
+
+B<DEPRECATED> - Use C<sort_key> instead.
 
 =item C<visibility_values>
 
@@ -1170,6 +1166,8 @@ You specified an invalid field name or id.
 =item Added in Bugzilla B<3.6>.
 
 =item The C<is_mandatory> return value was added in Bugzilla B<4.0>.
+
+=item C<sortkey> was renamed to C<sort_key> in Bugzilla B<4.2>.
 
 =back
 
@@ -1479,6 +1477,11 @@ C<int> The ID of the bug that this comment is on.
 C<int> If the comment was made on an attachment, this will be the
 ID of that attachment. Otherwise it will be null.
 
+=item count
+
+C<int> The number of the comment local to the bug. The Description is 0,
+comments start with 1.
+
 =item text
 
 C<string> The actual text of the comment.
@@ -1533,6 +1536,8 @@ that id.
 
 =item In Bugzilla B<4.0>, the C<author> return value was renamed to
 C<creator>.
+
+=item C<count> was added to the return value in Bugzilla B<5.0>.
 
 =back
 
@@ -2267,9 +2272,8 @@ is private, otherwise it is assumed to be public.
 =item C<groups> (array) - An array of group names to put this
 bug into. You can see valid group names on the Permissions
 tab of the Preferences screen, or, if you are an administrator,
-in the Groups control panel. Note that invalid group names or
-groups that the bug can't be restricted to are silently ignored. If
-you don't specify this argument, then a bug will be added into
+in the Groups control panel.
+If you don't specify this argument, then the bug will be added into
 all the groups that are set as being "Default" for this product. (If
 you want to avoid that, you should specify C<groups> as an empty array.)
 
@@ -2279,6 +2283,11 @@ the component's default QA Contact.
 
 =item C<status> (string) - The status that this bug should start out as.
 Note that only certain statuses can be set on bug creation.
+
+=item C<resolution> (string) - If you are filing a closed bug, then
+you will have to specify a resolution. You cannot currently specify
+a resolution of C<DUPLICATE> for new bugs, though. That must be done
+with L</update>.
 
 =item C<target_milestone> (string) - A valid target milestone for this
 product.
@@ -2330,6 +2339,11 @@ You didn't specify a summary for the bug.
 You specified values in the C<blocks> or C<depends_on> fields
 that would cause a circular dependency between bugs.
 
+=item 120 (Group Restriction Denied)
+
+You tried to restrict the bug to a group which does not exist, or which
+you cannot use with this product.
+
 =item 504 (Invalid User)
 
 Either the QA Contact, Assignee, or CC lists have some invalid user
@@ -2346,7 +2360,9 @@ B<Required>, due to a bug in Bugzilla.
 
 =item The C<groups> argument was added in Bugzilla B<4.0>. Before
 Bugzilla 4.0, bugs were only added into Mandatory groups by this
-method.
+method. Since Bugzilla B<4.0.2>, passing an illegal group name will
+throw an error. In Bugzilla 4.0 and 4.0.1, illegal group names were
+silently ignored.
 
 =item The C<comment_is_private> argument was added in Bugzilla B<4.0>.
 Before Bugzilla 4.0, you had to use the undocumented C<commentprivacy>
@@ -2354,6 +2370,9 @@ argument.
 
 =item Error 116 was added in Bugzilla B<4.0>. Before that, dependency
 loop errors had a generic code of C<32000>.
+
+=item The ability to file new bugs with a C<resolution> was added in
+Bugzilla B<5.0>.
 
 =back
 
@@ -2483,7 +2502,7 @@ This allows you to add a comment to a bug in Bugzilla.
 
 =over
 
-=item C<id> (int) B<Required> - The id or alias of the bug to append a 
+=item C<id> (int or string) B<Required> - The id or alias of the bug to append a 
 comment to.
 
 =item C<comment> (string) B<Required> - The comment to append to the bug.

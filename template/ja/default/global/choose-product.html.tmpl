@@ -27,8 +27,6 @@
   # format:   the desired format to display the target.
   #%]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% IF target == "enter_bug.cgi" %]
   [% title = "$terms.Bug の登録" %]
   [% h2 = BLOCK %]まず最初に、[% terms.abug %] を登録するプロダクトを選択してください。[% END %]

@@ -21,8 +21,6 @@
 
 [%# Remember to PROCESS rather than INCLUDE this template. %]
 
-[% PROCESS global/variables.none.tmpl %]
-
 [% SET search_descs = {
   "noop"           => "---",
   "equals"         => "と等しい",
@@ -98,6 +96,7 @@
     "component"               => "コンポーネント",
     "content"                 => "中身",
     "creation_ts"             => "作成日",
+    "days_elapsed"            => "$terms.bug が更新されてからの日数",
     "deadline"                => "締め切り",
     "delta_ts"                => "変更された",
     "dependson"               => "依存",
@@ -132,7 +131,7 @@
     "settings"                => "設定",
     "short_desc"              => "要約",
     "status_whiteboard"       => "ホワイトボード",
-    "tags.name"               => "タグ",
+    "tag.name"                => "タグ",
     "target_milestone"        => "ターゲットマイルストーン",
     "version"                 => "バージョン",
     "work_time"               => "作業時間",
@@ -148,6 +147,8 @@
          IF !vars.field_descs.${bz_field.name}.defined %]
     [% END %]
   [% END %]
+
+  [% PROCESS "bug/field-help.none.tmpl" %]
 [% END %]
 
 [% Hook.process("end") %]

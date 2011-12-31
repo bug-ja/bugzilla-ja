@@ -451,7 +451,7 @@ use constant ABSTRACT_SCHEMA => {
             mimetype     => {TYPE => 'TINYTEXT', NOTNULL => 1},
             ispatch      => {TYPE => 'BOOLEAN', NOTNULL => 1,
                              DEFAULT => 'FALSE'},
-            filename     => {TYPE => 'varchar(100)', NOTNULL => 1},
+            filename     => {TYPE => 'varchar(255)', NOTNULL => 1},
             submitter_id => {TYPE => 'INT3', NOTNULL => 1,
                              REFERENCES => {TABLE => 'profiles',
                                             COLUMN => 'userid'}},
@@ -494,6 +494,8 @@ use constant ABSTRACT_SCHEMA => {
 
     bug_see_also => {
         FIELDS => [
+            id     => {TYPE => 'MEDIUMSERIAL', NOTNULL => 1,
+                       PRIMARYKEY => 1},
             bug_id => {TYPE => 'INT3', NOTNULL => 1,
                        REFERENCES => {TABLE  => 'bugs',
                                       COLUMN => 'bug_id',
@@ -514,7 +516,8 @@ use constant ABSTRACT_SCHEMA => {
         FIELDS => [
             user_id   => {TYPE => 'INT3',
                           REFERENCES => {TABLE  => 'profiles',
-                                         COLUMN => 'userid'}},
+                                         COLUMN => 'userid',
+                                         DELETE => 'SET NULL'}},
             class     => {TYPE => 'varchar(255)', NOTNULL => 1},
             object_id => {TYPE => 'INT4', NOTNULL => 1},
             field     => {TYPE => 'varchar(64)', NOTNULL => 1},
@@ -883,6 +886,8 @@ use constant ABSTRACT_SCHEMA => {
             mybugslink     => {TYPE => 'BOOLEAN', NOTNULL => 1,
                                DEFAULT => 'TRUE'},
             extern_id      => {TYPE => 'varchar(64)'},
+            is_enabled     => {TYPE => 'BOOLEAN', NOTNULL => 1, 
+                               DEFAULT => 'TRUE'}, 
         ],
         INDEXES => [
             profiles_login_name_idx => {FIELDS => ['login_name'],
@@ -996,7 +1001,7 @@ use constant ABSTRACT_SCHEMA => {
         ],
     },
 
-    tags => {
+    tag => {
         FIELDS => [
             id   => {TYPE => 'MEDIUMSERIAL', NOTNULL => 1, PRIMARYKEY => 1},
             name => {TYPE => 'varchar(64)', NOTNULL => 1},
@@ -1006,7 +1011,7 @@ use constant ABSTRACT_SCHEMA => {
                                         DELETE => 'CASCADE'}},
         ],
         INDEXES => [
-            tags_user_id_idx => {FIELDS => [qw(user_id name)], TYPE => 'UNIQUE'},
+            tag_user_id_idx => {FIELDS => [qw(user_id name)], TYPE => 'UNIQUE'},
         ],
     },
 
@@ -1017,7 +1022,7 @@ use constant ABSTRACT_SCHEMA => {
                                       COLUMN => 'bug_id',
                                       DELETE => 'CASCADE'}},
             tag_id => {TYPE => 'INT3', NOTNULL => 1,
-                       REFERENCES => {TABLE  => 'tags',
+                       REFERENCES => {TABLE  => 'tag',
                                       COLUMN => 'id',
                                       DELETE => 'CASCADE'}},
         ],
@@ -2172,8 +2177,8 @@ sub get_add_column_ddl {
         if defined $init_value;
 
     if (defined $definition->{REFERENCES}) {
-        push(@statements, $self->get_add_fk_sql($table, $column,
-                                                $definition->{REFERENCES}));
+        push(@statements, $self->get_add_fks_sql($table, { $column =>
+                                                           $definition->{REFERENCES} }));
     }
 
     return (@statements);

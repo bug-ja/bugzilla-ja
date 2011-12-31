@@ -1,4 +1,10 @@
-<!-- <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook V4.1//EN"> -->
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                      "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+    <!ENTITY % myents SYSTEM "bugzilla.ent">
+    %myents;
+]>
+
 <chapter id="administration">
   <title>Bugzilla 管理</title>
 
@@ -21,10 +27,6 @@
           新規 Bugzilla インストールを利用する前に設定する必要があります。
           管理者はサイトを展開する前にこのリストを確認することをお勧めします。
         </para>
-
-        <indexterm>
-          <primary>チェックリスト</primary>
-        </indexterm>
 
         <variablelist>
 
@@ -836,6 +838,12 @@
             一致させるかについてのパラメータも設定できます。
           </para>
 
+          <para>
+            もうひとつの設定は 'ajax_user_autocompletion' で、ユーザが数文字を入力
+            したところでその文字列で始まるユーザ名をドロップダウンリストとして表示
+            するようになりまう。なお、'ajax_user_autocompletion' を有効にする場合は
+            mod_perl を利用することを推奨します。
+          </para>
         </section>
 
   </section>
@@ -2305,6 +2313,11 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
               フィールドの型です。いくつかのタイプがあります。
                <simplelist>
                  <member>
+                   Bug ID: 同じ Bugzilla サイトにあるほかの bug の ID を入力できる
+                   フィールドです。ほかのサイトの bug を入れたい場合は、
+                   "参照" フィールドを利用してください。
+                 </member>
+                 <member>
                    広い入力エリア: 複数行の自由記入ができるテキストボックスです。
                  </member>
                  <member>
@@ -2340,6 +2353,16 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
 
           <listitem>
             <para>
+              <emphasis>逆向きの関係の説明:</emphasis>
+              カスタムフィールドの型が <quote>Bug ID</quote> の場合、
+              ここにリストされている bug が示す先でこのラベルが利用されます。
+              これにより、二つの bug の間に相互関係があることを示すことに利用
+              できます。
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
               <emphasis>bug 作成時に設定可能:</emphasis>
               バグ作成時にこのフィールドを設定可能とするかどうかを決定します。
               非選択の場合、バグを作成するまではフィールドに値を設定することが
@@ -2362,6 +2385,43 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
               <emphasis>用済み:</emphasis>
               このフィールドを表示するかどうかを決定します。
               用済みとされたフィールドは表示されません。
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              <emphasis>必須にする:</emphasis>
+              このフィールドが必須であるかどうかを指定します。
+              単一または複数選択フィールドの場合、これは、(非既定) 値を選択する
+              必要があることを意味し、テキストや日付フィールドならば、
+              何らかの文字列を入力しないといけないことを意味します。
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              <emphasis>フィールドの出現条件:</emphasis>
+              カスタムフィールドは何らかの条件に合致した場合のみ表示されます。
+              たとえば、bug があるひとつ以上のプロダクトに属しているか、
+              ある重要性を持っているとき、などです。空白のままにすると、
+              カスタムフィールドは常にすべての bug で表示されます。
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>
+              <emphasis>このフィールドに表示される値を制御するフィールド:</emphasis>
+              <quote>ドロップダウン</quote> か <quote>複数選択ボックス</quote>
+              のカスタムフィールドに対し、他のフィールドの値を元にして
+              表示される値を制御することが可能です。この条件は、
+              <quote>出現条件</quote> で利用されたのとは独立な条件になります。
+              たとえば、ある値 <quote>valueY</quote> は bug のステータスが
+              RESOLVED である場合にのみ表示されるが、<quote>valueX</quote>
+              は常に表示される、などです。
+              いったんあるカスタムフィールドの値の表示を制御するために別な
+              フィールドを指定したあとで、このカスタムフィールドの値を設定する
+              ための条件を指定できます。詳細は
+              <xref linkend="edit-values-list" /> をご覧ください。
             </para>
           </listitem>
         </itemizedlist>
@@ -2405,6 +2465,11 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
       同じ画面から編集できるようになりました。
       そして、Bugzilla 3.1.1 からはバグのステータスについても同様に編集
       できるようになりました。
+      OS、プラットフォーム、バグの優先度、重要度、そして <quote>ドロップダウン</quote>
+      もしくは <quote>複数選択ボックス</quote> 形式のカスタムフィールド
+      (<xref linkend="custom-fields" /> 参照)、有効な bug のステータスや
+      解決方法のリストは、同じインターフェースから編集できます。
+      値の追加、編集、無効化、削除が可能になります。
     </para>
 
     <section id="edit-values-list">
@@ -2420,6 +2485,11 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
         フィールドが持つことができる値の数に制限はありませんが、全ての値は
         フィールド内で唯一でなければなりません。ソート順は値がどのような順で
         表示されるかを決定する重要な値です。
+      </para>
+      <para>
+        カスタムフィールドの値の有効性を他のフィールドで制御している場合、
+        フィールドのどの値が選択肢として表示されるかについて制御する値を
+        他のフィールドの値から選択できるようになります。
       </para>
     </section>
 
