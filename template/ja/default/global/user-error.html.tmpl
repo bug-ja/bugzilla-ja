@@ -783,6 +783,10 @@
     [% title = BLOCK %] ファイルが指定されていません [% END %]
     ファイルが指定されていません。
 
+  [% ELSIF error == "filename_not_specified" %]
+    [% title = "ファイル名が指定されていません" %]
+    この添付へのファイル名を指定する必要があります。
+
   [% ELSIF error == "file_too_large" %]
     [% title = BLOCK %] ファイルが大きすぎます [% END %]
     [%# Convert maxlocalattachment from Mb to Kb %]
@@ -1114,9 +1118,9 @@
     [% title = BLOCK %] Content-Type が無効です [% END %]
     Content-Type <em>[% contenttype FILTER html %]</em> は無効です。
     Content-Type は <em>foo/bar</em> の形式で、<em>foo</em> には
-    <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>.
-    のいずれかでなくてはいけません。
-    
+    <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>
+    でなくてはならず、<em>bar</em> は特殊文字 ("=", "?", など) を含んではなりません。
+
   [% ELSIF error == "invalid_context" %]
     [% title = BLOCK %] コンテキストが無効です [% END %]
     コンテキスト [% context FILTER html %] は無効です (有効な値は数値か、
@@ -1968,6 +1972,10 @@
     添付
   [% ELSIF class == "Bugzilla::User" %]
     ユーザ
+  [% ELSIF class == "Bugzilla::Classification" %]
+    classification
+  [% ELSIF class == "Bugzilla::Product" %]
+    プロダクト
   [% ELSIF class == "Bugzilla::Component" %]
     [% jawords.component FILTER html %]
   [% ELSIF class == "Bugzilla::Version" %]
@@ -1986,8 +1994,6 @@
     グループ
   [% ELSIF class == "Bugzilla::Keyword" %]
     キーワード
-  [% ELSIF class == "Bugzilla::Product" %]
-    プロダクト
   [% ELSIF class == "Bugzilla::Search::Recent" %]
     最近の検索
   [% ELSIF class == "Bugzilla::Search::Saved" %]

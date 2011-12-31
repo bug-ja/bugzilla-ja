@@ -554,8 +554,8 @@ sub possible_duplicates {
            FROM bugs
                 INNER JOIN bugs_fulltext ON bugs.bug_id = bugs_fulltext.bug_id
           WHERE ($where_sql) $product_sql
-       ORDER BY relevance DESC, bug_id DESC
-          LIMIT $sql_limit", {Slice=>{}});
+       ORDER BY relevance DESC, bug_id DESC " .
+          $dbh->sql_limit($sql_limit), {Slice=>{}});
 
     my @actual_dupe_ids;
     # Resolve duplicates into their ultimate target duplicates.
@@ -966,6 +966,9 @@ sub update {
                                 join(', ', map { $_->name } @$added_see)];
     }
 
+    $_->update foreach @{ $self->{_update_ref_bugs} || [] };
+    delete $self->{_update_ref_bugs};
+
     # Log bugs_activity items
     # XXX Eventually, when bugs_activity is able to track the dupe_id,
     # this code should go below the duplicates-table-updating code below.
@@ -1130,9 +1133,7 @@ sub remove_from_db {
     # The bugs_fulltext table doesn't support transactions.
     $dbh->do("DELETE FROM bugs_fulltext WHERE bug_id = ?", undef, $bug_id);
 
-    # Now this bug no longer exists
-    $self->DESTROY;
-    return $self;
+    undef $self;
 }
 
 #####################################################################
@@ -1216,6 +1217,8 @@ sub send_changes {
 
 sub _send_bugmail {
     my ($params, $vars) = @_;
+
+    require Bugzilla::BugMail;
 
     my $results = 
         Bugzilla::BugMail::Send($params->{'id'}, $params->{'forced'}, $params);
@@ -2677,19 +2680,21 @@ sub add_comment {
 
     $params ||= {};
 
-    # This makes it so we won't create new comments when there is nothing
-    # to add 
-    if ($comment eq '' && !($params->{type} || abs($params->{work_time}))) {
-        return;
-    }
-
     # Fill out info that doesn't change and callers may not pass in
     $params->{'bug_id'}  = $self;
-    $params->{'thetext'} = $comment;
+    $params->{'thetext'} = defined($comment) ? $comment : '';
 
     # Validate all the entered data
     Bugzilla::Comment->check_required_create_fields($params);
     $params = Bugzilla::Comment->run_create_validators($params);
+
+    # This makes it so we won't create new comments when there is nothing
+    # to add 
+    if ($params->{'thetext'} eq ''
+        && !($params->{type} || abs($params->{work_time} || 0)))
+    {
+        return;
+    }
 
     # If the user has explicitly set remaining_time, this will be overridden
     # later in set_all. But if they haven't, this keeps remaining_time
@@ -2833,12 +2838,13 @@ sub remove_group {
 }
 
 sub add_see_also {
-    my ($self, $input) = @_;
+    my ($self, $input, $skip_recursion) = @_;
 
     # This is needed by xt/search.t.
     $input = $input->name if blessed($input);
 
     $input = trim($input);
+    return if !$input;
 
     my ($class, $uri) = Bugzilla::BugUrl->class_for($input);
 
@@ -2848,15 +2854,6 @@ sub add_see_also {
     my $field_values = $class->run_create_validators($params);
     $uri = $field_values->{value};
     $field_values->{value} = $uri->as_string;
-
-    # If this is a link to a local bug then save the
-    # ref bug id for sending changes email.
-    if ($class->isa('Bugzilla::BugUrl::Bugzilla::Local')) {
-        my $ref_bug = $field_values->{ref_bug};
-        my $self_url = $class->local_uri($self->id);
-        push @{ $self->{see_also_changes} }, $ref_bug->id
-            if !grep { $_->name eq $self_url } @{ $ref_bug->see_also };
-    }
 
     # We only add the new URI if it hasn't been added yet. URIs are
     # case-sensitive, but most of our DBs are case-insensitive, so we do
@@ -2871,13 +2868,22 @@ sub add_see_also {
                                                newvalue => $value,
                                                privs    => $privs });
         }
-
+        # If this is a link to a local bug then save the
+        # ref bug id for sending changes email.
+        my $ref_bug = delete $field_values->{ref_bug};
+        if ($class->isa('Bugzilla::BugUrl::Bugzilla::Local')
+            and !$skip_recursion)
+        {
+            $ref_bug->add_see_also($self->id, 'skip_recursion');
+            push @{ $self->{_update_ref_bugs} }, $ref_bug;
+            push @{ $self->{see_also_changes} }, $ref_bug->id;
+        }
         push @{ $self->{see_also} }, bless ($field_values, $class);
     }
 }
 
 sub remove_see_also {
-    my ($self, $url) = @_;
+    my ($self, $url, $skip_recursion) = @_;
     my $see_also = $self->see_also;
 
     # This is needed by xt/search.t.
@@ -2885,16 +2891,6 @@ sub remove_see_also {
 
     my ($removed_bug_url, $new_see_also) =
         part { lc($_->name) ne lc($url) } @$see_also;
- 
-    # Since we remove also the url from the referenced bug,
-    # we need to notify changes for that bug too.
-    $removed_bug_url = $removed_bug_url->[0];
-    if ($removed_bug_url->isa('Bugzilla::BugUrl::Bugzilla::Local')
-        and defined $removed_bug_url->ref_bug_url)
-    {
-        push @{ $self->{see_also_changes} },
-             $removed_bug_url->ref_bug_url->bug_id;
-    }
 
     my $privs;
     my $can = $self->check_can_change_field('see_also', $see_also, $new_see_also, \$privs);
@@ -2902,6 +2898,23 @@ sub remove_see_also {
         ThrowUserError('illegal_change', { field    => 'see_also',
                                            oldvalue => $url,
                                            privs    => $privs });
+    }
+
+    # Since we remove also the url from the referenced bug,
+    # we need to notify changes for that bug too.
+    $removed_bug_url = $removed_bug_url->[0];
+    if (!$skip_recursion and $removed_bug_url
+        and $removed_bug_url->isa('Bugzilla::BugUrl::Bugzilla::Local'))
+    {
+        my $ref_bug
+            = Bugzilla::Bug->check($removed_bug_url->ref_bug_url->bug_id);
+
+        if (Bugzilla->user->can_edit_product($ref_bug->product_id)) {
+            my $self_url = $removed_bug_url->local_uri($self->id);
+            $ref_bug->remove_see_also($self_url, 'skip_recursion');
+            push @{ $self->{_update_ref_bugs} }, $ref_bug;
+            push @{ $self->{see_also_changes} }, $ref_bug->id;
+        }
     }
 
     $self->{see_also} = $new_see_also || [];
@@ -2916,10 +2929,10 @@ sub add_tag {
     my $tag_id = $user->tags->{$tag}->{id};
     # If this tag doesn't exist for this user yet, create it.
     if (!$tag_id) {
-        $dbh->do('INSERT INTO tags (user_id, name) VALUES (?, ?)',
+        $dbh->do('INSERT INTO tag (user_id, name) VALUES (?, ?)',
                   undef, ($user->id, $tag));
 
-        $tag_id = $dbh->selectrow_array('SELECT id FROM tags
+        $tag_id = $dbh->selectrow_array('SELECT id FROM tag
                                          WHERE name = ? AND user_id = ?',
                                          undef, ($tag, $user->id));
         # The list has changed.
@@ -2955,7 +2968,7 @@ sub remove_tag {
 
     # Decrement the counter, and delete the tag if no bugs are using it anymore.
     if (!--$user->tags->{$tag}->{bug_count}) {
-        $dbh->do('DELETE FROM tags WHERE name = ? AND user_id = ?',
+        $dbh->do('DELETE FROM tag WHERE name = ? AND user_id = ?',
                   undef, ($tag, $user->id));
 
         # The list has changed.
@@ -2972,7 +2985,7 @@ sub tags {
     if (!exists $self->{tags}) {
         $self->{tags} = $dbh->selectcol_arrayref(
             'SELECT name FROM bug_tag
-             INNER JOIN tags ON tags.id = bug_tag.tag_id
+             INNER JOIN tag ON tag.id = bug_tag.tag_id
              WHERE bug_id = ? AND user_id = ?',
              undef, ($self->id, $user->id));
     }
@@ -3383,7 +3396,7 @@ sub reporter {
 sub see_also {
     my ($self) = @_;
     return [] if $self->{'error'};
-    if (!defined $self->{see_also}) {
+    if (!exists $self->{see_also}) {
         my $ids = Bugzilla->dbh->selectcol_arrayref(
             'SELECT id FROM bug_see_also WHERE bug_id = ?',
             undef, $self->id);

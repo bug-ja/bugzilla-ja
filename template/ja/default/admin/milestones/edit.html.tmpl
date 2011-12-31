@@ -37,17 +37,17 @@
   <table border="0" cellpadding="4" cellspacing="0">
 
     <tr>
-      <th valign="top"><label for="milestone">マイルストーン:</label></th>
+      <th class="field_label"><label for="milestone">マイルストーン\:</label></th>
       <td><input id="milestone" size="20" maxlength="20" name="milestone" value="
       [%- milestone.name FILTER html %]"></td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">ソート順:</label></th>
+      <th class="field_label"><label for="sortkey">ソート順:</label></th>
       <td><input id="sortkey" size="20" maxlength="20" name="sortkey" value="
       [%- milestone.sortkey FILTER html %]"></td>
     </tr>
     <tr>
-      <th><label for="isactive">[% terms.Bugs %] で利用可能:</label></th>
+      <th class="field_label"><label for="isactive">[% terms.Bugs %] で利用可能:</label></th>
       <td><input id="isactive" name="isactive" type="checkbox" value="1"
                  [% 'checked="checked"' IF milestone.isactive %]></td>
     </tr>

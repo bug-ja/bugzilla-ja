@@ -205,7 +205,8 @@
 
   [% IF assignee_or_qa || cc || component_cc || email_setting || flags.requestee ||
         namedqueries || profile_setting || quips || series || watch.watched ||
-        watch.watcher || whine_events || whine_schedules || other_safe %]
+        watch.watcher || whine_events || whine_schedules || otheruser.has_audit_entries ||
+        other_safe %]
     <div class="warningmessages">
       <p>以下の情報の削除は <b>安全</b> です。
       これにより、データに不整合は発生しません。</p>
@@ -366,6 +367,14 @@
             [%+ whine_schedules %] 件の whine の終了通知を受け取っています。
             対応するスケジュールはユーザアカウントと共に削除されますが、
             whine そのものはそのまま残ります。
+          </li>
+        [% END %]
+        [% IF otheruser.has_audit_entries %]
+          <li>
+            このユーザはデータベースに記録されている監査対象の管理者タスクを
+            実行しています。
+            このユーザアカウントを削除すると、監査ログはその実行者を特定でき
+            なくなります。
           </li>
         [% END %]
         [% Hook.process('warn_safe') %]

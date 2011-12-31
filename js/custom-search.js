@@ -32,6 +32,8 @@ var ANY_ALL_SELECT_CLASS = 'any_all_select';
 function custom_search_not_changed(id) {
     var container = document.getElementById('custom_search_not_container_' + id);
     YAHOO.util.Dom.removeClass(container, 'custom_search_advanced');
+
+    fix_query_string(container);
 }
 
 function custom_search_new_row() {
@@ -53,6 +55,7 @@ function custom_search_new_row() {
     // Always make sure there's only one row with this id.
     row.id = null;
     row.parentNode.appendChild(clone);
+    fix_query_string(row);
     return clone;
 }
 
@@ -100,6 +103,8 @@ function custom_search_open_paren() {
     var new_margin = parseInt(int_match[0]) + PAREN_INDENT_EM;
     YAHOO.util.Dom.setStyle(row, 'margin-left', new_margin + 'em');
     YAHOO.util.Dom.removeClass('cp_container', 'bz_default_hidden');
+
+    fix_query_string(any_all_container);
 }
 
 function custom_search_close_paren() {
@@ -124,8 +129,40 @@ function custom_search_close_paren() {
     if (new_margin == 0) {
         YAHOO.util.Dom.addClass('cp_container', 'bz_default_hidden');
     }
+
+    fix_query_string(new_row);
 }
 
+// When a user goes Back in their browser after searching, some browsers
+// (Chrome, as of September 2011) do not remember the DOM that was created
+// by the Custom Search JS. (In other words, their whole entered Custom
+// Search disappears.) The solution is to update the History object,
+// using the query string, which query.cgi can read to re-create the page
+// exactly as the user had it before.
+function fix_query_string(form_member) {
+    // window.History comes from history.js.
+    // It falls back to the normal window.history object for HTML5 browsers.
+    if (!(window.History && window.History.replaceState))
+        return;
+
+    var form = YAHOO.util.Dom.getAncestorByTagName(form_member, 'form');
+    var query = YAHOO.util.Connect.setForm(form);
+    window.History.replaceState(null, document.title, '?' + query);
+}
+
+// Browsers that do not support HTML5's history.replaceState gain an emulated
+// version via history.js, with the full query_string in the location's hash.
+// We rewrite the URL to include the hash and redirect to the new location,
+// which causes custom search fields to work.
+function redirect_html4_browsers() {
+    var hash = document.location.hash;
+    if (hash == '') return;
+    hash = hash.substring(1);
+    if (hash.substring(0, 10) != 'query.cgi?') return;
+    var url = document.location + "";
+    url = url.substring(0, url.indexOf('query.cgi#')) + hash;
+    document.location = url;
+}
 
 function _cs_fix_ids(parent, preserve_values) {
     // Update the label of the checkbox.

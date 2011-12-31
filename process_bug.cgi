@@ -48,8 +48,6 @@ use lib qw(. lib);
 use Bugzilla;
 use Bugzilla::Constants;
 use Bugzilla::Bug;
-use Bugzilla::BugMail;
-use Bugzilla::Mailer;
 use Bugzilla::User;
 use Bugzilla::Util;
 use Bugzilla::Error;
@@ -386,6 +384,9 @@ foreach my $bug (@bug_objects) {
 
     $bug->send_changes($changes, $vars);
 }
+
+# Delete the session token used for the mass-change.
+delete_token($token) unless $cgi->param('id');
 
 if (Bugzilla->usage_mode == USAGE_MODE_EMAIL) {
     # Do nothing.

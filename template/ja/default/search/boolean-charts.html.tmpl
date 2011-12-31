@@ -73,7 +73,11 @@
     TUI_alternates['custom_search_advanced'] = "詳細条件設定を表示する";
     TUI_hide_default('custom_search_advanced');
   </script>
-  <script type="text/javascript" src="js/custom-search.js"></script>
+  <script type="text/javascript" src="[% 'js/custom-search.js' FILTER mtime %]"></script>
+  <script type="text/javascript" src="[% 'js/history.js/native.history.js' FILTER mtime %]"></script>
+  <script type="text/javascript">
+    redirect_html4_browsers();
+  </script>
 </div>
 [%# Whoever wrote the original version of boolean charts had a seriously twisted mind %]
 
@@ -134,6 +138,7 @@
     [% ELSE %]
       <select name="f[% cond_num FILTER html %]" title="Field"
               id="f[% cond_num FILTER html %]"
+              onchange="fix_query_string(this)"
               class="custom_search_form_field">
         [% FOREACH field = fields %]
           <option value="[% field.name FILTER html %]"
@@ -149,6 +154,7 @@
     
       <input name="v[% cond_num FILTER html %]" title="検索値"
              class="custom_search_form_field"
+             onchange="fix_query_string(this)"
              value="[% condition.v FILTER html %]">
     [% END %]
     
@@ -169,7 +175,8 @@
 
 [% BLOCK any_all_select %]
   <div class="any_all_select">
-    <select name="[% name FILTER html %]" id="[% name FILTER html %]">
+    <select name="[% name FILTER html %]" id="[% name FILTER html %]"
+            onchange="fix_query_string(this)">
       <option value="AND">以下のすべてに合致:</option>
       <option value="OR" [% ' selected="selected"' IF selected == "OR" %]>
         以下のいずれかに合致:</option>

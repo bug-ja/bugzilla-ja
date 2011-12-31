@@ -107,7 +107,7 @@ sub PrefillForm {
         # If the name ends in a number (which it does for the fields which
         # are part of the email searching), we use the array
         # positions to show the defaults for that number field.
-        elsif ($name =~ /^(\w)(\d)$/) {
+        elsif ($name =~ /^(\w+)(\d)$/) {
             $default{$1}->[$2] = $values[0];
         }
         else {
@@ -138,6 +138,9 @@ Bugzilla::Product::preload(\@selectable_products);
 my %components;
 my %versions;
 my %milestones;
+
+# Exclude products with no components.
+@selectable_products = grep { scalar @{$_->components} } @selectable_products;
 
 foreach my $product (@selectable_products) {
     $components{$_->name} = 1 foreach (@{$product->components});

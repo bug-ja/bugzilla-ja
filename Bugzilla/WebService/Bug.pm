@@ -204,7 +204,7 @@ sub _legal_field_values {
                name     => $self->type('string', $status->name),
                is_open  => $self->type('boolean', $status->is_open),
                sort_key => $self->type('int', $status->sortkey),
-               sortkey  => $self->type('int', $status->sortkey), # depricated
+               sortkey  => $self->type('int', $status->sortkey), # deprecated
                can_change_to => \@can_change_to,
                visibility_values => [],
             });
@@ -218,7 +218,7 @@ sub _legal_field_values {
             push(@result, {
                 name     => $self->type('string', $value->name),
                 sort_key => $self->type('int'   , $value->sortkey),
-                sortkey  => $self->type('int'   , $value->sortkey), # depricated
+                sortkey  => $self->type('int'   , $value->sortkey), # deprecated
                 visibility_values => [
                     defined $vis_val ? $self->type('string', $vis_val->name) 
                                      : ()
@@ -639,9 +639,12 @@ sub add_attachment {
 
     my @created;
     $dbh->bz_start_transaction();
+    my $timestamp = $dbh->selectrow_array('SELECT LOCALTIMESTAMP(0)');
+
     foreach my $bug (@bugs) {
         my $attachment = Bugzilla::Attachment->create({
             bug         => $bug,
+            creation_ts => $timestamp,
             data        => $params->{data},
             description => $params->{summary},
             filename    => $params->{file_name},
@@ -656,7 +659,7 @@ sub add_attachment {
               extra_data => $attachment->id });
         push(@created, $attachment);
     }
-    $_->bug->update($_->attached) foreach @created;
+    $_->bug->update($timestamp) foreach @created;
     $dbh->bz_commit_transaction();
 
     $_->send_changes() foreach @bugs;
@@ -1021,7 +1024,7 @@ containing the following keys:
 
 =item C<id>
 
-C<int> An integer id uniquely idenfifying this field in this installation only.
+C<int> An integer id uniquely identifying this field in this installation only.
 
 =item C<type>
 
@@ -2498,7 +2501,7 @@ This allows you to add a comment to a bug in Bugzilla.
 
 =over
 
-=item C<id> (int) B<Required> - The id or alias of the bug to append a 
+=item C<id> (int or string) B<Required> - The id or alias of the bug to append a 
 comment to.
 
 =item C<comment> (string) B<Required> - The comment to append to the bug.
