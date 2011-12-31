@@ -1364,7 +1364,7 @@ This allows you to add a comment to a bug in Bugzilla.
 
 =over
 
-=item C<id> (int) B<Required> - The id or alias of the bug to append a 
+=item C<id> (int or string) B<Required> - The id or alias of the bug to append a 
 comment to.
 
 =item C<comment> (string) B<Required> - The comment to append to the bug.
@@ -1398,7 +1398,7 @@ doesn't support aliases or (b) there is no bug with that alias.
 
 The id you specified doesn't exist in the database.
 
-=item 108 (Bug Edit Denied)
+=item 109 (Bug Edit Denied)
 
 You did not have the necessary rights to edit the bug.
 
@@ -1509,7 +1509,7 @@ This method can throw all of the errors that L</get> throws, plus:
 
 =over
 
-=item 108 (Bug Edit Denied)
+=item 109 (Bug Edit Denied)
 
 You did not have the necessary rights to edit the bug.
 
