@@ -62,8 +62,7 @@ TUI_hide_default('attachment_text_field');
       <tr>
         <th>用済み:</th>
         <td>
-        <em>(任意) 新しい添付によって用済みになる既存の添付をチェックしてください。</em><br>
-        [% IF attachments.size %]
+          <em>(任意) 新しい添付によって用済みになる既存の添付をチェックしてください。</em><br>
           [% FOREACH attachment = attachments %]
             <input type="checkbox" id="[% attachment.id %]"
                  name="obsolete" value="[% attachment.id %]">
