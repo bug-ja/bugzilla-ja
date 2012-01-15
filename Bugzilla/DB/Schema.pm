@@ -1,29 +1,9 @@
-# -*- Mode: perl; indent-tabs-mode: nil -*-
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# The contents of this file are subject to the Mozilla Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/MPL/
-#
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Original Code is the Bugzilla Bug Tracking System.
-#
-# The Initial Developer of the Original Code is Netscape Communications
-# Corporation. Portions created by Netscape are
-# Copyright (C) 1998 Netscape Communications Corporation. All
-# Rights Reserved.
-#
-# Contributor(s): Andrew Dunstan <andrew@dunslane.net>,
-#                 Edward J. Sabol <edwardjsabol@iname.com>
-#                 Max Kanat-Alexander <mkanat@bugzilla.org>
-#                 Lance Larsh <lance.larsh@oracle.com>
-#                 Dennis Melentyev <dennis.melentyev@infopulse.com.ua>
-#                 Akamai Technologies <bugzilla-dev@akamai.com>
-#                 Elliotte Martin <emartin@everythingsolved.com>
+# This Source Code Form is "Incompatible With Secondary Licenses", as
+# defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::DB::Schema;
 
@@ -255,7 +235,8 @@ use constant ABSTRACT_SCHEMA => {
             assigned_to         => {TYPE => 'INT3', NOTNULL => 1,
                                     REFERENCES => {TABLE  => 'profiles',
                                                    COLUMN => 'userid'}},
-            bug_file_loc        => {TYPE => 'MEDIUMTEXT'},
+            bug_file_loc        => {TYPE => 'MEDIUMTEXT', 
+                                    NOTNULL => 1, DEFAULT => "''"},
             bug_severity        => {TYPE => 'varchar(64)', NOTNULL => 1},
             bug_status          => {TYPE => 'varchar(64)', NOTNULL => 1},
             creation_ts         => {TYPE => 'DATETIME'},
@@ -501,7 +482,7 @@ use constant ABSTRACT_SCHEMA => {
                                       COLUMN => 'bug_id',
                                       DELETE => 'CASCADE'}},
             value  => {TYPE => 'varchar(255)', NOTNULL => 1},
-            class  => {TYPE => 'varchar(255)', NOTNULL => 1},
+            class  => {TYPE => 'varchar(255)', NOTNULL => 1, DEFAULT => "''"},
         ],
         INDEXES => [
             bug_see_also_bug_id_idx => {FIELDS => [qw(bug_id value)], 
@@ -900,7 +881,10 @@ use constant ABSTRACT_SCHEMA => {
     profile_search => {
         FIELDS => [
             id         => {TYPE => 'INTSERIAL', NOTNULL => 1, PRIMARYKEY => 1},
-            user_id    => {TYPE => 'INT3', NOTNULL => 1},
+            user_id    => {TYPE => 'INT3', NOTNULL => 1, 
+                           REFERENCES => {TABLE  => 'profiles', 
+                                          COLUMN => 'userid', 
+                                          DELETE => 'CASCADE'}},
             bug_list   => {TYPE => 'MEDIUMTEXT', NOTNULL => 1},
             list_order => {TYPE => 'MEDIUMTEXT'},
         ],

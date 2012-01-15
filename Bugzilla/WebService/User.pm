@@ -1,21 +1,9 @@
-# -*- Mode: perl; indent-tabs-mode: nil -*-
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# The contents of this file are subject to the Mozilla Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/MPL/
-#
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Original Code is the Bugzilla Bug Tracking System.
-#
-# Contributor(s): Marc Schumann <wurblzap@gmail.com>
-#                 Max Kanat-Alexander <mkanat@bugzilla.org>
-#                 Mads Bondo Dydensborg <mbd@dbc.dk>
-#                 Noura Elhawary <nelhawar@redhat.com>
+# This Source Code Form is "Incompatible With Secondary Licenses", as
+# defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::WebService::User;
 
@@ -28,7 +16,6 @@ use Bugzilla::Error;
 use Bugzilla::Group;
 use Bugzilla::User;
 use Bugzilla::Util qw(trim);
-use Bugzilla::Token;
 use Bugzilla::WebService::Util qw(filter validate);
 
 # Don't need auth to login
@@ -91,19 +78,8 @@ sub offer_account_by_email {
     my $email = trim($params->{email})
         || ThrowCodeError('param_required', { param => 'email' });
 
-    my $createexp = Bugzilla->params->{'createemailregexp'};
-    if (!$createexp) {
-        ThrowUserError("account_creation_disabled");
-    }
-    elsif ($email !~ /$createexp/i) {
-        ThrowUserError("account_creation_restricted");
-    }
-
-    $email = Bugzilla::User->check_login_name_for_creation($email);
-
-    # Create and send a token for this new account.
-    Bugzilla::Token::issue_new_user_account_token($email);
-
+    Bugzilla->user->check_account_creation_enabled;
+    Bugzilla->user->check_and_send_account_creation_confirmation($email);
     return undef;
 }
 
@@ -396,14 +372,14 @@ This is the recommended way to create a Bugzilla account.
 
 =over
 
-=item 500 (Illegal Email Address)
+=item 500 (Account Already Exists)
+
+An account with that email address already exists in Bugzilla.
+
+=item 501 (Illegal Email Address)
 
 This Bugzilla does not allow you to create accounts with the format of
 email address you specified. Account creation may be entirely disabled.
-
-=item 501 (Account Already Exists)
-
-An account with that email address already exists in Bugzilla.
 
 =back
 

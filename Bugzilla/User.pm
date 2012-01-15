@@ -1,35 +1,9 @@
-# -*- Mode: perl; indent-tabs-mode: nil -*-
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# The contents of this file are subject to the Mozilla Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/MPL/
-#
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Original Code is the Bugzilla Bug Tracking System.
-#
-# The Initial Developer of the Original Code is Netscape Communications
-# Corporation. Portions created by Netscape are
-# Copyright (C) 1998 Netscape Communications Corporation. All
-# Rights Reserved.
-#
-# Contributor(s): Myk Melez <myk@mozilla.org>
-#                 Erik Stambaugh <erik@dasbistro.com>
-#                 Bradley Baetz <bbaetz@acm.org>
-#                 Joel Peshkin <bugreport@peshkin.net> 
-#                 Byron Jones <bugzilla@glob.com.au>
-#                 Shane H. W. Travis <travis@sedsystems.ca>
-#                 Max Kanat-Alexander <mkanat@bugzilla.org>
-#                 Gervase Markham <gerv@gerv.net>
-#                 Lance Larsh <lance.larsh@oracle.com>
-#                 Justin C. De Vries <judevries@novell.com>
-#                 Dennis Melentyev <dennis.melentyev@infopulse.com.ua>
-#                 Frédéric Buclin <LpSolit@gmail.com>
-#                 Mads Bondo Dydensborg <mbd@dbc.dk>
+# This Source Code Form is "Incompatible With Secondary Licenses", as
+# defined by the Mozilla Public License, v. 2.0.
 
 ################################################################################
 # Module Initialization
@@ -1965,6 +1939,32 @@ sub is_available_username {
     return 1;
 }
 
+sub check_account_creation_enabled {
+    my $self = shift;
+
+    # If we're using e.g. LDAP for login, then we can't create a new account.
+    $self->authorizer->user_can_create_account
+      || ThrowUserError('auth_cant_create_account');
+
+    Bugzilla->params->{'createemailregexp'}
+      || ThrowUserError('account_creation_disabled');
+}
+
+sub check_and_send_account_creation_confirmation {
+    my ($self, $login) = @_;
+
+    $login = $self->check_login_name_for_creation($login);
+    my $creation_regexp = Bugzilla->params->{'createemailregexp'};
+
+    if ($login !~ /$creation_regexp/i) {
+        ThrowUserError('account_creation_restricted');
+    }
+
+    # Create and send a token for this new account.
+    require Bugzilla::Token;
+    Bugzilla::Token::issue_new_user_account_token($login);
+}
+
 # This is used in a few performance-critical areas where we don't want to
 # do check() and pull all the user data from the database.
 sub login_to_id {
@@ -2515,6 +2515,17 @@ Params: login_name - B<Required> The login name for the new user.
 
 Takes a username as its only argument. Throws an error if there is no
 user with that username. Returns a C<Bugzilla::User> object.
+
+=item C<check_account_creation_enabled>
+
+Checks that users can create new user accounts, and throws an error
+if user creation is disabled.
+
+=item C<check_and_send_account_creation_confirmation($login)>
+
+If the user request for a new account passes validation checks, an email
+is sent to this user for confirmation. Otherwise an error is thrown
+indicating why the request has been rejected.
 
 =item C<is_available_username>
 

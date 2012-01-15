@@ -1,20 +1,9 @@
-# The contents of this file are subject to the Mozilla Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/MPL/
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Initial Developer of the Original Code is Everything Solved.
-# Portions created by Everything Solved are Copyright (C) 2007
-# Everything Solved. All Rights Reserved.
-#
-# The Original Code is the Bugzilla Bug Tracking System.
-#
-# Contributor(s): Max Kanat-Alexander <mkanat@bugzilla.org>
+# This Source Code Form is "Incompatible With Secondary Licenses", as
+# defined by the Mozilla Public License, v. 2.0.
 
 # This file contains a single hash named %strings, which is used by the
 # installation code to display strings before Template-Toolkit can safely
@@ -60,7 +49,7 @@ EOT
     commands_optional => 'オプションのモジュールをインストールするためのコマンド:',
     commands_required => <<EOT,
 必須モジュールをインストールするためのコマンド
-(*必ず*これらすべてのコマンドを実行後、このスクリプトを再実行してください)
+(*必ず*これらすべてのコマンドを実行後、checksetup.pl を再実行してください)
 EOT
     continue_without_answers => <<'END',
 インタラクティブモードで ('answers' ファイルなしで) checksetup.pl を再実行し
@@ -139,11 +128,13 @@ END
 END
     lc_new_vars => <<'END',
 このバージョンの Bugzilla ではいくつかの新しい変数が追加されており、ローカル
-で設定を変更する必要があるかもしれません。##localconfig## ファイルを編集して、
-checksetup.pl を再実行してください。
+で設定を変更する必要があるかもしれません。最後の checksetup.pl の実行以来、
+次の値が ##localconfig## に追加されました。
 
-最後の checksetup.pl 以降、次の値が ##localconfig## に追加されました。
 ##new_vars##
+
+##localconfig## ファイルを編集して、checksetup.pl を再実行し、インストールを
+完了させてください。
 END
     lc_old_vars => <<'END',
 次の値は ##localconfig## で利用されなくなりましたので、##old_file## に移動さ
@@ -423,7 +414,7 @@ Quip は外部ファイルでなくデータベースに保存されるように
 ルは ##data##/comments.bak に変更されています。全ての quip が移動済みであ
 ると確認できれば、このファイルを消して大丈夫です。
 END
-    update_queries_to_tags => "新しいタグ用テーブルを追加:",
+    update_queries_to_tags => "新しい 'tag' テーブルを追加:",
     webdot_bad_htaccess => <<END,
 警告: 依存関係グラフの画像にアクセスできなくなっています。
 ##dir##/.htaccess ファイルを消し、checksetup.pl を再実行してください。

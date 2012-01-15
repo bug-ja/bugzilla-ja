@@ -1,32 +1,9 @@
-# -*- Mode: perl; indent-tabs-mode: nil -*-
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
-# The contents of this file are subject to the Mozilla Public
-# License Version 1.1 (the "License"); you may not use this file
-# except in compliance with the License. You may obtain a copy of
-# the License at http://www.mozilla.org/MPL/
-#
-# Software distributed under the License is distributed on an "AS
-# IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
-# implied. See the License for the specific language governing
-# rights and limitations under the License.
-#
-# The Original Code is the Bugzilla Bug Tracking System.
-#
-# The Initial Developer of the Original Code is Netscape Communications
-# Corporation. Portions created by Netscape are
-# Copyright (C) 1998 Netscape Communications Corporation. All
-# Rights Reserved.
-#
-# Contributor(s): Dawn Endico    <endico@mozilla.org>
-#                 Terry Weissman <terry@mozilla.org>
-#                 Chris Yeh      <cyeh@bluemartini.com>
-#                 Bradley Baetz  <bbaetz@acm.org>
-#                 Dave Miller    <justdave@bugzilla.org>
-#                 Max Kanat-Alexander <mkanat@bugzilla.org>
-#                 Frédéric Buclin <LpSolit@gmail.com>
-#                 Lance Larsh <lance.larsh@oracle.com>
-#                 Elliotte Martin <elliotte_martin@yahoo.com>
-#                 Christian Legnitto <clegnitto@mozilla.com>
+# This Source Code Form is "Incompatible With Secondary Licenses", as
+# defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::Bug;
 
@@ -74,6 +51,7 @@ use constant ID_FIELD   => 'bug_id';
 use constant NAME_FIELD => 'alias';
 use constant LIST_ORDER => ID_FIELD;
 # Bugs have their own auditing table, bugs_activity.
+use constant AUDIT_CREATES => 0;
 use constant AUDIT_UPDATES => 0;
 
 # This is a sub because it needs to call other subroutines.
@@ -337,12 +315,11 @@ sub new {
     # If we get something that looks like a word (not a number),
     # make it the "name" param.
     if (!defined $param || (!ref($param) && $param !~ /^\d+$/)) {
-        # But only if aliases are enabled.
-        if (Bugzilla->params->{'usebugaliases'} && $param) {
+        if ($param) {
             $param = { name => $param };
         }
         else {
-            # Aliases are off, and we got something that's not a number.
+            # We got something that's not a number.
             my $error_self = {};
             bless $error_self, $class;
             $error_self->{'bug_id'} = $param;
@@ -611,8 +588,7 @@ sub possible_duplicates {
 # C<rep_platform> - B<Required> The platform the bug was found against.
 # C<version>      - B<Required> The version of the product the bug was found in.
 #
-# C<alias>        - An alias for this bug. Will be ignored if C<usebugaliases>
-#                   is off.
+# C<alias>        - An alias for this bug.
 # C<target_milestone> - When this bug is expected to be fixed.
 # C<status_whiteboard> - A string.
 # C<bug_status>   - The initial status of the bug, a string.
@@ -1202,7 +1178,7 @@ sub _send_bugmail {
 sub _check_alias {
    my ($invocant, $alias) = @_;
    $alias = trim($alias);
-   return undef if (!Bugzilla->params->{'usebugaliases'} || !$alias);
+   return undef if (!$alias);
 
     # Make sure the alias isn't too long.
     if (length($alias) > 20) {
@@ -3696,7 +3672,6 @@ sub choices {
 # the ID of the bug if it exists or the undefined value if it doesn't.
 sub bug_alias_to_id {
     my ($alias) = @_;
-    return undef unless Bugzilla->params->{"usebugaliases"};
     my $dbh = Bugzilla->dbh;
     trick_taint($alias);
     return $dbh->selectrow_array(
@@ -3754,12 +3729,13 @@ sub _bugs_in_order {
 
 # Get the activity of a bug, starting from $starttime (if given).
 # This routine assumes Bugzilla::Bug->check has been previously called.
-sub GetBugActivity {
-    my ($bug_id, $attach_id, $starttime) = @_;
+sub get_activity {
+    my ($self, $attach_id, $starttime) = @_;
     my $dbh = Bugzilla->dbh;
+    my $user = Bugzilla->user;
 
     # Arguments passed to the SQL query.
-    my @args = ($bug_id);
+    my @args = ($self->id);
 
     # Only consider changes since $starttime, if given.
     my $datepart = "";
@@ -3778,8 +3754,7 @@ sub GetBugActivity {
     # Only includes attachments the user is allowed to see.
     my $suppjoins = "";
     my $suppwhere = "";
-    if (!Bugzilla->user->is_insider) 
-    {
+    if (!$user->is_insider) {
         $suppjoins = "LEFT JOIN attachments 
                    ON attachments.attach_id = bugs_activity.attach_id";
         $suppwhere = "AND COALESCE(attachments.isprivate, 0) = 0";
@@ -3814,16 +3789,11 @@ sub GetBugActivity {
         my $activity_visible = 1;
 
         # check if the user should see this field's activity
-        if ($fieldname eq 'remaining_time'
-            || $fieldname eq 'estimated_time'
-            || $fieldname eq 'work_time'
-            || $fieldname eq 'deadline')
-        {
-            $activity_visible = Bugzilla->user->is_timetracker;
+        if (grep { $fieldname eq $_ } TIMETRACKING_FIELDS) {
+            $activity_visible = $user->is_timetracker;
         }
         elsif ($fieldname eq 'longdescs.isprivate'
-                && !Bugzilla->user->is_insider 
-                && $added) 
+               && !$user->is_insider && $added)
         { 
             $activity_visible = 0;
         } 
@@ -3854,14 +3824,24 @@ sub GetBugActivity {
                 $changes = [];
             }
 
+            # If this is the same field as the previous item, then concatenate
+            # the data into the same change.
+            if ($operation->{'who'} && $who eq $operation->{'who'}
+                && $when eq $operation->{'when'}
+                && $fieldname eq $operation->{'fieldname'}
+                && ($attachid || 0) == ($operation->{'attachid'} || 0))
+            {
+                my $old_change = pop @$changes;
+                $removed = $old_change->{'removed'} . $removed;
+                $added = $old_change->{'added'} . $added;
+            }
             $operation->{'who'} = $who;
             $operation->{'when'} = $when;
-
-            $change{'fieldname'} = $fieldname;
-            $change{'attachid'} = $attachid;
+            $operation->{'fieldname'} = $change{'fieldname'} = $fieldname;
+            $operation->{'attachid'} = $change{'attachid'} = $attachid;
             $change{'removed'} = $removed;
             $change{'added'} = $added;
-            
+
             if ($comment_id) {
                 $change{'comment'} = Bugzilla::Comment->new($comment_id);
             }

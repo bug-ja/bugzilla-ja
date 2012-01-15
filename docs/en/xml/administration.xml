@@ -1,4 +1,11 @@
 <?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+     License, v. 2.0. If a copy of the MPL was not distributed with this
+     file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+     This Source Code Form is "Incompatible With Secondary Licenses", as
+     defined by the Mozilla Public License, v. 2.0.
+-->
 <!DOCTYPE chapter PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
                       "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
     <!ENTITY % myents SYSTEM "bugzilla.ent">
@@ -2529,7 +2536,7 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
       <title>Viewing/Editing legal values</title>
       <para>
         Editing legal values requires <quote>admin</quote> privileges.
-        Select "Legal Values" from the Administration page. A list of all
+        Select "Field Values" from the Administration page. A list of all
         fields, both system fields and Custom Fields, for which legal values
         can be edited appears. Click a field name to edit its legal values.
       </para>
@@ -2594,6 +2601,11 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
   <section id="voting">
     <title>Voting</title>
 
+    <para>All of the code for voting in Bugzilla has been moved into an
+    extension, called "Voting", in the <filename>extensions/Voting/</filename>
+    directory. To enable it, you must remove the <filename>disabled</filename>
+    file from that directory, and run <filename>checksetup.pl</filename>.</para>
+
     <para>Voting allows users to be given a pot of votes which they can allocate
     to bugs, to indicate that they'd like them fixed. 
     This allows developers to gauge
@@ -2650,12 +2662,12 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     </para>
   
     <para>
-      Quips are controlled by the <emphasis>enablequips</emphasis> parameter.
-      It has several possible values: on, approved, frozen or off.
-      In order to enable quips approval you need to set this parameter
-      to "approved". In this way, users are free to submit quips for
-      addition but an administrator must explicitly approve them before
-      they are actually used.
+      Quip submission is controlled by the <emphasis>quip_list_entry_control</emphasis>
+      parameter.  It has several possible values: open, moderated, or closed.
+      In order to enable quips approval you need to set this parameter to
+      "moderated". In this way, users are free to submit quips for addition
+      but an administrator must explicitly approve them before they are
+      actually used.
     </para>
 
     <para>
@@ -2670,7 +2682,7 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     </para>
 
     <para>
-      Next to each tip there is a checkbox, under the
+      Next to each quip there is a checkbox, under the
       "Approved" column. Quips who have this checkbox checked are
       already approved and will appear next to the search results.
       The ones that have it unchecked are still preserved in the
@@ -2681,6 +2693,11 @@ ReadOnly: ENTRY, NA/NA, CANEDIT
     <para>
       Also, there is a delete link next to each quip,
       which can be used in order to permanently delete a quip.
+    </para>
+
+    <para>
+      Display of quips is controlled by the <emphasis>display_quips</emphasis>
+      user preference.  Possible values are "on" and "off".
     </para>
   </section>
 
@@ -3091,4 +3108,3 @@ sgml-shorttag:t
 sgml-tag-region-if-active:t
 End:
 -->
-
