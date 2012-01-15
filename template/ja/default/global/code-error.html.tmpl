@@ -54,7 +54,7 @@
       有効なメールアドレスは、ひとつの '@' を含み、そのあとに最低ひとつの
       '.' があるものになります。
     [% ELSE %]
-      [%+ Param('emailregexpdesc') %]
+      [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
     また、次の特殊文字や空白文字を含むものは無効です。
     <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
