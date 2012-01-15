@@ -60,7 +60,7 @@ EOT
     commands_optional => 'オプションのモジュールをインストールするためのコマンド:',
     commands_required => <<EOT,
 必須モジュールをインストールするためのコマンド
-(*必ず*これらすべてのコマンドを実行後、このスクリプトを再実行してください)
+(*必ず*これらすべてのコマンドを実行後、checksetup.pl を再実行してください)
 EOT
     continue_without_answers => <<'END',
 インタラクティブモードで ('answers' ファイルなしで) checksetup.pl を再実行し
@@ -138,11 +138,13 @@ END
 END
     lc_new_vars => <<'END',
 このバージョンの Bugzilla ではいくつかの新しい変数が追加されており、ローカル
-で設定を変更する必要があるかもしれません。##localconfig## ファイルを編集して、
-checksetup.pl を再実行してください。
+で設定を変更する必要があるかもしれません。以下の値は最後に checksetup.pl を
+実行して以降 ##localconfig## に追加されました:
 
-最後の checksetup.pl 以降、次の値が ##localconfig## に追加されました。
 ##new_vars##
+
+##localconfig## ファイルを編集し、checksetup.pl を再実行してインストール作業
+を完了させてください。
 END
     lc_old_vars => <<'END',
 次の値は ##localconfig## で利用されなくなりましたので、##old_file## に移動さ

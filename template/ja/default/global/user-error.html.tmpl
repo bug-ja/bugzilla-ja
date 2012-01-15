@@ -1039,7 +1039,7 @@
       有効な [% jawords.mail_address FILTER html %] は、'@' を一つだけ含み、'.' を '@'
       の後ろに最低一つは含まなくてはいけません。
     [% ELSE %]
-      [%+ Param('emailregexpdesc') %]
+      [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
     また、<tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
     や空白文字(スペース等)を含むことはできません。

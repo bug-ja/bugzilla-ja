@@ -19,7 +19,7 @@
   #                 Frederic Buclin <LpSolit@gmail.com>
   #%]
 
-[% RETURN UNLESS attachments.size || Param("maxattachmentsize") %]
+[% RETURN UNLESS attachments.size || Param("maxattachmentsize") || Param("maxlocalattachment") %]
 
 <script type="text/javascript">
 <!--
@@ -160,7 +160,7 @@ function toggle_display(link) {
           [% END %]
         </span>
       [% END %]
-      [% IF Param("maxattachmentsize") %]
+      [% IF Param("maxattachmentsize") || Param("maxlocalattachment") %]
         <a href="attachment.cgi?bugid=[% bugid %]&amp;action=enter">添付を追加</a>
         (パッチの提案、テストケースなど)
       [% END %]

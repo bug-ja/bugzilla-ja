@@ -2542,6 +2542,11 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
   <section id="voting">
     <title>投票</title>
 
+    <para>Bugzilla の投票機能のコードは "Voting" 拡張機能として
+    <filename>extensions/Voting/</filename> ディレクトリに移動しました。
+    有効にしたい場合、このディレクトリにある <filename>disabled</filename> 
+    ファイルを削除し、<filename>checksetup.pl</filename> を実行してください。</para>
+
     <para>
       投票機能により、ユーザは自分が修正を望んでいることを示すために、バグ
       に対して票を投じることができます。これにより、開発者にとってはどのバグ
@@ -2593,9 +2598,9 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
     </para>
   
     <para>
-      "quip" は <emphasis>enablequips</emphasis> パラメータにより制御されます。
-      いくつかの値から選択できます: on, approved, frozen, off
-      承認された "quip" を有効にするにはパラメータを "approved" にします。
+      "quip" は <emphasis>quip_list_entry_control</emphasis> パラメータにより制御されます。
+      次の値の中から選択できます: open, moderated, closed
+      "quip" の承認を有効にするにはパラメータを "moderated" にします。
       この設定では、ユーザは自由に "quip" を投稿できますが、管理者が明示的に
       承認を与えない限り実際には利用されません。
     </para>
@@ -2620,6 +2625,11 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
     <para>
       また、それぞれの quip には削除リンクがあり、完全に削除できるように
       なっています。
+    </para>
+
+    <para>
+      quip の表示は <emphasis>display_quips</emphasis> ユーザ設定により制御され、
+      "on" もしくは "off" が設定可能です。
     </para>
   </section>
 
