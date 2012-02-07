@@ -1022,8 +1022,7 @@
     [% ELSE %]
       [%+ Param('emailregexpdesc') %]
     [% END %]
-    また、<tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
-    や空白文字(スペース等)を含むことはできません。
+    また、無効文字を含むことはできません。
 
   [% ELSIF error == "illegal_frequency" %]
     [% title = BLOCK %] 指定された [% jawords.report_frequency FILTER html %] は高すぎます [% END %]
