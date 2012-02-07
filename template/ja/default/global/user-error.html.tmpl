@@ -1054,8 +1054,7 @@
     [% ELSE %]
       [%+ Param('emailregexpdesc') %]
     [% END %]
-    また、<tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
-    や空白文字(スペース等)を含むことはできません。
+    また、無効文字を含むことはできません。
 
   [% ELSIF error == "illegal_frequency" %]
     [% title = BLOCK %] 指定された [% jawords.report_frequency FILTER html %] は高すぎます [% END %]
@@ -1214,6 +1213,10 @@
       このアカウントへのログインは
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分間ロックされます。
     [% END %]
+
+  [% ELSIF error == "json_rpc_illegal_content_type" %]
+    JSON-RPC を POST で利用する際には、[% content_type FILTER html %] を
+    content type としては利用できません。application/json を利用してください。
 
   [% ELSIF error == "json_rpc_post_only" %]
     セキュリティー上の問題から、POST HTTP メソッドを利用するには、

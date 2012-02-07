@@ -830,9 +830,8 @@
     [% ELSE %]
       [%+ Param('emailregexpdesc') %]
     [% END %]
-    It must also not contain any of these special characters:
-    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>, or any whitespace.
-    
+    It also must not contain any illegal characters.
+
   [% ELSIF error == "illegal_frequency" %]
     [% title = "Too Frequent" %]
     Unless you are an administrator, you may not create series which are 
@@ -996,6 +995,10 @@
       locked out of this account for 
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] minutes.
     [% END %]
+
+  [% ELSIF error == "json_rpc_illegal_content_type" %]
+    When using JSON-RPC over POST, you cannot use [% content_type FILTER html %]
+    as content type. The recommended content type is application/json.
 
   [% ELSIF error == "json_rpc_post_only" %]
     For security reasons, you may only use JSON-RPC with the POST
