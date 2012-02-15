@@ -56,8 +56,7 @@
     [% ELSE %]
       [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
-    また、次の特殊文字や空白文字を含むものは無効です。
-    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
+    また、無効文字を含むことはできません。
 
   [% ELSIF error == "authres_unhandled" %]
     ログイン処理中の結果 [% value FILTER html %] を処理できませんでした。.

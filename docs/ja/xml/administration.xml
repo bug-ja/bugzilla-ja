@@ -747,6 +747,68 @@
 
           <varlistentry>
             <term>
+              smtpserver
+            </term>
+            <listitem>
+              <para>
+                これは SMTP サーバのアドレスで、<quote>mail_delivery_method</quote> が
+                SMTP 二設定されている場合二利用されます。ローカルで MTA が動作している
+                場合には "localhost" を、リモートの SMTP サーバを利用する場合はそれを指定
+                してください。既定のポート以外が必要な場合、":" をつけて追加してください。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>
+              smtp_username
+            </term>
+            <listitem>
+              <para>
+                SMTP サーバでの SASL 認証に利用するユーザ名です。サーバが認証を要求
+                していない場合は、空白のままにしてください。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>
+              smtp_password
+            </term>
+            <listitem>
+              <para>
+                SMTP サーバでの SASL 認証に利用するパスワードです。これは
+                <quote>smtp_username</quote> パラメータが空白の場合には、
+                無視されます。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>
+              smtp_ssl
+            </term>
+            <listitem>
+              <para>
+                SMTP サーバへの接続に SSL を利用するかどうか。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>
+              smtp_debug
+            </term>
+            <listitem>
+              <para>
+                デバッグ出力を有効にするかどうかのフラグです。
+                ログはウェブサーバのエラーログに出力されます。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>
               whinedays
             </term>
             <listitem>

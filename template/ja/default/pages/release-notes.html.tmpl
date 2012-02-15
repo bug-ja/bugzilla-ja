@@ -67,6 +67,31 @@
 
 <h2 id="v40_point">4.0.x リリースでの更新点</h2>
 
+<h3>4.0.4</h3>
+
+<p>このリリースでは二つのセキュリティー問題への修正を含みます。
+  詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.4.13/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下の重要な修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li>特殊な形式の HTML ファイルが添付されていた際に、添付の詳細ページにおいてクリックハイ
+  ジャックが発生する可能性がありました。この可能性を防ぐため、詳細ページでは常に text/html 
+  のファイルについてはソースを表示するようになり、ユーザは閲覧をクリックしたときにページと
+  してみることができるようになります。
+  (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=716283">[% terms.Bug %] 716283</a>)</li>
+  <li>これまで、新しいバージョンでの非互換性のため、ウェブサービスは <kbd>JSON::RPC</kbd> 
+  0.96 もしくはそれ以前のみでしか動きませんでした。<kbd>JSON::RPC</kbd> 1.x もサポートされ
+  るようになりました。
+  (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=706753">[% terms.Bug %] 706753</a>)</li>
+  <li>request.cgi での要請者・被要請者のフィールドと、userprefs.cgi での監視するユーザの
+  フィールドにおけるユーザ自動補完が完全には動作していませんでした。
+  (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=715705">[% terms.Bug %] 715705</a>)
+  (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=715650">[% terms.Bug %] 715650</a>)</li>
+</ul>
+
 <h3>4.0.3</h3>
 
 <p>このリリースでは二つのセキュリティー問題への修正を含みます。
@@ -77,8 +102,8 @@
 <p>加えて、以下の重要な修正がこのリリースでは行われました。</p>
 
 <ul>
-  <li>あなたのサーバに Perl モジュール <kdb>DBD::Pg</kdb> がインストールされており
-    <kdb>version.pm</kdb> が 0.92 かより新しい場合、<kdb>version.pm</kdb> 0.92
+  <li>あなたのサーバに Perl モジュール <kbd>DBD::Pg</kbd> がインストールされており
+    <kbd>version.pm</kbd> が 0.92 かより新しい場合、<kbd>version.pm</kbd> 0.92
     で行われた非互換な変更により、[% terms.Bugzilla %] のインストール・
     アップグレードができない状態になっていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=678772">[% terms.Bug %] 678772</a>)</li>
@@ -105,14 +130,14 @@
   <li>他のフィールドの値に依存して表示されるカスタムフィールドの値が、
     [% terms.abug %] 編集後に残されていませんでした。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=707428">[% terms.Bug %] 707428</a>)</li>
-  <li><kdb>importxml.pl</kdb> によって [% terms.bugs %] のインポートができなくなって
+  <li><kbd>importxml.pl</kbd> によって [% terms.bugs %] のインポートができなくなって
     いました。(4.0.1 でのレグレッション)
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=691845">[% terms.Bug %] 691845</a>)</li>
-  <li><kdb>migrate.pl</kdb> は動作しませんでした。(4.0 でのレグレッション)
+  <li><kbd>migrate.pl</kbd> は動作しませんでした。(4.0 でのレグレッション)
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=682203">[% terms.Bug %] 682203</a>)</li>
-  <li><kdb>whine.pl</kdb> は保存した検索がエラーを出した場合に失敗していました。
+  <li><kbd>whine.pl</kbd> は保存した検索がエラーを出した場合に失敗していました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=277073">[% terms.Bug %] 277073</a>)</li>
-  <li><kdb>whine.pl</kdb> によるメールで担当者のメールアドレスが省略されるか、
+  <li><kbd>whine.pl</kbd> によるメールで担当者のメールアドレスが省略されるか、
     完全に消えていました。(3.4 でのレグレッション)現在では完全に表示されるようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=550299">[% terms.Bug %] 550299</a>)</li>
 </ul>
@@ -127,7 +152,7 @@
 <p>加えて、以下の重要な修正がこのリリースでは行われました。</p>
 
 <ul>
-  <li><kdb>B[% %]ug.create</kdb> ウェブサービスは、対象とするグループ名が存在しない
+  <li><kbd>B[% %]ug.create</kbd> ウェブサービスは、対象とするグループ名が存在しない
     場合にエラーを返すようになりました。[% terms.Bugzila %] 4.0 と 4.0.1 では、
     グループ名は単純に無視されており、[% terms.bug %] にほかのグループが定義されて
     いなかった場合に安全ではありませんでした。
@@ -138,7 +163,7 @@
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=663208">[% terms.Bug %] 663208</a>)</li>
   <li>[% terms.abug %] を重複とする操作が Internet Explorer 9 でも動作するようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=656769">[% terms.Bug %] 656769</a>)</li>
-  <li><kdb>importxml.pl</kdb> はキーワードを含むインポートでもクラッシュしなくなりました。
+  <li><kbd>importxml.pl</kbd> はキーワードを含むインポートでもクラッシュしなくなりました。
     (4.0 での退行 [% terms.bug %] です)
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=657707">[% terms.Bug %] 657707</a>)</li>
   <li>新規 [% terms.bug %] 報告の際に入力されたデータが、ブラウザで "戻る" 
@@ -152,7 +177,7 @@
     の元で動作するようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=600810">[% terms.Bug %] 600810</a>)</li>
   <li>LWP 6.00 とそれ以上のバージョンは Perl 5.8.8 以上を要求します。
-    <kdb>install-module.pl</kdb> を利用して 5.8.8 以下の Perl でインストールを行おう
+    <kbd>install-module.pl</kbd> を利用して 5.8.8 以下の Perl でインストールを行おう
     とすると、LWP 5.837 が代わりにインストールされます。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=655912">[% terms.Bug %] 655912</a>)</li>
   <li>多数のカスタムフィールドを利用しているサイトでの [% terms.abug %] 
