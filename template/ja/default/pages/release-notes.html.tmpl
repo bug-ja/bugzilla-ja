@@ -93,7 +93,7 @@
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
                      new  = ['Encode', 'Encode-Detect']
-                     updated = ['PatchReader']
+                     updated = ['PatchReader', 'Apache-SizeLimit']
                      include_feature = 1 %]
 
 <h3 id="v42_req_apache">Optional Apache Modules</h3>
@@ -216,6 +216,10 @@
     dependencies is now much faster.</li>
   <li><strong>Attachments:</strong> The encoding of text files can be automatically
     detected when uploading them as attachments.</li>
+  <li><strong>Attachments:</strong> Clickjacking could possibly occur in an attachment 
+    Details page if a user attached a specially formatted HTML file. To fix this 
+    potential problem, the Details page always displays the HTML source instead and 
+    users can see rendered page by clicking on View.</li>
   <li><strong>Flags:</strong> Changing the requestee of a flag no longer changes
     the requester.</li>
   <li><strong>Reports:</strong> If JavaScript is enabled in your web browser,
@@ -418,7 +422,7 @@
 <p>加えて、以下の重要な修正がこのリリースでは行われました。</p>
 
 <ul>
-  <li><kdb>B[% %]ug.create</kdb> ウェブサービスは、対象とするグループ名が存在しない
+  <li><kbd>B[% %]ug.create</kbd> ウェブサービスは、対象とするグループ名が存在しない
     場合にエラーを返すようになりました。[% terms.Bugzila %] 4.0 と 4.0.1 では、
     グループ名は単純に無視されており、[% terms.bug %] にほかのグループが定義されて
     いなかった場合に安全ではありませんでした。
@@ -429,7 +433,7 @@
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=663208">[% terms.Bug %] 663208</a>)</li>
   <li>[% terms.abug %] を重複とする操作が Internet Explorer 9 でも動作するようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=656769">[% terms.Bug %] 656769</a>)</li>
-  <li><kdb>importxml.pl</kdb> はキーワードを含むインポートでもクラッシュしなくなりました。
+  <li><kbd>importxml.pl</kbd> はキーワードを含むインポートでもクラッシュしなくなりました。
     (4.0 での退行 [% terms.bug %] です)
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=657707">[% terms.Bug %] 657707</a>)</li>
   <li>新規 [% terms.bug %] 報告の際に入力されたデータが、ブラウザで "戻る" 
@@ -443,7 +447,7 @@
     の元で動作するようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=600810">[% terms.Bug %] 600810</a>)</li>
   <li>LWP 6.00 とそれ以上のバージョンは Perl 5.8.8 以上を要求します。
-    <kdb>install-module.pl</kdb> を利用して 5.8.8 以下の Perl でインストールを行おう
+    <kbd>install-module.pl</kbd> を利用して 5.8.8 以下の Perl でインストールを行おう
     とすると、LWP 5.837 が代わりにインストールされます。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=655912">[% terms.Bug %] 655912</a>)</li>
   <li>多数のカスタムフィールドを利用しているサイトでの [% terms.abug %] 

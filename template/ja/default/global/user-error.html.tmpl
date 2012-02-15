@@ -1041,8 +1041,7 @@
     [% ELSE %]
       [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
-    また、<tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
-    や空白文字(スペース等)を含むことはできません。
+    また、無効文字を含むこともできません。
 
   [% ELSIF error == "illegal_frequency" %]
     [% title = BLOCK %] 指定された [% jawords.report_frequency FILTER html %] は高すぎます [% END %]
@@ -1202,6 +1201,10 @@
     JSON-RPC を GET で利用する場合、'method' パラメータを必ず指定する必要があります。
     [%+ docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html
     にある解説を参照してください。
+
+  [% ELSIF error == "json_rpc_illegal_content_type" %]
+    JSON-RPC を POST で利用する際には、[% content_type FILTER html %] を
+    content type としては利用できません。application/json を利用してください。
 
   [% ELSIF error == "json_rpc_invalid_params" %]
     'params' の値を有効な JSON としてパースできませんでした。
