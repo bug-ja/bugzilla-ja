@@ -169,7 +169,6 @@ END
     localconfig_db_host => <<'END',
 データベースサーバが実行されている DNS 名もしくは IP アドレスです。
 END
-    localconfig_db_name => 
     localconfig_db_name => <<'END',
 データベース名です。Oracle ではデータベースの SID です。
 SQLite では DB ファイルの名前(もしくはパス)です。
