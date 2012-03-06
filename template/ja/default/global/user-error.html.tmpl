@@ -1878,6 +1878,11 @@
     フィールドでは有効な値ではありません。
     (詳細は XML-RPC 仕様を参照してください。)
 
+  [% ELSIF error == "xmlrpc_illegal_content_type" %]
+    XML-RPC を利用する場合、データを [%+ content_type FILTER html %]
+    としては送信できません。text/xml もしくは application/xml 
+    のみが許可されています。
+
   [% ELSIF error == "zero_length_file" %]
     [% title = BLOCK %] 指定されたファイルは空です [% END %]
     アップロードしようとしたファイル

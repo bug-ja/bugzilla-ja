@@ -90,10 +90,22 @@
   </table>
 
   [% IF a.is_viewable %]
-    <iframe src="attachment.cgi?id=[% a.id %]" width="75%" height="350">
-      <b>あなたのブラウザが IFRAME をサポートしていないため、添付をこのページ内で見ることはできません。
-      <a href="attachment.cgi?id=[% a.id %]">添付を別々のページで見る</a>。</b>
-    </iframe>
+    [% IF a.contenttype == "text/html" %]
+      [%# For security reasons (clickjacking, embedded scripts), we never
+        # render HTML pages from here. The source code is displayed instead. %]
+      [% INCLUDE global/textarea.html.tmpl
+         minrows = 10
+         cols    = 80
+         defaultcontent = a.data
+         readonly = 'readonly'
+         classes = 'viewall_frame'
+      %]
+    [% ELSE %]
+      <iframe src="attachment.cgi?id=[% a.id %]" class="viewall_frame">
+        <b>あなたのブラウザが IFRAME をサポートしていないため、添付をこのページ内で見ることはできません。
+        <a href="attachment.cgi?id=[% a.id %]">添付を別々のページで見る</a>。</b>
+      </iframe>
+    [% END %]
   [% ELSE %]
     <p><b>
       MIME 型が text/* image/* や application/vnd.mozilla.* でないため、添付を見ることができません。
