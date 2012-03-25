@@ -38,16 +38,15 @@
 
 <h2 id="v42_introduction">導入</h2>
 
-<p>Welcome to [% terms.Bugzilla %] 4.2! It has been almost a year since we
-  released [% terms.Bugzilla %] 4.0 on February 2011, and this new major
-  release comes with several new features and improvements. This release
-  contains major improvements to search, support for SQLite, improved
-  WebServices, and lots of other enhancements.</p>
+<p>[% terms.Bugzilla %] 4.2 へようこそ。2011 年 11 月に [% terms.Bugzilla %] 4.0 
+をリリースして以来ほぼ1年になり、いくつかの新機能と改善を行ったメジャーリリース
+になります。このリリースでは検索機能の大きな改善、SQLite のサポート、
+ウェブサービスの改善や、その他多数の機能拡張が含まれます。</p>
 
-<p>If you are upgrading from a release before 4.0, make sure to read the
-  release notes for all the <a href="#v42_previous">previous versions</a>
-  in between your version and this one, <strong>particularly the Upgrading
-  section of each version's release notes</strong>.</p>
+<p>4.0 以前からアップグレードしようとしているユーザは、このバージョンとあなたの
+現在のバージョンの間の<a href="#v42_previous">過去のバージョン</a>のリリースノート
+をすべて確認してください。<strong>特にそれぞれのリリースノートの更新を行う
+際の部分は重要です。</strong></p>
 
 <!-- h2 id="v42_point">4.2.x リリースでの更新点</h2 -->
 
@@ -59,13 +58,13 @@
 
 <ul>
   <li><a href="#v42_req_perl">Perl</a></li>
-  <li><a href="#v42_req_mysql">For MySQL Users</a></li>
-  <li><a href="#v42_req_pg">For PostgreSQL Users</a></li>
-  <li><a href="#v42_req_oracle">For Oracle Users</a></li>
-  <li><a href="#v42_req_sqlite">For SQLite Users</a></li>
-  <li><a href="#v42_req_modules">Required Perl Modules</a></li>
-  <li><a href="#v42_req_optional_mod">Optional Perl Modules</a></li>
-  <li><a href="#v42_req_apache">Optional Apache Modules</a></li>
+  <li><a href="#v42_req_mysql">MySQL ユーザ</a></li>
+  <li><a href="#v42_req_pg">PostgreSQL ユーザ</a></li>
+  <li><a href="#v42_req_oracle">Oracle ユーザ</a></li>
+  <li><a href="#v42_req_sqlite">SQLite ユーザ</a></li>
+  <li><a href="#v42_req_modules">必須 Perl モジュール</a></li>
+  <li><a href="#v42_req_optional_mod">推奨  Perl モジュール</a></li>
+  <li><a href="#v42_req_apache">推奨 Apache モジュール</a></li>
 </ul>
 
 <h3 id="v42_req_perl">Perl</h3>
@@ -80,30 +79,29 @@
 
 [% INCLUDE db_req db='sqlite' %]
 
-<h3 id="v42_req_modules">Required Perl Modules</h3>
+<h3 id="v42_req_modules">必須 Perl モジュール</h3>
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES
                      new = ['Math-Random-ISAAC']
                      updated = ['URI'] %]
 
-<h3 id="v42_req_optional_mod">Optional Perl Modules</h3>
+<h3 id="v42_req_optional_mod">推奨 Perl モジュール</h3>
 
-<p>The following perl modules, if installed, enable various
-  features of [% terms.Bugzilla %]:</p>
+<p>以下の Perl モジュールは、インストールされていれば、いくつかの 
+[% terms.Bugzilla %] の機能が有効になります。</p>
 
 [% INCLUDE req_table reqs = OPTIONAL_MODULES
                      new  = ['Encode', 'Encode-Detect']
                      updated = ['PatchReader', 'Apache-SizeLimit']
                      include_feature = 1 %]
 
-<h3 id="v42_req_apache">Optional Apache Modules</h3>
+<h3 id="v42_req_apache">推奨 Apache モジュール</h3>
 
-<p>If you are using Apache as your webserver, [% terms.Bugzilla %] can
-  take advantage of some Apache features if you have the below Apache
-  modules installed and enabled. Currently,
-  <a href="#v40_feat_js_css_update">certain [% terms.Bugzilla %] features</a>
-  are enabled only if you have all of the following modules installed
-  and enabled:</p>
+<p>Apache をウェブサーバとして利用している場合、[% terms.Bugzilla %] は以下の
+Apache モジュールがインストールされ有効になっている場合は、いくつかの Apache 
+の機能が活用されます。現在、
+<a href="#v40_feat_js_css_update">特定の [% terms.Bugzilla %] の機能</a> は
+以下のモジュールがインストールされ有効になっている場合のみ有効になります。</p>
 
 <ul>
   <li>mod_headers</li>
@@ -111,149 +109,132 @@
   <li>mod_env</li>
 </ul>
 
-<p>On most systems (but not on Windows), <kbd>checksetup.pl</kbd> is able to
-  tell whether or not you have these modules installed, and it will tell
-  you.</p>
+<p>(Windows 以外の) ほとんどのシステムでは、<kbd>checksetup.pl</kbd> により
+それらのモジュールがインストールされているかを検出し、表示することができます。</p>
 
 
-<h2 id="v42_feat">New Features and Improvements</h2>
+<h2 id="v42_feat">新機能と改善点</h2>
 
 <ul>
-  <li><a href="#v42_feat_sqlite">Experimental SQLite Support</a></li>
-  <li><a href="#v42_feat_attach">Creating an Attachment by Pasting Text Into
-    a Text Field</a></li>
-  <li><a href="#v42_feat_email">HTML [% terms.Bug %]mail</a></li>
-  <li><a href="#v42_feat_search">Improved Searching System</a></li>
-  <li><a href="#v42_feat_product">Disabling Old Components, Versions and Milestones</a></li>
-  <li><a href="#v42_feat_custom">Displaying a Custom Field Value Based on Multiple
-    Values of Another Field</a></li>
-  <li><a href="#v42_feat_audit">Auditing of All Changes Within [% terms.Bugzilla %]</a></li>
-  <li><a href="#v42_feat_wai">Accessibility Improvements</a></li>
-  <li><a href="#v42_feat_other">Other Enhancements and Changes</a></li>
+  <li><a href="#v42_feat_sqlite">実験的な SQLite のサポート</a></li>
+  <li><a href="#v42_feat_attach">テキスト形式の添付をテキスト入力フィールドで可能に</a></li>
+  <li><a href="#v42_feat_email">HTML [% terms.Bug %] メール</a></li>
+  <li><a href="#v42_feat_search">検索機能の改善</a></li>
+  <li><a href="#v42_feat_product">古いコンポーネント、バージョン、マイルストーンの無効化</a></li>
+  <li><a href="#v42_feat_custom">カスタムフィールドの表示を他のフィールドの複数の値を元に制御</a></li>
+  <li><a href="#v42_feat_audit">[% terms.Bugzilla %] のすべての変更を監査</a></li>
+  <li><a href="#v42_feat_wai">アクセシビリティーの改善</a></li>
+  <li><a href="#v42_feat_other">他の機能拡張と更新点</a></li>
 </ul>
 
-<h3 id="v42_feat_sqlite">Experimental SQLite Support</h3>
+<h3 id="v42_feat_sqlite">実験的な SQLite のサポート</h3>
 
-<p>SQLite is now supported by [% terms.Bugzilla %] and becomes the 4th supported
-  database besides MySQL, PostgreSQL and Oracle. SQLite support must be considered
-  as experimental, at least till the next major release.</p>
+<p>SQLite は [% terms.Bugzilla %] によりサポートされるようになり、MySQL, PostgreSQL, 
+Oracle に次ぐ 4 番目に利用可能なデータベースになります。SQLite サポートは、
+次期メジャーリリースまではまだ実験的サポートとなります。</p>
 
-<p>Note that use of SQLite is only recommended for small installations. Larger
-  installations should use MySQL, PostgreSQL, or Oracle.</p>
+<p>なお、SQLite は小規模なサイトにのみ推奨されます。大規模なサイトでは、
+MySQL, PostgreSQL, や Oracle を利用すべきです。</p>
 
-<h3 id="v42_feat_attach">Creating an Attachment by Pasting Text Into a Text Field</h3>
+<h3 id="v42_feat_attach">テキスト形式の添付をテキスト入力フィールドで可能に</h3>
 
-<p>You can now create a new attachment simply by pasting some text into a text
-  field, in addition to the normal upload process for attachments.</p>
+<p>新しいテキスト形式の添付を、通常のようなファイルアップロードではなく、
+テキスト入力フィールドに貼り付けることで行えるようになりました。</p>
 
-<h3 id="v42_feat_email">HTML [% terms.Bug %]mail</h3>
+<h3 id="v42_feat_email">HTML [% terms.Bug %] メール</h3>
 
-<p>By default, [% terms.bug %]mails (email notifications about changes to
-  [%+ terms.bugs %]) are now sent in an HTML format that is more readable than
-  the old text format. Those who prefer the old text format can still choose it
-  in their Preferences, however.</p>
+<p>既定では、[% terms.bug %] メール ([%+ terms.bugs %] の変更についてのメール通知) 
+は、これまでのテキスト形式よりも読みやすい HTML メールで送信されるようになりました。
+ただし、これまでのテキスト形式を望むユーザは、自分の設定から変更することが可能です。</p>
 
-<h3 id="v42_feat_search">Improved Searching System</h3>
+<h3 id="v42_feat_search">検索機能の改善</h3>
 
-<p>The Custom Search section in the Advanced Search page has been redesigned
-  to work in a more sensible way. Complex queries are easier to build and have
-  more sensible results, as they are built using a more intuitive logic.
-  Some very complicated queries are still impossible to generate, though.
-  Things should improve in future releases.</p>
+<p>高度な検索のカスタムサーチ部分はよりわかりやすい形に再デザインされました。
+複雑なクエリもより簡単になり、よりわかりやすい表示で直感的な論理組み立てに
+なりました。ある種の非常に複雑なクエリはまだ実現できません。しかし、
+将来のリリースでは改善されるでしょう。</p>
 
-<h3 id="v42_feat_product">Disabling Old Components, Versions and Milestones</h3>
+<h3 id="v42_feat_product">古いコンポーネント、バージョン、マイルストーンの無効化</h3>
 
-<p>Older components, versions and milestones can now be disabled. [% terms.Bugs %]
-  already using them are not affected, but these values will no longer be
-  available for new [% terms.bugs %].</p>
+<p>古いコンポーネント、バージョン、マイルストーンを無効化できるようになりました。
+すでに [% terms.Bugs %] で利用されている部分には影響しませんが、新規 
+[% terms.bugs %] では利用できません。</p>
 
-<h3 id="v42_feat_custom">Displaying a Custom Field Value Based on Multiple Values
-  of Another Field</h3>
+<h3 id="v42_feat_custom">カスタムフィールドの表示を他のフィールドの複数の値を元に制御</h3>
 
-<p>A custom field can now be displayed based on multiple values of another field.
-  (For example, one custom field could now appear in multiple products.)
-  Previously, you could only display a custom field based on a single value of
-  another field.</p>
+<p>カスタムフィールドの表示を、他のフィールドの複数の値を元に制御できるように
+なりました。(たとえば、一つのカスタムフィールドを複数のプロダクトに表示するなど。)
+以前は、他のフィールドの一つのフィールドを元にしか表示を制御できませんでした。</p>
 
-<h3 id="v42_feat_audit">Auditing of All Changes Within [% terms.Bugzilla %]</h3>
+<h3 id="v42_feat_audit">[% terms.Bugzilla %] のすべての変更を監査</h3>
 
-<p>Most changes made through the admin interface are now logged to the database,
-  in the <kbd>audit_log</kbd> table. There is no UI to access this table yet,
-  but developers are free to create their own tools to track changes made into
-  their installation. This is only a first step, and improvements are expected
-  in future releases.</p>
+<p>管理画面から行った変更のほとんどはデータベースの <kbd>audit_log</kbd> テーブル
+に保存されるようになりました。まだアクセスのための UI はありませんが、
+開発者は各サイトのために自分でツールを開発することはできます。これは、最初の
+一歩で、将来のリリースでより改善されるでしょう。</p>
 
-<h3 id="v42_feat_wai">Accessibility Improvements</h3>
+<h3 id="v42_feat_wai">アクセシビリティーの改善</h3>
 
-<p>A project has started thanks to Francisco Donalisio from IBM to make
-  [%+ terms.Bugzilla %] compliant with the W3C Web Accessibility Initiative
-  standards. A lot more work still needs to be done, but we expect a much
-  better compatibility for the next major release.</p>
+<p>IBM の Francisco Donalisio による、[%+ terms.Bugzilla %] を W3C ウェブ
+アクセシビリティーイニシアティブ標準への準拠についての作業に感謝します。
+まだかなりの作業が必要ではありますが、次期バージョンのリリースではよりよい
+標準準拠を実現できると考えています。</p>
 
-<h3 id="v42_feat_other">Other Enhancements and Changes</h3>
+<h3 id="v42_feat_other">他の機能拡張と更新点</h3>
 
-<h4>Enhancements for Users</h4>
+<h4>ユーザ向けの機能拡張</h4>
 
 <ul>
-  <li><strong>[% terms.Bugs %]:</strong> Users without editbugs privileges can
-    no longer remove other users from the CC list of [% terms.bugs %].</li>
-  <li><strong>[% terms.Bugs %]:</strong> Local [% terms.bug %] IDs are now valid
-    in the See Also field. Adding such an ID will also add a reciprocal link in
-    the other [% terms.bug %].</li>
-  <li><strong>[% terms.Bugs %]:</strong> After editing [% terms.abug %] or an
-    attachment, the URL is automatically changed to <kbd>show_bug.cgi</kbd>
-    instead of <kbd>post_bug.cgi</kbd>, <kbd>process_bug.cgi</kbd> or
-    <kbd>attachment.cgi</kbd> so that reloading the page (for instance when
-    restarting the web browser) displays the right page. This feature is supported
-    by Firefox, Chrome and Safari, but not by Internet Explorer 9.</li>
-  <li><strong>[% terms.Bugs %]:</strong> Inactive accounts are no longer
-    displayed in user fields when user-autocompletion is enabled.</li>
-  <li><strong>[% terms.Bugs %]:</strong> User-autocompletion is now much faster
-    on installations with many user accounts.</li>
-  <li><strong>[% terms.Bugs %]:</strong> The See Also field now accepts URLs
-    pointing to MantisBT, Trac, JIRA and the sourceforge.net b[%%]ug trackers.</li>
-  <li><strong>[% terms.Bugs %]:</strong> Displaying [% terms.abug %] with many
-    dependencies is now much faster.</li>
-  <li><strong>Attachments:</strong> The encoding of text files can be automatically
-    detected when uploading them as attachments.</li>
-  <li><strong>Attachments:</strong> Clickjacking could possibly occur in an attachment 
-    Details page if a user attached a specially formatted HTML file. To fix this 
-    potential problem, the Details page always displays the HTML source instead and 
-    users can see rendered page by clicking on View.</li>
-  <li><strong>Flags:</strong> Changing the requestee of a flag no longer changes
-    the requester.</li>
-  <li><strong>Reports:</strong> If JavaScript is enabled in your web browser,
-    tabular reports are now sortable based on any displayed column.</li>
-  <li><strong>Dependency graphs:</strong> The <em>Show every [% terms.bug %] in
-    the system with dependencies</em> option has been removed.</li>
-  <li><strong>Searches:</strong> The columns displayed by default in
-    [%+ terms.bug %]lists have changed. These columns are now displayed by default
-    unless otherwise specified:<br>
-    <kbd>product | component | assignee | [% terms.bug %] status | resolution |
-    [%+ terms.bug %] summary | last change date</kbd><br>
-    This means that the priority, severity and operating system columns are no
-    longer displayed by default.</li>
-  <li><strong>Searches:</strong> [% terms.Bug %]lists will now only display the
-    first 500 [% terms.bugs %] by default. It is still possible to display the
-    whole list, though.</li>
-  <li><strong>Searches:</strong> When using relative dates and times, <kbd>-1w</kbd>
-    is now a synonym for <kbd>-7d</kbd> and means exactly 7 days. Previously,
-    <kbd>-1w</kbd> meant the beginning of the week, which was confusing some users.
-    The same confusion existed for <kbd>-1d</kbd> which was different from
-    <kbd>-24h</kbd>, and for <kbd>-1m</kbd> which was different from <kbd>-30d</kbd>.
-    Now if you really want the beginning of the day, week or month, you must use
-    <kbd>-1ds</kbd>, <kbd>-1ws</kbd>, and <kbd>-1ms</kbd> respectively, where
-    "s" means "start of". This change will affect existing saved searches using
-    relative dates.</li>
-  <li><strong>Searches:</strong> A new <em>Include fulltext when performing quick
-    searches</em> user preference has been added which permits users to include
-    or exclude comments when using quicksearches.</li>
-  <li><strong>Searches:</strong> It is now possible to query for [% terms.bugs %]
-    based on personal tags in the Custom Search section in the Advanced Search
-    page.</li>
-  <li><strong>Email notifications: </strong> The date and time of comments are no
-    longer displayed in the comment header in [% terms.bug%]mails. This information
-    is already available in the email header itself.</li>
+  <li><strong>[% terms.Bugs %]:</strong> editbugs 権限がないユーザは他のユーザを
+    [% terms.bugs %] の CC リストから削除できなくなりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> 同じサイトの [% terms.bug %] 番号が
+    参照フィールドで利用可能になりました。番号を追加するとその [% terms.bug %]
+    にも参照リンクが追加されます。</li>
+  <li><strong>[% terms.Bugs %]:</strong> [% terms.abug %] や添付の編集後、URL 
+    が自動的に <kbd>post_bug.cgi</kbd>、<kbd>process_bug.cgi</kbd> や
+    <kbd>attachment.cgi</kbd> でなく <kbd>show_bug.cgi</kbd> に変わるようになり、
+    ページ再読み込み (もしくはブラウザの再起動) でもきちんと表示されるように
+    なりました。この機能は Firefox、Chrome と Safari では利用できますが
+    Internet Explorer 9 には対応していません。</li>
+  <li><strong>[% terms.Bugs %]:</strong> 無効化されたアカウントはユーザ自動補完
+    が有効な場合にユーザ名入力欄には表示されなくなりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> 多数のアカウントがあるサイトでの
+    ユーザ自動補完が高速に動作するようになりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> 参照フィールドは MantisBT, Trac, JIRA
+    と sourceforge.net b[%%]ug トラッカーの URL を受け付けるようになりました。</li>
+  <li><strong>[% terms.Bugs %]:</strong> 多数の依存関係のある [% terms.abug %] 
+    の表示が高速化されました。</li>
+  <li><strong>添付:</strong> 添付のアップロード時に、テキストファイルの文
+    字コードが自動的に判別されるようになりました。</li>
+  <li><strong>添付:</strong> HTML 形式の添付の場合に、添付の詳細ページで
+    クリックジャックが発生する可能性がありました。この可能性のある問題を修正する
+    ため、詳細ページではページではなく HTML ソースが表示されるようになりました。</li>
+  <li><strong>フラグ:</strong> フラグの被要請者の変更は、要請者を変更しなくなりました。</li>
+  <li><strong>レポート:</strong> JavaScript がブラウザで有効の場合、表形式のレポー
+    トがどのカラムでもソート可能になりました。</li>
+  <li><strong>依存グラフ:</strong> <em>依存関係を持つサイト内のすべての 
+    [% terms.bug %] を表示</em> 機能は削除されました。</li>
+  <li><strong>検索:</strong> [%+ terms.bug %] リストの既定のカラムが変更されました。
+    以下のカラムが他に指定されない限り表示されます:<br>
+    <kbd>プロダクト | コンポーネント | 担当者 | [% terms.bug %] ステータス | 解決方法 |
+    [%+ terms.bug %] 要約 | 最終更新日</kbd><br>
+    これは、重要性、深刻度、OS カラムが既定では表示されなくなることを意味します。</li>
+  <li><strong>検索:</strong> [% terms.Bug %] リストには先頭 500 個の [% terms.bugs %] 
+    しか既定では表示されなくなりました。ただし、リスト全体を表示することは可能です。</li>
+  <li><strong>検索:</strong> 相対日付・時間について、<kbd>-1w</kbd> が
+    <kbd>-7d</kbd> と同義の 7 日を示すようになりました。以前は、<kbd>-1w</kbd> 
+    はユーザには混乱の元でしたが週の始まりを意味していました。
+    同じく、<kbd>-1d</kbd> は <kbd>-24h</kbd> ではなく、<kbd>-1m</kbd> も
+    <kbd>-30d</kbd> ではありませんでした。また、日、週、月の初めを意味するには、
+    <kbd>-1ds</kbd>, <kbd>-1ws</kbd>, や <kbd>-1ms</kbd> をそれぞれ利用してください。
+    "s" は開始点 (start of) を意味します。この変更は、既存の保存された検索で利用
+    されている相対日付にも影響します。</li>
+  <li><strong>検索:</strong> <em>簡易検索でも全文検索を行う</em> 設定が新たに追加
+    され、ユーザが簡易検索でコメントを対象とするかどうかを選択できるようになりました。</li>
+  <li><strong>検索:</strong> [% terms.bugs %] を高度な検索のカスタム検索で、
+    個人タグを元に検索できるようになりました。</li>
+  <li><strong>メール通知: </strong> コメントの日時が [% terms.bug%] メールのコメン
+    トヘッダ部分に表示されなくなりました。この情報はメールヘッダ自体に存在します。</li>
 </ul>
 
 <h4>Enhancements for Administrators and Developers</h4>
