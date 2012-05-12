@@ -28,7 +28,7 @@
 
 <ul class="bz_toc">
   <li><a href="#v42_introduction">導入</a></li>
-  <!-- li><a href="#v42_point">4.2.x リリースでの更新点</a></li -->
+  <li><a href="#v42_point">4.2.x リリースでの更新点</a></li>
   <li><a href="#v42_req">動作環境</a></li>
   <li><a href="#v42_feat">新機能と改善点</a></li>
   <li><a href="#v42_issues">既知の問題点</a></li>
@@ -48,8 +48,56 @@
 をすべて確認してください。<strong>特にそれぞれのリリースノートの更新を行う
 際の部分は重要です。</strong></p>
 
-<!-- h2 id="v42_point">4.2.x リリースでの更新点</h2 -->
+<h2 id="v42_point">4.2.x リリースでの更新点</h2>
 
+<h3>4.2.1</h3>
+
+<p>このリリースでは二つのセキュリティー問題への修正を含みます。
+  詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.6.8/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下の重要な修正・変更がこのリリースでは行われました。</p>
+
+<ul>
+  <li>Due to a regression introduced when fixing CVE-2012-0453, if an XML-RPC
+    client sets the charset as part of its Content-Type header, we were
+    incorrectly rejecting the request. The header is now correctly parsed.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=731219">[% terms.Bug %] 731219</a>)</li>
+  <li>Email notifications about status changes in blockers were incorrectly
+    formatted. Several pieces of text were missing in the emails.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=731586">[% terms.Bug %] 731586</a>)</li>
+  <li>Many [% terms.bugs %] related to the searching system have been fixed.
+    (<a href="https://bugzilla.mozilla.org/buglist.cgi?bug_id=58179,715270,730984,731163,737436,745320">
+    [% terms.Bugs %] 58179, 715270, 730984, 731163, 737436 and 745320</a>)</li>
+  <li>When using the QuickSearch box, complex queries are now parsed correctly.
+    It also behaves correctly with non-ASCII characters (such as e, a, u, etc.).
+    (<a href="https://bugzilla.mozilla.org/buglist.cgi?bug_id=554819,663377,730207">
+    [% terms.Bugs %] 554819, 663377 and 730207</a>)</li>
+  <li>The 'take' link besides the assignee field now works correctly when
+    the <kbd>usemenuforusers</kbd> parameter is turned on.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=734997">[% terms.Bug %] 734997</a>)</li>
+  <li>URLs in the 'Total' row at the bottom of tabular reports were broken
+    when JavaScript was enabled and a user field was used for the vertical
+    axis.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=731323">[% terms.Bug %] 731323</a>)</li>
+  <li>Some performance problems have been fixed for installations with many
+    products, components or versions.
+    (<a href="https://bugzilla.mozilla.org/buglist.cgi?bug_id=695514,731055">
+    [% terms.Bugs %] 695514 and 731055</a>)</li>
+  <li>A new hook named <kbd>buglist_column_joins</kbd> has been added to let
+    extensions alter the <kbd>Bugzilla::Search::COLUMN_JOINS</kbd> hash.
+    Now more fields can be displayed as columns in buglists, in combination
+    with the already existing <kbd>buglist_columns</kbd> hook.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=743991">[% terms.Bug %] 743991</a>)</li>
+  <li>A new hook named <kbd>error_catch</kbd> has been added to let extensions
+    alter the way errors are thrown.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=745197">[% terms.Bug %] 745197</a>)</li>
+  <li>A new hook named <kbd>admin_editusers_action</kbd> has been added to let
+    extensions alter the behavior of <kbd>editusers.cgi</kbd>. This lets you add
+    new features to this script very easily.
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=730794">[% terms.Bug %] 730794</a>)</li>
+</ul>
 
 <h2 id="v42_req">動作環境</h2>
 
@@ -335,6 +383,9 @@ MySQL, PostgreSQL, や Oracle を利用すべきです。</p>
     changes made to the [% terms.bug %] as well as <kbd>users</kbd> including
     recipients of the email notification.</li>
   <li>YUI has been upgraded to 2.9.0.</li>
+  <li>The [% terms.Bugzilla %]-specific <kbd>url_quote</kbd> filter used in templates
+    has been removed and replaced by the <kbd>uri</kbd> filter from Template::Toolkit
+    as they are now similar.</li>
   <li>Due to the major code refactor of <kbd>B[%%]ugzilla/Search.pm</kbd>, any
     customization made against this file will probably need to be rewritten.</li>
   <li><kbd>long_list.cgi</kbd>, <kbd>showattachment.cgi</kbd> and <kbd>xml.cgi</kbd>

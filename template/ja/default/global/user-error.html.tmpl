@@ -1619,6 +1619,27 @@
     [% title = BLOCK %] $jaword.search_name が長すぎます [% END %]
     クエリ名は [% constants.MAX_LEN_QUERY_NAME FILTER html %] 文字以内でなくてはなりません。
 
+  [% ELSIF error == "quicksearch_invalid_query" %]
+    [% title = "無効なクエリ" %]
+    指定されたクエリは無効です。
+    [% IF operators %]
+      [% operators.shift FILTER html %] 演算子の後には [%+ operators.shift FILTER html %]
+      を続けることはできません。
+    [% ELSE %]
+      クエリは AND や OR から始まる、もしくは AND、OR や NOT で終わることはできません。
+      これらは予約された演算子で、これらの文字列で検索したい場合は引用符で囲む
+      必要があります。
+    [% END %]
+
+  [% ELSIF error == "quicksearch_unbalanced_quotes" %]
+    [% title = "形式エラーのクエリ" %]
+    [% terms.Bugzilla %] はあなたのクエリを正常に解釈できませんでした:
+    <em>[% string FILTER html %]</em><br>
+    文字列を囲むのに引用符を利用している場合、両側ともあることを確認してください。
+    文字列の中に引用符を含む場合は " でなく \" としてください。たとえば、
+    <em>"I'm so \"special\", really"</em> (引用符付き) は、実際には
+    <em>I'm so "special", really</em> と解釈されます。
+
   [% ELSIF error == "quicksearch_unknown_field" %]
     [% title = "簡易検索エラー" %]
     検索中に問題が発生しました: 

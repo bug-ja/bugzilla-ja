@@ -294,6 +294,7 @@ sub pickos {
             /\(.*VMS.*\)/ && do {push @os, "OpenVMS";};
             /\(.*Win.*\)/ && do {
               /\(.*Windows XP.*\)/ && do {push @os, "Windows XP";};
+              /\(.*Windows NT 6\.2.*\)/ && do {push @os, "Windows 8";};
               /\(.*Windows NT 6\.1.*\)/ && do {push @os, "Windows 7";};
               /\(.*Windows NT 6\.0.*\)/ && do {push @os, "Windows Vista";};
               /\(.*Windows NT 5\.2.*\)/ && do {push @os, "Windows Server 2003";};
@@ -309,6 +310,7 @@ sub pickos {
               /\(.*Windows.*NT.*\)/ && do {push @os, "Windows NT";};
             };
             /\(.*Mac OS X.*\)/ && do {
+              /\(.*Mac OS X (?:|Mach-O |\()10.7.*\)/ && do {push @os, "Mac OS X 10.7";};
               /\(.*Mac OS X (?:|Mach-O |\()10.6.*\)/ && do {push @os, "Mac OS X 10.6";};
               /\(.*Mac OS X (?:|Mach-O |\()10.5.*\)/ && do {push @os, "Mac OS X 10.5";};
               /\(.*Mac OS X (?:|Mach-O |\()10.4.*\)/ && do {push @os, "Mac OS X 10.4";};
