@@ -81,7 +81,7 @@ use Memoize;
     POS_EVENTS
     EVT_OTHER EVT_ADDED_REMOVED EVT_COMMENT EVT_ATTACHMENT EVT_ATTACHMENT_DATA
     EVT_PROJ_MANAGEMENT EVT_OPENED_CLOSED EVT_KEYWORD EVT_CC EVT_DEPEND_BLOCK
-    EVT_BUG_CREATED
+    EVT_BUG_CREATED EVT_COMPONENT
 
     NEG_EVENTS
     EVT_UNCONFIRMED EVT_CHANGED_BY_ME 
@@ -140,6 +140,7 @@ use Memoize;
     MAX_SUDO_TOKEN_AGE
     MAX_LOGIN_ATTEMPTS
     LOGIN_LOCKOUT_INTERVAL
+    ACCOUNT_CHANGE_INTERVAL
     MAX_STS_AGE
 
     SAFE_PROTOCOLS
@@ -179,7 +180,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.3";
+use constant BUGZILLA_VERSION => "4.3.1";
 
 # Location of the remote and local XML files to track new releases.
 use constant REMOTE_FILE => 'http://updates.bugzilla.org/bugzilla-update.xml';
@@ -332,11 +333,13 @@ use constant EVT_KEYWORD            => 7;
 use constant EVT_CC                 => 8;
 use constant EVT_DEPEND_BLOCK       => 9;
 use constant EVT_BUG_CREATED        => 10;
+use constant EVT_COMPONENT          => 11;
 
 use constant POS_EVENTS => EVT_OTHER, EVT_ADDED_REMOVED, EVT_COMMENT, 
                            EVT_ATTACHMENT, EVT_ATTACHMENT_DATA, 
                            EVT_PROJ_MANAGEMENT, EVT_OPENED_CLOSED, EVT_KEYWORD,
-                           EVT_CC, EVT_DEPEND_BLOCK, EVT_BUG_CREATED;
+                           EVT_CC, EVT_DEPEND_BLOCK, EVT_BUG_CREATED,
+                           EVT_COMPONENT;
 
 use constant EVT_UNCONFIRMED        => 50;
 use constant EVT_CHANGED_BY_ME      => 51;
@@ -406,6 +409,10 @@ use constant MAX_LOGIN_ATTEMPTS => 5;
 # If the maximum login attempts occur during this many minutes, the
 # account is locked.
 use constant LOGIN_LOCKOUT_INTERVAL => 30;
+
+# The time in minutes a user must wait before he can request another email to
+# create a new account or change his password.
+use constant ACCOUNT_CHANGE_INTERVAL => 10;
 
 # The maximum number of seconds the Strict-Transport-Security header
 # will remain valid. Default is one week.
@@ -522,7 +529,7 @@ use constant MAX_CLASSIFICATION_SIZE => 64;
 use constant MAX_PRODUCT_SIZE => 64;
 
 # The longest milestone name allowed.
-use constant MAX_MILESTONE_SIZE => 20;
+use constant MAX_MILESTONE_SIZE => 64;
 
 # The longest component name allowed.
 use constant MAX_COMPONENT_SIZE => 64;

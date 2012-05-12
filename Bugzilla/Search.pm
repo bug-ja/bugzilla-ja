@@ -397,71 +397,88 @@ use constant COLUMN_DEPENDS => {
 # certain columns in the buglist. For the most part, Search.pm uses
 # DB::Schema to figure out what needs to be joined, but for some
 # fields it needs a little help.
-use constant COLUMN_JOINS => {
-    actual_time => {
-        table => '(SELECT bug_id, SUM(work_time) AS total'
-                 . ' FROM longdescs GROUP BY bug_id)',
-        join  => 'INNER',
-    },
-    assigned_to => {
-        from  => 'assigned_to',
-        to    => 'userid',
-        table => 'profiles',
-        join  => 'INNER',
-    },
-    reporter => {
-        from  => 'reporter',
-        to    => 'userid',
-        table => 'profiles',
-        join  => 'INNER',
-    },
-    qa_contact => {
-        from  => 'qa_contact',
-        to    => 'userid',
-        table => 'profiles',
-    },
-    component => {
-        from  => 'component_id',
-        to    => 'id',
-        table => 'components',
-        join  => 'INNER',
-    },
-    product => {
-        from  => 'product_id',
-        to    => 'id',
-        table => 'products',
-        join  => 'INNER',
-    },
-    classification => {
-        table => 'classifications',
-        from  => 'map_product.classification_id',
-        to    => 'id',
-        join  => 'INNER',
-    },
-    'flagtypes.name' => {
-        as    => 'map_flags',
-        table => 'flags',
-        extra => ['map_flags.attach_id IS NULL'],
-        then_to => {
-            as    => 'map_flagtypes',
-            table => 'flagtypes',
-            from  => 'map_flags.type_id',
-            to    => 'id',
+sub COLUMN_JOINS {
+    my $invocant = shift;
+    my $user = blessed($invocant) ? $invocant->_user : Bugzilla->user;
+
+    my $joins = {
+        actual_time => {
+            table => '(SELECT bug_id, SUM(work_time) AS total'
+                     . ' FROM longdescs GROUP BY bug_id)',
+            join  => 'INNER',
         },
-    },
-    keywords => {
-        table => 'keywords',
-        then_to => {
-            as    => 'map_keyworddefs',
-            table => 'keyworddefs',
-            from  => 'map_keywords.keywordid',
-            to    => 'id',
+        assigned_to => {
+            from  => 'assigned_to',
+            to    => 'userid',
+            table => 'profiles',
+            join  => 'INNER',
         },
-    },
-    'longdescs.count' => {
-        table => 'longdescs',
-        join  => 'INNER',
-    },
+        reporter => {
+            from  => 'reporter',
+            to    => 'userid',
+            table => 'profiles',
+            join  => 'INNER',
+        },
+        qa_contact => {
+            from  => 'qa_contact',
+            to    => 'userid',
+            table => 'profiles',
+        },
+        component => {
+            from  => 'component_id',
+            to    => 'id',
+            table => 'components',
+            join  => 'INNER',
+        },
+        product => {
+            from  => 'product_id',
+            to    => 'id',
+            table => 'products',
+            join  => 'INNER',
+        },
+        classification => {
+            table => 'classifications',
+            from  => 'map_product.classification_id',
+            to    => 'id',
+            join  => 'INNER',
+        },
+        'flagtypes.name' => {
+            as    => 'map_flags',
+            table => 'flags',
+            extra => ['map_flags.attach_id IS NULL'],
+            then_to => {
+                as    => 'map_flagtypes',
+                table => 'flagtypes',
+                from  => 'map_flags.type_id',
+                to    => 'id',
+            },
+        },
+        keywords => {
+            table => 'keywords',
+            then_to => {
+                as    => 'map_keyworddefs',
+                table => 'keyworddefs',
+                from  => 'map_keywords.keywordid',
+                to    => 'id',
+            },
+        },
+        'longdescs.count' => {
+            table => 'longdescs',
+            join  => 'INNER',
+        },
+        tag => {
+            as => 'map_bug_tag',
+            table => 'bug_tag',
+            then_to => {
+                as => 'map_tag',
+                table => 'tag',
+                extra => ['map_tag.user_id = ' . $user->id],
+                from => 'map_bug_tag.tag_id',
+                to => 'id',
+            },
+        }
+    };
+    return $joins;
 };
 
 # This constant defines the columns that can be selected in a query 
@@ -527,6 +544,8 @@ sub COLUMNS {
         'keywords' => $dbh->sql_group_concat('DISTINCT map_keyworddefs.name'),
         
         'longdescs.count' => 'COUNT(DISTINCT map_longdescs_count.comment_id)',
+
+        tag => $dbh->sql_group_concat($dbh->sql_string_concat('map_tag.name')),
     );
 
     # Backward-compatibility for old field names. Goes new_name => old_name.
@@ -625,6 +644,7 @@ use constant GROUP_BY_SKIP => qw(
     keywords
     longdescs.count
     percentage_complete
+    tag
 );
 
 ###############
@@ -782,8 +802,8 @@ sub _param_array {
 }
 
 sub _params { $_[0]->{params} }
-
 sub _user { return $_[0]->{user} }
+sub _sharer_id { $_[0]->{sharer} }
 
 ##############################
 # Internal Accessors: SELECT #
@@ -799,7 +819,7 @@ sub _extra_columns {
     my ($self) = @_;
     # Everything that's going to be in the ORDER BY must also be
     # in the SELECT.
-    $self->{extra_columns} ||= [ $self->_valid_order_columns ];
+    push(@{ $self->{extra_columns} }, $self->_valid_order_columns);
     return @{ $self->{extra_columns} };
 }
 
@@ -971,7 +991,8 @@ sub _column_join {
     my ($self, $field) = @_;
     # The _realname fields require the same join as the username fields.
     $field =~ s/_realname$//;
-    my $join_info = COLUMN_JOINS->{$field};
+    my $column_joins = $self->_get_column_joins();
+    my $join_info = $column_joins->{$field};
     if ($join_info) {
         # Don't allow callers to modify the constant.
         $join_info = dclone($join_info);
@@ -1414,6 +1435,11 @@ sub _special_parse_chfield {
         $clause->add($from_clause);
     }
     if ($date_to ne '') {
+        # chfieldto is supposed to be a relative date or a date of the form
+        # YYYY-MM-DD, i.e. without the time appended to it. We append the
+        # time ourselves so that the end date is correctly taken into account.
+        $date_to .= ' 23:59:59' if $date_to =~ /^\d{4}-\d{1,2}-\d{1,2}$/;
+
         my $to_clause = new Bugzilla::Search::Clause('OR');
         foreach my $field (@fields) {
             $to_clause->add($field, 'changedbefore', $date_to);
@@ -1680,7 +1706,11 @@ sub _handle_chart {
     $search_args{quoted} = $self->_quote_unless_numeric(\%search_args);
     # This should add a "term" selement to %search_args.
     $self->do_search_function(\%search_args);
-    
+
+    # If term is left empty, then this means the criteria
+    # has no effect and can be ignored.
+    return unless $search_args{term};
+
     # All the things here that don't get pulled out of
     # %search_args are their original values before
     # do_search_function modified them.   
@@ -1800,6 +1830,20 @@ sub _get_operator_field_override {
     return $cache->{operator_field_override};
 }
 
+sub _get_column_joins {
+    my $self = shift;
+    my $cache = Bugzilla->request_cache;
+
+    return $cache->{column_joins} if defined $cache->{column_joins};
+
+    my %column_joins = %{ $self->COLUMN_JOINS() };
+    Bugzilla::Hook::process('buglist_column_joins',
+                            { column_joins => \%column_joins });
+
+    $cache->{column_joins} = \%column_joins;
+    return $cache->{column_joins};
+}
+
 ###########################
 # Search Function Helpers #
 ###########################
@@ -1912,16 +1956,22 @@ sub _timestamp_translate {
     my $value = $args->{value};
     my $dbh = Bugzilla->dbh;
 
-    return if $value !~ /^[\+\-]?\d+[hdwmy]$/i;
-    
-    $args->{value}  = SqlifyDate($value);
-    $args->{quoted} = $dbh->quote($args->{value});
+    return if $value !~ /^(?:[\+\-]?\d+[hdwmy]s?|now)$/i;
+
+    # By default, the time is appended to the date, which we don't want
+    # for deadlines.
+    $value = SqlifyDate($value);
+    if ($args->{field} eq 'deadline') {
+        ($value) = split(/\s/, $value);
+    }
+    $args->{value} = $value;
+    $args->{quoted} = $dbh->quote($value);
 }
 
 sub SqlifyDate {
     my ($str) = @_;
     my $fmt = "%Y-%m-%d %H:%M:%S";
-    $str = "" if !defined $str;
+    $str = "" if (!defined $str || lc($str) eq 'now');
     if ($str eq "") {
         my ($sec, $min, $hour, $mday, $month, $year, $wday) = localtime(time());
         return sprintf("%4d-%02d-%02d 00:00:00", $year+1900, $month+1, $mday);
@@ -2496,8 +2546,8 @@ sub _multiselect_table {
     }
     elsif ($field eq 'tag') {
         $args->{full_field} = 'tag.name';
-        return "bug_tag INNER JOIN tag ON bug_tag.tag_id = tag.id"
-                                       . " AND user_id = " . $self->_user->id;
+        return "bug_tag INNER JOIN tag ON bug_tag.tag_id = tag.id AND user_id = "
+               . ($self->_sharer_id || $self->_user->id);
     }
     elsif ($field eq 'bug_group') {
         $args->{full_field} = 'groups.name';

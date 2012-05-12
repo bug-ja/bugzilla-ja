@@ -32,6 +32,7 @@ use Bugzilla::Status;
 use Bugzilla::Token;
 
 use Date::Parse;
+use Time::HiRes qw(gettimeofday tv_interval);
 
 my $cgi = Bugzilla->cgi;
 my $dbh = Bugzilla->dbh;
@@ -92,16 +93,6 @@ if (defined $cgi->param('format') && $cgi->param('format') eq "rdf"
 # Treat requests for ctype=rss as requests for ctype=atom
 if (defined $cgi->param('ctype') && $cgi->param('ctype') eq "rss") {
     $cgi->param('ctype', "atom");
-}
-
-# The js ctype presents a security risk; a malicious site could use it  
-# to gather information about secure bugs. So, we only allow public bugs to be
-# retrieved with this format.
-#
-# Note that if and when this call clears cookies or has other persistent 
-# effects, we'll need to do this another way instead.
-if ((defined $cgi->param('ctype')) && ($cgi->param('ctype') eq "js")) {
-    Bugzilla->logout_request();
 }
 
 # An agent is a program that automatically downloads and extracts data
@@ -210,7 +201,9 @@ sub LookupNamedQuery {
     $query->url
        || ThrowUserError("buglist_parameters_required");
 
-    return wantarray ? ($query->url, $query->id) : $query->url;
+    # Detaint $sharer_id.
+    $sharer_id = $query->user->id if $sharer_id;
+    return wantarray ? ($query->url, $query->id, $sharer_id) : $query->url;
 }
 
 # Inserts a Named Query (a "Saved Search") into the database, or
@@ -329,6 +322,7 @@ sub _close_standby_message {
 
 my $cmdtype   = $cgi->param('cmdtype')   || '';
 my $remaction = $cgi->param('remaction') || '';
+my $sharer_id;
 
 # Backwards-compatibility - the old interface had cmdtype="runnamed" to run
 # a named command, and we can't break this because it's in bookmarks.
@@ -365,8 +359,9 @@ $filename =~ s/"/\\"/g; # escape quotes
 if ($cmdtype eq "dorem") {  
     if ($remaction eq "run") {
         my $query_id;
-        ($buffer, $query_id) = LookupNamedQuery(scalar $cgi->param("namedcmd"),
-                                                scalar $cgi->param('sharer_id'));
+        ($buffer, $query_id, $sharer_id) =
+          LookupNamedQuery(scalar $cgi->param("namedcmd"),
+                           scalar $cgi->param('sharer_id'));
         # If this is the user's own query, remember information about it
         # so that it can be modified easily.
         $vars->{'searchname'} = $cgi->param('namedcmd');
@@ -726,7 +721,8 @@ if ($format->{'extension'} eq 'html' && !defined $params->param('limit')) {
 # Generate the basic SQL query that will be used to generate the bug list.
 my $search = new Bugzilla::Search('fields' => \@selectcolumns, 
                                   'params' => scalar $params->Vars,
-                                  'order' => \@order_columns);
+                                  'order'  => \@order_columns,
+                                  'sharer' => $sharer_id);
 my $query = $search->sql;
 $vars->{'search_description'} = $search->search_description;
 $order = join(',', $search->order);
@@ -792,8 +788,10 @@ $::SIG{TERM} = 'DEFAULT';
 $::SIG{PIPE} = 'DEFAULT';
 
 # Execute the query.
+my $start_time = [gettimeofday()];
 my $buglist_sth = $dbh->prepare($query);
 $buglist_sth->execute();
+$vars->{query_time} = tv_interval($start_time);
 
 
 ################################################################################

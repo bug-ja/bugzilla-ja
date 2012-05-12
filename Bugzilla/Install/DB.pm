@@ -180,15 +180,6 @@ sub update_table_definitions {
 
     _populate_milestones_table();
 
-    # 2000-03-22 Changed the default value for target_milestone to be "---"
-    # (which is still not quite correct, but much better than what it was
-    # doing), and made the size of the value field in the milestones table match
-    # the size of the target_milestone field in the bugs table.
-    $dbh->bz_alter_column('bugs', 'target_milestone',
-        {TYPE => 'varchar(20)', NOTNULL => 1, DEFAULT => "'---'"});
-    $dbh->bz_alter_column('milestones', 'value',
-                          {TYPE => 'varchar(20)', NOTNULL => 1});
-
     _add_products_defaultmilestone();
 
     # 2000-03-24 Added unique indexes into the cc and keyword tables.  This
@@ -388,7 +379,7 @@ sub update_table_definitions {
               "WHERE initialqacontact = 0");
 
     _migrate_email_prefs_to_new_table();
-    _initialize_dependency_tree_changes_email_pref();
+    _initialize_new_email_prefs();
     _change_all_mysql_booleans_to_tinyint();
 
     # make classification_id field type be consistent with DB:Schema
@@ -665,6 +656,15 @@ sub update_table_definitions {
         $dbh->bz_drop_index('profile_search', 'profile_search_user_id');
         $dbh->bz_add_index('profile_search', 'profile_search_user_id_idx', [qw(user_id)]);
     }
+
+    # 2012-03-23 LpSolit@gmail.com - Bug 448551
+    $dbh->bz_alter_column('bugs', 'target_milestone',
+                          {TYPE => 'varchar(64)', NOTNULL => 1, DEFAULT => "'---'"});
+
+    $dbh->bz_alter_column('milestones', 'value', {TYPE => 'varchar(64)', NOTNULL => 1});
+
+    $dbh->bz_alter_column('products', 'defaultmilestone',
+                          {TYPE => 'varchar(64)', NOTNULL => 1, DEFAULT => "'---'"});
 
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #
@@ -2393,13 +2393,16 @@ sub _migrate_email_prefs_to_new_table {
     }
 }
 
-sub _initialize_dependency_tree_changes_email_pref {
+sub _initialize_new_email_prefs {
     my $dbh = Bugzilla->dbh;
     # Check for any "new" email settings that wouldn't have been ported over
     # during the block above.  Since these settings would have otherwise
     # fallen under EVT_OTHER, we'll just clone those settings.  That way if
     # folks have already disabled all of that mail, there won't be any change.
-    my %events = ("Dependency Tree Changes" => EVT_DEPEND_BLOCK);
+    my %events = (
+        "Dependency Tree Changes" => EVT_DEPEND_BLOCK,
+        "Product/Component Changes" => EVT_COMPONENT,
+    );
 
     foreach my $desc (keys %events) {
         my $event = $events{$desc};

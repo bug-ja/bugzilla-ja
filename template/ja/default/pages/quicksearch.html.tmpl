@@ -24,7 +24,16 @@
   <input type="submit" value="検索" id="find">
 </form>
 
-<h2>はじめに</h2>
+<ul>
+  <li><a href="#basics">はじめに</a></li>
+  <li><a href="#basic_examples">簡易検索の例</a></li>
+  <li><a href="#fields">検索対象のフィールド</a></li>
+  <li><a href="#advanced_features">高度な機能</a></li>
+  <li><a href="#shortcuts">高度な検索のショートカット</a></li>
+  <li><a href="#advanced_examples">複雑な検索の例</a></li>
+</ul>
+
+<h2 id="basics">はじめに</h2>
 
 <ul class="qs_help">
   <li>検索ボックスにひとつもしくは複数の単語を入力してください。
@@ -73,7 +82,31 @@
     <em>いずれか</em>の値に合致する[% terms.bugs %]が検索されます。</li>
 </ul>
 
-<p>また、<a href="#advanced">高度な機能</a>も利用可能です。</p>
+<h2 id="basic_examples">簡易検索の例</h2>
+
+<p>簡単な検索をどう実行するかのいくつかの例です。
+  <a href="#advanced_examples">複雑な検索の例</a> もこのページの下部にあります。</p>
+
+<ul class="qs_help">
+  <li>すべての活動中の [% terms.bugs %] で、CC リストに userA@company.com 
+    が入っている (活動中の [% terms.bugs %] については明示しなくても既定です):<br>
+    <kbd>cc:userA@company.com</kbd></li>
+  <li>プロダクト productA にあるすべての unconfirmed [% terms.bugs %]
+    ([%+ terms.bug %] ステータスを先頭に書くと自動的に [% terms.abug %] 
+    ステータスとして認識されます):<br>
+    <kbd>UNCONFIRMED product:productA</kbd>
+  <li>userB@company.com により報告されたすべての活動中・終了済の [% terms.bugs %] 
+    ('ALL' は先頭に書く必要があり、先頭でなければ活動中の [% terms.bugs %]
+    のみが検索対象になります):<br>
+    <kbd>ALL reporter:userB@company.com</kbd>
+  <li>すべての活動中の [% terms.bugs %] で、ターゲットマイルストーンが 2.5
+    に設定されている、blocker もしくは critical の深刻度を持つもの:<br>
+    <kbd>severity:blocker,critical milestone:2.5</kbd>
+  <li>Research & Development コンポーネントにある、すべての活動中の
+    [% terms.bugs %] で、重要度が P1 もしくは P2 のもの
+    (空白文字を含むコンポーネント名は引用符で囲む必要があります):<br>
+    <kbd>component:"Research & Development" priority:P1,P2</kbd></li>
+</ul>
 
 <h2 id="fields">検索対象のフィールド</h2>
 
@@ -122,14 +155,17 @@
   </tbody>
 </table>
 
-<h2 id="advanced">高度な機能</h2>
+<h2 id="advanced_features">高度な機能</h2>
 
 <ul class="qs_help">
-  <li><strong>フレーズ</strong>や空白を含む何かで検索したい場合、
-    それらを引用符で囲ってください。たとえば、<kbd>"this is a phrase"</kbd>です。
+  <li><strong>フレーズ</strong>や空白、カンマ、コロン、引用符を含む何かで検索
+    したい場合、それらを必ず引用符で囲ってください。
+    たとえば、<kbd>"this is a phrase"</kbd>です。
     また、簡易検索システムで特殊文字として扱われるような文字を含む検索語
     を利用するときにも引用符を利用できます。たとえば、<kbd>"this|thing"</kbd>
-    は単純な文字列の<em>this|thing</em>を検索します。</li>
+    は単純な文字列の<em>this|thing</em>となり、<kbd>this OR thing</kbd>
+    を検索します。また、<kbd>"-field:value"</kbd> は <em>-field:value</em> 
+    そのものを検索対象とし、<kbd>"NOT field:value"</kbd> とは解釈されません。</li>
 
   <li>検索中には <strong>AND</strong>, <strong>NOT</strong>,
     <strong>OR</strong> も利用可能です。
@@ -158,6 +194,12 @@
         <kbd><em>foo OR bar</em></kbd> も同じ意味です。<br>
       </li>
     </ul>
+
+    <p>| や OR をフィールド値の列挙を行うためとしては利用することはできません。
+      カンマを変わりに利用してください。つまり <kbd>field:value1,value2</kbd> 
+      は希望通りに動きますが、<kbd>field:value1|value2</kbd> は
+      <kbd>field:value1 OR value2</kbd> と解釈され、value2 
+      は指定したフィールドについての値としては扱われません。</p>
 
     <p>OR は AND より優先です。AND の操作は一番最後に来ます。
       たとえば:</p>
@@ -247,5 +289,31 @@
     [% END %]
   </tbody>
 </table>
+
+<h2 id="advanced_examples">複雑な検索の例</h2>
+
+<p>より複雑な検索条件もそれほど手を掛けずに記述することができます。
+  非常に複雑な検索条件については、
+  <a href="query.cgi?format=advanced">高度な検索</a> からの方がよいでしょう。</p>
+
+<ul class="qs_help">
+  <li>userA@company.com により報告されたか担当者に割り当てられているすべての
+    [% terms.bugs %] (先頭の @ は担当者を意味します。上の
+    <a href="#shortcuts">高度な検索のショートカット</a> を参照してください):<br>
+    <kbd>ALL @userA@company.com OR reporter:userA@company.com</kbd></li>
+  <li>プロダクト productA に登録され活動中の [% terms.bugs %] で、
+    深刻度が blocker、critical、major、もしくは重要度が P1、もしくは blocker+
+    フラグが設定されており、userB@company.com と userC@company.com のどちらも
+    が担当者でないもの
+    (条件式では userB、userC を含むユーザが他に居ないという仮定をしていますが、
+    存在する場合はログイン名全体を書く必要があります):<br>
+    <kbd>:productA sev:blocker,critical,major OR pri:P1 OR flag:blocker+ -assign:userB,userC</kbd></li>
+  <li>すべての FIXED [% terms.bugs %] で、blocker+ フラグが設定されているが、
+    approval+ も approval? フラグも設定されていないもの:<br>
+    <kbd>FIXED flag:blocker+ -flag:approval+ -flag:approval?</kbd></li>
+  <li><em>That's a "unusual" issue</em> を要約に含む [% terms.Bugs %] 
+    (二重引用符は <em>\"</em> とエスケープする必要があります):<br>
+    <kbd>summary:"That's a \"unusual\" issue"</kbd></li>
+</ul>
 
 [% PROCESS global/footer.html.tmpl %]

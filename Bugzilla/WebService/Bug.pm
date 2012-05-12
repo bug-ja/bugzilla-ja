@@ -18,7 +18,7 @@ use Bugzilla::WebService::Constants;
 use Bugzilla::WebService::Util qw(filter filter_wants validate);
 use Bugzilla::Bug;
 use Bugzilla::BugMail;
-use Bugzilla::Util qw(trick_taint trim);
+use Bugzilla::Util qw(trick_taint trim diff_arrays);
 use Bugzilla::Version;
 use Bugzilla::Milestone;
 use Bugzilla::Status;
@@ -104,11 +104,12 @@ sub fields {
 
         my (@values, $has_values);
         if ( ($field->is_select and $field->name ne 'product')
-             or grep($_ eq $field->name, PRODUCT_SPECIFIC_FIELDS))
+             or grep($_ eq $field->name, PRODUCT_SPECIFIC_FIELDS)
+             or $field->name eq 'keywords')
         {
              $has_values = 1;
              @values = @{ $self->_legal_field_values({ field => $field }) };
-        }
+        } 
 
         if (grep($_ eq $field->name, PRODUCT_SPECIFIC_FIELDS)) {
              $value_field = 'product';
@@ -198,6 +199,15 @@ sub _legal_field_values {
         }
     }
 
+    elsif ($field_name eq 'keywords') {
+        my @legal_keywords = Bugzilla::Keyword->get_all;
+        foreach my $value (@legal_keywords) {
+            push (@result, {
+               name     => $self->type('string', $value->name),
+               description => $self->type('string', $value->description),
+            });
+        }
+    }
     else {
         my @values = Bugzilla::Field::Choice->type($field)->get_all();
         foreach my $value (@values) {
@@ -338,8 +348,10 @@ sub history {
     my $ids = $params->{ids};
     defined $ids || ThrowCodeError('param_required', { param => 'ids' });
 
-    my @return;
+    my %api_name = reverse %{ Bugzilla::Bug::FIELD_MAP() };
+    $api_name{'bug_group'} = 'groups';
 
+    my @return;
     foreach my $bug_id (@$ids) {
         my %item;
         my $bug = Bugzilla::Bug->check($bug_id);
@@ -355,14 +367,15 @@ sub history {
             $bug_history{who}  = $self->type('string', $changeset->{who});
             $bug_history{changes} = [];
             foreach my $change (@{ $changeset->{changes} }) {
+                my $api_field = $api_name{$change->{fieldname}} || $change->{fieldname};
                 my $attach_id = delete $change->{attachid};
                 if ($attach_id) {
                     $change->{attachment_id} = $self->type('int', $attach_id);
                 }
                 $change->{removed} = $self->type('string', $change->{removed});
                 $change->{added}   = $self->type('string', $change->{added});
-                $change->{field_name} = $self->type('string',
-                    delete $change->{fieldname});
+                $change->{field_name} = $self->type('string', $api_field);
+                delete $change->{fieldname};
                 push (@{$bug_history{changes}}, $change);
             }
             
@@ -771,6 +784,44 @@ sub attachments {
     return { bugs => \%bugs, attachments => \%attachments };
 }
 
+sub update_tags {
+    my ($self, $params) = @_;
+
+    Bugzilla->login(LOGIN_REQUIRED);
+
+    my $ids  = $params->{ids};
+    my $tags = $params->{tags};
+
+    ThrowCodeError('param_required',
+                   { function => 'Bug.update_tags', 
+                     param    => 'ids' }) if !defined $ids;
+
+    ThrowCodeError('param_required',
+                   { function => 'Bug.update_tags', 
+                     param    => 'tags' }) if !defined $tags;
+
+    my %changes;
+    foreach my $bug_id (@$ids) {
+        my $bug = Bugzilla::Bug->check($bug_id);
+        my @old_tags = @{ $bug->tags };
+
+        $bug->remove_tag($_) foreach @{ $tags->{remove} || [] };
+        $bug->add_tag($_) foreach @{ $tags->{add} || [] };
+
+        my ($removed, $added) = diff_arrays(\@old_tags, $bug->tags);
+
+        my @removed = map { $self->type('string', $_) } @$removed;
+        my @added   = map { $self->type('string', $_) } @$added;
+
+        $changes{$bug->id}->{tags} = {
+            removed => \@removed,
+            added   => \@added
+        };
+    }
+
+    return { changes => \%changes };
+}
+
 ##############################
 # Private Helper Subroutines #
 ##############################
@@ -886,6 +937,7 @@ sub _bug_to_hash {
         # No need to format $bug->deadline specially, because Bugzilla::Bug
         # already does it for us.
         $item{'deadline'} = $self->type('string', $bug->deadline);
+        $item{'actual_time'} = $self->type('double', $bug->actual_time);
     }
 
     if (Bugzilla->user->id) {
@@ -1099,7 +1151,7 @@ values of the field are shown in the user interface. Can be null.
 
 This is an array of hashes, representing the legal values for
 select-type (drop-down and multiple-selection) fields. This is also
-populated for the C<component>, C<version>, and C<target_milestone>
+populated for the C<component>, C<version>, C<target_milestone>, and C<keywords>
 fields, but not for the C<product> field (you must use
 L<Product.get_accessible_products|Bugzilla::WebService::Product/get_accessible_products>
 for that.
@@ -1131,6 +1183,11 @@ If C<value_field> is defined for this field, then this value is only shown
 if the C<value_field> is set to one of the values listed in this array.
 Note that for per-product fields, C<value_field> is set to C<'product'>
 and C<visibility_values> will reflect which product(s) this value appears in.
+
+=item C<description>
+
+C<string> The description of the value. This item is only included for the
+C<keywords> field.
 
 =item C<is_open>
 
@@ -1654,6 +1711,13 @@ the valid ids. Each hash contains the following items:
 
 =over
 
+=item C<actual_time>
+
+C<double> The total number of hours that this bug has taken (so far).
+
+If you are not in the time-tracking group, this field will not be included
+in the return value.
+
 =item C<alias>
 
 C<string> The unique alias of this bug.
@@ -1982,6 +2046,9 @@ and all custom fields.
 
 =item The C<flags> array was added in Bugzilla B<4.4>.
 
+=item The C<actual_time> item was added to the C<bugs> return value
+in Bugzilla B<4.4>.
+
 =back
 
 =back
@@ -2083,6 +2150,10 @@ The same as L</get>.
 
 =item Added in Bugzilla B<3.4>.
 
+=item Field names changed to be more consistent with other methods in Bugzilla B<4.4>.
+
+=item As of Bugzilla B<4.4>, field names now match names used by L<Bug.update|/"update"> for consistency.
+
 =back
 
 =back
@@ -2148,6 +2219,9 @@ May not be an array.
 
 C<string> The login name of the user who created the bug.
 
+You can also pass this argument with the name C<reporter>, for
+backwards compatibility with older Bugzillas.
+
 =item C<id>
 
 C<int> The numeric id of the bug.
@@ -2183,13 +2257,6 @@ C<string> The Priority field on a bug.
 =item C<product>
 
 C<string> The name of the Product that the bug is in.
-
-=item C<creator>
-
-C<string> The login name of the user who reported the bug.
-
-You can also pass this argument with the name C<reporter>, for
-backwards compatibility with older Bugzillas.
 
 =item C<resolution>
 
@@ -3234,6 +3301,70 @@ this bug.
 =item Added in Bugzilla B<3.4>.
 
 =item Before Bugzilla B<3.6>, error 115 had a generic error code of 32000.
+
+=back
+
+=back
+
+
+=head2 update_tags
+
+B<UNSTABLE>
+
+=over
+
+=item B<Description>
+
+Adds or removes tags on bugs.
+
+=item B<Params>
+
+=over
+
+=item C<ids>
+
+B<Required> C<array> An array of ints and/or strings--the ids
+or aliases of bugs that you want to add or remove tags to. All the tags
+will be added or removed to all these bugs.
+
+=item C<tags>
+
+B<Required> C<hash> A hash representing tags to be added and/or removed.
+The hash has the following fields:
+
+=over
+
+=item C<add> An array of C<string>s representing tag names
+to be added to the bugs.
+
+It is safe to specify tags that are already associated with the 
+bugs--they will just be silently ignored.
+
+=item C<remove> An array of C<string>s representing tag names
+to be removed from the bugs.
+
+It is safe to specify tags that are not associated with any
+bugs--they will just be silently ignored.
+
+=back
+
+=back
+
+=item B<Returns>
+
+C<changes>, a hash containing bug IDs as keys and one single value
+name "tags" which is also a hash, with C<added> and C<removed> as keys.
+See L</update_see_also> for an example of how it looks like.
+
+=item B<Errors>
+
+This method can throw the same errors as L</get>.
+
+=item B<History>
+
+=over
+
+=item Added in Bugzilla B<4.4>.
 
 =back
 
