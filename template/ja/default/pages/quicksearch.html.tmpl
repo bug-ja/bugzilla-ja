@@ -6,8 +6,6 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-[% PROCESS "global/field-descs.none.tmpl" %]
-
 [% INCLUDE global/header.html.tmpl
    title  = "$terms.Bugzilla 簡易検索",
    style_urls = ['skins/standard/page.css']         
@@ -16,13 +14,13 @@
 
 [% USE Bugzilla %]
 
-<p>検索対象のひとつ以上の単語 (もしくは単語の断片) を入力してください :</p>
+<p><label for="quicksearch">検索対象のひとつ以上の単語 (もしくは単語の断片) を入力してください :</label></p>
 
 <form name="f" action="buglist.cgi" method="get"
       onsubmit="if (this.quicksearch.value == '')
                 { alert('ひとつ以上の単語を入力してください。');
                   return false; } return true;">
-  <input type="text" size="40" name="quicksearch">
+  <input type="text" size="40" name="quicksearch" id="quicksearch">
   <input type="submit" value="検索" id="find">
 </form>
 

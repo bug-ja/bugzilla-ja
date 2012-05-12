@@ -10,8 +10,6 @@
   # alphabetical order by message tag, and leave a blank line between messages.
   #%]
 
-[% PROCESS "global/field-descs.none.tmpl" %]
-
 [% message_tag = message %]
 
 [% message = BLOCK %]
@@ -266,8 +264,7 @@
 
   [% ELSIF message_tag == "extension_created" %]
     [% name FILTER html %] という名前の拡張が [% path FILTER html %]
-    に作成されました。コード中の "YOUR NAME" と "YOUR EMAIL ADDRESS" 
-    をあなたの名前とメールアドレスに変更してください。
+    に作成されました。
 
   [% ELSIF message_tag == "field_value_created" %]
     [% title = "新しいフィールド値の作成" %]

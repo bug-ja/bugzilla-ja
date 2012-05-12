@@ -21,6 +21,13 @@
         onsubmit="if (this.quicksearch.value == '')
                   { alert('ひとつ以上の検索語を入力してください。');
                     return false; } return true;">
+    <input type="hidden" id="no_redirect" name="no_redirect" value="0">
+    <script type="text/javascript">
+      if (history && history.replaceState) {
+        var no_redirect = document.getElementById("no_redirect");
+        no_redirect.value = 1;
+      }
+    </script>
     <input class="txt" type="text" id="quicksearch[% qs_suffix FILTER html %]" name="quicksearch" 
            title="簡易検索" value="[% quicksearch FILTER html %]">
     <input class="btn" type="submit" value="検索" 

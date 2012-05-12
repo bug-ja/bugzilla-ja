@@ -438,7 +438,7 @@
         <li>Trac サイトのチケット</li>
         <li>MantisBT サイトの b[% %]ug</li>
         <li>sourceforge.net の b[% %]ug</li>
-        <li>Review Board のレビューリクエスト</li>
+        [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% ELSIF reason == 'id' %]
       有効な [% terms.bug %] ID が URL に含まれていません。
@@ -1030,8 +1030,7 @@
     [% ELSE %]
       [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
-    また、<tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>
-    や空白文字(スペース等)を含むことはできません。
+    また、無効な文字を含むことはできません。
 
   [% ELSIF error == "illegal_frequency" %]
     [% title = BLOCK %] 指定された [% jawords.report_frequency FILTER html %] は高すぎます [% END %]
@@ -1200,6 +1199,10 @@
     'callback' パラメータに '[% callback FILTER html %]' を利用できません。
     セキュリティー的な理由で、文字、数字、<code>[]._</code> のみが
     'callback' パラメータでは許可されています。
+
+  [% ELSIF error == "json_rpc_illegal_content_type" %]
+    JSON-RPC を POST で利用する際には、[% content_type FILTER html %] を
+    content type としては利用できません。application/json を利用してください。
 
   [% ELSIF error == "json_rpc_post_only" %]
     セキュリティー上の問題から、'[% method FILTER html %]' を利用するには 
@@ -1872,6 +1875,11 @@
     "[% value FILTER html %]" は &lt;[% type FILTER html %]&gt; 
     フィールドでは有効な値ではありません。
     (詳細は XML-RPC 仕様を参照してください。)
+
+  [% ELSIF error == "xmlrpc_illegal_content_type" %]
+    XML-RPC を利用する場合、データを [%+ content_type FILTER html %]
+    としては送信できません。text/xml もしくは application/xml 
+    のみが許可されています。
 
   [% ELSIF error == "zero_length_file" %]
     [% title = BLOCK %] 指定されたファイルは空です [% END %]

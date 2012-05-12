@@ -65,16 +65,21 @@ use constant DB_TABLE => 'profiles';
 # that you passed in for "name" to new(). That's because historically
 # Bugzilla::User used "name" for the realname field. This should be
 # fixed one day.
-use constant DB_COLUMNS => (
-    'profiles.userid',
-    'profiles.login_name',
-    'profiles.realname',
-    'profiles.mybugslink AS showmybugslink',
-    'profiles.disabledtext',
-    'profiles.disable_mail',
-    'profiles.extern_id',
-    'profiles.is_enabled', 
-);
+sub DB_COLUMNS {
+    my $dbh = Bugzilla->dbh;
+    return (
+        'profiles.userid',
+        'profiles.login_name',
+        'profiles.realname',
+        'profiles.mybugslink AS showmybugslink',
+        'profiles.disabledtext',
+        'profiles.disable_mail',
+        'profiles.extern_id',
+        'profiles.is_enabled',
+        $dbh->sql_date_format('last_seen_date', '%Y-%m-%d') . ' AS last_seen_date',
+    ),
+}
+
 use constant NAME_FIELD => 'login_name';
 use constant ID_FIELD   => 'userid';
 use constant LIST_ORDER => NAME_FIELD;
@@ -195,8 +200,7 @@ sub check_login_name_for_creation {
     my ($invocant, $name) = @_;
     $name = trim($name);
     $name || ThrowUserError('user_login_required');
-    validate_email_syntax($name)
-        || ThrowUserError('illegal_email_address', { addr => $name });
+    check_email_syntax($name);
 
     # Check the name if it's a new user, or if we're changing the name.
     if (!ref($invocant) || $invocant->login ne $name) {
@@ -259,6 +263,23 @@ sub set_disabledtext {
     $_[0]->set('is_enabled', $_[1] ? 0 : 1);
 }
 
+sub update_last_seen_date {
+    my $self = shift;
+    return unless $self->id;
+    my $dbh = Bugzilla->dbh;
+    my $date = $dbh->selectrow_array(
+        'SELECT ' . $dbh->sql_date_format('NOW()', '%Y-%m-%d'));
+
+    if (!$self->last_seen_date or $date ne $self->last_seen_date) {
+        $self->{last_seen_date} = $date;
+        # We don't use the normal update() routine here as we only
+        # want to update the last_seen_date column, not any other
+        # pending changes
+        $dbh->do("UPDATE profiles SET last_seen_date = ? WHERE userid = ?",
+                 undef, $date, $self->id);
+    }
+}
+
 ################################################################################
 # Methods
 ################################################################################
@@ -273,6 +294,7 @@ sub is_enabled { $_[0]->{'is_enabled'} ? 1 : 0; }
 sub showmybugslink { $_[0]->{showmybugslink}; }
 sub email_disabled { $_[0]->{disable_mail}; }
 sub email_enabled { !($_[0]->{disable_mail}); }
+sub last_seen_date { $_[0]->{last_seen_date}; }
 sub cryptpassword {
     my $self = shift;
     # We don't store it because we never want it in the object (we
@@ -752,6 +774,15 @@ sub in_group_id {
     return grep($_->id == $id, @{ $self->groups }) ? 1 : 0;
 }
 
+# This is a helper to get all groups which have an icon to be displayed
+# besides the name of the commenter.
+sub groups_with_icon {
+    my $self = shift;
+
+    my @groups = grep { $_->icon_url } @{ $self->groups };
+    return \@groups;
+}
+
 sub get_products_by_permission {
     my ($self, $group) = @_;
     # Make sure $group exists on a per-product basis.
@@ -1014,12 +1045,14 @@ sub get_enterable_products {
         # And all of these products must have at least one component
         # and one version.
         $enterable_ids = $dbh->selectcol_arrayref(
-               'SELECT DISTINCT products.id FROM products
-            INNER JOIN components ON components.product_id = products.id
-            INNER JOIN versions ON versions.product_id = products.id
-                 WHERE products.id IN (' . join(',', @$enterable_ids) . ')
-                   AND components.isactive = 1
-                   AND versions.isactive = 1');
+            'SELECT DISTINCT products.id FROM products
+              WHERE ' . $dbh->sql_in('products.id', $enterable_ids) .
+              ' AND products.id IN (SELECT DISTINCT components.product_id
+                                      FROM components
+                                     WHERE components.isactive = 1)
+                AND products.id IN (SELECT DISTINCT versions.product_id
+                                      FROM versions
+                                     WHERE versions.isactive = 1)');
     }
 
     $self->{enterable_products} =

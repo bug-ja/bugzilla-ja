@@ -16,8 +16,6 @@
   # recipient: user object for the intended recipient of the message
   #%]
 
-[% PROCESS 'global/field-descs.none.tmpl' %]
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
@@ -27,9 +25,9 @@
   </head>
   <body bgcolor="#FFFFFF">
 
-    <p align="left">
+    <pre>
       [% body FILTER html %]
-    </p>
+    </pre>
 
     <p align="left">
       [% IF author.login == recipient.login %]
@@ -44,7 +42,7 @@
 [% IF queries.size %]
   [% FOREACH query=queries %]
 
-    <h2>[%+ query.title FILTER html %]</h2>
+    <h2>[%+ query.title FILTER html %] ([% query.bugs.size %] [%+ terms.bugs %])</h2>
 
     <table width="100%">
       <tr>
@@ -72,6 +70,10 @@
         </tr>
       [% END %]
     </table>
+
+    <p align="left">
+    <a href="[% urlbase FILTER html %]buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% query.name FILTER uri %]">[% terms.bug %] リストとして表示</a>
+    </p>
   [% END %]
 [% ELSE %]
   <h3>検索条件に合致する [% terms.bugs %] が見つかりませんでした。</h3>

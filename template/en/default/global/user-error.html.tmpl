@@ -254,7 +254,7 @@
         <li>A ticket in a Trac installation.</li>
         <li>A b[% %]ug in a MantisBT installation.</li>
         <li>A b[% %]ug on sourceforge.net.</li>
-        <li>A Review Board review request.</li>
+        [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% ELSIF reason == 'id' %]
       There is no valid [% terms.bug %] id in that URL.
@@ -841,9 +841,8 @@
     [% ELSE %]
       [%+ Param('emailregexpdesc') FILTER html_light %]
     [% END %]
-    It must also not contain any of these special characters:
-    <tt>\ ( ) &amp; &lt; &gt; , ; : &quot; [ ]</tt>, or any whitespace.
-    
+    It also must not contain any illegal characters.
+
   [% ELSIF error == "illegal_frequency" %]
     [% title = "Too Frequent" %]
     Unless you are an administrator, you may not create series which are 
@@ -1006,6 +1005,11 @@
     When using JSON-RPC over GET, you must specify a 'method'
     parameter. See the documentation at
     [%+ docs_urlbase FILTER html %]api/Bugzilla/WebService/Server/JSONRPC.html
+
+  [% ELSIF error == "json_rpc_illegal_content_type" %]
+    When using JSON-RPC over POST, you cannot send data as
+    [%+ content_type FILTER html %]. Only application/json and
+    application/json-rpc are allowed.
 
   [% ELSIF error == "json_rpc_invalid_params" %]
     Could not parse the 'params' argument as valid JSON.
@@ -1694,6 +1698,11 @@
     "[% value FILTER html %]" is not a valid value for a
     &lt;[% type FILTER html %]&gt; field. (See the XML-RPC specification
     for details.)
+
+  [% ELSIF error == "xmlrpc_illegal_content_type" %]
+    When using XML-RPC, you cannot send data as
+    [%+ content_type FILTER html %]. Allowed content types 
+    are [% constants.XMLRPC_CONTENT_TYPE_WHITELIST.join(', ') FILTER html %].
 
   [% ELSIF error == "zero_length_file" %]
     [% title = "File Is Empty" %]

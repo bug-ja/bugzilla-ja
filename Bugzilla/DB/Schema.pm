@@ -869,6 +869,7 @@ use constant ABSTRACT_SCHEMA => {
             extern_id      => {TYPE => 'varchar(64)'},
             is_enabled     => {TYPE => 'BOOLEAN', NOTNULL => 1, 
                                DEFAULT => 'TRUE'}, 
+            last_seen_date => {TYPE => 'DATETIME'},
         ],
         INDEXES => [
             profiles_login_name_idx => {FIELDS => ['login_name'],
@@ -889,7 +890,7 @@ use constant ABSTRACT_SCHEMA => {
             list_order => {TYPE => 'MEDIUMTEXT'},
         ],
         INDEXES => [
-            profile_search_user_id => [qw(user_id)],
+            profile_search_user_id_idx => [qw(user_id)],
         ],
     },
 

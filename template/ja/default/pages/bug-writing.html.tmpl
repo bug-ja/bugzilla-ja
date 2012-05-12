@@ -6,8 +6,6 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-[% PROCESS "global/field-descs.none.tmpl" %]
-
 [% INCLUDE global/header.html.tmpl title = "$terms.Bug 報告ガイドライン" %]
 
   <p>有用な [% terms.bug %] 報告は修正のための情報をほぼ含んでいます。
@@ -51,9 +49,9 @@
     "コンポーネント" の単語をクリックするとそれぞれのコンポーネントの説明が表示されます。
     もし合致するものが見つからなければ、"総合的な" コンポーネントを探してください。</p>
 
-    <p><b>OS:</b> どの OS で問題を発見しましたか？
+    <p><b>[% field_descs.op_sys FILTER html %]:</b> どの OS で問題を発見しましたか？
         (例 Linux, Windows XP, Mac OS X.)<br>
-        [% terms.bug %] がひとつ以上の OS で発生するなら、<em>[% display_value("op_sys", "All") FILTER html %]</em> を選択してください。
+        [% terms.bug %] がひとつ以上の [% field_descs.op_sys FILTER html %] で発生するなら、<em>[% display_value("op_sys", "All") FILTER html %]</em> を選択してください。
         もしリストになければ、<em>[% display_value("op_sys", "Other") FILTER html %]</em> を選択してください。</p>
 
     <p><b>要約:</b> [% terms.bug %] を 60 文字程度以下で説明できますか ?<br>

@@ -86,7 +86,9 @@ sub MessageToMTA {
     my $from = $email->header('From');
 
     my ($hostname, @args);
+    my $mailer_class = $method;
     if ($method eq "Sendmail") {
+        $mailer_class = 'Bugzilla::Send::Sendmail';
         if (ON_WINDOWS) {
             $Email::Send::Sendmail::SENDMAIL = SENDMAIL_EXE;
         }
@@ -131,7 +133,11 @@ sub MessageToMTA {
         my ($part) = @_;
         return if $part->parts > 1; # Top-level
         my $content_type = $part->content_type || '';
-        if ($content_type !~ /;/) {
+        $content_type =~ /charset=['"](.+)['"]/;
+        # If no charset is defined or is the default us-ascii,
+        # then we encode the email to UTF-8 if Bugzilla has utf8 enabled.
+        # XXX - This is a hack to workaround bug 723944.
+        if (!$1 || $1 eq 'us-ascii') {
             my $body = $part->body;
             if (Bugzilla->params->{'utf8'}) {
                 $part->charset_set('UTF-8');
@@ -156,7 +162,7 @@ sub MessageToMTA {
     else {
         # This is useful for both Sendmail and Qmail, so we put it out here.
         local $ENV{PATH} = SENDMAIL_PATH;
-        my $mailer = Email::Send->new({ mailer => $method, 
+        my $mailer = Email::Send->new({ mailer => $mailer_class, 
                                         mailer_args => \@args });
         my $retval = $mailer->send($email);
         ThrowCodeError('mail_send_error', { msg => $retval, mail => $email })

@@ -101,6 +101,17 @@
       [% END %]
     </td>
   </tr>
+
+  <tr>
+    <th>最終ログイン:</th>
+    <td>
+      [% IF otheruser.last_seen_date %]
+        [% otheruser.last_seen_date FILTER html %]
+      [% ELSE %]
+        <em>なし</em>
+      [% END %]
+    </td>
+  </tr>
 </table>
 
 <p>

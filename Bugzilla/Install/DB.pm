@@ -647,6 +647,9 @@ sub update_table_definitions {
     # 2011-06-15 dkl@mozilla.com - Bug 658929
     _migrate_disabledtext_boolean();
 
+    # 2011-11-01 glob@mozilla.com - Bug 240437
+    $dbh->bz_add_column('profiles', 'last_seen_date', {TYPE => 'DATETIME'});
+
     # 2011-10-11 miketosh - Bug 690173
     _on_delete_set_null_for_audit_log_userid();
     
@@ -656,6 +659,12 @@ sub update_table_definitions {
 
     # 2011-11-28 dkl@mozilla.com - Bug 685611
     _fix_notnull_defaults();
+
+    # 2012-02-15 LpSolit@gmail.com - Bug 722113
+    if ($dbh->bz_index_info('profile_search', 'profile_search_user_id')) {
+        $dbh->bz_drop_index('profile_search', 'profile_search_user_id');
+        $dbh->bz_add_index('profile_search', 'profile_search_user_id_idx', [qw(user_id)]);
+    }
 
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #
@@ -3474,6 +3483,37 @@ sub _fix_series_indexes {
     return if $dbh->bz_index_info('series', 'series_category_idx');
 
     $dbh->bz_drop_index('series', 'series_creator_idx');
+
+    # Fix duplicated names under the same category/subcategory before
+    # adding the more restrictive index.
+    my $duplicated_series = $dbh->selectall_arrayref(
+         'SELECT s1.series_id, s1.category, s1.subcategory, s1.name
+            FROM series AS s1
+      INNER JOIN series AS s2
+              ON s1.category = s2.category
+             AND s1.subcategory = s2.subcategory
+             AND s1.name = s2.name
+           WHERE s1.series_id != s2.series_id');
+    my $sth_series_update = $dbh->prepare('UPDATE series SET name = ? WHERE series_id = ?');
+    my $sth_series_query = $dbh->prepare('SELECT 1 FROM series WHERE name = ?
+                                          AND category = ? AND subcategory = ?');
+
+    my %renamed_series;
+    foreach my $series (@$duplicated_series) {
+        my ($series_id, $category, $subcategory, $name) = @$series;
+        # Leave the first series alone, then rename duplicated ones.
+        if ($renamed_series{"${category}_${subcategory}_${name}"}++) {
+            print "Renaming series ${category}/${subcategory}/${name}...\n";
+            my $c = 0;
+            my $exists = 1;
+            while ($exists) {
+                $sth_series_query->execute($name . ++$c, $category, $subcategory);
+                $exists = $sth_series_query->fetchrow_array;
+            }
+            $sth_series_update->execute($name . $c, $series_id);
+        }
+    }
+
     $dbh->bz_add_index('series', 'series_creator_idx', ['creator']);
     $dbh->bz_add_index('series', 'series_category_idx',
         {FIELDS => [qw(category subcategory name)], TYPE => 'UNIQUE'});
@@ -3557,7 +3597,7 @@ sub _populate_bug_see_also_class {
     if ($dbh->bz_column_info('bug_see_also', 'class')) {
         # The length was incorrectly set to 64 instead of 255.
         $dbh->bz_alter_column('bug_see_also', 'class',
-                              {TYPE => 'varchar(255)', NOTNULL => 1});
+                {TYPE => 'varchar(255)', NOTNULL => 1, DEFAULT => "''"});
         return;
     }
 

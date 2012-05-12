@@ -6,8 +6,6 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-[% PROCESS 'global/field-descs.none.tmpl' %]
-
 [% filtered_desc = blocked_tree.$bugid.short_desc FILTER html %]
 [% PROCESS global/header.html.tmpl
    title           = "$terms.Bug $bugid の依存ツリー"
@@ -48,14 +46,14 @@
         [% IF ids.size %]
             の依存先は
         [% ELSE %]
-            はどの [% terms.bugs %] にも依存しません。
+            はどの [% '活動中の' IF hide_resolved %][% terms.bugs %] にも依存しません。
         [% END %]
     [% ELSIF type == 2 %]
         [% tree_name = "blocked_tree" %]
         [% IF ids.size %] 
             の妨害先は
         [% ELSE %]
-            はどの [% terms.bugs %] も妨害しません。
+            はどの [% '活動中の' IF hide_resolved %][% terms.bugs %] も妨害しません。
         [% END %]
     [% END %]
     [% IF ids.size %]
