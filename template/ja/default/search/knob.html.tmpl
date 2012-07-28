@@ -40,6 +40,9 @@
    "Last Changed" => "最終更新" } %]
 
 <input type="hidden" name="cmdtype" value="doit">
+[% IF user.id %]
+  <input type="hidden" name="token" value="[% issue_hash_token(['searchknob']) FILTER html %]">
+[% END %]
 
 <p>
   <label for="order">検索結果の並び順</label>:
@@ -68,18 +71,21 @@
   [% END %]
 </p>
 
-<p>
-  &nbsp;&nbsp;&nbsp;
-  <input type="checkbox" id="remasdefault"
-         name="remtype" value="asdefault">
-  <label for="remasdefault">
-    この検索条件を既定の検索条件とする
-  </label>
-</p>
-        
+[% IF user.id %]
+  <p>
+    &nbsp;&nbsp;&nbsp;
+    <input type="checkbox" id="remasdefault"
+           name="remtype" value="asdefault">
+    <label for="remasdefault">
+      この検索条件を既定の検索条件とする
+    </label>
+  </p>
+[% END %]
+
 [% IF userdefaultquery %]
   <p>
-    <a href="query.cgi?nukedefaultquery=1">
+    <a href="query.cgi?nukedefaultquery=1&amp;token=
+       [%- issue_hash_token(['nukedefaultquery']) FILTER uri %]">
       既定の検索条件をシステム既定のものに戻す</a>
   </p>
 [% END %]

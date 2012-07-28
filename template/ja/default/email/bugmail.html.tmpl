@@ -32,8 +32,9 @@
         <div>
           [% IF comment.count %]
             <b>[% INCLUDE global/user.html.tmpl who = comment.author %] からの
-              [% "コメント # ${comment.count}" FILTER bug_link( bug, 
-              {comment_num => comment.count, full_url => 1}) FILTER none %]</b>
+              [% "$terms.bug $bug.id" FILTER bug_link(bug, { full_url => 1, user => to_user }) FILTER none %] についての
+              [% "コメント # ${comment.count}" FILTER bug_link(bug,
+              {comment_num => comment.count, full_url => 1, user => to_user}) FILTER none %]</b>
           [% END %]
         <pre>[% comment.body_full({ wrap => 1 }) FILTER quoteUrls(bug, comment) %]</pre>
         </div>
@@ -68,12 +69,12 @@
           [% SET in_table = 0 %]
         [% END %]
         [% IF change.blocker %]
-             [% "${terms.Bug} ${bug.id}" FILTER bug_link(bug, full_url => 1) FILTER none  %]
-             は、ステータスに変更があった [% "${terms.bug} ${change.blocker.id}" 
-             FILTER bug_link(change.blocker, full_url => 1) FILTER none %] に依存しています。
+             [% "${terms.Bug} ${bug.id}" FILTER bug_link(bug, {full_url => 1, user => to_user}) FILTER none %]
+             は、ステータスに変更があった [%+ "${terms.bug} ${change.blocker.id}"
+             FILTER bug_link(change.blocker, {full_url => 1, user => to_user}) FILTER none %] に依存しています。
         [% ELSE %]
               [% INCLUDE global/user.html.tmpl who = change.who %]
-              による [% "${terms.Bug} ${bug.id}" FILTER bug_link(bug, full_url => 1) FILTER none %] の変更
+              による [%+ "${terms.bug} ${bug.id}" FILTER bug_link(bug, {full_url => 1, user => to_user}) FILTER none %] の変更
         [% END %]
         <br>
           [% IF in_table == 0 %]
@@ -97,7 +98,7 @@
           <th>[% field_label FILTER html %]</th>
           <td>
             [% IF change.field_name == "bug_id" %]
-              [% new_value FILTER bug_link(bug, full_url => 1) FILTER none %]
+              [% new_value FILTER bug_link(bug, {full_url => 1, user => to_user}) FILTER none %]
             [% ELSE %]
               [% new_value FILTER html %]
             [% END %]

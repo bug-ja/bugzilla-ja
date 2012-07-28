@@ -452,7 +452,9 @@ if ($cmdtype eq "dorem") {
         # Generate and return the UI (HTML page) from the appropriate template.
         $vars->{'message'} = "buglist_query_gone";
         $vars->{'namedcmd'} = $qname;
-        $vars->{'url'} = "buglist.cgi?newquery=" . url_quote($buffer) . "&cmdtype=doit&remtype=asnamed&newqueryname=" . url_quote($qname);
+        $vars->{'url'} = "buglist.cgi?newquery=" . url_quote($buffer)
+                         . "&cmdtype=doit&remtype=asnamed&newqueryname=" . url_quote($qname)
+                         . "&token=" . url_quote(issue_hash_token(['savedsearch']));
         $template->process("global/message.html.tmpl", $vars)
           || ThrowTemplateError($template->error());
         exit;
@@ -461,6 +463,8 @@ if ($cmdtype eq "dorem") {
 elsif (($cmdtype eq "doit") && defined $cgi->param('remtype')) {
     if ($cgi->param('remtype') eq "asdefault") {
         $user = Bugzilla->login(LOGIN_REQUIRED);
+        my $token = $cgi->param('token');
+        check_hash_token($token, ['searchknob']);
         InsertNamedQuery(DEFAULT_QUERY_NAME, $buffer);
         $vars->{'message'} = "buglist_new_default_query";
     }
