@@ -308,7 +308,6 @@
 'attachment/edit.html.tmpl' => [
   'attachment.id', 
   'attachment.bug_id', 
-  'a',
   'editable_or_hide',
 ],
 

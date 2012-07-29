@@ -114,7 +114,11 @@ sub update_fielddefs_definition {
         {TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'FALSE'});
     $dbh->do('UPDATE fielddefs SET is_numeric = 1 WHERE type = '
              . FIELD_TYPE_BUG_ID);
-             
+
+    # 2012-04-12 aliustek@gmail.com - Bug 728138
+    $dbh->bz_add_column('fielddefs', 'long_desc',
+                        {TYPE => 'varchar(255)', NOTNULL => 1, DEFAULT => "''"}, '');
+
     Bugzilla::Hook::process('install_update_db_fielddefs');
 
     # Remember, this is not the function for adding general table changes.
@@ -665,6 +669,27 @@ sub update_table_definitions {
 
     $dbh->bz_alter_column('products', 'defaultmilestone',
                           {TYPE => 'varchar(64)', NOTNULL => 1, DEFAULT => "'---'"});
+
+    # 2012-04-15 Frank@Frank-Becker.de - Bug 740536
+    $dbh->bz_add_index('audit_log', 'audit_log_class_idx', ['class', 'at_time']);
+
+    # 2012-06-06 dkl@mozilla.com - Bug 762288
+    $dbh->bz_alter_column('bugs_activity', 'removed', 
+                          { TYPE => 'varchar(255)' });
+    $dbh->bz_add_index('bugs_activity', 'bugs_activity_removed_idx', ['removed']);
+
+    # 2012-06-13 dkl@mozilla.com - Bug 764457
+    $dbh->bz_add_column('bugs_activity', 'id', 
+                        {TYPE => 'INTSERIAL', NOTNULL => 1, PRIMARYKEY => 1});
+
+    # 2012-06-13 dkl@mozilla.com - Bug 764466
+    $dbh->bz_add_column('profiles_activity', 'id', 
+                        {TYPE => 'MEDIUMSERIAL', NOTNULL => 1, PRIMARYKEY => 1});
+
+    # 2012-07-24 dkl@mozilla.com - Bug 776972
+    $dbh->bz_alter_column('bugs_activity', 'id', 
+                          {TYPE => 'INTSERIAL', NOTNULL => 1, PRIMARYKEY => 1});
+
 
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #

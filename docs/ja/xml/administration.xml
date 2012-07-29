@@ -2380,34 +2380,64 @@ ReadOnly: 新規追加, 無関係/無関係, 編集可能
             <para>
               <emphasis>型:</emphasis>
               フィールドの型です。いくつかのタイプがあります。
-               <simplelist>
-                 <member>
-                   Bug ID: 同じ Bugzilla サイトにあるほかの bug の ID を入力できる
-                   フィールドです。ほかのサイトの bug を入れたい場合は、
-                   "参照" フィールドを利用してください。
-                 </member>
-                 <member>
-                   広い入力エリア: 複数行の自由記入ができるテキストボックスです。
-                 </member>
-                 <member>
-                   テキスト: 自由記入ができる1行ボックスです。
-                 </member>
-                 <member>
-                   複数選択ボックス: 複数の選択肢を選べるリストボックスです。
-                   フィールド作成後、選択肢を追加・編集できるようになります。
-                   利用可能な値への制限については、
-                   <xref linkend="edit-values-list" /> を参照してください。
-                 </member>
-                 <member>
-                   ドロップダウン: 一つのオプションのみが選択可能なリストボックス
+               <variablelist>
+                 <varlistentry>
+                   <term>Bug ID:</term>
+                   <listitem>
+                     <para>
+                       同じ Bugzilla サイトにあるほかの bug の ID を入力できる
+                       フィールドです。ほかのサイトの bug を入れたい場合は、
+                       "参照" フィールドを利用してください。
+                     </para>
+                   </listitem>
+                 </varlistentry>
+                 <varlistentry>
+                   <term>広い入力エリア:</term>
+                   <listitem>
+                     <para>
+                       複数行の自由記入ができるテキストボックスです。
+                     </para>
+                   </listitem>
+                 </varlistentry>
+                 <varlistentry>
+                   <term>テキスト:</term>
+                   <listitem>
+                     <para>
+                       自由記入ができる1行ボックスです。
+                     </para>
+                   </listitem>
+                 </varlistentry>
+                 <varlistentry>
+                   <term>複数選択ボックス:</term>
+                   <listitem>
+                     <para>
+                       複数の選択肢を選べるリストボックスです。
+                       フィールド作成後、選択肢を追加・編集できるようになります。
+                       利用可能な値への制限については、
+                       <xref linkend="edit-values-list" /> を参照してください。
+                     </para>
+                   </listitem>
+                 </varlistentry>
+                 <varlistentry>
+                   <term>ドロップダウン:</term>
+                   <listitem>
+                     <para>
+                    一つのオプションのみが選択可能なリストボックス
                    です。フィールド作成後、選択肢を追加・編集できるようになります。
                    利用可能な値への制限については、
-                 </member>
-                 <member>
-                   日時: 日付フィールドです。日付を選択するためのカレンダー
-                   ウィジェットが表示されます。
-                 </member>
-               </simplelist>
+                     </para>
+                   </listitem>
+                 </varlistentry>
+                 <varlistentry>
+                   <term>日時:</term>
+                   <listitem>
+                     <para>
+                       日付フィールドです。日付を選択するためのカレンダー
+                       ウィジェットが表示されます。
+                     </para>
+                   </listitem>
+                 </varlistentry>
+              </variablelist>
             </para>
           </listitem>
 

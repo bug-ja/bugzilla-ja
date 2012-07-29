@@ -385,8 +385,7 @@ sub view {
     }
     print $cgi->header(-type=>"$contenttype; name=\"$filename\"",
                        -content_disposition=> "$disposition; filename=\"$filename\"",
-                       -content_length => $attachment->datasize,
-                       -x_content_type_options => "nosniff");
+                       -content_length => $attachment->datasize);
     disable_utf8();
     print $attachment->data;
 }
@@ -575,6 +574,8 @@ sub insert {
       $owner = $bug->assigned_to->login;
       $bug->set_assigned_to($user);
   }
+
+  $bug->add_cc($user) if $cgi->param('addselfcc');
   $bug->update($timestamp);
 
   $dbh->bz_commit_transaction;
@@ -605,8 +606,6 @@ sub edit {
 
   my $bugattachments =
       Bugzilla::Attachment->get_attachments_by_bug($attachment->bug);
-  # We only want attachment IDs.
-  @$bugattachments = map { $_->id } @$bugattachments;
 
   my $any_flags_requesteeble =
     grep { $_->is_requestable && $_->is_requesteeble } @{$attachment->flag_types};
@@ -686,6 +685,8 @@ sub update {
                                       type => CMT_ATTACHMENT_UPDATED,
                                       extra_data => $attachment->id });
     }
+
+    $bug->add_cc($user) if $cgi->param('addselfcc');
 
     if ($can_edit) {
         my ($flags, $new_flags) =

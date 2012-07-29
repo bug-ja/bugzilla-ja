@@ -22,7 +22,7 @@
 [% USE Bugzilla %]
 
 <p>
-  続行するには、正しいログイン名とパスワードが必要です。
+  この [% terms.Bugzilla %] の操作を続行するには、正しいログイン名とパスワードが必要です。
 </p>
 
 <form name="login" action="[% target FILTER html %]" method="POST"
@@ -88,6 +88,13 @@
     <p>
       もし、[% terms.Bugzilla %] アカウントを持っていなければ、
       <a href="createaccount.cgi">新規アカウント登録</a> も可能です。
+      [% IF Param("requirelogin") %]
+        この [% terms.Bugzilla %] は認証済みユーザのみアクセス可能ですので、
+        ユーザアカウントが必須です。
+      [% ELSIF target.match("_bug\.cgi$") %]
+        新規 [% terms.bug %] の追加もしくはコメントの追加を行う場合、
+        より詳細な情報が必要な場合に連絡をとるためにユーザアカウントが必要です。
+      [% END %]
     </p>
   [% END %]
 

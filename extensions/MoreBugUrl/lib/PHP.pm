@@ -5,7 +5,7 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-package Bugzilla::BugUrl::SourceForge;
+package Bugzilla::Extension::MoreBugUrl::PHP;
 use strict;
 use base qw(Bugzilla::BugUrl);
 
@@ -16,14 +16,11 @@ use base qw(Bugzilla::BugUrl);
 sub should_handle {
     my ($class, $uri) = @_;
 
-    # SourceForge tracker URLs have only one form:
-    #  http://sourceforge.net/tracker/?func=detail&aid=111&group_id=111&atid=111
-    return ($uri->authority =~ /^sourceforge.net$/i
-            and $uri->path =~ m|/tracker/|
-            and $uri->query_param('func') eq 'detail'
-            and $uri->query_param('aid')
-            and $uri->query_param('group_id')
-            and $uri->query_param('atid')) ? 1 : 0;
+    # PHP Bug URLs have only one form:
+    #   https://bugs.php.net/bug.php?id=1234
+    return ($uri->authority =~ /^bugs.php.net$/i
+            and $uri->path =~ m|/bug.php$|
+            and $uri->query_param('id') =~ /^\d+$/) ? 1 : 0;
 }
 
 sub _check_value {
@@ -31,7 +28,10 @@ sub _check_value {
 
     my $uri = $class->SUPER::_check_value(@_);
 
-    # Remove any # part if there is one.
+    # PHP Bug URLs redirect to HTTPS, so just use the HTTPS scheme.
+    $uri->scheme('https');
+
+    # And remove any # part if there is one.
     $uri->fragment(undef);
 
     return $uri;

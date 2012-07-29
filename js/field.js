@@ -83,9 +83,17 @@ function _errorFor(field, name) {
     YAHOO.util.Dom.addClass(field, 'validation_error_field');
 }
 
-function createCalendar(name) {
+/* This function is never to be called directly, but only indirectly
+ * using template/en/default/global/calendar.js.tmpl, so that localization
+ * works. For the same reason, if you modify this function's parameter list,
+ * you need to modify the documentation in said template as well. */
+function createCalendar(name, start_weekday, months_long, weekdays_short) {
     var cal = new YAHOO.widget.Calendar('calendar_' + name, 
-                                        'con_calendar_' + name);
+                                        'con_calendar_' + name,
+                                        { START_WEEKDAY:  start_weekday,
+                                          MONTHS_LONG:    months_long,
+                                          WEEKDAYS_SHORT: weekdays_short
+                                        });
     YAHOO.bugzilla['calendar_' + name] = cal;
     var field = document.getElementById(name);
     cal.selectEvent.subscribe(setFieldFromCalendar, field, false);
@@ -870,32 +878,39 @@ YAHOO.bugzilla.userAutocomplete = {
     }
 };
 
-YAHOO.bugzilla.keywordAutocomplete = {
-    dataSource : null,
-    init_ds : function(){
-        this.dataSource = new YAHOO.util.LocalDataSource( YAHOO.bugzilla.keyword_array );
+YAHOO.bugzilla.fieldAutocomplete = {
+    dataSource : [],
+    init_ds : function( field ) {
+        this.dataSource[field] =
+          new YAHOO.util.LocalDataSource( YAHOO.bugzilla.field_array[field] );
     },
     init : function( field, container ) {
-        if( this.dataSource == null ){
-            this.init_ds();
+        if( this.dataSource[field] == null ) {
+            this.init_ds( field );
         }
-        var keywordAutoComp = new YAHOO.widget.AutoComplete(field, container, this.dataSource);
-        keywordAutoComp.maxResultsDisplayed = YAHOO.bugzilla.keyword_array.length;
-        keywordAutoComp.minQueryLength = 0;
-        keywordAutoComp.useIFrame = true;
-        keywordAutoComp.delimChar = [","," "];
-        keywordAutoComp.resultTypeList = false;
-        keywordAutoComp.queryDelay = 0;
-        /*  Causes all the possibilities in the keyword to appear when a user 
+        var fieldAutoComp =
+          new YAHOO.widget.AutoComplete(field, container, this.dataSource[field]);
+        fieldAutoComp.maxResultsDisplayed = YAHOO.bugzilla.field_array[field].length;
+        fieldAutoComp.formatResult = fieldAutoComp.formatEscapedResult;
+        fieldAutoComp.minQueryLength = 0;
+        fieldAutoComp.useIFrame = true;
+        fieldAutoComp.delimChar = [","," "];
+        fieldAutoComp.resultTypeList = false;
+        fieldAutoComp.queryDelay = 0;
+        /*  Causes all the possibilities in the field to appear when a user
          *  focuses on the textbox 
          */
-        keywordAutoComp.textboxFocusEvent.subscribe( function(){
-            var sInputValue = YAHOO.util.Dom.get('keywords').value;
-            if( sInputValue.length === 0 ){
+        fieldAutoComp.textboxFocusEvent.subscribe( function(){
+            var sInputValue = YAHOO.util.Dom.get(field).value;
+            if( sInputValue.length === 0
+                && YAHOO.bugzilla.field_array[field].length > 0 ){
                 this.sendQuery(sInputValue);
                 this.collapseContainer();
                 this.expandContainer();
             }
+        });
+        fieldAutoComp.dataRequestEvent.subscribe( function(type, args) {
+            args[0].autoHighlight = args[1] != '';
         });
     }
 };

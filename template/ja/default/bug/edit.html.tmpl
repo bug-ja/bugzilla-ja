@@ -715,15 +715,10 @@
       <td>
         [% IF user.id %]
           [% IF NOT bug.cc || NOT bug.cc.contains(user.login) %]
-            [% has_role = bug.user.isreporter
-                          || bug.assigned_to.id == user.id
-                          || (Param('useqacontact')
-                              && bug.qa_contact
-                              && bug.qa_contact.id == user.id) %]
             <input type="checkbox" id="addselfcc" name="addselfcc"
               [% " checked=\"checked\""
                    IF user.settings.state_addselfcc.value == 'always'
-                      || (!has_role
+                      || (!bug.user.has_any_role
                           && user.settings.state_addselfcc.value == 'cc_unless_role') %]>
             <label for="addselfcc">自分自身を追加</label>
             <br> 
@@ -879,7 +874,7 @@
   [% USE Bugzilla %]
   [% FOREACH field = Bugzilla.active_custom_fields %]
     <tr>
-      [% PROCESS bug/field.html.tmpl value = bug.${field.name}
+      [% INCLUDE bug/field.html.tmpl value = bug.${field.name}
                                      editable = bug.check_can_change_field(field.name, 0, 1)
                                      value_span = 2 %]
     </tr>
@@ -950,27 +945,27 @@
 [% BLOCK section_timetracking %]
   <table class="bz_time_tracking_table">
     <tr>
-      <th>
-        <label for="estimated_time">初期推定</label>
-      </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.estimated_time, editable = 1
+      %]
       <th>
         現状の推定
       </th>
-      <th>
-        <label for="work_time">実働時間</label>
-      </th>
-      <th>
-        <label for="remaining_time">残り時間</label>
-      </th>
-      <th>
-        %完了
-      </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.work_time, editable = 1
+      %]
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.remaining_time, editable = 1
+      %]
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.percentage_complete, editable = 1
+      %]
       <th>
         倍
       </th>
-      <th>
-        <label for="deadline">締め切り</label>
-      </th>
+      [% INCLUDE "bug/field-label.html.tmpl"
+         field = bug_fields.deadline, editable = 1
+      %]
     </tr>
     <tr>
       <td>

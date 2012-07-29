@@ -616,10 +616,6 @@
     メールアドレスの変更は既に申請されています。
     入力したメールアドレスのメールボックスを確認してください。
 
-  [% ELSIF error == "email_confirmation_failed" %]
-    [% title = BLOCK %] メールアドレスの確認に失敗しました [% END %]
-    メールアドレス確認の手続きが失敗に終わりました。
-
   [% ELSIF error == "email_no_body" %]
     あなたのメッセージは文章を含んでいません。
 
@@ -673,6 +669,11 @@
   [% ELSIF error == "field_missing_description" %]
     [% title = BLOCK %] フィールドの説明を入力してください [% END %]
     フィールドの説明は必須項目です。
+
+  [% ELSIF error == "field_long_desc_too_long" %]
+    [% title = "フィールドの説明が長すぎます" %]
+    あなたが入力した説明は、
+    [% constants.MAX_FIELD_LONG_DESC_LENGTH FILTER html %] 文字を超えています。
 
   [% ELSIF error == "field_missing_name" %]
     [% title = BLOCK %] フィールド名を入力してください [% END %]
@@ -1465,8 +1466,8 @@
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
-    [% title = BLOCK %] [% jawords.account_current_password FILTER html %] が違います [% END %]
-    [% jawords.account_current_password FILTER html %] が正しく入力されていません。
+    [% title = "パスワードが合致しません" %]
+    現在のパスワードと入力内容が合致しません。
 
   [% ELSIF error == "old_password_required" %]
     [% title = BLOCK %] [% jawords.account_current_password FILTER html %] が入力されていません [% END %]

@@ -193,13 +193,20 @@ sub confirmChangeEmail {
 sub changeEmail {
     my ($userid, $eventdata, $token) = @_;
     my $dbh = Bugzilla->dbh;
-
     my ($old_email, $new_email) = split(/:/,$eventdata);
 
-    # Check the user entered the correct old email address
-    if (lc($cgi->param('email')) ne lc($old_email)) {
-        ThrowUserError("email_confirmation_failed");
+    $dbh->bz_start_transaction();
+    
+    my $user = Bugzilla::User->check({ id => $userid });
+    my $realpassword = $user->cryptpassword;
+    my $cgipassword  = $cgi->param('password');
+
+    # Make sure the user who wants to change the email address
+    # is the real account owner.
+    if (bz_crypt($cgipassword, $realpassword) ne $realpassword) {
+        ThrowUserError("old_password_incorrect");
     }
+
     # The new email address should be available as this was 
     # confirmed initially so cancel token if it is not still available
     if (! is_available_username($new_email,$old_email)) {
@@ -208,20 +215,12 @@ sub changeEmail {
         ThrowUserError("account_exists", { email => $new_email } );
     } 
 
-    # Update the user's login name in the profiles table and delete the token
-    # from the tokens table.
-    $dbh->bz_start_transaction();
-    $dbh->do(q{UPDATE   profiles
-               SET      login_name = ?
-               WHERE    userid = ?},
-             undef, ($new_email, $userid));
+    # Update the user's login name in the profiles table.
+    $user->set_login($new_email);
+    $user->update({ keep_session => 1, keep_tokens => 1 });
     delete_token($token);
     $dbh->do(q{DELETE FROM tokens WHERE userid = ?
                AND tokentype = 'emailnew'}, undef, $userid);
-
-    # The email address has been changed, so we need to rederive the groups
-    my $user = new Bugzilla::User($userid);
-    $user->derive_regexp_groups;
 
     $dbh->bz_commit_transaction();
 
@@ -250,9 +249,7 @@ sub cancelChangeEmail {
         # check to see if it has been altered
         if ($user->login ne $old_email) {
             $user->set_login($old_email);
-            $user->update();
-            # email has changed, so rederive groups
-            $user->derive_regexp_groups;
+            $user->update({ keep_session => 1 });
 
             $vars->{'message'} = "email_change_canceled_reinstated";
         } 

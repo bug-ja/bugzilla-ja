@@ -431,10 +431,6 @@
     [% title = "Email Change Already In Progress" %]
     Email change already in progress; please check your email.
 
-  [% ELSIF error == "email_confirmation_failed" %]
-    [% title = "Email Address Confirmation Failed" %]
-    Email address confirmation failed.
-
   [% ELSIF error == "email_no_body" %]
     Your message did not contain any text, as far as we could tell.
 
@@ -490,6 +486,11 @@
   [% ELSIF error == "field_missing_description" %]
     [% title = "Missing Description for Field" %]
     You must enter a description for this field.
+
+  [% ELSIF error == "field_long_desc_too_long" %]
+    [% title = "Long Description for Field too long" %]
+    The long description you have provided for this field is longer than 
+    [% constants.MAX_FIELD_LONG_DESC_LENGTH FILTER html %] characters.
 
   [% ELSIF error == "field_missing_name" %]
     [% title = "Missing Name for Field" %]
@@ -1294,8 +1295,8 @@
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
-    [% title = "Incorrect Old Password" %]
-    You did not enter your old password correctly.
+    [% title = "Incorrect Password" %]
+    You did not enter your current password correctly.
 
   [% ELSIF error == "old_password_required" %]
     [% title = "Old Password Required" %]

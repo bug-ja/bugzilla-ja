@@ -99,6 +99,7 @@ END
     feature_updates           => 'システム更新通知',
     feature_xmlrpc            => 'XML-RPC インターフェース',
     feature_detect_charset    => 'テキスト添付での自動文字コード検出',
+    feature_typesniffer       => '添付の MIME 型を判別',
 
     file_remove => 'ファイル ##name## を削除中...',
     file_rename => 'ファイル名を ##from## から ##to## へ変更中...',

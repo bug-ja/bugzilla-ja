@@ -54,12 +54,14 @@
           [% END %]
         </div>
         <div class="details">
+          [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
+          による [%+ attachment.attached FILTER time %] の添付
           [% attachment.filename FILTER html %] ([% attachment.contenttype FILTER html %]),
           [% IF attachment.datasize %]
             [%+ attachment.datasize FILTER unitconvert %]
           [% ELSE %]
             <em>削除済</em>
-          [% END %] による添付 [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
+          [% END %]
           [% IF attachment.isprivate %];
             <span class="bz_private"><strong>[% Param('insidergroup') FILTER html %]</strong> グループのメンバーのみ閲覧可</span>
           [% END %]
@@ -100,7 +102,12 @@
             <span class="label">作成者:</span>
             [%+ INCLUDE global/user.html.tmpl who = attachment.attacher %]
           </div>
-          
+
+          <div id="attachment_created">
+            <span class="label">作成日時:</span>
+            [%+ attachment.attached FILTER time %]
+          </div>
+
           <div id="attachment_size">
             <span class="label">サイズ:</span>
             [% IF attachment.datasize %]
@@ -251,8 +258,16 @@
               wrap    = 'soft'
               classes = classNames
             %]
+            [% IF NOT attachment.bug.cc || NOT attachment.bug.cc.contains(user.login) %]
+              <input type="checkbox" id="addselfcc" name="addselfcc"
+                [%~ ' checked="checked"'
+                    IF user.settings.state_addselfcc.value == 'always'
+                       || (!attachment.bug.user.has_any_role
+                           && user.settings.state_addselfcc.value == 'cc_unless_role') %]>
+              <label for="addselfcc">CC リストに追加</label>
+            [% END %]
           </div>
-        [% END %]             
+        [% END %]
         <div id="attachment_flags">
           [% IF attachment.flag_types.size > 0 %]
               [% PROCESS "flag/list.html.tmpl" flag_types = attachment.flag_types
@@ -291,10 +306,17 @@
 <div id="attachment_list">
   この [% "$terms.bug ${attachment.bug_id}" FILTER bug_link(attachment.bug_id) FILTER none %] への添付:
   [% FOREACH a = attachments %]
-    [% IF a == attachment.id %]
-      [%+ a %]
+    [% IF a.isobsolete %]
+      <span class="bz_obsolete">
+    [% END %]
+    [% IF a.id == attachment.id %]
+      [%+ a.id FILTER html %]
     [% ELSE %]
-      <a href="attachment.cgi?id=[% a %]&amp;action=edit">[% a %]</a>
+      <a href="attachment.cgi?id=[% a.id FILTER uri %]&amp;action=edit"
+         title="[% a.description FILTER html %]">[% a.id FILTER html %]</a>
+    [% END %]
+    [% IF a.isobsolete %]
+      </span>
     [% END %]
     [% " |" UNLESS loop.last() %]
   [% END %]

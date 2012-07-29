@@ -40,9 +40,9 @@
             [% ELSIF field == 'cryptpassword' %]
               パスワードが更新されました。
             [% ELSIF field == 'disabledtext' %]
-              無効化テキストが更新されました。
+              ログイン無効化テキストが更新されました。
             [% ELSIF field == 'is_enabled' %]
-              このユーザは [% otheruser.is_enabled ? '有効' : '無効' %] です。
+              このユーザアカウントでのログインは [% otheruser.is_enabled ? '有効' : '無効' %] です。
             [% ELSIF field == 'extern_id' %]
               ユーザの外部ログイン ID は変更されています。
             [% ELSIF field == 'disable_mail' %]
@@ -95,7 +95,7 @@
     ユーザアカウント [% otheruser.login FILTER html %] は正常に削除されました。
 
   [% ELSIF message_tag == "account_disabled" %]
-    ユーザアカウント [% account FILTER html %] は無効です。
+    ユーザアカウント [% account FILTER html %] でのログインは無効です。
     パスワードを変更することはできません。
 
   [% ELSIF message_tag == "attachment_creation_failed" %]
@@ -456,7 +456,7 @@
     [% title = "ログアウト" %]
     [% url = "index.cgi?GoAheadAndLogIn=1" %]
     [% link = "再度ログインする" %]
-    <b>ログイン情報を破棄しました</b>。
+    <b>ログアウトに成功しました</b>。
     ログイン名を記録してたクッキーを破棄しました。
     次回ログインを要求されることになるでしょう。
 

@@ -156,6 +156,7 @@ use Memoize;
     MAX_MILESTONE_SIZE
     MAX_COMPONENT_SIZE
     MAX_FIELD_VALUE_SIZE
+    MAX_FIELD_LONG_DESC_LENGTH
     MAX_FREETEXT_LENGTH
     MAX_BUG_URL_LENGTH
     MAX_POSSIBLE_DUPLICATES
@@ -180,7 +181,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.3.1";
+use constant BUGZILLA_VERSION => "4.3.2";
 
 # Location of the remote and local XML files to track new releases.
 use constant REMOTE_FILE => 'http://updates.bugzilla.org/bugzilla-update.xml';
@@ -537,6 +538,9 @@ use constant MAX_COMPONENT_SIZE => 64;
 # The maximum length for values of <select> fields.
 use constant MAX_FIELD_VALUE_SIZE => 64;
 
+# The maximum length for the long description of fields.
+use constant MAX_FIELD_LONG_DESC_LENGTH => 255;
+
 # Maximum length allowed for free text fields.
 use constant MAX_FREETEXT_LENGTH => 255;
 
@@ -564,7 +568,8 @@ use constant PASSWORD_SALT_LENGTH => 8;
 # Certain scripts redirect to GET even if the form was submitted originally
 # via POST such as buglist.cgi. This value determines whether the redirect
 # can be safely done or not based on the web server's URI length setting.
-use constant CGI_URI_LIMIT => 8000;
+# See http://support.microsoft.com/kb/208427 for why MSIE is different
+use constant CGI_URI_LIMIT => ($ENV{'HTTP_USER_AGENT'} || '') =~ /MSIE/ ? 2083 : 8000;
 
 # If the user isn't allowed to change a field, we must tell him who can.
 # We store the required permission set into the $PrivilegesRequired

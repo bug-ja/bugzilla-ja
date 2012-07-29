@@ -57,6 +57,11 @@ sub new {
     # Make sure our outgoing cookie list is empty on each invocation
     $self->{Bugzilla_cookie_list} = [];
 
+    # Path-Info is of no use for Bugzilla and interacts badly with IIS.
+    # Moreover, it causes unexpected behaviors, such as totally breaking
+    # the rendering of pages. Skip it!
+    print $self->redirect($self->url(-path => 0, -query => 1)) if $self->path_info;
+
     # Send appropriate charset
     $self->charset(Bugzilla->params->{'utf8'} ? 'UTF-8' : '');
 
@@ -221,35 +226,6 @@ sub check_etag {
     }
 }
 
-# Overwrite to ensure nph doesn't get set, and unset HEADERS_ONCE
-sub multipart_init {
-    my $self = shift;
-
-    # Keys are case-insensitive, map to lowercase
-    my %args = @_;
-    my %param;
-    foreach my $key (keys %args) {
-        $param{lc $key} = $args{$key};
-    }
-
-    # Set the MIME boundary and content-type
-    my $boundary = $param{'-boundary'}
-        || '------- =_' . generate_random_password(16);
-    delete $param{'-boundary'};
-    $self->{'separator'} = "\r\n--$boundary\r\n";
-    $self->{'final_separator'} = "\r\n--$boundary--\r\n";
-    $param{'-type'} = SERVER_PUSH($boundary);
-
-    # Note: CGI.pm::multipart_init up to v3.04 explicitly set nph to 0
-    # CGI.pm::multipart_init v3.05 explicitly sets nph to 1
-    # CGI.pm's header() sets nph according to a param or $CGI::NPH, which
-    # is the desired behaviour.
-
-    return $self->header(
-        %param,
-    ) . "WARNING: YOUR BROWSER DOESN'T SUPPORT THIS SERVER-PUSH TECHNOLOGY." . $self->multipart_end;
-}
-
 # Have to add the cookies in.
 sub multipart_start {
     my $self = shift;
@@ -316,6 +292,10 @@ sub header {
     # Add X-XSS-Protection header to prevent simple XSS attacks
     # and enforce the blocking (rather than the rewriting) mode.
     unshift(@_, '-x_xss_protection' => '1; mode=block');
+
+    # Add X-Content-Type-Options header to prevent browsers sniffing
+    # the MIME type away from the declared Content-Type.
+    unshift(@_, '-x_content_type_options' => 'nosniff');
 
     return $self->SUPER::header(@_) || "";
 }
@@ -425,6 +405,10 @@ sub remove_cookie {
 # URLs that get POSTed to buglist.cgi.
 sub redirect_search_url {
     my $self = shift;
+
+    # If there is no parameter, there is nothing to do.
+    return unless $self->param;
+
     # If we're retreiving an old list, we never need to redirect or
     # do anything related to Bugzilla::Search::Recent.
     return if $self->param('regetlastlist');

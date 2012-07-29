@@ -316,7 +316,7 @@ sub create_admin {
         print get_text('install_admin_get_email') . ' ';
         $login = <STDIN>;
         chomp $login;
-        eval { Bugzilla::User->check_login_name_for_creation($login); };
+        eval { Bugzilla::User->check_login_name($login); };
         if ($@) {
             say $@;
             undef $login;
@@ -373,6 +373,12 @@ sub make_admin {
     if (!Bugzilla->params->{'maintainer'}) {
         SetParam('maintainer', $user->email);
         write_params();
+    }
+
+    # Make sure the new admin isn't disabled
+    if ($user->disabledtext) {
+        $user->set_disabledtext('');
+        $user->update();
     }
 
     if (Bugzilla->usage_mode == USAGE_MODE_CMDLINE) {

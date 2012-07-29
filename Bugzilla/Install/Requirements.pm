@@ -93,10 +93,11 @@ sub REQUIRED_MODULES {
         module  => 'Digest::SHA',
         version => 0
     },
+    # 0.23 fixes incorrect handling of 1/2 & 3/4 timezones.
     {
         package => 'TimeDate',
         module  => 'Date::Format',
-        version => '2.21'
+        version => '2.23'
     },
     # 0.28 fixed some important bugs in DateTime.
     {
@@ -358,6 +359,20 @@ sub OPTIONAL_MODULES {
         # 0.96 properly determines process size on Linux.
         version => '0.96',
         feature => ['mod_perl'],
+    },
+
+    # typesniffer
+    {
+        package => 'File-MimeInfo',
+        module  => 'File::MimeInfo::Magic',
+        version => '0',
+        feature => ['typesniffer'],
+    },
+    {
+        package => 'IO-stringy',
+        module  => 'IO::Scalar',
+        version => '0',
+        feature => ['typesniffer'],
     },
     );
 

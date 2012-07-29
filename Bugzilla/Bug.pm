@@ -1236,6 +1236,7 @@ sub _check_assigned_to {
 sub _check_bug_file_loc {
     my ($invocant, $url) = @_;
     $url = '' if !defined($url);
+    $url = trim($url);
     # On bug entry, if bug_file_loc is "http://", the default, use an 
     # empty value instead. However, on bug editing people can set that
     # back if they *really* want to.
@@ -1919,6 +1920,12 @@ sub _check_field_is_mandatory {
     return if !$field->is_mandatory;
 
     return if !$field->is_visible_on_bug($params || $invocant);
+
+    return if ($field->type == FIELD_TYPE_SINGLE_SELECT
+                 && scalar @{ get_legal_field_values($field->name) } == 1);
+
+    return if ($field->type == FIELD_TYPE_MULTI_SELECT
+                 && !scalar @{ get_legal_field_values($field->name) });
 
     if (ref($value) eq 'ARRAY') {
         $value = join('', @$value);
@@ -3608,23 +3615,23 @@ sub user {
     return {} if $self->{'error'};
 
     my $user = Bugzilla->user;
-
     my $prod_id = $self->{'product_id'};
 
-    my $unknown_privileges = $user->in_group('editbugs', $prod_id);
-    my $canedit = $unknown_privileges
-                  || $user->id == $self->{'assigned_to'}
-                  || (Bugzilla->params->{'useqacontact'}
-                      && $self->{'qa_contact'}
-                      && $user->id == $self->{'qa_contact'});
-    my $canconfirm = $unknown_privileges
-                     || $user->in_group('canconfirm', $prod_id);
-    my $isreporter = $user->id
-                     && $user->id == $self->{reporter_id};
+    my $editbugs = $user->in_group('editbugs', $prod_id);
+    my $is_reporter = $user->id == $self->{reporter_id} ? 1 : 0;
+    my $is_assignee = $user->id == $self->{'assigned_to'} ? 1 : 0;
+    my $is_qa_contact = Bugzilla->params->{'useqacontact'}
+                        && $self->{'qa_contact'}
+                        && $user->id == $self->{'qa_contact'} ? 1 : 0;
+
+    my $canedit = $editbugs || $is_assignee || $is_qa_contact;
+    my $canconfirm = $editbugs || $user->in_group('canconfirm', $prod_id);
+    my $has_any_role = $is_reporter || $is_assignee || $is_qa_contact;
 
     $self->{'user'} = {canconfirm => $canconfirm,
                        canedit    => $canedit,
-                       isreporter => $isreporter};
+                       isreporter => $is_reporter,
+                       has_any_role => $has_any_role};
     return $self->{'user'};
 }
 

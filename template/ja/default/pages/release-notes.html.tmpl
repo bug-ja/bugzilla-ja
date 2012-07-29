@@ -38,6 +38,46 @@
 
 <h2 id="v42_point">4.2.x リリースでの更新点</h2>
 
+<h3>4.2.2</h3>
+
+<p>このリリースでは一つのセキュリティー問題への修正を含みます。
+  詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.6.9/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下の[% terms.bug %]修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li>[% terms.Bugzilla %] 4.0 でのレグレッションにより、ある種のログイン名を
+    [% terms.bugs %] の CC リストに追加しようとした場合に無視される問題がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=756314">[% terms.Bug %] 756314</a>)</li>
+  <li>ユーザ名の先頭か末尾に空白がある文字列が入力された場合、ある種のクエリで
+    無効な SQL が生成されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=760075">[% terms.Bug %] 760075</a>)</li>
+  <li>キーワードの自動補完において、フィールドが空白の場合に先頭のキーワードが
+    自動的に選択される動作をしていたのが修正されました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=764517">[% terms.Bug %] 764517</a>)</li>
+  <li>[% terms.Bugzilla %] 4.2 において classification が画像・表形式のレポートで
+    "複数テーブル" のフィールドに利用できなかったレグレッションがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=753688">[% terms.Bug %] 753688</a>)</li>
+  <li><kbd>email_in.pl</kbd> スクリプトで添付したファイルが間違ったコメントに
+    関連付けられていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=762785">[% terms.Bug %] 762785</a>)</li>
+  <li>非常に長い依存リストが正常に表示されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=762783">[% terms.Bug %] 762783</a>)</li>
+  <li>XSS を防ぐためにフォームの自動補完でキーワードも正しくエスケープされる
+    ようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=754561">[% terms.Bug %] 754561</a>)</li>
+  <li>[% terms.Bugzilla %] 4.0rc2 での CVE-2011-0046 の修正により、
+    "検索条件の削除を取り止める" リンクが削除された保存された検索を復活させる
+    際に、リンクに有効なトークンが含まれて居ないために正しく動いていませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=768870">[% terms.Bug %] 768870</a>)</li>
+  <li>詳細検索のページで攻撃者があなたの既定の検索条件を変更できるという、
+    二つのマイナーな CSRF 脆弱性が修正されました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=754672">[% terms.Bugs %] 754672</a>
+    と <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=754673">754673</a>)</li>
+</ul>
+
 <h3>4.2.1</h3>
 
 <p>このリリースでは二つのセキュリティー問題への修正を含みます。

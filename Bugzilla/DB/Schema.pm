@@ -322,6 +322,8 @@ use constant ABSTRACT_SCHEMA => {
 
     bugs_activity => {
         FIELDS => [
+            id        => {TYPE => 'INTSERIAL', NOTNULL => 1, 
+                          PRIMARYKEY => 1}, 
             bug_id    => {TYPE => 'INT3', NOTNULL => 1,
                           REFERENCES    =>  {TABLE  =>  'bugs',
                                              COLUMN =>  'bug_id',
@@ -338,7 +340,7 @@ use constant ABSTRACT_SCHEMA => {
                           REFERENCES    =>  {TABLE  =>  'fielddefs',
                                              COLUMN =>  'id'}},
             added     => {TYPE => 'varchar(255)'},
-            removed   => {TYPE => 'TINYTEXT'},
+            removed   => {TYPE => 'varchar(255)'},
             comment_id => {TYPE => 'INT3', 
                            REFERENCES => { TABLE  => 'longdescs',
                                            COLUMN => 'comment_id',
@@ -350,6 +352,7 @@ use constant ABSTRACT_SCHEMA => {
             bugs_activity_bug_when_idx => ['bug_when'],
             bugs_activity_fieldid_idx => ['fieldid'],
             bugs_activity_added_idx   => ['added'],
+            bugs_activity_removed_idx => ['removed'], 
         ],
     },
 
@@ -505,6 +508,9 @@ use constant ABSTRACT_SCHEMA => {
             removed   => {TYPE => 'MEDIUMTEXT'},
             added     => {TYPE => 'MEDIUMTEXT'},
             at_time   => {TYPE => 'DATETIME', NOTNULL => 1},
+        ],
+        INDEXES => [
+                    audit_log_class_idx => ['class', 'at_time'],
         ],
     },
 
@@ -670,6 +676,7 @@ use constant ABSTRACT_SCHEMA => {
             custom      => {TYPE => 'BOOLEAN', NOTNULL => 1,
                             DEFAULT => 'FALSE'},
             description => {TYPE => 'TINYTEXT', NOTNULL => 1},
+            long_desc   => {TYPE => 'varchar(255)', NOTNULL => 1, DEFAULT => "''"},
             mailhead    => {TYPE => 'BOOLEAN', NOTNULL => 1,
                             DEFAULT => 'FALSE'},
             sortkey     => {TYPE => 'INT2', NOTNULL => 1},
@@ -896,6 +903,8 @@ use constant ABSTRACT_SCHEMA => {
 
     profiles_activity => {
         FIELDS => [
+            id            => {TYPE => 'MEDIUMSERIAL', NOTNULL => 1, 
+                              PRIMARYKEY => 1}, 
             userid        => {TYPE => 'INT3', NOTNULL => 1,
                               REFERENCES => {TABLE  => 'profiles', 
                                              COLUMN => 'userid',
