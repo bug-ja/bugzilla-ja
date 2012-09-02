@@ -1356,7 +1356,7 @@
     [% title = BLOCK %] 指定された [% jawords.saved_search FILTER html %] がありません [% END %]
     [% docslinks = {'query.html' => "$terms.bugs の検索",
                     'query.html#list' => "$terms.Bug リスト"} %]
-    <em>[% queryname FILTER html %]</em> という [% jawords.search_saved_search FILTER html %] は
+    <em>[% name FILTER html %]</em> という [% jawords.search_saved_search FILTER html %] は
     [% IF sharer_id && sharer_id != user.id %]
       あなたのアカウントから利用できません。
     [% ELSE %]

@@ -213,7 +213,7 @@ sub LookupNamedQuery {
     Bugzilla->login(LOGIN_REQUIRED);
 
     my $query = Bugzilla::Search::Saved->check(
-        { user => $sharer_id, name => $name });
+        { user => $sharer_id, name => $name, _error => 'missing_query' });
 
     $query->url
        || ThrowUserError("buglist_parameters_required");
@@ -465,6 +465,8 @@ elsif (($cmdtype eq "doit") && defined $cgi->param('remtype')) {
         $user = Bugzilla->login(LOGIN_REQUIRED);
         my $token = $cgi->param('token');
         check_hash_token($token, ['searchknob']);
+        $buffer = $params->canonicalise_query('cmdtype', 'remtype',
+                                              'query_based_on', 'token');
         InsertNamedQuery(DEFAULT_QUERY_NAME, $buffer);
         $vars->{'message'} = "buglist_new_default_query";
     }
@@ -1116,7 +1118,8 @@ else {
 
 # Set 'urlquerypart' once the buglist ID is known.
 $vars->{'urlquerypart'} = $params->canonicalise_query('order', 'cmdtype',
-                                                      'query_based_on');
+                                                      'query_based_on',
+                                                      'token');
 
 if ($format->{'extension'} eq "csv") {
     # We set CSV files to be downloaded, as they are designed for importing

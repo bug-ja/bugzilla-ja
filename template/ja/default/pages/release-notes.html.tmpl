@@ -50,6 +50,44 @@
 
 <h2 id="v42_point">4.2.x リリースでの更新点</h2>
 
+<h3>4.2.3</h3>
+
+<p>このリリースでは二つのセキュリティー問題への修正を含みます。
+  詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.6.10/">セキュリティーアドバイザり</a>
+  を参照してください。</p>
+
+<p>加えて、以下の[% terms.bug %]修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li>Perl 5.16 での変更により [% terms.abug %] へのファイルの添付機能が
+    動かなくなっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=771100">[% terms.Bug %] 771100</a>)</li>
+  <li>[% terms.Bugzilla %] 4.2.2 において Oracle 環境下でバグ一覧を表示しようと
+    した際にクラッシュするレグレッションがありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=780028">[% terms.Bug %] 780028</a>)</li>
+  <li>見ることのできないコメントや添付についてその履歴が検索できるようになっていました。
+    (コメントや添付自体は閲覧できていませんでした。)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=779709">[% terms.Bug %] 779709</a>)</li>
+  <li>utf8 パラメータが有効の場合でも、PostgreSQL 環境下で間違った文字コードで
+    データベースが生成されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=783786">[% terms.Bug %] 783786</a>)</li>
+  <li>Oracle 環境下ではスケジュールされた whine が間違った時間に送信される可能性
+    がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=559539">[% terms.Bug %] 559539</a>)</li>
+  <li>保存されたクエリで、トークンは送信されなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=772953">[% terms.Bug %] 772953</a>)</li>
+  <li>カスタムフィールドの説明に &lt; か &gt; の文字が含まれる
+    際にフィルターされないことによりバグリストの表示が壊れてしまう問題がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=785917">[% terms.Bug %] 785917</a>)</li>
+  <li>Oracle 環境下でデータベースカラムを追加・削除する際に SERIAL カラムが
+    正常に扱われていませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=731156">[% terms.Bug %] 731156</a>)</li>
+  <li>token.cgi において有効でないパスワードリセットメール送信要求が
+    受け付けられる可能性があるという、小さな CSRF 脆弱性がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=706271">[% terms.Bug %] 706271</a>)</li>
+</ul>
+
 <h3>4.2.2</h3>
 
 <p>このリリースでは一つのセキュリティー問題への修正を含みます。
@@ -63,20 +101,19 @@
   <li>[% terms.Bugzilla %] 4.0 でのレグレッションにより、ある種のログイン名を
     [% terms.bugs %] の CC リストに追加しようとした場合に無視される問題がありました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=756314">[% terms.Bug %] 756314</a>)</li>
-  <li>Some queries could trigger an invalid SQL query if strings entered by
-    the user contained leading or trailing whitespaces.
+  <li>ユーザ名の先頭か末尾に空白がある文字列が入力された場合、ある種のクエリで
+    無効な SQL が生成されていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=760075">[% terms.Bug %] 760075</a>)</li>
-  <li>The auto-completion form for keywords no longer automatically selects
-    the first keyword in the list when the field is empty.
+  <li>キーワードの自動補完において、フィールドが空白の場合に先頭のキーワードが
+    自動的に選択される動作をしていたのが修正されました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=764517">[% terms.Bug %] 764517</a>)</li>
-  <li>A regression in [% terms.Bugzilla %] 4.2 prevented classifications
-    from being used in graphical and tabular reports in the "Multiple Tables"
-    field.
+  <li>[% terms.Bugzilla %] 4.2 において classification が画像・表形式のレポートで
+    "複数テーブル" のフィールドに利用できなかったレグレッションがありました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=753688">[% terms.Bug %] 753688</a>)</li>
-  <li>Attachments created by the <kbd>email_in.pl</kbd> script were associated
-    to the wrong comment.
+  <li><kbd>email_in.pl</kbd> スクリプトで添付したファイルが間違ったコメントに
+    関連付けられていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=762785">[% terms.Bug %] 762785</a>)</li>
-  <li>Very long dependency lists can now be viewed correctly.
+  <li>非常に長い依存リストが正常に表示されるようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=762783">[% terms.Bug %] 762783</a>)</li>
   <li>XSS を防ぐためにフォームの自動補完でキーワードも正しくエスケープされる
     ようになりました。
@@ -85,10 +122,10 @@
     "検索条件の削除を取り止める" リンクが削除された保存された検索を復活させる
     際に、リンクに有効なトークンが含まれて居ないために正しく動いていませんでした。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=768870">[% terms.Bug %] 768870</a>)</li>
-  <li>Two minor CSRF vulnerabilities have been fixed which could let an attacker
-    alter your default search criteria in the Advanced Search page.
+  <li>詳細検索のページで攻撃者があなたの既定の検索条件を変更できるという、
+    二つのマイナーな CSRF 脆弱性が修正されました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=754672">[% terms.Bugs %] 754672</a>
-    and <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=754673">754673</a>)</li>
+    と <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=754673">754673</a>)</li>
 </ul>
 
 <h3>4.2.1</h3>
@@ -410,6 +447,9 @@ MySQL, PostgreSQL, や Oracle を利用すべきです。</p>
     [%- terms.Bug %] 584742</a>: When viewing [% terms.abug %], WebKit-based
     browsers can automatically reset a field's selected value when the field
     has disabled values.</li>
+  <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=780053">
+    [%- terms.Bug %] 780053</a>: Oracle crashes when listing keywords, tags
+    or flags in buglists.</li>
 </ul>
 
 +
