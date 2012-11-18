@@ -30,8 +30,8 @@
 
 [% PROCESS bug/time.html.tmpl %]
 
-  <script type="text/javascript">
-  <!--
+<script type="text/javascript">
+<!--
   
   /* Outputs a link to call replyToComment(); used to reduce HTML output */
   function addReplyLink(id, real_id) {
@@ -119,6 +119,7 @@
 
 [% END %]
 
+[% IF user.id %]
   /* Index all classifications so we can keep track of the classification
    * for the selected product, which could control field visibility.
    */
@@ -128,8 +129,9 @@
           [%- product.classification.name FILTER js %]';
   [%- END %]
 
-  //-->
-  </script>
+[% END %]
+//-->
+</script>
 
 <form name="changeform" id="changeform" method="post" action="process_bug.cgi">
 

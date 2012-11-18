@@ -169,7 +169,7 @@
       <a href="query.cgi?[% switchbase %]&amp;format=report-table">このレポートを編集</a>
     [% ELSE %]
       <a href="query.cgi?[% switchbase %]&amp;chart_format=
-        [% format %]&amp;format=report-graph&amp;cumulate=[% cumulate %]">
+        [% format FILTER uri %]&amp;format=report-graph&amp;cumulate=[% cumulate %]">
         このレポートを編集
       </a>
     [% END %]

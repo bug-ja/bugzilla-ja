@@ -239,8 +239,7 @@
     設定を確認してください。
 
   [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
-    添付 [% attach_id FILTER html %] ([% description FILTER html %]) は
-    [% terms.bug %] [%+ attach_bug_id FILTER html %] に添付されていますが、
+    添付 [% attach_id FILTER html %] は他の [% terms.bug %] に添付されていますが、
     あなたは [% terms.bug %] [%+ my_bug_id FILTER html %] へ新しい添付をつけるときに
     無効化しようとしました。
 

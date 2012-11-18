@@ -1987,7 +1987,7 @@
                   
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        、もしくは <a href="query.cgi?[% q.url FILTER uri %]">編集</a>
+        、もしくは <a href="query.cgi?[% q.url FILTER html %]">編集</a>
       [% END %]
     [% END %]
     することも可能です。
