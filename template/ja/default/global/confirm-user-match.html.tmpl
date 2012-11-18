@@ -196,7 +196,7 @@
   [% ELSIF field_labels.$field_name %]
     [% field_labels.$field_name FILTER html %]
   [% ELSIF field_name.match("^requestee") %]
-    [% fields.${field_name}.flag_type.name %] 要請者
+    [% fields.${field_name}.flag_type.name FILTER html %] 要請者
   [% ELSE %]
     [% field_name FILTER html %]
   [% END %]

@@ -67,6 +67,26 @@
 
 <h2 id="v40_point">4.0.x リリースでの更新点</h2>
 
+<h3>4.0.9</h3>
+
+<p>このリリースでは複数のセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/3.6.11/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下の[% terms.bug %]修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li>フラグ名が "ユーザ名確認画面" で正しくエスケープされていなかったという問
+    題が修正されています。&lt; や &gt; が含まれるフラグ名で管理者が作成した場合に、
+    それらの文字がフィルターされていないことにより表示が異常になる可能性がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=790215">[% terms.Bug %] 790215</a>)</li>
+  <li>解決方法が MOVED になった [% terms.Bugs %] が編集不可になりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=757935">[% terms.Bug %] 757935</a>)</li>
+  <li>"複数 [% terms.Bugs %] を同時に変更する" ページで依存関係を編集すると、
+    正常に動作していませんでした。[% terms.Bugs %] ID が間違って解釈されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=790909">[% terms.Bug %] 790909</a>)</li>
+</ul>
+
 <h3>4.0.8</h3>
 
 <p>このリリースでは二つのセキュリティー問題への修正を含みます。
