@@ -842,7 +842,6 @@ sub process_bug {
     my $valid_status = check_field('bug_status',  
                                   scalar $bug_fields{'bug_status'}, 
                                   undef, ERR_LEVEL );
-    my $is_open = is_open_state($bug_fields{'bug_status'}); 
     my $status = $bug_fields{'bug_status'} || undef;
     my $resolution = $bug_fields{'resolution'} || undef;
     
@@ -892,7 +891,7 @@ sub process_bug {
 
     if ($status) {
         if($valid_status){
-            if($is_open){
+            if (is_open_state($status)) {
                 if ($resolution) {
                     $err .= "Resolution set on an open status.\n";
                     $err .= "   Dropping resolution $resolution\n";
@@ -926,7 +925,7 @@ sub process_bug {
                     }
                 }
             }
-            else{ # $is_open is false
+            else {
                if (!$resolution) {
                    $err .= "Missing Resolution. Setting status to ";
                    if($everconfirmed){

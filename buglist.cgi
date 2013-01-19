@@ -23,10 +23,8 @@ use Bugzilla::Search;
 use Bugzilla::Search::Quicksearch;
 use Bugzilla::Search::Recent;
 use Bugzilla::Search::Saved;
-use Bugzilla::User;
 use Bugzilla::Bug;
 use Bugzilla::Product;
-use Bugzilla::Keyword;
 use Bugzilla::Field;
 use Bugzilla::Status;
 use Bugzilla::Token;
@@ -95,13 +93,6 @@ if (defined $cgi->param('ctype') && $cgi->param('ctype') eq "rss") {
     $cgi->param('ctype', "atom");
 }
 
-# An agent is a program that automatically downloads and extracts data
-# on its user's behalf.  If this request comes from an agent, we turn off
-# various aspects of bug list functionality so agent requests succeed
-# and coexist nicely with regular user requests.  Currently the only agent
-# we know about is Firefox's microsummary feature.
-my $agent = ($cgi->http('X-Moz') && $cgi->http('X-Moz') =~ /\bmicrosummary\b/);
-
 # Determine the format in which the user would like to receive the output.
 # Uses the default format if the user did not specify an output format;
 # otherwise validates the user's choice against the list of available formats.
@@ -122,9 +113,8 @@ my $serverpush =
       && $ENV{'HTTP_USER_AGENT'} =~ /(Mozilla.[3-9]|Opera)/
         && $ENV{'HTTP_USER_AGENT'} !~ /compatible/i
           && $ENV{'HTTP_USER_AGENT'} !~ /WebKit/
-            && !$agent
-              && !defined($cgi->param('serverpush'))
-                || $cgi->param('serverpush');
+            && !defined($cgi->param('serverpush'))
+              || $cgi->param('serverpush');
 
 my $order = $cgi->param('order') || "";
 
@@ -193,7 +183,7 @@ sub LookupNamedQuery {
     Bugzilla->login(LOGIN_REQUIRED);
 
     my $query = Bugzilla::Search::Saved->check(
-        { user => $sharer_id, name => $name });
+        { user => $sharer_id, name => $name, _error => 'missing_query' });
 
     $query->url
        || ThrowUserError("buglist_parameters_required");
@@ -445,6 +435,8 @@ elsif (($cmdtype eq "doit") && defined $cgi->param('remtype')) {
         $user = Bugzilla->login(LOGIN_REQUIRED);
         my $token = $cgi->param('token');
         check_hash_token($token, ['searchknob']);
+        $buffer = $params->canonicalise_query('cmdtype', 'remtype',
+                                              'query_based_on', 'token');
         InsertNamedQuery(DEFAULT_QUERY_NAME, $buffer);
         $vars->{'message'} = "buglist_new_default_query";
     }
@@ -454,51 +446,18 @@ elsif (($cmdtype eq "doit") && defined $cgi->param('remtype')) {
         my $new_query = $cgi->param('newquery');
         my $token = $cgi->param('token');
         check_hash_token($token, ['savedsearch']);
-        # If list_of_bugs is true, we are adding/removing tags to/from
-        # individual bugs.
-        if ($cgi->param('list_of_bugs')) {
-            # We add/remove tags based on the action choosen.
-            my $action = trim($cgi->param('action') || '');
-            $action =~ /^(add|remove)$/
-              || ThrowUserError('unknown_action', {action => $action});
-
-            my $method = "${action}_tag";
-
-            # If no new tag name has been given, use the selected one.
-            $query_name ||= $cgi->param('oldqueryname')
-              or ThrowUserError('no_tag_to_edit', {action => $action});
-
-            my @buglist;
-            # Validate all bug IDs before editing tags in any of them.
-            foreach my $bug_id (split(/[\s,]+/, $cgi->param('bug_ids'))) {
-                next unless $bug_id;
-                push(@buglist, Bugzilla::Bug->check($bug_id));
-            }
-
-            foreach my $bug (@buglist) {
-                $bug->$method($query_name);
-            }
-
-            $vars->{'message'} = 'tag_updated';
-            $vars->{'action'} = $action;
-            $vars->{'tag'} = $query_name;
-            $vars->{'buglist'} = [map { $_->id } @buglist];
+        my $existed_before = InsertNamedQuery($query_name, $new_query, 1);
+        if ($existed_before) {
+            $vars->{'message'} = "buglist_updated_named_query";
         }
         else {
-            my $existed_before = InsertNamedQuery($query_name, $new_query, 1);
-            if ($existed_before) {
-                $vars->{'message'} = "buglist_updated_named_query";
-            }
-            else {
-                $vars->{'message'} = "buglist_new_named_query";
-            }
-
-            # Make sure to invalidate any cached query data, so that the footer is
-            # correctly displayed
-            $user->flush_queries_cache();
-
-            $vars->{'queryname'} = $query_name;
+            $vars->{'message'} = "buglist_new_named_query";
         }
+        $vars->{'queryname'} = $query_name;
+
+        # Make sure to invalidate any cached query data, so that the footer is
+        # correctly displayed
+        $user->flush_queries_cache();
 
         print $cgi->header();
         $template->process("global/message.html.tmpl", $vars)
@@ -1065,7 +1024,7 @@ $vars->{'quicksearch'} = $searchstring;
 my $contenttype;
 my $disposition = "inline";
 
-if ($format->{'extension'} eq "html" && !$agent) {
+if ($format->{'extension'} eq "html") {
     my $list_id = $cgi->param('list_id') || $cgi->param('regetlastlist');
     my $search = $user->save_last_search(
         { bugs => \@bugidlist, order => $order, vars => $vars, list_id => $list_id });
@@ -1078,7 +1037,8 @@ else {
 
 # Set 'urlquerypart' once the buglist ID is known.
 $vars->{'urlquerypart'} = $params->canonicalise_query('order', 'cmdtype',
-                                                      'query_based_on');
+                                                      'query_based_on',
+                                                      'token');
 
 if ($format->{'extension'} eq "csv") {
     # We set CSV files to be downloaded, as they are designed for importing

@@ -545,7 +545,7 @@ sub COLUMNS {
         
         'longdescs.count' => 'COUNT(DISTINCT map_longdescs_count.comment_id)',
 
-        tag => $dbh->sql_group_concat($dbh->sql_string_concat('map_tag.name')),
+        tag => $dbh->sql_group_concat('DISTINCT map_tag.name'),
     );
 
     # Backward-compatibility for old field names. Goes new_name => old_name.
@@ -722,7 +722,8 @@ sub search_description {
 
 sub boolean_charts_to_custom_search {
     my ($self, $cgi_buffer) = @_;
-    my @as_params = $self->_boolean_charts->as_params;
+    my $boolean_charts = $self->_boolean_charts;
+    my @as_params = $boolean_charts ? $boolean_charts->as_params : ();
 
     # We need to start our new ids after the last custom search "f" id.
     # We can just pick the last id in the array because they are sorted
@@ -834,10 +835,19 @@ sub _add_extra_column {
 # These are the columns that we're going to be actually SELECTing.
 sub _display_columns {
     my ($self) = @_;
-    # Do not alter the list specified here at all, even if they are duplicated.
-    # Those are passed by the caller, and the caller expects to get them back
-    # in the exact same order.
-    $self->{display_columns} ||= [$self->_input_columns, $self->_extra_columns];
+    return @{ $self->{display_columns} } if $self->{display_columns};
+
+    # Do not alter the list from _input_columns at all, even if there are
+    # duplicated columns. Those are passed by the caller, and the caller
+    # expects to get them back in the exact same order.
+    my @columns = $self->_input_columns;
+
+    # Only add columns which are not already listed.
+    my %list = map { $_ => 1 } @columns;
+    foreach my $column ($self->_extra_columns) {
+        push(@columns, $column) unless $list{$column}++;
+    }
+    $self->{display_columns} = \@columns;
     return @{ $self->{display_columns} };
 }
 
@@ -1337,7 +1347,7 @@ sub _parse_basic_fields {
         }
         $clause->add($field_name, $operator, $pass_value);
     }
-    return $clause;
+    return @{$clause->children} ? $clause : undef;
 }
 
 sub _special_parse_bug_status {
@@ -1457,7 +1467,7 @@ sub _special_parse_chfield {
         $clause->add($to_clause);
     }
 
-    return $clause;
+    return @{$clause->children} ? $clause : undef;
 }
 
 sub _special_parse_deadline {
@@ -1472,8 +1482,8 @@ sub _special_parse_deadline {
     if (my $to = $params->{'deadlineto'}) {
         $clause->add('deadline', 'lessthaneq', $to);
     }
-    
-    return $clause;
+
+    return @{$clause->children} ? $clause : undef;
 }
 
 sub _special_parse_email {
@@ -1503,8 +1513,8 @@ sub _special_parse_email {
         
         $clause->add($or_clause);
     }
-    
-    return $clause;
+
+    return @{$clause->children} ? $clause : undef;
 }
 
 sub _special_parse_resolution {
@@ -1613,17 +1623,20 @@ sub _boolean_charts {
         }
         $clause->add($and_clause);
     }
-    
-    return $clause;
+
+    return @{$clause->children} ? $clause : undef;
 }
 
 sub _custom_search {
     my ($self) = @_;
     my $params = $self->_params;
 
+    my @field_ids = $self->_field_ids;
+    return unless scalar @field_ids;
+
     my $current_clause = new Bugzilla::Search::Clause($params->{j_top});
     my @clause_stack;
-    foreach my $id ($self->_field_ids) {
+    foreach my $id (@field_ids) {
         my $field = $params->{"f$id"};
         if ($field eq 'OP') {
             my $joiner = $params->{"j$id"};
@@ -1789,7 +1802,9 @@ sub do_search_function {
 sub _do_operator_function {
     my ($self, $func_args) = @_;
     my $operator = $func_args->{operator};
-    my $operator_func = OPERATORS->{$operator};
+    my $operator_func = OPERATORS->{$operator}
+      || ThrowCodeError("search_field_operator_unsupported",
+                        { operator => $operator });
     $self->$operator_func($func_args);
 }
 
@@ -2281,6 +2296,12 @@ sub _long_desc_changedbefore_after {
     };
     push(@$joins, $join);
     $args->{term} = "$table.bug_when IS NOT NULL";
+
+    # If the user is not part of the insiders group, they cannot see
+    # private comments
+    if (!$self->_user->is_insider) {
+        $args->{term} .= " AND $table.isprivate = 0";
+    }
 }
 
 sub _content_matches {
@@ -2763,8 +2784,10 @@ sub _changedbefore_changedafter {
         extra => ["$table.fieldid = $field_id",
                   "$table.bug_when $sql_operator $sql_date"],
     };
-    push(@$joins, $join);
+
     $args->{term} = "$table.bug_when IS NOT NULL";
+    $self->_changed_security_check($args, $join);
+    push(@$joins, $join);
 }
 
 sub _changedfrom_changedto {
@@ -2783,9 +2806,10 @@ sub _changedfrom_changedto {
         extra => ["$table.fieldid = $field_id",
                   "$table.$column = $quoted"],
     };
-    push(@$joins, $join);
 
     $args->{term} = "$table.bug_when IS NOT NULL";
+    $self->_changed_security_check($args, $join);
+    push(@$joins, $join);
 }
 
 sub _changedby {
@@ -2804,8 +2828,32 @@ sub _changedby {
         extra => ["$table.fieldid = $field_id",
                   "$table.who = $user_id"],
     };
-    push(@$joins, $join);
+
     $args->{term} = "$table.bug_when IS NOT NULL";
+    $self->_changed_security_check($args, $join);
+    push(@$joins, $join);
+}
+
+sub _changed_security_check {
+    my ($self, $args, $join) = @_;
+    my ($chart_id, $field) = @$args{qw(chart_id field)};
+
+    my $field_object = $self->_chart_fields->{$field}
+        || ThrowCodeError("invalid_field_name", { field => $field });
+    my $field_id = $field_object->id;
+
+    # If the user is not part of the insiders group, they cannot see
+    # changes to attachments (including attachment flags) that are private
+    if ($field =~ /^(?:flagtypes\.name$|attach)/ and !$self->_user->is_insider) {
+        $join->{then_to} = {
+            as    => "attach_${field_id}_$chart_id",
+            table => 'attachments',
+            from  => "act_${field_id}_$chart_id.attach_id",
+            to    => 'attach_id',
+        };
+
+        $args->{term} .= " AND COALESCE(attach_${field_id}_$chart_id.isprivate, 0) = 0";
+    }
 }
 
 ######################

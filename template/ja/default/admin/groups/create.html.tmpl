@@ -71,9 +71,20 @@
   アイコンは [% terms.bugs %] のコメントの表示でコメント投稿者の名前のあとに表示されます。
 </p>
 
-<p>既定では、新規グループは既存のプロダクトにのみ関連付けることができます。
-"すべての既存のプロダクトに新規グループを導入する。" のチェックをはずすと、
-これは行われず、プロダクトに追加したものについてのみグループが表示されるようになります。</p>
+[% IF Param("makeproductgroups") %]
+  <p>既定では、新規グループは既存のプロダクトにのみ関連付けることができます。
+  "すべての既存のプロダクトに新規グループを導入する。" のチェックをはずすと、
+  これは行われず、プロダクトに追加したものについてのみグループが表示されるようになります。</p>
+[% ELSE %]
+  <p>Checking the "Insert new group into all existing products" option will
+  make the new group be associated with existing products. Leaving it unchecked
+  will make the group become visible only when its controls have been added to
+  a product.</p>
+  <p>"すべての既存のプロダクトに新規グループを導入する。" オプションを選択すると、
+  既存のすべてのプロダクトにこのグループが関連付けられます。選択しない場合は、
+  これは行われず、プロダクトに追加したものについてのみグループが表示されるようになります。</p>
+[% END %]
+
 
 <p><a href="./">メイン [% terms.bugs %] ページ</a>に戻る
 

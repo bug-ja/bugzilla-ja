@@ -15,6 +15,8 @@ use Bugzilla::Util;
 use Bugzilla::Error;
 use Bugzilla::Field;
 use Bugzilla::Search;
+use Bugzilla::Report;
+use Bugzilla::Token;
 
 use List::MoreUtils qw(uniq);
 
@@ -34,11 +36,58 @@ if (grep(/^cmd-/, $cgi->param())) {
 
 Bugzilla->login();
 my $action = $cgi->param('action') || 'menu';
+my $token  = $cgi->param('token');
 
 if ($action eq "menu") {
     # No need to do any searching in this case, so bail out early.
     print $cgi->header();
     $template->process("reports/menu.html.tmpl", $vars)
+      || ThrowTemplateError($template->error());
+    exit;
+
+}
+elsif ($action eq 'add') {
+    my $user = Bugzilla->login(LOGIN_REQUIRED);
+    check_hash_token($token, ['save_report']);
+
+    my $name = clean_text($cgi->param('name'));
+    my $query = $cgi->param('query');
+
+    if (my ($report) = grep{ lc($_->name) eq lc($name) } @{$user->reports}) {
+        $report->set_query($query);
+        $report->update;
+        $vars->{'message'} = "report_updated";
+    } else {
+        my $report = Bugzilla::Report->create({name => $name, query => $query});
+        $vars->{'message'} = "report_created";
+    }
+
+    $user->flush_reports_cache;
+
+    print $cgi->header();
+
+    $vars->{'reportname'} = $name;
+
+    $template->process("global/message.html.tmpl", $vars)
+      || ThrowTemplateError($template->error());
+    exit;
+}
+elsif ($action eq 'del') {
+    my $user = Bugzilla->login(LOGIN_REQUIRED);
+    my $report_id = $cgi->param('saved_report_id');
+    check_hash_token($token, ['delete_report', $report_id]);
+
+    my $report = Bugzilla::Report->check({id => $report_id});
+    $report->remove_from_db();
+
+    $user->flush_reports_cache;
+
+    print $cgi->header();
+
+    $vars->{'message'} = 'report_deleted';
+    $vars->{'reportname'} = $report->name;
+
+    $template->process("global/message.html.tmpl", $vars)
       || ThrowTemplateError($template->error());
     exit;
 }
@@ -54,20 +103,18 @@ if (!($col_field || $row_field || $tbl_field)) {
     ThrowUserError("no_axes_defined");
 }
 
-my $width = $cgi->param('width');
-my $height = $cgi->param('height');
+# There is no UI for these parameters anymore,
+# but they are still here just in case.
+my $width = $cgi->param('width') || 1024;
+my $height = $cgi->param('height') || 600;
 
-if (defined($width)) {
-   (detaint_natural($width) && $width > 0)
-     || ThrowCodeError("invalid_dimensions");
-   $width <= 2000 || ThrowUserError("chart_too_large");
-}
+(detaint_natural($width) && $width > 0)
+  || ThrowCodeError("invalid_dimensions");
+$width <= 2000 || ThrowUserError("chart_too_large");
 
-if (defined($height)) {
-   (detaint_natural($height) && $height > 0)
-     || ThrowCodeError("invalid_dimensions");
-   $height <= 2000 || ThrowUserError("chart_too_large");
-}
+(detaint_natural($height) && $height > 0)
+  || ThrowCodeError("invalid_dimensions");
+$height <= 2000 || ThrowUserError("chart_too_large");
 
 # These shenanigans are necessary to make sure that both vertical and 
 # horizontal 1D tables convert to the correct dimension when you ask to
@@ -195,7 +242,7 @@ $vars->{'row_names'} = \@row_names;
 $vars->{'tbl_names'} = \@tbl_names;
 
 # Below a certain width, we don't see any bars, so there needs to be a minimum.
-if ($width && $cgi->param('format') eq "bar") {
+if ($cgi->param('format') eq "bar") {
     my $min_width = (scalar(@col_names) || 1) * 20;
 
     if (!$cgi->param('cumulate')) {
@@ -205,10 +252,10 @@ if ($width && $cgi->param('format') eq "bar") {
     $vars->{'min_width'} = $min_width;
 }
 
-$vars->{'width'} = $width if $width;
-$vars->{'height'} = $height if $height;
-
+$vars->{'width'} = $width;
+$vars->{'height'} = $height;
 $vars->{'query'} = $query;
+$vars->{'saved_report_id'} = $cgi->param('saved_report_id');
 $vars->{'debug'} = $cgi->param('debug');
 
 my $formatparam = $cgi->param('format');

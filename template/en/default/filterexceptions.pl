@@ -89,7 +89,6 @@
   'imageurl', 
   'formaturl', 
   'other_format.name', 
-  'sizeurl', 
   'switchbase',
   'format',
   'cumulate',
@@ -139,7 +138,6 @@
 'list/table.html.tmpl' => [
   'tableheader',
   'bug.bug_id', 
-  'abbrev.$id.title || field_descs.$id || column.title',
 ],
 
 'list/list.csv.tmpl' => [
@@ -175,10 +173,6 @@
 'global/messages.html.tmpl' => [
   'message_tag', 
   'series.frequency * 2',
-],
-
-'global/per-bug-queries.html.tmpl' => [
-  '" value=\"$bugids\"" IF bugids',
 ],
 
 'global/select-menu.html.tmpl' => [

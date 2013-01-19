@@ -174,6 +174,11 @@ sub _legal_field_values {
 
     elsif ($field_name eq 'bug_status') {
         my @status_all = Bugzilla::Status->get_all;
+        my $initial_status = bless({ id => 0, name => '', is_open => 1, sortkey => 0,
+                                     can_change_to => Bugzilla::Status->can_change_to },
+                                   'Bugzilla::Status');
+        unshift(@status_all, $initial_status);
+
         foreach my $status (@status_all) {
             my @can_change_to;
             foreach my $change_to (@{ $status->can_change_to }) {
@@ -2367,8 +2372,9 @@ B<STABLE>
 =item B<Description>
 
 This allows you to create a new bug in Bugzilla. If you specify any
-invalid fields, they will be ignored. If you specify any fields you
-are not allowed to set, they will just be set to their defaults or ignored.
+invalid fields, an error will be thrown stating which field is invalid.
+If you specify any fields you are not allowed to set, they will just be
+set to their defaults or ignored.
 
 You cannot currently set all the items here that you can set on enter_bug.cgi.
 

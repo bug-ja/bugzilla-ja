@@ -8,11 +8,11 @@
 
 From: [% Param('mailfrom') %]
 To: [% Param('maintainer') %]
-Subject: [[% terms.Bugzilla %]] アカウントロック: [% locked_user.login %] ([% attempts.0.ip_addr %])
+Subject: [[% terms.Bugzilla %]] アカウントロック: [% locked_user.login %] ([% address %])
 X-Bugzilla-Type: admin
 
 アカウント [% locked_user.login %] において
-IP アドレス [% attempts.0.ip_addr %] から多数回の (
+アドレス [% address %] での多数回の (
 [%- constants.MAX_LOGIN_ATTEMPTS +%]) ログイン失敗記録がありました。
 
 ログインが試みられたのは以下の時間です。

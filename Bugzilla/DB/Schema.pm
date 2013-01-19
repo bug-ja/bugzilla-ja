@@ -341,7 +341,7 @@ use constant ABSTRACT_SCHEMA => {
                                              COLUMN =>  'id'}},
             added     => {TYPE => 'varchar(255)'},
             removed   => {TYPE => 'varchar(255)'},
-            comment_id => {TYPE => 'INT3', 
+            comment_id => {TYPE => 'INT4', 
                            REFERENCES => { TABLE  => 'longdescs',
                                            COLUMN => 'comment_id',
                                            DELETE => 'CASCADE'}},
@@ -376,7 +376,7 @@ use constant ABSTRACT_SCHEMA => {
 
     longdescs => {
         FIELDS => [
-            comment_id      => {TYPE => 'MEDIUMSERIAL',  NOTNULL => 1,
+            comment_id      => {TYPE => 'INTSERIAL',  NOTNULL => 1,
                                 PRIMARYKEY => 1},
             bug_id          => {TYPE => 'INT3',  NOTNULL => 1,
                                 REFERENCES => {TABLE => 'bugs',
@@ -416,7 +416,8 @@ use constant ABSTRACT_SCHEMA => {
                                             DELETE => 'CASCADE'}},
         ],
         INDEXES => [
-            dependencies_blocked_idx   => ['blocked'],
+            dependencies_blocked_idx => {FIELDS => [qw(blocked dependson)],
+                                         TYPE   => 'UNIQUE'},
             dependencies_dependson_idx => ['dependson'],
         ],
     },
@@ -1025,6 +1026,23 @@ use constant ABSTRACT_SCHEMA => {
         ],
     },
 
+    reports => {
+        FIELDS => [
+            id      => {TYPE => 'MEDIUMSERIAL', NOTNULL => 1,
+                        PRIMARYKEY => 1},
+            user_id => {TYPE => 'INT3', NOTNULL => 1,
+                        REFERENCES => {TABLE  => 'profiles',
+                                       COLUMN => 'userid',
+                                       DELETE => 'CASCADE'}},
+            name    => {TYPE => 'varchar(64)', NOTNULL => 1},
+            query   => {TYPE => 'LONGTEXT', NOTNULL => 1},
+        ],
+        INDEXES => [
+            reports_user_id_idx => {FIELDS => [qw(user_id name)],
+                                   TYPE => 'UNIQUE'},
+        ],
+    },
+
     component_cc => {
 
         FIELDS => [
@@ -1466,7 +1484,7 @@ use constant ABSTRACT_SCHEMA => {
                          REFERENCES => {TABLE  => 'profiles', 
                                         COLUMN => 'userid',
                                         DELETE => 'SET NULL'}},
-            quip     => {TYPE => 'MEDIUMTEXT', NOTNULL => 1},
+            quip     => {TYPE => 'varchar(512)', NOTNULL => 1},
             approved => {TYPE => 'BOOLEAN', NOTNULL => 1,
                          DEFAULT => 'TRUE'},
         ],

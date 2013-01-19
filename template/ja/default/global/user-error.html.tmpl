@@ -259,9 +259,13 @@
 
   [% ELSIF error == "alias_in_use" %]
     [% title = BLOCK %] [% jawords.bug_alias FILTER html %] は既に利用されています [% END %]
-    [% terms.Bug FILTER html %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
-    は既に <em>[% alias FILTER html %]</em> という [% jawords.bug_alias FILTER html %] を持ちます。
-    別の名称を選択してください。
+    [% IF user.can_see_bug(bug_id) %]
+      [% terms.Bug %] [%+ bug_id FILTER bug_link(bug_id) FILTER none %]
+    [% ELSE %]
+      他の [% terms.bug %]
+    [% END %]
+    が既に <em>[% alias FILTER html %]</em> を利用しています。
+    別のエイリアスを選択してください。
 
   [% ELSIF error == "alias_is_numeric" %]
     [% title = BLOCK %] [% jawords.bug_alias FILTER html %] が数字です [% END %]
@@ -426,7 +430,9 @@
       "http" もしくは "https" から始まる必要があります。
     [% ELSIF reason == 'path_only' %]
       URL 全体を指定する必要があります。
-    [% ELSIF reason == 'show_bug' %]
+    [% ELSIF reason == 'id' %]
+      URL 中に有効な [% terms.bug %] 番号がありません。
+    [% ELSE %]
       [%+ field_descs.see_also FILTER html %] URL は以下のうちの一つでなくてはなりません:
       <ul>
         <li>[% terms.Bugzilla %]
@@ -441,8 +447,6 @@
         <li>github.com の issue</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
-    [% ELSIF reason == 'id' %]
-      有効な [% terms.bug %] ID が URL に含まれていません。
     [% END %]
 
   [% ELSIF error == "bug_url_too_long" %]
@@ -1346,7 +1350,7 @@
     [% title = BLOCK %] 指定された [% jawords.saved_search FILTER html %] がありません [% END %]
     [% docslinks = {'query.html' => "$terms.bugs の検索",
                     'query.html#list' => "$terms.Bug リスト"} %]
-    <em>[% queryname FILTER html %]</em> という [% jawords.search_saved_search FILTER html %] は
+    <em>[% name FILTER html %]</em> という [% jawords.search_saved_search FILTER html %] は
     [% IF sharer_id && sharer_id != user.id %]
       あなたのアカウントから利用できません。
     [% ELSE %]
@@ -1646,10 +1650,24 @@
         <a href="page.cgi?id=quicksearch.html#fields">このリスト</a>で参照できます。</p>
     [% END %]
 
+  [% ELSIF error == "quip_too_long" %]
+    [% title = "Quip が長すぎます" %]
+    あなたの入力した quip は [% length FILTER none %] 文字ですが、
+    利用できる最大文字数は [% constants.MAX_QUIP_LENGTH FILTER none %] 
+    文字です。
+
   [% ELSIF error == "reassign_to_empty" %]
     [% title = BLOCK %] 新しい担当者の [% jawords.mail_address FILTER html %] が指定されていません [% END %]
     [% terms.abug %] を他のアカウントに担当を設定する場合、
     新しい担当者の [% jawords.mail_address FILTER html %] を入力する必要があります。
+
+  [% ELSIF error == "report_name_missing" %]
+    [% title = "レポート名が指定されていません" %]
+    レポート名を入力する必要があります。
+
+  [% ELSIF error == "report_access_denied" %]
+    [% title = "レポートへのアクセスができません" %]
+    このレポートへアクセスすることはできません。
 
   [% ELSIF error == "require_component" %]
     [% title = BLOCK %] [% jawords.component FILTER html %] が指定されていません [% END %]

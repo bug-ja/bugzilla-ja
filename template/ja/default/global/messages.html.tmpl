@@ -784,6 +784,14 @@
     プロダクト <em>[% product FILTER html %]</em> は存在しないか、アクセスできません。
     以下があなたが選択可能なプロダクトのリストです。
 
+  [% ELSIF message_tag == "report_created" %]
+    操作が完了し、<em>[% reportname FILTER html %]</em>という保存されたレポートが作成されました。
+
+  [% ELSIF message_tag == "report_deleted" %]
+    操作が完了し、<em>[% reportname FILTER html %]</em> レポートが削除されました。
+
+  [% ELSIF message_tag == "report_updated" %]
+    レポート <em>[% reportname FILTER html %]</em> が更新されました。
 
   [% ELSIF message_tag == "remaining_time_zeroed" %]
     この [% terms.bug %] を閉じるや閉じられた状態から他に移行するのに伴い、
@@ -838,19 +846,6 @@
       <p>セキュリティー上の理由から、あなたは自動的にログアウトしています。
       保存されているクッキーは削除しました。
     [% END %]
-
-  [% ELSIF message_tag == "tag_updated" %]
-    [% title = "タグを更新しました" %]
-    '<a href="buglist.cgi?tag=[% tag FILTER uri %]">[% tag FILTER html %]</a>'
-    タグを
-    [%+ buglist.size > 1 ? terms.bugs : terms.bug %]
-    [%+ buglist.join(", ") FILTER html %] から
-    [% IF action == "add" %]
-      追加
-    [% ELSE %]
-      削除
-    [% END %]
-    しました。
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]

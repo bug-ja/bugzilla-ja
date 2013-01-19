@@ -16,15 +16,6 @@ use Bugzilla::Search::Recent;
 
 use File::Basename;
 
-BEGIN {
-    if (ON_WINDOWS) {
-        # Help CGI find the correct temp directory as the default list
-        # isn't Windows friendly (Bug 248988)
-        $ENV{'TMPDIR'} = $ENV{'TEMP'} || $ENV{'TMP'} || "$ENV{'WINDIR'}\\TEMP";
-    }
-    *AUTOLOAD = \&CGI::AUTOLOAD;
-}
-
 sub _init_bz_cgi_globals {
     my $invocant = shift;
     # We need to disable output buffering - see bug 179174
@@ -59,14 +50,27 @@ sub new {
 
     # Path-Info is of no use for Bugzilla and interacts badly with IIS.
     # Moreover, it causes unexpected behaviors, such as totally breaking
-    # the rendering of pages. Skip it!
-    print $self->redirect($self->url(-path => 0, -query => 1)) if $self->path_info;
+    # the rendering of pages.
+    my $script = basename($0);
+    if (my $path_info = $self->path_info) {
+        my @whitelist;
+        Bugzilla::Hook::process('path_info_whitelist', { whitelist => \@whitelist });
+        if (!grep($_ eq $script, @whitelist)) {
+            # IIS includes the full path to the script in PATH_INFO,
+            # so we have to extract the real PATH_INFO from it,
+            # else we will be redirected outside Bugzilla.
+            my $script_name = $self->script_name;
+            $path_info =~ s/^\Q$script_name\E//;
+            if ($path_info) {
+                print $self->redirect($self->url(-path => 0, -query => 1));
+            }
+        }
+    }
 
     # Send appropriate charset
     $self->charset(Bugzilla->params->{'utf8'} ? 'UTF-8' : '');
 
     # Redirect to urlbase/sslbase if we are not viewing an attachment.
-    my $script = basename($0);
     if ($self->url_is_attachment_base and $script ne 'attachment.cgi') {
         $self->redirect_to_urlbase();
     }
@@ -157,6 +161,16 @@ sub clean_search_url {
 
     # Delete leftovers from the login form
     $self->delete('Bugzilla_remember', 'GoAheadAndLogIn');
+
+    # Delete the token if we're not performing an action which needs it
+    unless ((defined $self->param('remtype')
+             && ($self->param('remtype') eq 'asdefault'
+                 || $self->param('remtype') eq 'asnamed'))
+            || (defined $self->param('remaction')
+                && $self->param('remaction') eq 'forget'))
+    {
+        $self->delete("token");
+    }
 
     foreach my $num (1,2,3) {
         # If there's no value in the email field, delete the related fields.
@@ -344,7 +358,7 @@ sub param {
 sub _fix_utf8 {
     my $input = shift;
     # The is_utf8 is here in case CGI gets smart about utf8 someday.
-    utf8::decode($input) if defined $input && !utf8::is_utf8($input);
+    utf8::decode($input) if defined $input && !ref $input && !utf8::is_utf8($input);
     return $input;
 }
 
