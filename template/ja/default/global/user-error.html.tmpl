@@ -1814,6 +1814,11 @@
     [% title = BLOCK %] 指定された [% jawords.tab FILTER html %] は存在していません [% END %]
     <code>[% current_tab_name FILTER html %]</code> は有効な [% jawords.tab_name FILTER html %] ではありません。
 
+  [% ELSIF error == "value_inactive" %]
+    [% title = "値が有効化されていません" %]
+    [% type = BLOCK %][% INCLUDE object_name class = class %][% END %]
+    [% type FILTER html %] の値 '[% value FILTER html %]' は有効ではありません。
+
   [% ELSIF error == "version_already_exists" %]
     [% title = BLOCK %] 入力されたバージョンは既に存在しています [% END %]
     [% admindocslinks = {'versions.html' => 'バージョンの管理'} %]

@@ -1368,7 +1368,7 @@ sub _check_bug_status {
     }
 
     # Check if a comment is required for this change.
-    if ($new_status->comment_required_on_change_from($old_status) && !$comment)
+    if ($new_status->comment_required_on_change_from($old_status) && !$comment->{'thetext'})
     {
         ThrowUserError('comment_required', { old => $old_status,
                                              new => $new_status });
@@ -1462,8 +1462,12 @@ sub _check_component {
     $name || ThrowUserError("require_component");
     my $product = blessed($invocant) ? $invocant->product_obj 
                                      : $params->{product};
-    my $obj = Bugzilla::Component->check({ product => $product, name => $name });
-    return $obj;
+    my $old_comp = blessed($invocant) ? $invocant->component : '';
+    my $object = Bugzilla::Component->check({ product => $product, name => $name });
+    if ($object->name ne $old_comp && !$object->is_active) {
+        ThrowUserError('value_inactive', { class => ref($object), value => $name });
+    }
+    return $object;
 }
 
 sub _check_creation_ts {
@@ -1905,10 +1909,14 @@ sub _check_target_milestone {
     my ($invocant, $target, undef, $params) = @_;
     my $product = blessed($invocant) ? $invocant->product_obj 
                                      : $params->{product};
+    my $old_target = blessed($invocant) ? $invocant->target_milestone : '';
     $target = trim($target);
     $target = $product->default_milestone if !defined $target;
     my $object = Bugzilla::Milestone->check(
         { product => $product, name => $target });
+    if ($old_target && $object->name ne $old_target && !$object->is_active) {
+        ThrowUserError('value_inactive', { class => ref($object),  value => $target });
+    }
     return $object->name;
 }
 
@@ -1931,8 +1939,11 @@ sub _check_version {
     $version = trim($version);
     my $product = blessed($invocant) ? $invocant->product_obj 
                                      : $params->{product};
-    my $object = 
-        Bugzilla::Version->check({ product => $product, name => $version });
+    my $old_vers = blessed($invocant) ? $invocant->version : '';
+    my $object = Bugzilla::Version->check({ product => $product, name => $version });
+    if ($object->name ne $old_vers && !$object->is_active) {
+        ThrowUserError('value_inactive', { class => ref($object), value => $version });
+    }
     return $object->name;
 }
 
@@ -2467,9 +2478,9 @@ sub _set_product {
                 milestone => $milestone_ok ? $self->target_milestone
                                            : $product->default_milestone
             };
-            $vars{components} = [map { $_->name } @{$product->components}];
-            $vars{milestones} = [map { $_->name } @{$product->milestones}];
-            $vars{versions}   = [map { $_->name } @{$product->versions}];
+            $vars{components} = [map { $_->name } grep($_->is_active, @{$product->components})];
+            $vars{milestones} = [map { $_->name } grep($_->is_active, @{$product->milestones})];
+            $vars{versions}   = [map { $_->name } grep($_->is_active, @{$product->versions})];
         }
 
         if (!$verified) {
@@ -3639,9 +3650,13 @@ sub bug_alias_to_id {
 # Subroutines
 #####################################################################
 
-# Represents which fields from the bugs table are handled by process_bug.cgi.
+# Returns a list of currently active and editable bug fields,
+# including multi-select fields.
 sub editable_bug_fields {
     my @fields = Bugzilla->dbh->bz_table_columns('bugs');
+    # Add multi-select fields
+    push(@fields, map { $_->name } @{Bugzilla->fields({obsolete => 0,
+                                                       type => FIELD_TYPE_MULTI_SELECT})});
     # Obsolete custom fields are not editable.
     my @obsolete_fields = @{ Bugzilla->fields({obsolete => 1, custom => 1}) };
     @obsolete_fields = map { $_->name } @obsolete_fields;
@@ -3649,7 +3664,7 @@ sub editable_bug_fields {
                         "lastdiffed", @obsolete_fields) 
     {
         my $location = firstidx { $_ eq $remove } @fields;
-        # Custom multi-select fields are not stored in the bugs table.
+        # Ensure field exists before attempting to remove it.
         splice(@fields, $location, 1) if ($location > -1);
     }
     # Sorted because the old @::log_columns variable, which this replaces,
