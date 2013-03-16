@@ -18,6 +18,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <table border="1" cellpadding="4" cellspacing="0">
@@ -51,7 +52,7 @@
 <h2>確認</h2>
 
 [% IF version.bug_count %]
-  <p>
+  <p class="confirmation">
   このバージョンを利用している
     [% version.bug_count FILTER none %] [%+ terms.bug %] 
   が残っています。これらの

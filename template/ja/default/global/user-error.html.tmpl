@@ -407,6 +407,10 @@
     [% title = BLOCK %] 添付は削除されました [% END %]
     削除しようとした添付は既に削除されています。
 
+  [% ELSIF error == "bad_page_cgi_id" %]
+    [% title = "無効なページ ID" %]
+    ID <code>[% page_id FILTER html %]</code> は有効なページ識別子でありません。
+
   [% ELSIF error == "bug_access_denied" %]
     [% title = BLOCK %] アクセスは拒否されました [% END %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
@@ -641,9 +645,22 @@
   [% ELSIF error == "extension_create_no_name" %]
     このスクリプトの引数として、拡張の名前を指定する必要があります。
 
+  [% ELSIF error == "extension_disabled" %]
+    [% title = "拡張は無効化されました" %]
+    拡張機能 '[% name FILTER html %]' が無効なため、
+    このページにはアクセスできません。
+
   [% ELSIF error == "extension_first_letter_caps" %]
     拡張の名前の最初の文字は大文字である必要があります。
     (指定されたものは '[% name FILTER html %]' でした。)
+
+  [% ELSIF error == "feature_disabled" %]
+    [% install_string("feature_$feature") FILTER html %] 機能はこの
+    [% terms.Bugzilla %] では有効ではありません。
+    [% IF user.in_group('admin') %]
+      この機能を有効にするには、 <kbd>checksetup.pl</kbd> を実行し
+      必要要件を満たすように設定してください。
+    [% END %]
 
   [% ELSIF error == "field_already_exists" %]
     [% title = BLOCK %] 指定されたフィールド名は既に存在しています [% END %]
@@ -761,8 +778,9 @@
 
   [% ELSIF error == "fieldvalue_sortkey_invalid" %]
     [% title = BLOCK %] フィールド値の [% jawords.sortkey FILTER html %] が無効です [% END %]
-    フィールド '[% field.description FILTER html %]' に指定された [% jawords.sortkey FILTER html %]
-    '[% sortkey FILTER html %]' は妥当な正の整数ではありません。
+    [%+ field.description FILTER html %] フィールドのソート順
+    '[% sortkey FILTER html %]' は 0 から [% constants.MAX_SMALLINT FILTER none %]
+    までの整数である必要があります。
 
   [% ELSIF error == "fieldvalue_still_has_bugs" %]
     [% title = BLOCK %] 指定されたフィールド値は削除できません [% END %]
@@ -796,6 +814,10 @@
     ファイルの URL を添付作成ページのテキストフィールドに入力してください。
     <br>もしくは、ファイルが画像ファイルなら、圧縮形式、
     たとえば JPG や PNG などの形式に変換してもう一度試してください。
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "特定のユーザに対してフラグを要請できません" %]
+    あなたは特定のユーザに対して、<em>[% type.name FILTER html %]</em> を要請できません。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] のアカウントに権限が必要です [% END %]
@@ -918,6 +940,9 @@
     [% title = BLOCK %] [% jawords.output_format FILTER html %] が存在していません [% END %]
     指定された [% jawords.output_format FILTER html %] <em>[% format FILTER html %]</em> は
     <em>[% ctype FILTER html %]</em> の [% jawords.output_content_type FILTER html %] で出力できません。
+    [% IF invalid %]
+      両方のパラメータは文字もしくはハイフンだけでなければなりません。
+    [% END %]
 
   [% ELSIF error == "flag_type_sortkey_invalid" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.sortkey FILTER html %] が無効です [% END %]
@@ -1124,6 +1149,10 @@
     [% jawords.report_dataset FILTER html %] <em>[% datasets.join(":") FILTER html %]</em> は無効です。
     数値、文字、コロンのみが利用できます。
 
+  [% ELSIF error == "invalid_dimensions" %]
+    [% title = "無効な寸法です" %]
+    指定された幅もしくは高さが正の整数ではありません。
+
   [% ELSIF error == "invalid_format" %]
     [% title = BLOCK %] [% jawords.output_format FILTER html %] が無効です [% END %]
     [% jawords.output_format FILTER html %] "[% format FILTER html %]" は無効です (
@@ -1139,6 +1168,9 @@
   [% ELSIF error == "invalid_group_name" %]
     [% title = BLOCK %] 指定された [% jawords.group_name FILTER html %] が無効です [% END %]
     指定された [% jawords.group FILTER html %] [% name FILTER html %] はここでは有効ではありません。
+
+  [% ELSIF error == "invalid_keyword_id" %]
+    キーワード ID <em>[% id FILTER html %]</em> が見つかりません。
 
   [% ELSIF error == "invalid_maxrows" %]
     [% title = BLOCK %] 最大行数が無効です [% END %]
@@ -1156,6 +1188,17 @@
   [% ELSIF error == "invalid_regexp" %]
     [% title = BLOCK %] 無効な正規表現です [% END %]
     指定された正規表現は無効です。
+
+  [% ELSIF error == "invalid_user" %]
+    [% title = "無効なユーザ" %]
+    [% IF user_id %]
+      ID <em>[% user_id FILTER html %]</em>の
+    [% ELSIF user_login %]
+      ログイン名 <em>[% user_login FILTER html %]</em>の
+    [% ELSE %]
+      与えられた
+    [% END %]
+    ユーザは存在しません。
 
   [% ELSIF error == "invalid_user_group" %]
     [% title = BLOCK %] [% jawords.group FILTER html %] は無効です [% END %]
@@ -1189,6 +1232,8 @@
       [%+ remaining FILTER html %] 回以上パスワードを間違えた場合、
       このアカウントへのログインは
       [%+ constants.LOGIN_LOCKOUT_INTERVAL FILTER html %] 分間ロックされます。
+      ロックアウトから回復するのは、"パスワードを忘れた" リンクから
+      パスワードをリセットすることによっても可能です。
     [% END %]
 
   [% ELSIF error == "json_rpc_get_method_required" %]
@@ -1293,11 +1338,20 @@
     [% title = BLOCK %] 指定された [% jawords.search_date FILTER html %] の範囲が間違っています [% END %]
     [% jawords.search_date_first FILTER html %] ([% datefrom FILTER html %]) が
     [% jawords.search_date_last FILTER html %] ([% dateto FILTER html %]) よりも後です。
-    
+
+  [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
+    添付 [% attach_id FILTER html %] は他の [% terms.bug %] に添付されていますが、
+    新しい添付ファイルを [%+ terms.bug %] [%+ my_bug_id FILTER html %]
+    に添付する際に用済みにしようとしました。
+
   [% ELSIF error == "missing_attachment_description" %]
     [% title = BLOCK %] 説明が入力されていません [% END %]
     添付の説明は必須項目です。
-    
+
+  [% ELSIF error == "missing_bug_id" %]
+    [% title = "$terms.Bug ID なし" %]
+    [% terms.bug %] ID が与えられませんでした。
+
   [% ELSIF error == "missing_category" %]
     [% title = BLOCK %] [% jawords.report_category FILTER html %] が指定されていません [% END %]
     この [% jawords.report_series FILTER html %] の [% jawords.report_category FILTER html %] が指定されていません。
@@ -1313,12 +1367,6 @@
     [% ELSE %]
       [% Param("maintainer") %] に連絡をとり、この [% jawords.product FILTER html %] に [% jawords.component FILTER html %] を追加してもらってください。
     [% END %]
-
-  [% ELSIF error == "missing_content_type" %]
-    [% title = BLOCK %] Content-Type の自動判別に失敗しました [% END %]
-     [% terms.Bugzilla %] に添付ファイルの Content-Type を自動で判定するように要請されましたが、
-     ブラウザからファイルをアップロードする際に情報がありませんでした。
-     手動で入力してください。
 
   [% ELSIF error == "missing_content_type_method" %]
     [% title = BLOCK %] Content-Type の決定方法が指定されていません [% END %]
@@ -1356,6 +1404,10 @@
     [% ELSE %]
       存在しません。
     [% END %]
+
+  [% ELSIF error == "need_quipid" %]
+    [% title = "Quip ID なし" %]
+    有効な quipid が必要です。
 
   [% ELSIF error == "missing_resolution" %]
     [% title = BLOCK %] [% jawords.bug_resolution FILTER html %] が指定されていません [% END %]
@@ -1661,6 +1713,14 @@
     [% terms.abug %] を他のアカウントに担当を設定する場合、
     新しい担当者の [% jawords.mail_address FILTER html %] を入力する必要があります。
 
+  [% ELSIF error == "report_axis_invalid" %]
+    [% title = "軸指定無効" %]
+    <em>[% val FILTER html %]</em> は
+    [%+ IF    fld == "x" %]横軸
+    [%+ ELSIF fld == "y" %]縦軸
+    [%+ ELSIF fld == "z" %]複数テーブル・イメージ
+    [%+ ELSE %]レポート軸[% END %] フィールドとして無効値です。
+
   [% ELSIF error == "report_name_missing" %]
     [% title = "レポート名が指定されていません" %]
     レポート名を入力する必要があります。
@@ -1716,6 +1776,17 @@
     [% jawords.search_match_search FILTER html %] でのみ利用可能です。
     また、[% jawords.search_match_search FILTER html %] は
     [% jawords.search_content_field FILTER html %] を利用したときのみ利用可能です。
+
+  [% ELSIF error == "search_grouped_field_invalid" %]
+    [% terms.Bugzilla %] では
+    "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
+    フィールドをグループ化した検索条件に利用できません。
+
+  [% ELSIF error == "search_grouped_invalid_nesting" %]
+    グループ化された検索条件では条件のネストはできません。
+
+  [% ELSIF error == "search_grouped_field_mismatch" %]
+    グループ化された検索条件内では同じフィールドしか利用できません。
 
   [% ELSIF error == "search_field_operator_invalid" %]
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
@@ -1825,6 +1896,11 @@
   [% ELSIF error == "unknown_tab" %]
     [% title = BLOCK %] 指定された [% jawords.tab FILTER html %] は存在していません [% END %]
     <code>[% current_tab_name FILTER html %]</code> は有効な [% jawords.tab_name FILTER html %] ではありません。
+
+  [% ELSIF error == "value_inactive" %]
+    [% title = "値は無効です" %]
+    [% type = BLOCK %][% INCLUDE object_name class = class %][% END %]
+    [% type FILTER html %] の値 '[% value FILTER html %]' は無効です。
 
   [% ELSIF error == "version_already_exists" %]
     [% title = BLOCK %] 入力されたバージョンは既に存在しています [% END %]
@@ -2005,7 +2081,7 @@
                   
     [% FOREACH q = Bugzilla.user.queries %]
       [% IF q.name == namedcmd %]
-        、もしくは <a href="query.cgi?[% q.url FILTER uri %]">編集</a>
+        、もしくは <a href="query.cgi?[% q.url FILTER html %]">編集</a>
       [% END %]
     [% END %]
     することも可能です。

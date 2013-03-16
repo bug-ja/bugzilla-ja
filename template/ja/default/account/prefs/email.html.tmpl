@@ -19,6 +19,15 @@
   #               receiving mail for that reason when in that role.
   #%]
 
+[%# If the user's bugmail has been disabled by admins, show a warning. %]
+[% IF user.email_disabled %]
+  <div class="warningmessages">
+    あなた宛の [% terms.bug %] メールは、[% terms.Bugzilla %] 管理者により
+    無効化されています。[% terms.bug %] メールを有効化するには、
+    [% Param('maintainer') %] に連絡してください。
+  </div>
+[% END %]
+
 <p>
   "重要でない" [% terms.bugs %] への変更についての通知メールを受け取りたくない場合、
   下の設定からいくつかもしくは全ての通知メールの設定を変更することができます。

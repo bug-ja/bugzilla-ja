@@ -82,7 +82,7 @@ use constant VALIDATORS => {
     description      => \&_check_description,
     cc_list          => \&_check_cc_list,
     target_type      => \&_check_target_type,
-    sortkey          => \&_check_sortey,
+    sortkey          => \&_check_sortkey,
     is_active        => \&Bugzilla::Object::check_boolean,
     is_requestable   => \&Bugzilla::Object::check_boolean,
     is_requesteeble  => \&Bugzilla::Object::check_boolean,
@@ -308,7 +308,7 @@ sub _check_target_type {
     return $target_type;
 }
 
-sub _check_sortey {
+sub _check_sortkey {
     my ($invocant, $sortkey) = @_;
 
     (detaint_natural($sortkey) && $sortkey <= MAX_SMALLINT)
@@ -620,22 +620,10 @@ sub count {
 # Private Functions
 ######################################################################
 
-=begin private
-
-=head1 PRIVATE FUNCTIONS
-
-=over
-
-=item C<sqlify_criteria($criteria, $tables)>
-
-Converts a hash of criteria into a list of SQL criteria.
-$criteria is a reference to the criteria (field => value), 
-$tables is a reference to an array of tables being accessed 
-by the query.
-
-=back
-
-=cut
+# Converts a hash of criteria into a list of SQL criteria.
+# $criteria is a reference to the criteria (field => value), 
+# $tables is a reference to an array of tables being accessed 
+# by the query.
 
 sub sqlify_criteria {
     my ($criteria, $tables) = @_;
@@ -713,27 +701,3 @@ sub sqlify_criteria {
 }
 
 1;
-
-=end private
-
-=head1 SEE ALSO
-
-=over
-
-=item B<Bugzilla::Flags>
-
-=back
-
-=head1 CONTRIBUTORS
-
-=over
-
-=item Myk Melez <myk@mozilla.org>
-
-=item Kevin Benton <kevin.benton@amd.com>
-
-=item Frédéric Buclin <LpSolit@gmail.com>
-
-=back
-
-=cut

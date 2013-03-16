@@ -133,7 +133,7 @@
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
-                [% IF (query.key.length < 3) && !Param('emailsuffix') %]
+                [% IF query.key.length < 3 %]
                   <font color="#FF0000">は部分一致には短すぎます
                   (最低 3 文字必要)</font>
                 [% ELSE %]
@@ -180,7 +180,7 @@
   [% ELSIF field_labels.$field_name %]
     [% field_labels.$field_name FILTER html %]
   [% ELSIF field_name.match("^requestee") %]
-    [% fields.${field_name}.flag_type.name %] 要請者
+    [% fields.${field_name}.flag_type.name FILTER html %] 要請者
   [% ELSE %]
     [% field_name FILTER html %]
   [% END %]

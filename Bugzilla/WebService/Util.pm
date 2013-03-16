@@ -40,11 +40,20 @@ sub filter_wants ($$;$) {
 
     $field = "${prefix}.${field}" if $prefix;
 
-    if (defined $params->{include_fields}) {
-        return 0 if !$include{$field};
+    if (defined $params->{exclude_fields} && $exclude{$field}) {
+        return 0;
     }
-    if (defined $params->{exclude_fields}) {
-        return 0 if $exclude{$field};
+    if (defined $params->{include_fields} && !$include{$field}) {
+        if ($prefix) {
+            # Include the field if the parent is include (and this one is not excluded)
+            return 0 if !$include{$prefix};
+        }
+        else {
+            # We want to include this if one of the sub keys is included
+            my $key = $field . '.';
+            my $len = length($key);
+            return 0 if ! grep { substr($_, 0, $len) eq $key  } keys %include;
+        }
     }
 
     return 1;
@@ -166,7 +175,7 @@ a hash to L</filter>, C<0> otherwise.
 
 =head2 validate
 
-This helps in the validation of parameters passed into the WebSerice
+This helps in the validation of parameters passed into the WebService
 methods. Currently it converts listed parameters into an array reference
 if the client only passed a single scalar value. It modifies the parameters
 hash in place so other parameters should be unaltered.

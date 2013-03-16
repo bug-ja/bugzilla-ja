@@ -40,10 +40,6 @@ use constant FORMAT_3_SIZE => [19,28,28];
 use constant FORMAT_DOUBLE => '%19s %-55s';
 use constant FORMAT_2_SIZE => [19,55];
 
-# Use a per-process provider to cache compiled templates in memory across
-# requests.
-our %shared_providers;
-
 # Pseudo-constant.
 sub SAFE_URL_REGEXP {
     my $safe_protocols = join('|', SAFE_PROTOCOLS);
@@ -102,9 +98,12 @@ sub get_format {
     $ctype ||= 'html';
     $format ||= '';
 
-    # Security - allow letters and a hyphen only
-    $ctype =~ s/[^a-zA-Z\-]//g;
-    $format =~ s/[^a-zA-Z\-]//g;
+    # ctype and format can have letters and a hyphen only.
+    if ($ctype =~ /[^a-zA-Z\-]/ || $format =~ /[^a-zA-Z\-]/) {
+        ThrowUserError('format_not_found', {'format' => $format,
+                                            'ctype'  => $ctype,
+                                            'invalid' => 1});
+    }
     trick_taint($ctype);
     trick_taint($format);
 
@@ -130,6 +129,7 @@ sub get_format {
     return
     {
         'template'    => $template,
+        'format'      => $format,
         'extension'   => $ctype,
         'ctype'       => Bugzilla::Constants::contenttypes->{$ctype}
     };
@@ -391,13 +391,10 @@ sub mtime_filter {
 #
 #  1. YUI CSS
 #  2. Standard Bugzilla stylesheet set (persistent)
-#  3. Standard Bugzilla stylesheet set (selectable)
-#  4. All third-party "skin" stylesheet sets (selectable)
-#  5. Page-specific styles
-#  6. Custom Bugzilla stylesheet set (persistent)
-#
-# "Selectable" skin file sets may be either preferred or alternate.
-# Exactly one is preferred, determined by the "skin" user preference.
+#  3. Third-party "skin" stylesheet set, per user prefs (persistent)
+#  4. Page-specific styles
+#  5. Custom Bugzilla stylesheet set (persistent)
+
 sub css_files {
     my ($style_urls, $yui, $yui_css) = @_;
     
@@ -414,18 +411,10 @@ sub css_files {
     
     my @css_sets = map { _css_link_set($_) } @requested_css;
     
-    my %by_type = (standard => [], alternate => {}, skin => [], custom => []);
+    my %by_type = (standard => [], skin => [], custom => []);
     foreach my $set (@css_sets) {
         foreach my $key (keys %$set) {
-            if ($key eq 'alternate') {
-                foreach my $alternate_skin (keys %{ $set->{alternate} }) {
-                    my $files = $by_type{alternate}->{$alternate_skin} ||= [];
-                    push(@$files, $set->{alternate}->{$alternate_skin});
-                }
-            }
-            else {
-                push(@{ $by_type{$key} }, $set->{$key});
-            }
+            push(@{ $by_type{$key} }, $set->{$key});
         }
     }
     
@@ -442,27 +431,15 @@ sub _css_link_set {
     if ($file_name !~ m{(^|/)skins/standard/}) {
         return \%set;
     }
-    
-    my $skin_user_prefs = Bugzilla->user->settings->{skin};
+
+    my $skin = Bugzilla->user->settings->{skin}->{value};
     my $cgi_path = bz_locations()->{'cgi_path'};
-    # If the DB is not accessible, user settings are not available.
-    my $all_skins = $skin_user_prefs ? $skin_user_prefs->legal_values : [];
-    my %skin_urls;
-    foreach my $option (@$all_skins) {
-        next if $option eq 'standard';
-        my $skin_file_name = $file_name;
-        $skin_file_name =~ s{(^|/)skins/standard/}{skins/contrib/$option/};
-        if (my $mtime = _mtime("$cgi_path/$skin_file_name")) {
-            $skin_urls{$option} = mtime_filter($skin_file_name, $mtime);
-        }
+    my $skin_file_name = $file_name;
+    $skin_file_name =~ s{(^|/)skins/standard/}{skins/contrib/$skin/};
+    if (my $mtime = _mtime("$cgi_path/$skin_file_name")) {
+        $set{skin} = mtime_filter($skin_file_name, $mtime);
     }
-    $set{alternate} = \%skin_urls;
-    
-    my $skin = $skin_user_prefs->{'value'};
-    if ($skin ne 'standard' and defined $set{alternate}->{$skin}) {
-        $set{skin} = delete $set{alternate}->{$skin};
-    }
-    
+
     my $custom_file_name = $file_name;
     $custom_file_name =~ s{(^|/)skins/standard/}{skins/custom/};
     if (my $custom_mtime = _mtime("$cgi_path/$custom_file_name")) {
@@ -877,14 +854,9 @@ sub create {
             # Currently logged in user, if any
             # If an sudo session is in progress, this is the user we're faking
             'user' => sub { return Bugzilla->user; },
-           
+
             # Currenly active language
-            # XXX Eventually this should probably be replaced with something
-            # like Bugzilla->language.
-            'current_language' => sub {
-                my ($language) = include_languages();
-                return $language;
-            },
+            'current_language' => sub { return Bugzilla->current_language; },
 
             # If an sudo session is in progress, this is the user who
             # started the session.
@@ -895,7 +867,7 @@ sub create {
 
             # Allow templates to access docs url with users' preferred language
             'docs_urlbase' => sub { 
-                my ($language) = include_languages();
+                my $language = Bugzilla->current_language;
                 my $docs_urlbase = Bugzilla->params->{'docs_urlbase'};
                 $docs_urlbase =~ s/\%lang\%/$language/;
                 return $docs_urlbase;
@@ -978,12 +950,15 @@ sub create {
                 }
                 return \@optional;
             },
-            'default_authorizer' => new Bugzilla::Auth(),
+            'default_authorizer' => sub { return Bugzilla::Auth->new() },
         },
     };
+    # Use a per-process provider to cache compiled templates in memory across
+    # requests.
     my $provider_key = join(':', @{ $config->{INCLUDE_PATH} });
-    $shared_providers{$provider_key} ||= Template::Provider->new($config);
-    $config->{LOAD_TEMPLATES} = [ $shared_providers{$provider_key} ];
+    my $shared_providers = Bugzilla->process_cache->{shared_providers} ||= {};
+    $shared_providers->{$provider_key} ||= Template::Provider->new($config);
+    $config->{LOAD_TEMPLATES} = [ $shared_providers->{$provider_key} ];
 
     local $Template::Config::CONTEXT = 'Bugzilla::Template::Context';
 
@@ -1050,7 +1025,7 @@ sub precompile_templates {
         }
 
         # Clear out the cached Provider object
-        undef %shared_providers;
+        Bugzilla->process_cache->{shared_providers} = undef;
     }
 
     # Under mod_perl, we look for templates using the absolute path of the

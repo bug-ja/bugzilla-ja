@@ -72,10 +72,13 @@
 
   [% IF debug %]
     <div class="bz_query_debug">
-      <p>[% query FILTER html %]</p>
-      <p>実行時間: [% query_time FILTER html %] 秒</p>
-      [% IF query_explain.defined %]
-        <pre>[% query_explain FILTER html %]</pre>
+      <p>全実行時間: [% query_time FILTER html %] 秒</p>
+      [% FOREACH query = queries %]
+        <p>[% query.sql FILTER html %]</p>
+        <p>実行時間: [% query.time FILTER html %] 秒</p>
+        [% IF query.explain %]
+          <pre>[% query.explain FILTER html %]</pre>
+        [% END %]
       [% END %]
     </div>
   [% END %]
@@ -191,9 +194,8 @@
     [% IF bugs.size > 0 %]
       <td valign="middle" class="bz_query_buttons">
         <form method="post" action="show_bug.cgi">
-          [% FOREACH id = buglist %]
-            <input type="hidden" name="id" value="[% id FILTER html %]">
-          [% END %]
+          [% id = buglist.join(",") %]
+          <input type="hidden" name="id" value="[% id FILTER html %]">
           <input type="hidden" name="format" value="multiple">
           <input type="submit" id="long_format" value="長いフォーマット">
         </form>

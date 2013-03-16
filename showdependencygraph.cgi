@@ -81,7 +81,7 @@ sub AddLink {
     }
 }
 
-ThrowCodeError("missing_bug_id") if !defined $cgi->param('id');
+ThrowUserError("missing_bug_id") unless $cgi->param('id');
 
 # The list of valid directions. Some are not proposed in the dropdrown
 # menu despite the fact that they are valid.
@@ -169,7 +169,10 @@ my $sth = $dbh->prepare(
               q{SELECT bug_status, resolution, short_desc
                   FROM bugs
                  WHERE bugs.bug_id = ?});
-foreach my $k (keys(%seen)) {
+
+my @bug_ids = keys %seen;
+$user->visible_bugs(\@bug_ids);
+foreach my $k (@bug_ids) {
     # Retrieve bug information from the database
     my ($stat, $resolution, $summary) = $dbh->selectrow_array($sth, undef, $k);
 

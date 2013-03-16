@@ -204,7 +204,7 @@
 
       <para>
         <ulink url="http://www.bugzilla.org/download/">Bugzilla の tar アーカイブ</ulink>
-        をダウンロード (もしくは CVS からチェックアウト) して、
+        をダウンロード (もしくは <ulink url="https://wiki.mozilla.org/Bugzilla:Bzr">Bzr</ulink>からチェックアウト) して、
         ウェブブラウザが動作するユーザ (通常 <quote>apache</quote> や <quote>www</quote>
         でしょう) からアクセス可能な適切なディレクトリにおいてください。
         通常は、ウェブサーバのドキュメント用ディレクトリに直接置くか、

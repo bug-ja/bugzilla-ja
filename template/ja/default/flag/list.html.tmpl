@@ -6,7 +6,7 @@
   # defined by the Mozilla Public License, v. 2.0.
   #%]
 
-[% IF user.id AND !read_only_flags %]
+[% IF user.id && !read_only_flags && (!bug || bug.check_can_change_field('flagtypes.name', 0, 1)) %]
 
 [%# We list flags by looping twice over the flag types relevant for the bug.
   # In the first loop, we display existing flags and then, for active types,
@@ -107,6 +107,7 @@
           [%- type.name FILTER html FILTER no_break -%]</label>
       </td>
       <td>
+        <input type="hidden" id="[% fid FILTER html %]_dirty">
         <select id="[% fid FILTER html %]" name="[% fid FILTER html %]"
                 title="[% type.description FILTER html %]"
                 onchange="toggleRequesteeField(this);"

@@ -99,24 +99,6 @@
 </table>
 
 [% IF verify_bug_groups %]
-  <h3>[% terms.Bug %] グループの確認</h3>
-  
-  [% IF old_groups.size %]
-    <p>これらのグループは '[% product.name FILTER html %]' プロダクトでは有効でないか、
-    [% terms.bugs %] をこれらのグループに制限することが許可されてません。
-    [% terms.Bugs %] はこれらのグループに制限されることがなくなり、
-    ほかのグループを設定しない限り一般公開されることになります:<br>
-    [% FOREACH group = old_groups %]
-      <input type="checkbox" id="group_[% group.id FILTER html %]"
-             name="groups" disabled="disabled" value="[% group.name FILTER html %]">
-      <label for="group_[% group.id FILTER html %]">
-        [% group.name FILTER html %]: [% group.description FILTER html %]
-      </label>
-      <br>
-    [% END %]
-    </p>
-  [% END %]
-
   [% mandatory_groups = [] %]
   [% optional_groups = [] %]
 
@@ -131,6 +113,26 @@
               || group.othercontrol != constants.CONTROLMAPNA %]
       [% optional_groups.push(group) %]
     [% END %]
+  [% END %]
+  
+  [% IF old_groups.size || optional_groups.size || mandatory_groups.size %]
+    <h3>[% terms.Bug %] グループの確認</h3>
+  [% END %]
+
+  [% IF old_groups.size %]
+    <p>これらのグループは '[% product.name FILTER html %]' プロダクトでは有効でないか、
+    [% terms.bugs %] をこれらのグループに制限することが許可されてません。
+    [% terms.Bugs %] はこれらのグループに制限されることがなくなり、
+    ほかのグループを設定しない限り一般公開されることになります:<br>
+    [% FOREACH group = old_groups %]
+      <input type="checkbox" id="group_[% group.id FILTER html %]"
+             name="groups" disabled="disabled" value="[% group.name FILTER html %]">
+      <label for="group_[% group.id FILTER html %]">
+        [% group.name FILTER html %]: [% group.description FILTER html %]
+      </label>
+      <br>
+    [% END %]
+    </p>
   [% END %]
 
   [% IF optional_groups.size %]

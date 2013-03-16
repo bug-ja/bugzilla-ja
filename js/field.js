@@ -336,13 +336,19 @@ function showPeopleOnChange( field_id_list ) {
     }
 }
 
-function assignToDefaultOnChange(field_id_list) {
-    showPeopleOnChange( field_id_list );
-    for(var i = 0; i < field_id_list.length; i++) {
-        YAHOO.util.Event.addListener( field_id_list[i],'change', setDefaultCheckbox,
-                                      'set_default_assignee');
-        YAHOO.util.Event.addListener( field_id_list[i],'change',setDefaultCheckbox,
-                                      'set_default_qa_contact');    
+function assignToDefaultOnChange(field_id_list, default_assignee, default_qa_contact) {
+    showPeopleOnChange(field_id_list);
+    for(var i = 0, l = field_id_list.length; i < l; i++) {
+        YAHOO.util.Event.addListener(field_id_list[i], 'change', function(evt, defaults) {
+            if (document.getElementById('assigned_to').value == defaults[0]) {
+                setDefaultCheckbox(evt, 'set_default_assignee');
+            }
+            if (document.getElementById('qa_contact')
+                && document.getElementById('qa_contact').value == defaults[1])
+            {
+                setDefaultCheckbox(evt, 'set_default_qa_contact');
+            }
+        }, [default_assignee, default_qa_contact]);
     }
 }
 
@@ -439,7 +445,7 @@ function setResolutionToDuplicate(e, duplicate_or_move_bug_status) {
     YAHOO.util.Event.preventDefault(e);
 }
 
-function setDefaultCheckbox(e, field_id ) { 
+function setDefaultCheckbox(e, field_id) {
     var el = document.getElementById(field_id);
     var elLabel = document.getElementById(field_id + "_label");
     if( el && elLabel ) {
@@ -925,5 +931,53 @@ function userDisabledTextOnChange(disabledtext) {
     }
     if (disabledtext.value !== "" && !disable_mail_manually_set) {
         disable_mail.checked = true;
+    }
+}
+
+/**
+ * Force the browser to honour the selected option when a page is refreshed,
+ * but only if the user hasn't explicitly selected a different option.
+ */
+function initDirtyFieldTracking() {
+    // old IE versions don't provide the information we need to make this fix work
+    // however they aren't affected by this issue, so it's ok to ignore them
+    if (YAHOO.env.ua.ie > 0 && YAHOO.env.ua.ie <= 8) return;
+    var selects = document.getElementById('changeform').getElementsByTagName('select');
+    for (var i = 0, l = selects.length; i < l; i++) {
+        var el = selects[i];
+        var el_dirty = document.getElementById(el.name + '_dirty');
+        if (!el_dirty) continue;
+        if (!el_dirty.value) {
+            var preSelected = bz_preselectedOptions(el);
+            if (!el.multiple) {
+                preSelected.selected = true;
+            } else {
+                el.selectedIndex = -1;
+                for (var j = 0, m = preSelected.length; j < m; j++) {
+                    preSelected[j].selected = true;
+                }
+            }
+        }
+        YAHOO.util.Event.on(el, "change", function(e) {
+            var el = e.target || e.srcElement;
+            var preSelected = bz_preselectedOptions(el);
+            var currentSelected = bz_selectedOptions(el);
+            var isDirty = false;
+            if (!el.multiple) {
+                isDirty = preSelected.index != currentSelected.index;
+            } else {
+                if (preSelected.length != currentSelected.length) {
+                    isDirty = true;
+                } else {
+                    for (var i = 0, l = preSelected.length; i < l; i++) {
+                        if (currentSelected[i].index != preSelected[i].index) {
+                            isDirty = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            document.getElementById(el.name + '_dirty').value = isDirty ? '1' : '';
+        });
     }
 }

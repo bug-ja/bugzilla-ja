@@ -321,12 +321,17 @@ sub set_all {
     my %field_values = %$params;
 
     my @sorted_names = $self->_sort_by_dep(keys %field_values);
+
     foreach my $key (@sorted_names) {
         # It's possible for one set_ method to delete a key from $params
         # for another set method, so if that's happened, we don't call the
         # other set method.
         next if !exists $field_values{$key};
         my $method = "set_$key";
+        if (!$self->can($method)) {
+            my $class = ref($self) || $self;
+            ThrowCodeError("unknown_method", { method => "${class}::${method}" });
+        }
         $self->$method($field_values{$key}, \%field_values);
     }
     Bugzilla::Hook::process('object_end_of_set_all', 
@@ -790,7 +795,7 @@ your own C<DB_COLUMNS> subroutine in a subclass.)
 The name of the column that should be considered to be the unique
 "name" of this object. The 'name' is a B<string> that uniquely identifies
 this Object in the database. Defaults to 'name'. When you specify 
-C<{name => $name}> to C<new()>, this is the column that will be 
+C<< {name => $name} >> to C<new()>, this is the column that will be 
 matched against in the DB.
 
 =item C<ID_FIELD>
@@ -953,7 +958,7 @@ for each placeholder in C<condition>, in order.
 
 This is to allow subclasses to have complex parameters, and then to
 translate those parameters into C<condition> and C<values> when they
-call C<$self->SUPER::new> (which is this function, usually).
+call C<< $self->SUPER::new >> (which is this function, usually).
 
 If you try to call C<new> outside of a subclass with the C<condition>
 and C<values> parameters, Bugzilla will throw an error. These parameters
@@ -1078,8 +1083,9 @@ Notes:       In order for this function to work in your subclass,
              your subclass's L</ID_FIELD> must be of C<SERIAL>
              type in the database.
 
-             Subclass Implementors: This function basically just
-             calls L</check_required_create_fields>, then
+Subclass Implementors:
+             This function basically just calls 
+             L</check_required_create_fields>, then
              L</run_create_validators>, and then finally
              L</insert_create_data>. So if you have a complex system that
              you need to implement, you can do it by calling these
@@ -1272,9 +1278,9 @@ C<0> otherwise.
 
  Returns:     A list of objects, or an empty list if there are none.
 
- Notes:       Note that you must call this as C<$class->get_all>. For 
-              example, C<Bugzilla::Keyword->get_all>. 
-              C<Bugzilla::Keyword::get_all> will not work.
+ Notes:       Note that you must call this as $class->get_all. For 
+              example, Bugzilla::Keyword->get_all. 
+              Bugzilla::Keyword::get_all will not work.
 
 =back
 

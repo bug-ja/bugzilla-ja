@@ -296,6 +296,12 @@ sub set_flag {
         ThrowCodeError('flag_unexpected_object', { 'caller' => ref $obj });
     }
 
+    # Make sure the user can change flags
+    my $privs;
+    $bug->check_can_change_field('flagtypes.name', 0, 1, \$privs)
+        || ThrowUserError('illegal_change',
+                          { field => 'flagtypes.name', privs => $privs });
+
     # Update (or delete) an existing flag.
     if ($params->{id}) {
         my $flag = $class->check({ id => $params->{id} });
@@ -664,7 +670,7 @@ sub _check_requestee {
         # is specifically requestable. For existing flags, if the requestee
         # was set before the flag became specifically unrequestable, the
         # user can either remove him or leave him alone.
-        ThrowCodeError('flag_requestee_disabled', { type => $self->type })
+        ThrowUserError('flag_requestee_disabled', { type => $self->type })
           if !$self->type->is_requesteeble;
 
         # Make sure the requestee can see the bug.
@@ -718,7 +724,7 @@ sub _check_setter {
     # By default, the currently logged in user is the setter.
     $setter ||= Bugzilla->user;
     (blessed($setter) && $setter->isa('Bugzilla::User') && $setter->id)
-      || ThrowCodeError('invalid_user');
+      || ThrowUserError('invalid_user');
 
     # set_status() has already been called. So this refers
     # to the new flag status.
@@ -1056,30 +1062,5 @@ sub _flag_types {
     push(@{$flagtypes{$_->type_id}->{flags}}, $_) foreach @$flags;
     return $flag_types;
 }
-
-=head1 SEE ALSO
-
-=over
-
-=item B<Bugzilla::FlagType>
-
-=back
-
-
-=head1 CONTRIBUTORS
-
-=over
-
-=item Myk Melez <myk@mozilla.org>
-
-=item Jouni Heikniemi <jouni@heikniemi.net>
-
-=item Kevin Benton <kevin.benton@amd.com>
-
-=item Frédéric Buclin <LpSolit@gmail.com>
-
-=back
-
-=cut
 
 1;
