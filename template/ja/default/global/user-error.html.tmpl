@@ -1368,7 +1368,7 @@
       [% Param("maintainer") %] に連絡をとり、この [% jawords.product FILTER html %] に [% jawords.component FILTER html %] を追加してもらってください。
     [% END %]
 
-  [% ELSIF error == "missing_content_type_method" %]
+  [% ELSIF error == "missing_content_type" %]
     [% title = BLOCK %] Content-Type の決定方法が指定されていません [% END %]
     <em>自動認識</em>、<em>リストから選択</em>、
     <em>[% jawords.input FILTER html %]</em>
