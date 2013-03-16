@@ -199,7 +199,7 @@
         <li>既定の担当者が '[% comp.default_assignee.login FILTER html %]' に更新されました</li>
       [% END %]
       [% IF changes.initialqacontact.defined %]
-        [% IF comp.default_qa_contact.id %]
+        [% IF comp.default_qa_contact %]
           <li>既定の QA コンタクトが '[% comp.default_qa_contact.login FILTER html %]' に更新されました</li>
         [% ELSE %]
           <li>既定の QA コンタクトが削除されました</li>
@@ -821,7 +821,7 @@
   [% ELSIF message_tag == "sudo_ended" %]
     [% title = "sudo セッション完了" %]
       sudo セッションが完了しました。
-      この時点移行、全ての操作はあなた自身のものとなります。
+      この時点以降、全ての操作はあなた自身のものとなります。
 
   [% ELSIF message_tag == "series_created" %]
     [% title = "シリーズ作成完了" %]

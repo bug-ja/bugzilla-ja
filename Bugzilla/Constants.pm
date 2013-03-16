@@ -182,7 +182,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.3.3+";
+use constant BUGZILLA_VERSION => "4.4rc2";
 
 # Location of the remote and local XML files to track new releases.
 use constant REMOTE_FILE => 'http://updates.bugzilla.org/bugzilla-update.xml';
@@ -487,7 +487,9 @@ use constant DB_MODULE => {
                 dbd => {
                     package => 'DBD-Pg',
                     module  => 'DBD::Pg',
-                    version => '1.45',
+                    # 2.7.0 fixes a problem with quoting strings
+                    # containing backslashes in them.
+                    version => '2.7.0',
                 },
                 name => 'PostgreSQL'},
      'oracle'=> {db => 'Bugzilla::DB::Oracle', db_version => '10.02.0',

@@ -41,6 +41,8 @@ use constant BLOB_TYPE => { ora_type => ORA_BLOB };
 use constant MIN_LONG_READ_LEN => 32 * 1024;
 use constant FULLTEXT_OR => ' OR ';
 
+our $fulltext_label = 0;
+
 sub new {
     my ($class, $params) = @_;
     my ($user, $pass, $host, $dbname, $port) = 
@@ -109,7 +111,8 @@ sub bz_explain {
 sub sql_group_concat {
     my ($self, $text, $separator) = @_;
     $separator = $self->quote(', ') if !defined $separator;
-    return "group_concat(T_CLOB_DELIM($text, $separator))";
+    my ($distinct, $rest) = $text =~/^(\s*DISTINCT\s|)(.+)$/i;
+    return "group_concat($distinct T_CLOB_DELIM(NVL($rest, ' '), $separator))";
 }
 
 sub sql_regexp {
@@ -155,11 +158,13 @@ sub sql_from_days{
 
     return " TO_DATE($date,'J') ";
 }
+
 sub sql_fulltext_search {
-    my ($self, $column, $text, $label) = @_;
+    my ($self, $column, $text) = @_;
     $text = $self->quote($text);
     trick_taint($text);
-    return "CONTAINS($column,$text,$label) > 0", "SCORE($label)";
+    $fulltext_label++;
+    return "CONTAINS($column,$text,$fulltext_label) > 0", "SCORE($fulltext_label)";
 }
 
 sub sql_date_format {
@@ -196,16 +201,16 @@ sub sql_position {
 }
 
 sub sql_in {
-    my ($self, $column_name, $in_list_ref) = @_;
+    my ($self, $column_name, $in_list_ref, $negate) = @_;
     my @in_list = @$in_list_ref;
-    return $self->SUPER::sql_in($column_name, $in_list_ref) if $#in_list < 1000;
+    return $self->SUPER::sql_in($column_name, $in_list_ref, $negate) if $#in_list < 1000;
     my @in_str;
     while (@in_list) {
         my $length = $#in_list + 1;
         my $splice = $length > 1000 ? 1000 : $length;
         my @sub_in_list = splice(@in_list, 0, $splice);
         push(@in_str, 
-             $self->SUPER::sql_in($column_name, \@sub_in_list)); 
+             $self->SUPER::sql_in($column_name, \@sub_in_list, $negate));
     }
     return "( " . join(" OR ", @in_str) . " )";
 }
@@ -524,14 +529,17 @@ sub bz_setup_database {
               . " RETURN NUMBER IS BEGIN RETURN LENGTH(COLUMN_NAME); END;");
     
     # Create types for group_concat
-    my $t_clob_delim = $self->selectcol_arrayref("
-        SELECT TYPE_NAME FROM USER_TYPES WHERE TYPE_NAME=?",
-        undef, 'T_CLOB_DELIM'); 
-
-    if ( !@$t_clob_delim ) {
-        $self->do("CREATE OR REPLACE TYPE T_CLOB_DELIM AS OBJECT "
-              . "( p_CONTENT CLOB, p_DELIMITER VARCHAR2(256));");
-    }
+    $self->do("DROP TYPE T_GROUP_CONCAT");
+    $self->do("CREATE OR REPLACE TYPE T_CLOB_DELIM AS OBJECT "
+          . "( p_CONTENT CLOB, p_DELIMITER VARCHAR2(256)"
+          . ", MAP MEMBER FUNCTION T_CLOB_DELIM_ToVarchar return VARCHAR2"
+          . ");");
+    $self->do("CREATE OR REPLACE TYPE BODY T_CLOB_DELIM IS
+                  MAP MEMBER FUNCTION T_CLOB_DELIM_ToVarchar return VARCHAR2 is
+                  BEGIN
+                      RETURN p_CONTENT;
+                  END;
+              END;");
 
     $self->do("CREATE OR REPLACE TYPE T_GROUP_CONCAT AS OBJECT 
                (  CLOB_CONTENT CLOB,

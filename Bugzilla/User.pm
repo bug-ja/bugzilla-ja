@@ -208,7 +208,7 @@ sub check_login_name {
     check_email_syntax($name);
 
     # Check the name if it's a new user, or if we're changing the name.
-    if (!ref($invocant) || $invocant->login ne $name) {
+    if (!ref($invocant) || lc($invocant->login) ne lc($name)) {
         my @params = ($name);
         push(@params, $invocant->login) if ref($invocant);
         is_available_username(@params)
@@ -888,6 +888,14 @@ sub visible_bugs {
     if (@check_ids) {
         my $dbh = Bugzilla->dbh;
         my $user_id = $self->id;
+
+        foreach my $id (@check_ids) {
+            my $orig_id = $id;
+            detaint_natural($id)
+              || ThrowCodeError('param_must_be_numeric', { param    => $orig_id,
+                                                           function => 'Bugzilla::User->visible_bugs'});
+        }
+
         my $sth;
         # Speed up the can_see_bug case.
         if (scalar(@check_ids) == 1) {
@@ -2216,6 +2224,35 @@ groups.
 
 Returns a hashref with tag IDs as key, and a hashref with tag 'id',
 'name' and 'bug_count' as value.
+
+=back
+
+=head2 Saved Recent Bug Lists
+
+=over
+
+=item C<recent_searches>
+
+Returns an arrayref of L<Bugzilla::Search::Recent> objects
+containing the user's recent searches.
+
+=item C<recent_search_containing(bug_id)>
+
+Returns a L<Bugzilla::Search::Recent> object that contains the most recent
+search by the user for the specified bug id. Retuns undef if no match is found.
+
+=item C<recent_search_for(bug)>
+
+Returns a L<Bugzilla::Search::Recent> object that contains a search by the
+user. Uses the list_id of the current loaded page, or the referrer page, and
+the bug id if that fails. Finally it will check the BUGLIST cookie, and create
+an object based on that, or undef if it does not exist.
+
+=item C<save_last_search>
+
+Saves the users most recent search in the database if logged in, or in the
+BUGLIST cookie if not logged in. Parameters are bug_ids, order, vars and
+list_id.
 
 =back
 

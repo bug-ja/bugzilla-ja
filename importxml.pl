@@ -827,8 +827,10 @@ sub process_bug {
             push( @values, $qa_contact );
         }
         else {
-            push( @values, $component->default_qa_contact->id || undef );
-            if ($component->default_qa_contact->id){
+            push(@values, $component->default_qa_contact ?
+                          $component->default_qa_contact->id : undef);
+
+            if ($component->default_qa_contact) {
                 $err .= "Setting qa contact to the default for this product.\n";
                 $err .= "   This bug either had no qa contact or an invalid one.\n";
             }
@@ -1189,7 +1191,7 @@ sub process_bug {
                               $c->{isprivate}, $c->{thetext}, 0);
     }
     $sth_comment->execute($id, $exporterid, $timestamp, 0, $comments, $worktime);
-    Bugzilla::Bug->new($id)->_sync_fulltext('new_bug');
+    Bugzilla::Bug->new($id)->_sync_fulltext( new_bug => 1);
 
     # Add this bug to each group of which its product is a member.
     my $sth_group = $dbh->prepare("INSERT INTO bug_group_map (bug_id, group_id) 

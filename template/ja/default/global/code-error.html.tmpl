@@ -39,10 +39,6 @@
   [% ELSIF error == "authres_unhandled" %]
     ログイン処理中の結果 [% value FILTER html %] を処理できませんでした。.
 
-  [% ELSIF error == "bad_page_cgi_id" %]
-    [% title = "無効なページ ID" %]
-    ID <code>[% page_id FILTER html %]</code> は有効なページ識別子でありません。
-
   [% ELSIF error == "bad_arg" %]
     <code>[% function FILTER html %]</code> 関数が無効な引数
     <code>[% argument FILTER html %]</code> により呼ばれました。
@@ -122,11 +118,6 @@
       ユーザのメールアドレスを含むような環境変数の名前を設定する必要があります。
     [% END %]
 
-  [% ELSIF error == "extension_disabled" %]
-    [% title = "拡張は無効化されました" %]
-    拡張機能 '[% name FILTER html %]' が無効なため、
-    このページにはアクセスできません。
-
   [% ELSIF error == "extension_must_be_subclass" %]
     <code>[% filename FILTER html %]</code> の
     <code>[% package FILTER html %]</code> は
@@ -173,26 +164,12 @@
     [% title = "フィールド型が指定されていません" %]
     カスタムフィールドを作成するには型を指定する必要があります。
 
-  [% ELSIF error == "illegal_content_type_method" %]
-    あなたの変更には間違いがあります。
-    コンテントタイプをどう評価するかを指定する <em>content method</em> フィールドは、
-    <em>autodetect</em>、<em>list</em>、もしくは <em>manual</em> でないといけませんが、
-    <em>[% contenttypemethod FILTER html %]</em> が指定されました。
-
   [% ELSIF error == "illegal_field" %]
     有効な [% field FILTER html %] が指定されていません。
-
-  [% ELSIF error == "invalid_attach_id_to_obsolete" %]
-    用済みにマークしようとした添付ファイルのひとつ [% attach_id FILTER html %] 
-    は無効です。
           
   [% ELSIF error == "invalid_customfield_type" %]
     [% title = "無効なフィールドタイプ" %]
     <em>[% type FILTER html %]</em> は有効なフィールドタイプではありません。
-
-  [% ELSIF error == "invalid_dimensions" %]
-    [% title = "無効な寸法です" %]
-    指定された幅もしくは高さが正の整数ではありません。
 
   [% ELSIF error == "invalid_feature" %]
     [% title = "無効な機能名" %]
@@ -224,31 +201,11 @@
     [% constants.bz_locations.localconfig FILTER html %] の $webservergroup 
     設定を確認してください。
 
-  [% ELSIF error == "mismatched_bug_ids_on_obsolete" %]
-    添付 [% attach_id FILTER html %] ([% description FILTER html %]) は
-    [% terms.bug %] [%+ attach_bug_id FILTER html %] に添付されていますが、
-    あなたは [% terms.bug %] [%+ my_bug_id FILTER html %] へ新しい添付をつけるときに
-    無効化しようとしました。
-
-  [% ELSIF error == "feature_disabled" %]
-    [% install_string("feature_$feature") FILTER html %] 機能が
-    この [% terms.Bugzilla %] にインストールされていません。
-    [% IF user.in_group('admin') %]
-      この機能を有効にするには、
-      <kbd>checksetup.pl</kbd> を実行し、
-      この機能のために必要なモジュールのインストール方法を確認してください。
-    [% END %]
-
   [% ELSIF error == "flag_unexpected_object" %]
     [% title = "認識できないオブジェクトです" %]
     [% caller FILTER html %] 型のオブジェクトにはフラグを設定できません。
     [% terms.bugs %] もしくは添付にのみ設定可能です。
 
-  [% ELSIF error == "flag_requestee_disabled" %]
-    [% title = "特定の人からのフラグ要請はできません" %]
-    特定の人からの
-    <em>[% type.name FILTER html %]</em> の要請はできません。
- 
   [% ELSIF error == "flag_type_inactive" %]
     [% title = "利用されていないフラグタイプ" %]
     フラグタイプ [% type FILTER html %] は無効化されており、
@@ -260,20 +217,6 @@
  
   [% ELSIF error == "invalid_field_name" %]
     [% field FILTER html %] をフィールド名に利用できません。
-
-  [% ELSIF error == "invalid_keyword_id" %]
-    キーワード ID <em>[% id FILTER html %]</em> が見つかりません。
-
-  [% ELSIF error == "invalid_user" %]
-    [% title = "無効なユーザ" %]
-    [% IF user_id %]
-      ID <em>[% user_id FILTER html %]</em>.
-    [% ELSIF user_login %]
-      ログイン名 <em>[% user_login FILTER html %]</em>
-    [% ELSE %]
-      与えられた
-    [% END %]
-    のユーザは存在しません。
 
   [% ELSIF error == "jobqueue_insert_failed" %]
    [% title = "ジョブのキューが失敗" %]
@@ -316,17 +259,11 @@
     '[% mail.header('To') FILTER html %]' に送信する際に問題が発生しました。
     [%+ msg FILTER html %]
 
-  [% ELSIF error == "missing_bug_id" %]
-    [% terms.bug %] ID が与えられませんでした。
-
   [% ELSIF error == "missing_series_id" %]
     シリーズをデータベースに登録しようとしましたが、シリーズ ID がありません。
     シリーズ: [% series.category FILTER html %] / 
     [%+ series.subcategory FILTER html %] / 
     [%+ series.name FILTER html %]
-
-  [% ELSIF error == "need_quipid" %]
-    有効な quipid が必要です。
 
   [% ELSIF error == "object_dep_sort_loop" %]
     '[%+ field FILTER html %]' の VALIDATOR_DEPENDENCIES にループが検出されました。
@@ -379,13 +316,6 @@
   [% ELSIF error == "radius_preparation_error" %]
     RADIUS 認証リクエストを準備している途中でエラーが発生しました。
     <code>[% errstr FILTER html %]</code>
-
-  [% ELSIF error == "report_axis_invalid" %]
-    <em>[% val FILTER html %]</em> は
-    [%+ IF    fld == "x" %]横軸
-    [%+ ELSIF fld == "y" %]縦軸
-    [%+ ELSIF fld == "z" %]複数テーブル・イメージ
-    [%+ ELSE %]レポート軸[% END %] フィールドとして無効値です。
 
   [% ELSIF error == "search_cp_without_op" %]
     検索条件 f[% id FILTER html %] は "CP" になりますが、

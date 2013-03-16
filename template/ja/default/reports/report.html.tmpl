@@ -61,7 +61,9 @@
 %]
 
 [% IF debug %]
-  <p>[% query FILTER html %]</p>
+  [% FOREACH query = queries %]
+    <p>[% query.sql FILTER html %]</p>
+  [% END %]
 [% END %]
 
 <div align="center">
@@ -123,7 +125,7 @@
           <a href="query.cgi?[% switchbase %]&amp;format=report-table">このレポートを編集</a>
         [% ELSE %]
           <a href="query.cgi?[% switchbase %]&amp;chart_format=
-                  [%~ format %]&amp;format=report-graph&amp;cumulate=[% cumulate %]">
+                  [%~ format FILTER uri %]&amp;format=report-graph&amp;cumulate=[% cumulate %]">
           このレポートを編集</a>
         [% END %]
       </td>
@@ -136,7 +138,7 @@
           <form method="get" action="report.cgi">
             <input type="text" id="name" name="name" size="20" value="" maxlength="64">
             として <input type="submit" id="remember" value="レポートを保存">
-            <input type="hidden" name="query" value="[% switchbase %]&amp;format=[% format FILTER html %]&amp;action=wrap">
+            <input type="hidden" name="query" value="[% switchbase %]&amp;format=[% format FILTER uri %]&amp;action=wrap">
             <input type="hidden" name="action" value="add">
             <input type="hidden" name="token" value="[% issue_hash_token(['save_report']) FILTER html %]">
           </form>

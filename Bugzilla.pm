@@ -27,7 +27,7 @@ use Bugzilla::Extension;
 use Bugzilla::DB;
 use Bugzilla::Install::Localconfig qw(read_localconfig);
 use Bugzilla::Install::Requirements qw(OPTIONAL_MODULES);
-use Bugzilla::Install::Util qw(init_console);
+use Bugzilla::Install::Util qw(init_console include_languages);
 use Bugzilla::Template;
 use Bugzilla::User;
 use Bugzilla::Error;
@@ -268,10 +268,8 @@ sub input_params {
     return $cache->{input_params};
 }
 
-our $_localconfig;
 sub localconfig {
-    $_localconfig ||= read_localconfig();
-    return $_localconfig;
+    return $_[0]->process_cache->{localconfig} ||= read_localconfig();
 }
 
 sub params {
@@ -440,6 +438,10 @@ sub languages {
     return Bugzilla::Install::Util::supported_languages();
 }
 
+sub current_language {
+    return $_[0]->request_cache->{current_language} ||= (include_languages())[0];
+}
+
 sub error_mode {
     my ($class, $newval) = @_;
     if (defined $newval) {
@@ -593,7 +595,8 @@ sub fields {
         }
     }
 
-    return $do_by_name ? \%requested : [values %requested];
+    return $do_by_name ? \%requested
+        : [sort { $a->sortkey <=> $b->sortkey || $a->name cmp $b->name } values %requested];
 }
 
 sub active_custom_fields {
@@ -617,11 +620,11 @@ sub has_flags {
 sub local_timezone {
     my $class = shift;
 
-    if (!defined $class->request_cache->{local_timezone}) {
-        $class->request_cache->{local_timezone} =
+    if (!defined $class->process_cache->{local_timezone}) {
+        $class->process_cache->{local_timezone} =
           DateTime::TimeZone->new(name => 'local');
     }
-    return $class->request_cache->{local_timezone};
+    return $class->process_cache->{local_timezone};
 }
 
 # This creates the request cache for non-mod_perl installations.
@@ -642,6 +645,27 @@ sub request_cache {
     return $_request_cache;
 }
 
+sub clear_request_cache {
+    $_request_cache = {};
+    if ($ENV{MOD_PERL}) {
+        require Apache2::RequestUtil;
+        my $request = eval { Apache2::RequestUtil->request };
+        if ($request) {
+            my $pnotes = $request->pnotes;
+            delete @$pnotes{(keys %$pnotes)};
+        }
+    }
+}
+
+# This is a per-process cache.  Under mod_cgi it's identical to the
+# request_cache.  When using mod_perl, items in this cache live until the
+# worker process is terminated.
+our $_process_cache = {};
+
+sub process_cache {
+    return $_process_cache;
+}
+
 # Private methods
 
 # Per-process cleanup. Note that this is a plain subroutine, not a method,
@@ -654,7 +678,7 @@ sub _cleanup {
         $dbh->bz_rollback_transaction() if $dbh->bz_in_transaction;
         $dbh->disconnect;
     }
-    undef $_request_cache;
+    clear_request_cache();
 
     # These are both set by CGI.pm but need to be undone so that
     # Apache can actually shut down its children if it needs to.
@@ -848,7 +872,7 @@ in a hashref:
 =item C<by_name>
 
 If false (or not specified), this method will return an arrayref of
-the requested fields. The order of the returned fields is random.
+the requested fields.
 
 If true, this method will return a hashref of fields, where the keys
 are field names and the valules are L<Bugzilla::Field> objects.
@@ -914,6 +938,10 @@ The main database handle. See L<DBI>.
 
 Currently installed languages.
 Returns a reference to a list of RFC 1766 language tags of installed languages.
+
+=item C<current_language>
+
+The currently active language.
 
 =item C<switch_to_shadow_db>
 

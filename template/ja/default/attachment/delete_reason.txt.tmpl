@@ -9,18 +9,10 @@
 [%# INTERFACE:
   # attachment: object of the attachment the user wants to delete.
   # reason: string; The reason provided by the user.
-  # date: the date when the request to delete the attachment was made.
   #%]
 
-添付 [% attachment.id %] の中身は
-    [%+ user.identity %]
-によって削除されました。
+添付 [% attachment.id %] は[% IF reason %]以下の理由により[% END %]削除されました。
+
 [% IF reason %]
-以下の理由が提示されています。
-
 [%+ reason %]
-[% ELSE %]
-削除理由は示されていません。
 [% END %]
-
-添付の削除のためのトークンは [% date FILTER time %] に発行されました。

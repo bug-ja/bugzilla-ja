@@ -167,6 +167,7 @@ sub _legal_field_values {
                     sort_key => $self->type('int', $sortkey),
                     sortkey  => $self->type('int', $sortkey), # deprecated
                     visibility_values => [$self->type('string', $product_name)],
+                    is_active         => $self->type('boolean', $value->is_active),
                 });
             }
         }
@@ -658,10 +659,9 @@ sub add_attachment {
 
     $_->send_changes() foreach @bugs;
 
-    my %attachments = map { $_->id => $self->_attachment_to_hash($_, $params) }
-                          @created;
+    my @created_ids = map { $_->id } @created;
 
-    return { attachments => \%attachments };
+    return { ids => \@created_ids };
 }
 
 sub add_comment {
@@ -877,7 +877,7 @@ sub _bug_to_hash {
         $item{'blocks'} = \@blocks;
     }
     if (filter_wants $params, 'cc') {
-        my @cc = map { $self->type('string', $_) } @{ $bug->cc || [] };
+        my @cc = map { $self->type('string', $_) } @{ $bug->cc };
         $item{'cc'} = \@cc;
     }
     if (filter_wants $params, 'creator') {
@@ -1190,6 +1190,12 @@ if the C<value_field> is set to one of the values listed in this array.
 Note that for per-product fields, C<value_field> is set to C<'product'>
 and C<visibility_values> will reflect which product(s) this value appears in.
 
+=item C<is_active>
+
+C<boolean> This value is defined only for certain product specific fields
+such as version, target_milestone or component. When true, the value is active,
+otherwise the value is not active.
+
 =item C<description>
 
 C<string> The description of the value. This item is only included for the
@@ -1245,6 +1251,8 @@ You specified an invalid field name or id.
 =item The C<is_mandatory> return value was added in Bugzilla B<4.0>.
 
 =item C<sortkey> was renamed to C<sort_key> in Bugzilla B<4.2>.
+
+=item C<is_active> return key for C<values> was added in Bugzilla B<4.4>.
 
 =back
 
@@ -2165,9 +2173,9 @@ The same as L</get>.
 
 =item Added in Bugzilla B<3.4>.
 
-=item Field names changed to be more consistent with other methods in Bugzilla B<4.4>.
-
-=item As of Bugzilla B<4.4>, field names now match names used by L<Bug.update|/"update"> for consistency.
+=item Field names returned by the C<field_name> field changed to be
+consistent with other methods. Since Bugzilla B<4.4>, they now match
+names used by L<Bug.update|/"update"> for consistency.
 
 =back
 
@@ -2553,7 +2561,7 @@ Bugzilla B<4.4>.
 
 =head2 add_attachment
 
-B<UNSTABLE>
+B<STABLE>
 
 =over
 
@@ -2574,7 +2582,9 @@ these bugs.
 
 =item C<data>
 
-B<Required> C<base64> The content of the attachment.
+B<Required> C<base64> or C<string> The content of the attachment.
+If the content of the attachment is not ASCII text, you must encode
+it in base64 and declare it as the C<base64> type.
 
 =item C<file_name>
 
@@ -2614,9 +2624,8 @@ Defaults to False if not specified.
 
 =item B<Returns>
 
-A single item C<attachments>, which contains the created
-attachments in the same format as the C<attachments> return
-value from L</attachments>.
+A single item C<ids>, which contains an array of the
+attachment id(s) created.
 
 =item B<Errors>
 
@@ -2654,6 +2663,8 @@ You set the "data" field to an empty string.
 =item Added in Bugzilla B<4.0>.
 
 =item The C<is_url> parameter was removed in Bugzilla B<4.2>.
+
+=item The return value has changed in Bugzilla B<4.4>.
 
 =back
 

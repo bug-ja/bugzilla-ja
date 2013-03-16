@@ -153,6 +153,42 @@ sub bug_end_of_create_validators {
     # $bug_params->{cc} = [];
 }
 
+sub bug_start_of_update {
+    my ($self, $args) = @_;
+
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+    my ($bug, $old_bug, $timestamp, $changes) = 
+        @$args{qw(bug old_bug timestamp changes)};
+
+    foreach my $field (keys %$changes) {
+        my $used_to_be = $changes->{$field}->[0];
+        my $now_it_is  = $changes->{$field}->[1];
+    }
+
+    my $old_summary = $old_bug->short_desc;
+
+    my $status_message;
+    if (my $status_change = $changes->{'bug_status'}) {
+        my $old_status = new Bugzilla::Status({ name => $status_change->[0] });
+        my $new_status = new Bugzilla::Status({ name => $status_change->[1] });
+        if ($new_status->is_open && !$old_status->is_open) {
+            $status_message = "Bug re-opened!";
+        }
+        if (!$new_status->is_open && $old_status->is_open) {
+            $status_message = "Bug closed!";
+        }
+    }
+
+    my $bug_id = $bug->id;
+    my $num_changes = scalar keys %$changes;
+    my $result = "There were $num_changes changes to fields on bug $bug_id"
+                 . " at $timestamp.";
+    # Uncomment this line to see $result in your webserver's error log whenever
+    # you update a bug.
+    # warn $result;
+}
+
 sub bug_end_of_update {
     my ($self, $args) = @_;
     
@@ -408,7 +444,13 @@ sub error_catch {
     my $new_error_msg = "Ah ah, you tried to access $page_id? Good try!";
     $new_error_msg = html_quote($new_error_msg);
     # There are better tools to parse an HTML page, but it's just an example.
-    $$page =~ s/(?<=<td id="error_msg" class="throw_error">).*(?=<\/td>)/$new_error_msg/si;
+    # Since Perl 5.16, we can no longer write "class" inside look-behind
+    # assertions, because "ss" is also seen as the german ß character, which
+    # makes Perl 5.16 complain. The right fix is to use the /aa modifier,
+    # but it's only understood since Perl 5.14. So the workaround is to write
+    # "clas[s]" instead of "class". Stupid and ugly hack, but it works with
+    # all Perl versions.
+    $$page =~ s/(?<=<td id="error_msg" clas[s]="throw_error">).*(?=<\/td>)/$new_error_msg/si;
 }
 
 sub flag_end_of_update {
@@ -709,10 +751,12 @@ sub _check_short_desc {
     my $invocant = shift;
     my $value = $invocant->$original(@_);
     if ($value !~ /example/i) {
-        # Uncomment this line to make Bugzilla throw an error every time
+        # Use this line to make Bugzilla throw an error every time
         # you try to file a bug or update a bug without the word "example"
         # in the summary.
-        #ThrowUserError('example_short_desc_invalid');
+        if (0) {
+            ThrowUserError('example_short_desc_invalid');
+        }
     }
     return $value;
 }

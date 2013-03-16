@@ -8,8 +8,8 @@
 
 [% PROCESS bug/time.html.tmpl %]
 
-  <script type="text/javascript">
-  <!--
+<script type="text/javascript">
+<!--
   
 [% IF user.is_timetracker %]
   var fRemainingTime = [% bug.remaining_time %]; // holds the original value
@@ -32,6 +32,7 @@
 
 [% END %]
 
+[% IF user.id %]
   /* Index all classifications so we can keep track of the classification
    * for the selected product, which could control field visibility.
    */
@@ -40,9 +41,9 @@
       all_classifications['[% product.name FILTER js %]'] = '
           [%- product.classification.name FILTER js %]';
   [%- END %]
-
-  //-->
-  </script>
+[% END %]
+//-->
+</script>
 
 <form name="changeform" id="changeform" method="post" action="process_bug.cgi">
 
@@ -263,9 +264,8 @@
       %]
     </tr>
     <tr>
-      <td class="field_label">
-        <label for="version"><b>バージョン</b></label>:
-      </td>
+      [% INCLUDE "bug/field-label.html.tmpl"
+        field = bug_fields.version editable = 1 %]
 
       [% PROCESS select selname => "version" %]
     </tr>
@@ -273,10 +273,11 @@
     [%# PLATFORM #%]
     [%############%]    
     <tr>
-      <td class="field_label">
-        <label for="rep_platform" accesskey="h">
-          <b>[% field_descs.rep_platform FILTER html %]</b></label>:
-      </td>
+      [% INCLUDE "bug/field-label.html.tmpl"
+        field = bug_fields.
+        rep_platform editable = 1
+        accesskey = "h"
+      %]
       <td class="field_value">
        [% INCLUDE bug/field.html.tmpl
             bug = bug, field = bug_fields.rep_platform,
@@ -286,9 +287,6 @@
             bug = bug, field = bug_fields.op_sys, 
             no_tds = 1, value = bug.op_sys
             editable = bug.check_can_change_field('op_sys', 0, 1) %]
-       <script type="text/javascript">
-         assignToDefaultOnChange(['product', 'component']);
-       </script>
       </td>
     </tr>
 
@@ -302,9 +300,9 @@
 
 [% BLOCK section_status %]
   <tr>
-    <td class="field_label">
-      <b><a href="page.cgi?id=fields.html#status">ステータス</a></b>:
-    </td>
+    <th class="field_label">
+      <a href="page.cgi?id=fields.html#status">ステータス</a>:
+    </th>
     <td id="bz_field_status">
       <span id="static_bug_status">
         [% display_value("bug_status", bug.bug_status) FILTER html %]
@@ -333,10 +331,10 @@
  [%# Importance (priority and severity) #%]
  [%###############################################################%]
     <tr>
-      <td class="field_label">
+      <th class="field_label">
         <label for="priority" accesskey="i">
-          <b><a href="page.cgi?id=fields.html#importance"><b>重要度 (<u>I</u>)</a></b></label>:
-      </td>
+          <a href="page.cgi?id=fields.html#importance"><b>重要度 (<u>I</u>)</a></label>:
+      </th>
       <td>
        [% INCLUDE bug/field.html.tmpl
             bug = bug, field = bug_fields.priority,
@@ -354,9 +352,9 @@
       <tr>
         <th class="field_label">
           <label for="target_milestone">
-              <a href="page.cgi?id=fields.html#target_milestone">
+            <a href="page.cgi?id=fields.html#target_milestone">
             ターゲットマイルストーン</a></label>:
-        </td>
+        </th>
         [% PROCESS select selname = "target_milestone" %]
       </tr>
     [% END %]
@@ -370,9 +368,9 @@
 [% BLOCK section_people %]
 
     <tr>
-      <td class="field_label">
-        <b><a href="page.cgi?id=fields.html#assigned_to">担当者</a></b>:
-      </td>
+      <th class="field_label">
+        <a href="page.cgi?id=fields.html#assigned_to">担当者</a>:
+      </th>
       <td>
         [% IF bug.check_can_change_field("assigned_to", 0, 1) %]
           <div id="bz_assignee_edit_container" class="bz_default_hidden">
@@ -419,9 +417,11 @@
 
     [% IF Param('useqacontact') %]
     <tr>
-      <td class="field_label">
-        <label for="qa_contact" accesskey="q"><b><u>Q</u>A コンタクト</b></label>:
-      </td>
+      [% INCLUDE "bug/field-label.html.tmpl"
+        field = bug_fields.qa_contact
+        editable = 1
+        accesskey = "q"
+      %]
       <td>
         [% IF bug.check_can_change_field("qa_contact", 0, 1) %]
           <div id="bz_qa_contact_edit_container" class="bz_default_hidden">
@@ -468,6 +468,11 @@
       </td>
     </tr>
     [% END %]
+    <script type="text/javascript">
+      assignToDefaultOnChange(['product', 'component'],
+        '[% bug.component_obj.default_assignee.login FILTER js %]',
+        '[% bug.component_obj.default_qa_contact.login FILTER js %]');
+    </script>
 [% END %]
 
 [%############################################################################%]
@@ -515,19 +520,21 @@
   
   [% IF Param('usestatuswhiteboard') %]
     <tr>
-      <td class="field_label">
-        <label for="status_whiteboard" accesskey="w"><b>ホワイトボード (<u>W</u>)</b></label>:
-      </td>
+      [% INCLUDE "bug/field-label.html.tmpl"
+        field = bug_fields.status_whiteboard
+        editable = 1
+        accesskey = "w"
+      %]
       [% PROCESS input inputname => "status_whiteboard" size => "40" colspan => 2 %]
     </tr>
   [% END %]
   
   [% IF use_keywords %]
     <tr>
-      <td class="field_label">
+      <th class="field_label">
         <label for="keywords" accesskey="k">
-          <b><a href="describekeywords.cgi">キーワード (<u>K</u>)</a></b></label>:
-      </td>
+          <a href="describekeywords.cgi">キーワード (<u>K</u>)</a></label>:
+      </th>
       <td class="field_value" colspan="2">
         [% INCLUDE bug/field.html.tmpl
            bug = bug, field = bug_fields.keywords, value = bug.keywords
@@ -555,9 +562,9 @@
 [% BLOCK section_duplicates %]
   [% RETURN UNLESS bug.duplicates.size %]
   <tr>
-    <td class="field_label">
+    <th class="field_label">
       <label for="duplicates">重複</label>:
-    </td>
+    </th>
     <td class="field_value" colspan="2">
       <span id="duplicates">
         [% FOREACH dupe = bug.duplicates %]
@@ -583,6 +590,7 @@
   <tr>
     [% INCLUDE dependencies 
          field = bug_fields.blocked deps = bug.blocks_obj %]
+  </tr>
   
   <tr>
     <th>&nbsp;</th>
@@ -700,18 +708,18 @@
 
 [% BLOCK section_dates %]
   <tr>
-    <td class="field_label">
-      <b>報告日</b>:
-    </td>
+    <th class="field_label">
+      報告日:
+    </th>
     <td>
      [% bug.creation_ts FILTER time %] by [% INCLUDE global/user.html.tmpl who = bug.reporter %]
     </td>
   </tr>
   
   <tr>
-    <td class="field_label">
-      <b>最終更新</b>:
-    </td>
+    <th class="field_label">
+      最終更新:
+    </th>
     <td>
       [% bug.delta_ts FILTER time FILTER replace(':\d\d$', '') FILTER replace(':\d\d ', ' ')%] 
       (<a href="show_activity.cgi?id=[% bug.bug_id %]">[%# terms.Bug %]履歴の表示</a>)
@@ -725,9 +733,9 @@
 [%############################################################################%]
 [% BLOCK section_cclist %]
     <tr>
-      <td class="field_label">
-        <label for="newcc" accesskey="a"><b>CC リスト</b>:</label>
-      </td>
+      <th class="field_label">
+        <label for="newcc" accesskey="a">CC リスト:</label>
+      </th>
       <td>
         [% IF user.id %]
           [% IF NOT bug.cc || NOT bug.cc.contains(user.login) %]
@@ -830,27 +838,27 @@
   [% bug_flags_set = 0 %]
   [% show_more_flags = 0 %]
   [% FOREACH type = bug.flag_types %]
-    [% IF (type.flags && type.flags.size > 0) || (user.id && type.is_active) %]
+    [% IF type.flags.size || (user.id && type.is_active && user.can_request_flag(type)) %]
       [% show_bug_flags = 1 %]
     [% END %]
-    [% IF user.id && type.is_active && (!type.flags || type.is_multiplicable) %]
+    [% IF user.id && type.is_active && (!type.flags.size || type.is_multiplicable) %]
       [% show_more_flags = 1 %]
     [% END %]
-    [% IF type.flags && type.flags.size > 0 %]
+    [% IF type.flags.size %]
       [% bug_flags_set = 1 %]
     [% END %]
     [% LAST IF show_bug_flags && show_more_flags && bug_flags_set %]
   [% END %]
   [% IF show_bug_flags %]
     <tr>
-      <td class="field_label flags_label">
-        <label><b>フラグ:</b></label>
-      </td>
+      <th class="field_label flags_label">
+        <label>フラグ:</label>
+      </th>
       <td></td>
     </tr>
     <tr>
       <td colspan="2">
-        [% IF bug.flag_types.size > 0 %]
+        [% IF bug.flag_types.size %]
           [% PROCESS "flag/list.html.tmpl" flag_no_header = 1
                                            flag_types = bug.flag_types
                                            any_flags_requesteeble = bug.any_flags_requesteeble %]
@@ -1038,7 +1046,7 @@
     [% IF user.id %]
       <label for="comment" accesskey="c"><b>追加コメント (<u>C</u>)</b></label>:
 
-      [% IF user.is_insider %]
+      [% IF user.is_insider && bug.check_can_change_field('longdesc', 0, 1) %]
         <input type="checkbox" name="comment_is_private" value="1"
                id="newcommentprivacy"
                onClick="updateCommentTagControl(this, 'comment')">
@@ -1051,23 +1059,27 @@
 
       <!-- This table keeps the submit button aligned with the box. -->
       <table><tr><td>
-        [% INCLUDE global/textarea.html.tmpl
-                   name      = 'comment'
-                   id        = 'comment'
-                   minrows   = 10
-                   maxrows   = 25
-                   cols      = constants.COMMENT_COLS
-        %]
-        [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
+        [% IF bug.check_can_change_field('longdesc', 0, 1) %]
+          [% INCLUDE global/textarea.html.tmpl
+                     name      = 'comment'
+                     id        = 'comment'
+                     minrows   = 10
+                     maxrows   = 25
+                     cols      = constants.COMMENT_COLS
+          %]
+          [% Hook.process("after_comment_textarea", 'bug/edit.html.tmpl') %]
+        [% ELSE %]
+          この [% terms.bug %] にコメントを追加する権限がありません。
+        [% END %]
         <br>
         [% PROCESS commit_button id=""%]
 
         <table id="bug_status_bottom"
                class="status" cellspacing="0" cellpadding="0">
           <tr>
-            <td class="field_label">
-              <b><a href="page.cgi?id=fields.html#status">ステータス</a></b>:
-            </td>
+            <th class="field_label">
+              <a href="page.cgi?id=fields.html#status">ステータス</a>:
+            </th>
             <td>
               [% PROCESS bug/knob.html.tmpl %]
             </td>
@@ -1101,6 +1113,7 @@
   <td>
     [% IF bug.check_can_change_field(selname, 0, 1)
           AND bug.choices.${selname}.size > 1 %]
+      <input type="hidden" id="[% selname %]_dirty">
       <select id="[% selname %]" name="[% selname %]">
         [% FOREACH x = bug.choices.${selname} %]
           [% NEXT IF NOT x.is_active AND x.name != bug.${selname} %]

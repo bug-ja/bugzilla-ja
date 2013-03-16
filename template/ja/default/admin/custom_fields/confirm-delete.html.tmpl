@@ -19,6 +19,7 @@
 
 [% PROCESS global/header.html.tmpl
            title = title
+           style_urls = ['skins/standard/admin.css']
            doc_section = "custom-fields.html#delete-custom-fields"
 %]
 
@@ -43,7 +44,7 @@
 
 <h2>確認</h2>
 
-<p>
+<p class="confirmation">
   本当にこのフィールドをデータベースから削除してもよろしいですか?<br>
   <em>この操作が可能なのは、フィールドが "用済み" となっているか、
   [% terms.abug FILTER html %] で利用されていない場合のみです。</em>

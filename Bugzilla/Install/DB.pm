@@ -700,6 +700,12 @@ sub update_table_definitions {
     # 2012-08-01 koosha.khajeh@gmail.com - Bug 187753
     _shorten_long_quips();
 
+    # 2012-12-23 LpSolit@gmail.com - Bug 824361
+    _fix_longdescs_indexes();
+
+    # 2013-02-04 dkl@mozilla.com - Bug 824346
+    _fix_flagclusions_indexes();
+
     ################################################################
     # New --TABLE-- changes should go *** A B O V E *** this point #
     ################################################################
@@ -3729,6 +3735,15 @@ sub _fix_longdescs_primary_key {
     }
 }
 
+sub _fix_longdescs_indexes {
+    my $dbh = Bugzilla->dbh;
+    my $bug_id_idx = $dbh->bz_index_info('longdescs', 'longdescs_bug_id_idx');
+    if ($bug_id_idx && scalar @{$bug_id_idx->{'FIELDS'}} < 2) {
+        $dbh->bz_drop_index('longdescs', 'longdescs_bug_id_idx');
+        $dbh->bz_add_index('longdescs', 'longdescs_bug_id_idx', [qw(bug_id work_time)]);
+    }
+}
+
 sub _fix_dependencies_dupes {
     my $dbh = Bugzilla->dbh;
     my $blocked_idx = $dbh->bz_index_info('dependencies', 'dependencies_blocked_idx');
@@ -3773,6 +3788,35 @@ sub _shorten_long_quips {
         print "\n";
     }
     $dbh->bz_alter_column('quips', 'quip', { TYPE => 'varchar(512)', NOTNULL => 1});
+}
+
+sub _fix_flagclusions_indexes {
+    my $dbh = Bugzilla->dbh;
+    foreach my $table ('flaginclusions', 'flagexclusions') {
+        my $index = $table . '_type_id_idx';
+        my $idx_info = $dbh->bz_index_info($table, $index);
+        if ($idx_info && $idx_info->{'TYPE'} ne 'UNIQUE') {
+            # Remove duplicated entries
+            my $dupes = $dbh->selectall_arrayref("
+                SELECT type_id, product_id, component_id, COUNT(*) AS count
+                  FROM $table " .
+                $dbh->sql_group_by('type_id, product_id, component_id') . "
+                HAVING COUNT(*) > 1",
+                { Slice => {} });
+            say "Removing duplicated entries from the '$table' table..." if @$dupes;
+            foreach my $dupe (@$dupes) {
+                $dbh->do("DELETE FROM $table 
+                          WHERE type_id = ? AND product_id = ? AND component_id = ?",
+                         undef, $dupe->{type_id}, $dupe->{product_id}, $dupe->{component_id});
+                $dbh->do("INSERT INTO $table (type_id, product_id, component_id) VALUES (?, ?, ?)",
+                         undef, $dupe->{type_id}, $dupe->{product_id}, $dupe->{component_id});
+            }
+            $dbh->bz_drop_index($table, $index);
+            $dbh->bz_add_index($table, $index,
+                { FIELDS => [qw(type_id product_id component_id)],
+                  TYPE   => 'UNIQUE' });
+        }
+    }
 }
 
 1;
