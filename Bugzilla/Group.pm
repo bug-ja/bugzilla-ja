@@ -5,11 +5,12 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-use strict;
-
 package Bugzilla::Group;
 
-use base qw(Bugzilla::Object);
+use 5.10.1;
+use strict;
+
+use parent qw(Bugzilla::Object);
 
 use Bugzilla::Constants;
 use Bugzilla::Util;
@@ -645,5 +646,49 @@ inherit membership in any group on the list.  So, we can determine if a user
 is in any of the groups input to flatten_group_membership by querying the
 user_group_map for any user with DIRECT or REGEXP membership IN() the list
 of groups returned.
+
+=back
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item icon_url
+
+=item set_name
+
+=item bugs
+
+=item granted_by_direct
+
+=item set_user_regexp
+
+=item flag_types
+
+=item products
+
+=item set_icon_url
+
+=item set_description
+
+=item set_is_active
+
+=item user_regexp
+
+=item members_direct
+
+=item is_bug_group
+
+=item grant_direct
+
+=item description
+
+=item is_active
+
+=item remove_from_db
+
+=item is_active_bug_group
+
+=item update
 
 =back

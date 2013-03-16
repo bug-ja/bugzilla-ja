@@ -6,8 +6,11 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::WebService::Util;
+
+use 5.10.1;
 use strict;
-use base qw(Exporter);
+
+use parent qw(Exporter);
 
 # We have to "require", not "use" this, because otherwise it tries to
 # use features of Test::More during import().
@@ -195,3 +198,11 @@ parameters passed to a WebService method (the first parameter to this function).
 Helps make life simpler for WebService methods that internally create objects
 via both "ids" and "names" fields. Also de-duplicates objects that were loaded
 by both "ids" and "names". Returns an arrayref of objects.
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item taint_data
+
+=back

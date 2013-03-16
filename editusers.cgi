@@ -6,6 +6,7 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
+use 5.10.1;
 use strict;
 use lib qw(. lib);
 
@@ -20,6 +21,7 @@ use Bugzilla::Flag;
 use Bugzilla::Field;
 use Bugzilla::Group;
 use Bugzilla::Token;
+use Bugzilla::Mailer;
 
 my $user = Bugzilla->login(LOGIN_REQUIRED);
 
@@ -216,6 +218,15 @@ if ($action eq 'search') {
     userDataToVars($new_user->id);
 
     delete_token($token);
+
+    if ($cgi->param('notify_user')) {
+        $vars->{'new_user'} = $new_user;
+        my $message;
+      
+        $template->process('email/new-user-details.txt.tmpl', $vars, \$message)
+            || ThrowTemplateError($template->error());
+        MessageToMTA($message);
+    }
 
     # We already display the updated page. We have to recreate a token now.
     $vars->{'token'} = issue_session_token('edit_user');

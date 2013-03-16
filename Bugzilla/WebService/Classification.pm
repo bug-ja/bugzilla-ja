@@ -7,9 +7,10 @@
 
 package Bugzilla::WebService::Classification;
 
+use 5.10.1;
 use strict;
 
-use base qw (Bugzilla::WebService);
+use parent qw (Bugzilla::WebService);
 
 use Bugzilla::Classification;
 use Bugzilla::Error;

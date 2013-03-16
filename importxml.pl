@@ -10,6 +10,7 @@
 # a new bug into bugzilla. Everything before the beginning <?xml line
 # is removed so you can pipe in email messages.
 
+use 5.10.1;
 use strict;
 
 #####################################################################
@@ -1015,6 +1016,15 @@ sub process_bug {
             }
         } elsif ($field->type == FIELD_TYPE_DATETIME) {
             eval { $value = Bugzilla::Bug->_check_datetime_field($value); };
+            if ($@) {
+                $err .= "Skipping illegal value \"$value\" in $custom_field.\n" ;
+            }
+            else {
+                push(@query, $custom_field);
+                push(@values, $value);
+            }
+        } elsif ($field->type == FIELD_TYPE_DATE) {
+            eval { $value = Bugzilla::Bug->_check_date_field($value); };
             if ($@) {
                 $err .= "Skipping illegal value \"$value\" in $custom_field.\n" ;
             }

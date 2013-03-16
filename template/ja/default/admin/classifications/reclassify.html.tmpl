@@ -13,11 +13,11 @@
 <form method=post action="editclassifications.cgi">
   <table border=0 cellpadding=4 cellspacing=0>
     <tr>
-      <th align="right">Classification:</th>
+      <th>Classification:</th>
       <td valign="top" colspan=3>[% classification.name FILTER html %]</td>
 
     </tr><tr>
-      <th align="right">説明:</th>
+      <th>説明:</th>
       <td valign="top" colspan=3>
         [% IF classification.description %]
           [% classification.description FILTER html_light %]
@@ -27,11 +27,11 @@
       </td>
 
     </tr><tr>
-      <th align="right">ソート順:</th>
+      <th>ソート順:</th>
       <td valign="top" colspan=3>[% classification.sortkey FILTER html %]</td>
 
     </tr><tr>
-      <th align="right">プロダクト:</th>
+      <th>プロダクト:</th>
       <td valign="top">他の Classification</td>
       <td></td>
       <td valign="top">この Classification</td>

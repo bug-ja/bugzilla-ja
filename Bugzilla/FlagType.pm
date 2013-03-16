@@ -5,9 +5,10 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-use strict;
-
 package Bugzilla::FlagType;
+
+use 5.10.1;
+use strict;
 
 =head1 NAME
 
@@ -40,7 +41,7 @@ use Bugzilla::Group;
 
 use Email::Address;
 
-use base qw(Bugzilla::Object);
+use parent qw(Bugzilla::Object);
 
 ###############################
 ####    Initialization     ####
@@ -701,3 +702,43 @@ sub sqlify_criteria {
 }
 
 1;
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item exclusions_as_hash
+
+=item request_group_id
+
+=item set_is_active
+
+=item set_is_multiplicable
+
+=item inclusions_as_hash
+
+=item set_sortkey
+
+=item grant_group_id
+
+=item set_cc_list
+
+=item set_request_group
+
+=item set_name
+
+=item set_is_specifically_requestable
+
+=item set_grant_group
+
+=item create
+
+=item set_clusions
+
+=item set_description
+
+=item set_is_requestable
+
+=item update
+
+=back

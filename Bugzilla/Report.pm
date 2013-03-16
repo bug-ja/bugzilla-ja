@@ -5,11 +5,12 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-use strict;
-
 package Bugzilla::Report;
 
-use base qw(Bugzilla::Object);
+use 5.10.1;
+use strict;
+
+use parent qw(Bugzilla::Object);
 
 use Bugzilla::CGI;
 use Bugzilla::Constants;
@@ -132,3 +133,17 @@ of L<Bugzilla::Object>, and thus provides all methods that
 L<Bugzilla::Object> provides.
 
 =cut
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item create
+
+=item query
+
+=item set_query
+
+=item set_name
+
+=back

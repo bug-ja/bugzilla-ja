@@ -6,8 +6,11 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::Constants;
+
+use 5.10.1;
 use strict;
-use base qw(Exporter);
+
+use parent qw(Exporter);
 
 # For bz_locations
 use File::Basename;
@@ -101,10 +104,12 @@ use Memoize;
     FIELD_TYPE_MULTI_SELECT
     FIELD_TYPE_TEXTAREA
     FIELD_TYPE_DATETIME
+    FIELD_TYPE_DATE
     FIELD_TYPE_BUG_ID
     FIELD_TYPE_BUG_URLS
     FIELD_TYPE_KEYWORDS
-
+    FIELD_TYPE_HIGHEST_PLUS_ONE
+    
     EMPTY_DATETIME_REGEX
 
     ABNORMAL_SELECTS
@@ -182,7 +187,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.4rc2";
+use constant BUGZILLA_VERSION => "4.5";
 
 # Location of the remote and local XML files to track new releases.
 use constant REMOTE_FILE => 'http://updates.bugzilla.org/bugzilla-update.xml';
@@ -382,6 +387,10 @@ use constant FIELD_TYPE_DATETIME  => 5;
 use constant FIELD_TYPE_BUG_ID  => 6;
 use constant FIELD_TYPE_BUG_URLS => 7;
 use constant FIELD_TYPE_KEYWORDS => 8;
+use constant FIELD_TYPE_DATE => 9;
+# Add new field types above this line, and change the below value in the
+# obvious fashion
+use constant FIELD_TYPE_HIGHEST_PLUS_ONE => 10;
 
 use constant EMPTY_DATETIME_REGEX => qr/^[0\-:\sA-Za-z]+$/; 
 
@@ -396,8 +405,7 @@ use constant ABNORMAL_SELECTS => {
 # The fields from fielddefs that are blocked from non-timetracking users.
 # work_time is sometimes called actual_time.
 use constant TIMETRACKING_FIELDS =>
-    qw(estimated_time remaining_time work_time actual_time
-       percentage_complete deadline);
+    qw(estimated_time remaining_time work_time actual_time percentage_complete);
 
 # The maximum number of days a token will remain valid.
 use constant MAX_TOKEN_AGE => 3;
@@ -565,10 +573,10 @@ use constant MAX_QUIP_LENGTH => 512;
 # This is the name of the algorithm used to hash passwords before storing
 # them in the database. This can be any string that is valid to pass to
 # Perl's "Digest" module. Note that if you change this, it won't take
-# effect until a user changes his password.
+# effect until a user logs in or changes his password.
 use constant PASSWORD_DIGEST_ALGORITHM => 'SHA-256';
-# How long of a salt should we use? Note that if you change this, none
-# of your users will be able to log in until they reset their passwords.
+# How long of a salt should we use? Note that if you change this, it
+# won't take effect until a user logs in or changes his password.
 use constant PASSWORD_SALT_LENGTH => 8;
 
 # Certain scripts redirect to GET even if the form was submitted originally
@@ -651,3 +659,13 @@ sub bz_locations {
 BEGIN { memoize('bz_locations') };
 
 1;
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item DB_MODULE
+
+=item contenttypes
+
+=back

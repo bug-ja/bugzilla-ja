@@ -201,6 +201,8 @@
     </tr>
   [% END %]
   [% PROCESS display_buglist %]
+  <br><br>
+  <a href="request.cgi?[% urlquerypart FILTER html %]&amp;ctype=csv">CSV として全リストを見る</a>
 [% END %]
 
 [% PROCESS global/footer.html.tmpl %]
@@ -258,6 +260,6 @@
   </table>
   [% NEXT UNLESS buglist.keys.size %]
   <a href="buglist.cgi?bug_id=
-           [%- buglist.keys.nsort.join(",") FILTER html %]">(
-  [%+ terms.bug %] リストとしてみる)</a>
+           [%- buglist.keys.nsort.join(",") FILTER html %]">
+  [%+ terms.bug %] リストとしてみる</a>
 [% END %]

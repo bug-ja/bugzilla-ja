@@ -67,8 +67,8 @@
           
           [% PROCESS section_spacer %]
           
-          [%# *** severity, priority, version and milestone *** %]
-          [% PROCESS section_details2 %]            
+          [%# *** severity, priority, version, milestone, and deadline *** %]
+          [% PROCESS section_details2 %]
           
           [%# *** assigned to and qa contact *** %]
           [% PROCESS section_people %]
@@ -359,6 +359,10 @@
       </tr>
     [% END %]
   
+
+    [% IF Param("timetrackinggroup") && bug.deadline %]
+      [% INCLUDE bug/field.html.tmpl field = bug_fields.deadline, value = bug.deadline, editable = 0 %]
+    [% END %]
 [% END %]
 
 [%############################################################################%]
@@ -592,6 +596,7 @@
          field = bug_fields.blocked deps = bug.blocks_obj %]
   </tr>
   
+  [% IF bug.dependson.size || bug.blocked.size %]
   <tr>
     <th>&nbsp;</th>
   
@@ -604,6 +609,7 @@
       を表示する
     </td>
   </tr>
+  [% END %]
 [% END %]
 
 

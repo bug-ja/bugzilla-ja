@@ -5,10 +5,12 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
+package Bugzilla::Search;
+
+use 5.10.1;
 use strict;
 
-package Bugzilla::Search;
-use base qw(Exporter);
+use parent qw(Exporter);
 @Bugzilla::Search::EXPORT = qw(
     IsValidQueryType
     split_order_term
@@ -107,6 +109,7 @@ use Time::HiRes qw(gettimeofday tv_interval);
 
 # When doing searches, NULL datetimes are treated as this date.
 use constant EMPTY_DATETIME => '1970-01-01 00:00:00';
+use constant EMPTY_DATE     => '1970-01-01';
 
 # This is the regex for real numbers from Regexp::Common, modified to be
 # more readable.
@@ -309,6 +312,7 @@ use constant OPERATOR_FIELD_OVERRIDE => {
     FIELD_TYPE_FREETEXT, { _non_changed => \&_nullable },
     FIELD_TYPE_BUG_ID,   { _non_changed => \&_nullable_int },
     FIELD_TYPE_DATETIME, { _non_changed => \&_nullable_datetime },
+    FIELD_TYPE_DATE,     { _non_changed => \&_nullable_date },
     FIELD_TYPE_TEXTAREA, { _non_changed => \&_nullable },
     FIELD_TYPE_MULTI_SELECT, MULTI_SELECT_OVERRIDE,
     FIELD_TYPE_BUG_URLS,     MULTI_SELECT_OVERRIDE,    
@@ -464,6 +468,14 @@ sub COLUMN_JOINS {
                 to    => 'id',
             },
         },
+        blocked => {
+            table => 'dependencies',
+            to => 'dependson',
+        },
+        dependson => {
+            table => 'dependencies',
+            to => 'blocked',
+        },
         'longdescs.count' => {
             table => 'longdescs',
             join  => 'INNER',
@@ -544,6 +556,9 @@ sub COLUMNS {
             . $dbh->sql_string_concat('map_flagtypes.name', 'map_flags.status')),
 
         'keywords' => $dbh->sql_group_concat('DISTINCT map_keyworddefs.name'),
+
+        blocked => $dbh->sql_group_concat('DISTINCT map_blocked.blocked'),
+        dependson => $dbh->sql_group_concat('DISTINCT map_dependson.dependson'),
         
         'longdescs.count' => 'COUNT(DISTINCT map_longdescs_count.comment_id)',
 
@@ -641,7 +656,9 @@ sub REPORT_COLUMNS {
 # is here because it *always* goes into the GROUP BY as the first item,
 # so it should be skipped when determining extra GROUP BY columns.
 use constant GROUP_BY_SKIP => qw(
+    blocked
     bug_id
+    dependson
     flagtypes.name
     keywords
     longdescs.count
@@ -1539,9 +1556,8 @@ sub _special_parse_chfield {
 
 sub _special_parse_deadline {
     my ($self) = @_;
-    return if !$self->_user->is_timetracker;
     my $params = $self->_params;
-    
+
     my $clause = new Bugzilla::Search::Clause();
     if (my $from = $params->{'deadlinefrom'}) {
         $clause->add('deadline', 'greaterthaneq', $from);
@@ -2587,6 +2603,13 @@ sub _nullable_datetime {
     $args->{full_field} = "COALESCE($field, $empty)";
 }
 
+sub _nullable_date {
+    my ($self, $args) = @_;
+    my $field = $args->{full_field};
+    my $empty = Bugzilla->dbh->quote(EMPTY_DATE);
+    $args->{full_field} = "COALESCE($field, $empty)";
+}
+
 sub _deadline {
     my ($self, $args) = @_;
     my $field = $args->{full_field};
@@ -3119,5 +3142,37 @@ the SQL query which has been executed, and C<time> contains the time spent
 to execute the SQL query, in seconds. There can be either a single hash, or
 two hashes if two SQL queries have been executed sequentially to get all the
 required data.
+
+=back
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item invalid_order_columns
+
+=item COLUMN_JOINS
+
+=item split_order_term
+
+=item SqlifyDate
+
+=item REPORT_COLUMNS
+
+=item pronoun
+
+=item COLUMNS
+
+=item order
+
+=item search_description
+
+=item IsValidQueryType
+
+=item build_subselect
+
+=item do_search_function
+
+=item boolean_charts_to_custom_search
 
 =back

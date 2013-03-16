@@ -7,10 +7,11 @@
 
 package Bugzilla::WebService::User;
 
+use 5.10.1;
 use strict;
-use base qw(Bugzilla::WebService);
 
-use Bugzilla;
+use parent qw(Bugzilla::WebService);
+
 use Bugzilla::Constants;
 use Bugzilla::Error;
 use Bugzilla::Group;
@@ -158,8 +159,8 @@ sub get {
             \@user_objects, $params);
         @users = map {filter $params, {
                      id        => $self->type('int', $_->id),
-                     real_name => $self->type('string', $_->name), 
-                     name      => $self->type('string', $_->login),
+                     real_name => $self->type('string', $_->name),
+                     name      => $self->type('email', $_->login),
                  }} @$in_group;
 
         return { users => \@users };
@@ -200,7 +201,7 @@ sub get {
             }
         }
     }
-   
+
     my $in_group = $self->_filter_users_by_group(
         \@user_objects, $params);
 
@@ -208,8 +209,8 @@ sub get {
         my $user_info = {
             id        => $self->type('int', $user->id),
             real_name => $self->type('string', $user->name),
-            name      => $self->type('string', $user->login),
-            email     => $self->type('string', $user->email),
+            name      => $self->type('email', $user->login),
+            email     => $self->type('email', $user->email),
             can_login => $self->type('boolean', $user->is_enabled ? 1 : 0),
         };
 

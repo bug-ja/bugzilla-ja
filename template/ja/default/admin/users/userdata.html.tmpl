@@ -107,3 +107,12 @@
     </td>
   </tr>
 [% END %]
+[% UNLESS editform %]
+  <tr>
+    <th><label for="notify_user">ユーザへの通知:</label></th>
+    <td>
+      <input type="checkbox" name="notify_user" id="notify_user" value="1">
+      (ユーザにアカウント情報を通知します。パスワードは含みません。)
+    </td>
+  </tr>
+[% END %]

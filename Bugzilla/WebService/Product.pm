@@ -7,8 +7,10 @@
 
 package Bugzilla::WebService::Product;
 
+use 5.10.1;
 use strict;
-use base qw(Bugzilla::WebService);
+
+use parent qw(Bugzilla::WebService);
 use Bugzilla::Product;
 use Bugzilla::User;
 use Bugzilla::Error;
@@ -233,10 +235,10 @@ sub _component_to_hash {
         description =>
             $self->type('string' , $component->description),
         default_assigned_to =>
-            $self->type('string' , $component->default_assignee->login),
-        default_qa_contact => 
-            $self->type('string' , $component->default_qa_contact ?
-                                   $component->default_qa_contact->login : ''),
+            $self->type('email', $component->default_assignee->login),
+        default_qa_contact =>
+            $self->type('email', $component->default_qa_contact ?
+                                 $component->default_qa_contact->login : ""),
         sort_key =>  # sort_key is returned to match Bug.fields
             0,
         is_active =>
@@ -858,5 +860,13 @@ You must define a default milestone.
 =item Added in Bugzilla B<4.4>.
 
 =back
+
+=back
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item get_products
 
 =back

@@ -6,13 +6,8 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-################################################################################
-# Script Initialization
-################################################################################
-
-# Make it harder for us to do dangerous things in Perl.
+use 5.10.1;
 use strict;
-
 use lib qw(. lib);
 
 use Bugzilla;
@@ -285,18 +280,17 @@ sub GetGroups {
 }
 
 sub _close_standby_message {
-    my ($contenttype, $disposition, $serverpush) = @_;
+    my ($contenttype, $disp, $disp_prefix, $extension, $serverpush) = @_;
     my $cgi = Bugzilla->cgi;
-
+    $cgi->set_dated_content_disp($disp, $disp_prefix, $extension);
+    
     # Close the "please wait" page, then open the buglist page
     if ($serverpush) {
         print $cgi->multipart_end();
-        print $cgi->multipart_start(-type                => $contenttype,
-                                    -content_disposition => $disposition);
+        print $cgi->multipart_start(-type => $contenttype);
     }
     else {
-        print $cgi->header(-type                => $contenttype,
-                           -content_disposition => $disposition);
+        print $cgi->header($contenttype);
     }
 }
 
@@ -328,17 +322,10 @@ $params ||= new Bugzilla::CGI($cgi);
 # if available.  We have to do this now, even though we return HTTP headers 
 # at the end, because the fact that there is a remembered query gets 
 # forgotten in the process of retrieving it.
-my @time = localtime(time());
-my $date = sprintf "%04d-%02d-%02d", 1900+$time[5],$time[4]+1,$time[3];
-my $filename = "bugs-$date.$format->{extension}";
+my $disp_prefix = "bugs";
 if ($cmdtype eq "dorem" && $remaction =~ /^run/) {
-    $filename = $cgi->param('namedcmd') . "-$date.$format->{extension}";
-    # Remove white-space from the filename so the user cannot tamper
-    # with the HTTP headers.
-    $filename =~ s/\s/_/g;
+    $disp_prefix = $cgi->param('namedcmd');
 }
-$filename =~ s/\\/\\\\/g; # escape backslashes
-$filename =~ s/"/\\"/g; # escape quotes
 
 # Take appropriate action based on user's request.
 if ($cmdtype eq "dorem") {  
@@ -526,11 +513,9 @@ else {
 # Remove the timetracking columns if they are not a part of the group
 # (happens if a user had access to time tracking and it was revoked/disabled)
 if (!$user->is_timetracker) {
-   @displaycolumns = grep($_ ne 'estimated_time', @displaycolumns);
-   @displaycolumns = grep($_ ne 'remaining_time', @displaycolumns);
-   @displaycolumns = grep($_ ne 'actual_time', @displaycolumns);
-   @displaycolumns = grep($_ ne 'percentage_complete', @displaycolumns);
-   @displaycolumns = grep($_ ne 'deadline', @displaycolumns);
+   foreach my $tt_field (TIMETRACKING_FIELDS) {
+       @displaycolumns = grep($_ ne $tt_field, @displaycolumns);
+   }
 }
 
 # Remove the relevance column if the user is not doing a fulltext search.
@@ -945,7 +930,8 @@ if ($one_product && $user->can_enter_product($one_product)) {
 # The following variables are used when the user is making changes to multiple bugs.
 if ($dotweak && scalar @bugs) {
     if (!$vars->{'caneditbugs'}) {
-        _close_standby_message('text/html', 'inline', $serverpush);
+        _close_standby_message('text/html', 
+                               'inline', "error", "html", $serverpush);
         ThrowUserError('auth_failure', {group  => 'editbugs',
                                         action => 'modify',
                                         object => 'multiple_bugs'});
@@ -1052,10 +1038,8 @@ if ($format->{'extension'} eq "csv") {
     $vars->{'human'} = $cgi->param('human');
 }
 
-# Suggest a name for the bug list if the user wants to save it as a file.
-$disposition .= "; filename=\"$filename\"";
-
-_close_standby_message($contenttype, $disposition, $serverpush);
+_close_standby_message($contenttype, $disposition, $disp_prefix, 
+                       $format->{'extension'}, $serverpush);
 
 ################################################################################
 # Content Generation

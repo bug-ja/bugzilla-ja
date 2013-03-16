@@ -7,8 +7,10 @@
 
 package Bugzilla::WebService::Bug;
 
+use 5.10.1;
 use strict;
-use base qw(Bugzilla::WebService);
+
+use parent qw(Bugzilla::WebService);
 
 use Bugzilla::Comment;
 use Bugzilla::Constants;
@@ -300,8 +302,8 @@ sub _translate_comment {
     return filter $filters, {
         id         => $self->type('int', $comment->id),
         bug_id     => $self->type('int', $comment->bug_id),
-        creator    => $self->type('string', $comment->author->login),
-        author     => $self->type('string', $comment->author->login),
+        creator    => $self->type('email', $comment->author->login),
+        author     => $self->type('email', $comment->author->login),
         time       => $self->type('dateTime', $comment->creation_ts),
         creation_time => $self->type('dateTime', $comment->creation_ts),
         is_private => $self->type('boolean', $comment->is_private),
@@ -416,7 +418,7 @@ sub search {
     delete $params->{WHERE};
 
     unless (Bugzilla->user->is_timetracker) {
-        delete $params->{$_} foreach qw(estimated_time remaining_time deadline);
+        delete $params->{$_} foreach TIMETRACKING_FIELDS;
     }
 
     # Do special search types for certain fields.
@@ -848,6 +850,9 @@ sub _bug_to_hash {
         classification   => $self->type('string', $bug->classification),
         component        => $self->type('string', $bug->component),
         creation_time    => $self->type('dateTime', $bug->creation_ts),
+        # No need to format $bug->deadline specially, because Bugzilla::Bug
+        # already does it for us.
+        deadline         => $self->type('string', $bug->deadline),
         id               => $self->type('int', $bug->bug_id),
         is_confirmed     => $self->type('boolean', $bug->everconfirmed),
         last_change_time => $self->type('dateTime', $bug->delta_ts),
@@ -870,18 +875,18 @@ sub _bug_to_hash {
     # We don't do the SQL calls at all if the filter would just
     # eliminate them anyway.
     if (filter_wants $params, 'assigned_to') {
-        $item{'assigned_to'} = $self->type('string', $bug->assigned_to->login);
+        $item{'assigned_to'} = $self->type('email', $bug->assigned_to->login);
     }
     if (filter_wants $params, 'blocks') {
         my @blocks = map { $self->type('int', $_) } @{ $bug->blocked };
         $item{'blocks'} = \@blocks;
     }
     if (filter_wants $params, 'cc') {
-        my @cc = map { $self->type('string', $_) } @{ $bug->cc };
+        my @cc = map { $self->type('email', $_) } @{ $bug->cc };
         $item{'cc'} = \@cc;
     }
     if (filter_wants $params, 'creator') {
-        $item{'creator'} = $self->type('string', $bug->reporter->login);
+        $item{'creator'} = $self->type('email', $bug->reporter->login);
     }
     if (filter_wants $params, 'depends_on') {
         my @depends_on = map { $self->type('int', $_) } @{ $bug->dependson };
@@ -905,7 +910,7 @@ sub _bug_to_hash {
     }
     if (filter_wants $params, 'qa_contact') {
         my $qa_login = $bug->qa_contact ? $bug->qa_contact->login : '';
-        $item{'qa_contact'} = $self->type('string', $qa_login);
+        $item{'qa_contact'} = $self->type('email', $qa_login);
     }
     if (filter_wants $params, 'see_also') {
         my @see_also = map { $self->type('string', $_->name) }
@@ -924,7 +929,9 @@ sub _bug_to_hash {
         if ($field->type == FIELD_TYPE_BUG_ID) {
             $item{$name} = $self->type('int', $bug->$name);
         }
-        elsif ($field->type == FIELD_TYPE_DATETIME) {
+        elsif ($field->type == FIELD_TYPE_DATETIME
+               || $field->type == FIELD_TYPE_DATE)
+        {
             $item{$name} = $self->type('dateTime', $bug->$name);
         }
         elsif ($field->type == FIELD_TYPE_MULTI_SELECT) {
@@ -940,9 +947,6 @@ sub _bug_to_hash {
     if (Bugzilla->user->is_timetracker) {
         $item{'estimated_time'} = $self->type('double', $bug->estimated_time);
         $item{'remaining_time'} = $self->type('double', $bug->remaining_time);
-        # No need to format $bug->deadline specially, because Bugzilla::Bug
-        # already does it for us.
-        $item{'deadline'} = $self->type('string', $bug->deadline);
         $item{'actual_time'} = $self->type('double', $bug->actual_time);
     }
 
@@ -982,7 +986,7 @@ sub _attachment_to_hash {
     # the filter wants them.
     foreach my $field (qw(creator attacher)) {
         if (filter_wants $filters, $field) {
-            $item->{$field} = $self->type('string', $attach->attacher->login);
+            $item->{$field} = $self->type('email', $attach->attacher->login);
         }
     }
 
@@ -1015,7 +1019,7 @@ sub _flag_to_hash {
 
     foreach my $field (qw(setter requestee)) {
         my $field_id = $field . "_id";
-        $item->{$field} = $self->type('string', $flag->$field->login)
+        $item->{$field} = $self->type('email', $flag->$field->login)
             if $flag->$field_id;
     }
 
@@ -1778,9 +1782,6 @@ C<string> The login name of the person who filed this bug (the reporter).
 
 C<string> The day that this bug is due to be completed, in the format
 C<YYYY-MM-DD>.
-
-If you are not in the time-tracking group, this field will not be included
-in the return value.
 
 =item C<depends_on>
 
@@ -3394,5 +3395,17 @@ This method can throw the same errors as L</get>.
 =item Added in Bugzilla B<4.4>.
 
 =back
+
+=back
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item get_bugs
+
+=item possible_duplicates
+
+=item get_history
 
 =back

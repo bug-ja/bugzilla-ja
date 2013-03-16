@@ -20,23 +20,22 @@
 
 [% DEFAULT type="bug" %]
 
-[% Link = BLOCK %][% "$terms.Bug $id" FILTER bug_link(id) %][% END %]
-[% link = BLOCK %][% "$terms.bug $id" FILTER bug_link(id) %][% END %]
+[% link = BLOCK %][% terms.bug %] [%+ id FILTER bug_link(id) FILTER none %][% END %]
 
 [%
   title = {
     'bug' => "$link に加えられた変更" ,
     'dupe' => "重複処理の通知が $link に加えられました" ,
     'dep' => "$link の依存関係の確認" ,
-    'created' => "$Link はデータベースに追加されました" ,
-    'move' => "$Link はほかのデータベースに移動されました" ,
+    'created' => "$link はデータベースに追加されました" ,
+    'move' => "$link はほかのデータベースに移動されました" ,
   }
 %]
 
 [% Hook.process('title') %]
 
 <dl>
-  <dt>[% title.$type %]</dt>
+  <dt>[% title.$type.ucfirst %]</dt>
   <dd>
     [% PROCESS "bug/process/bugmail.html.tmpl" mailing_bugid = id %]
     [%# Links to more information about the changed bug. %]

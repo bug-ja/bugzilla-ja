@@ -10,6 +10,7 @@
 # as its only argument.  It attempts to troubleshoot as many installation
 # issues as possible.
 
+use 5.10.1;
 use strict;
 use lib qw(. lib);
 

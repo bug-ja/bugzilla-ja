@@ -7,7 +7,7 @@
 
 package Bugzilla::Search::Quicksearch;
 
-# Make it harder for us to do dangerous things in Perl.
+use 5.10.1;
 use strict;
 
 use Bugzilla::Error;
@@ -21,7 +21,7 @@ use List::Util qw(min max);
 use List::MoreUtils qw(firstidx);
 use Text::ParseWords qw(parse_line);
 
-use base qw(Exporter);
+use parent qw(Exporter);
 @Bugzilla::Search::Quicksearch::EXPORT = qw(quicksearch);
 
 # Custom mappings for some fields.
@@ -608,3 +608,21 @@ sub makeChart {
 }
 
 1;
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item FIELD_MAP
+
+=item quicksearch
+
+=item negateComparisonType
+
+=item makeChart
+
+=item addChart
+
+=item matchPrefixes
+
+=back

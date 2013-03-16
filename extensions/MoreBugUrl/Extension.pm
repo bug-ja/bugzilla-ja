@@ -6,10 +6,13 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::Extension::MoreBugUrl;
+
+use 5.10.1;
 use strict;
-use base qw(Bugzilla::Extension);
+use parent qw(Bugzilla::Extension);
 
 use constant MORE_SUB_CLASSES => qw(
+    Bugzilla::Extension::MoreBugUrl::BitBucket
     Bugzilla::Extension::MoreBugUrl::ReviewBoard
     Bugzilla::Extension::MoreBugUrl::Rietveld
     Bugzilla::Extension::MoreBugUrl::RT

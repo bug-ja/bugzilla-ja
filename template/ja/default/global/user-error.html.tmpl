@@ -412,13 +412,13 @@
     ID <code>[% page_id FILTER html %]</code> は有効なページ識別子でありません。
 
   [% ELSIF error == "bug_access_denied" %]
-    [% title = BLOCK %] アクセスは拒否されました [% END %]
+    [% title = BLOCK %] $terms.Bug アクセスは拒否されました [% END %]
     [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
     あなたのアカウントには
     [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
 
   [% ELSIF error == "bug_access_query" %]
-    [% title = BLOCK %] アクセスは拒否されました [% END %]
+    [% title = BLOCK %] $terms.Bug アクセスは拒否されました [% END %]
     [% docslinks = {'myaccount.html' => 'アカウント作成'} %]
     あなたのアカウントには
     [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
@@ -1181,10 +1181,6 @@
     [% title = BLOCK %] [% jawords.param FILTER html %] が無効です [% END %]
     指定された値 [% name FILTER html %] は無効です: [% err FILTER html %].
 
-  [% ELSIF error == "invalid_product_name" %]
-    [% title = BLOCK %] [% jawords.product_name FILTER html %] が無効です [% END %]
-    [% jawords.product_name FILTER html %] '[% product FILTER html %]' は無効か存在しません。
-
   [% ELSIF error == "invalid_regexp" %]
     [% title = BLOCK %] 無効な正規表現です [% END %]
     指定された正規表現は無効です。
@@ -1466,6 +1462,11 @@
     [% terms.bug %] を作成時に選択可能な [% terms.bug %] [% jawords.bug_status FILTER html %] がありません。
     [% Param("maintainer") %] にこの問題を報告してください。
 
+  [% ELSIF error == "no_keywords" %]
+    [% title = "キーワード未定義" %]
+    [% admindocslinks = {'keywords.html' => 'キーワードを設定'} %]
+    このサイトではキーワードが定義されていません。
+
   [% ELSIF error == "no_new_quips" %]
     [% title = BLOCK %] 新規 [% jawords.quip FILTER html %] は無効です [% END %]
     [% admindocslinks = {'quips.html' => 'quip の利用方法の制御'} %]
@@ -1517,8 +1518,7 @@
     [% IF class == "Bugzilla::User" %]
       入力した [% jawords.account_login_name FILTER html %] が間違えているか、その人は [% terms.Bugzilla %] にはアカウントを登録していないのかもしれません。
     [% ELSIF class == "Bugzilla::Keyword" %]
-      無効なキーワード名は <a href="describekeywords.cgi">一覧</a>
-      で見ることができます。
+      存在するキーワード <a href="describekeywords.cgi">一覧</a> を参照してください。
     [% END %]
 
   [% ELSIF error == "old_password_incorrect" %]
@@ -1894,8 +1894,8 @@
     [% END %]
 
   [% ELSIF error == "unknown_tab" %]
-    [% title = BLOCK %] 指定された [% jawords.tab FILTER html %] は存在していません [% END %]
-    <code>[% current_tab_name FILTER html %]</code> は有効な [% jawords.tab_name FILTER html %] ではありません。
+    [% title = BLOCK %] 指定されたタブは存在していません [% END %]
+    <code>[% current_tab_name FILTER html %]</code> というタブは存在していません。
 
   [% ELSIF error == "value_inactive" %]
     [% title = "値は無効です" %]

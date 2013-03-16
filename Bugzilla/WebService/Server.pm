@@ -6,6 +6,8 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::WebService::Server;
+
+use 5.10.1;
 use strict;
 
 use Bugzilla::Error;
@@ -54,3 +56,15 @@ sub datetime_format_outbound {
 }
 
 1;
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item handle_login
+
+=item datetime_format_outbound
+
+=item datetime_format_inbound
+
+=back

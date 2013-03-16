@@ -1,0 +1,31 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[%# INTERFACE:
+  # new_user: The Bugzilla::User object of the user being created
+  #%]
+
+From: [% Param('mailfrom') %]
+To: [% new_user.email %]
+Subject: [% terms.Bugzilla %]: 新規アカウント作成完了
+X-Bugzilla-Type: admin
+
+[このメールは自動生成メールです]
+
+新規 [% terms.Bugzilla %] ユーザアカウントが [% urlbase %] にて作成されました:
+
+ログイン名: [% new_user.login %]
+[% IF new_user.realname %]
+実名: [% new_user.realname %]
+[% END %]
+
+セキュリティー上の理由で、パスワードはこのメールに含んでいません。
+パスワードが不明な場合は、"パスワードを忘れた" リンクから新規パスワードを
+要求してください。
+
+アカウントに何か問題があれば、 [% Param('maintainer') %] に問い合わせてください。

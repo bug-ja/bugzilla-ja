@@ -57,9 +57,10 @@ in addition to what is documented here.
 
 package Bugzilla::Field;
 
+use 5.10.1;
 use strict;
 
-use base qw(Exporter Bugzilla::Object);
+use parent qw(Exporter Bugzilla::Object);
 @Bugzilla::Field::EXPORT = qw(check_field get_field_id get_legal_field_values);
 
 use Bugzilla::Constants;
@@ -150,6 +151,7 @@ use constant SQL_DEFINITIONS => {
     FIELD_TYPE_TEXTAREA,      { TYPE => 'MEDIUMTEXT', 
                                 NOTNULL => 1, DEFAULT => "''"},
     FIELD_TYPE_DATETIME,      { TYPE => 'DATETIME'   },
+    FIELD_TYPE_DATE,          { TYPE => 'DATE'       },
     FIELD_TYPE_BUG_ID,        { TYPE => 'INT3'       },
 };
 
@@ -198,9 +200,9 @@ use constant DEFAULT_FIELDS => (
      buglist => 1},
     {name => 'cc',           desc => 'CC',         in_new_bugmail => 1},
     {name => 'dependson',    desc => 'Depends on', in_new_bugmail => 1,
-     is_numeric => 1},
+     is_numeric => 1, buglist => 1},
     {name => 'blocked',      desc => 'Blocks',     in_new_bugmail => 1,
-     is_numeric => 1},
+     is_numeric => 1, buglist => 1},
 
     {name => 'attachments.description', desc => 'Attachment description'},
     {name => 'attachments.filename',    desc => 'Attachment filename'},
@@ -348,9 +350,7 @@ sub _check_sortkey {
 sub _check_type {
     my ($invocant, $type, undef, $params) = @_;
     my $saved_type = $type;
-    # The constant here should be updated every time a new,
-    # higher field type is added.
-    (detaint_natural($type) && $type <= FIELD_TYPE_KEYWORDS)
+    (detaint_natural($type) && $type < FIELD_TYPE_HIGHEST_PLUS_ONE)
       || ThrowCodeError('invalid_customfield_type', { type => $saved_type });
 
     my $custom = blessed($invocant) ? $invocant->custom : $params->{custom};
@@ -951,7 +951,10 @@ sub remove_from_db {
     }
     else {
         $bugs_query = "SELECT COUNT(*) FROM bugs WHERE $name IS NOT NULL";
-        if ($self->type != FIELD_TYPE_BUG_ID && $self->type != FIELD_TYPE_DATETIME) {
+        if ($self->type != FIELD_TYPE_BUG_ID
+            && $self->type != FIELD_TYPE_DATE
+            && $self->type != FIELD_TYPE_DATETIME)
+        {
             $bugs_query .= " AND $name != ''";
         }
         # Ignore the default single select value
@@ -1345,3 +1348,15 @@ sub get_field_id {
 1;
 
 __END__
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item match
+
+=item set_is_numeric
+
+=item update
+
+=back

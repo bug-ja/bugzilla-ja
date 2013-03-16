@@ -48,7 +48,7 @@
 
     <table width="100%">
       <tr>
-        <th align="left">ID</th>
+        <th>ID</th>
         [% FOREACH col = query.columnlist %]
           [% NEXT IF col == 'bug_id' %]
           <th align="left">[% field_descs.$col FILTER html %]</th>
@@ -57,7 +57,7 @@
 
       [% FOREACH bug=query.bugs %]
         <tr>
-          <td align="left"><a href="[%+ urlbase FILTER html %]show_bug.cgi?id=
+          <td><a href="[%+ urlbase FILTER html %]show_bug.cgi?id=
               [%- bug.bug_id %]">[% bug.bug_id %]</a></td>
           [% FOREACH col = query.columnlist %]
             [% NEXT IF col == 'bug_id' %]

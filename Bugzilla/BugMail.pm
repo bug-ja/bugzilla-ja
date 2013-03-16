@@ -5,9 +5,10 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-use strict;
-
 package Bugzilla::BugMail;
+
+use 5.10.1;
+use strict;
 
 use Bugzilla::Error;
 use Bugzilla::User;
@@ -442,10 +443,17 @@ sub _get_new_bugmail_fields {
     my $bug = shift;
     my @fields = @{ Bugzilla->fields({obsolete => 0, in_new_bugmail => 1}) };
     my @diffs;
+    my $params = Bugzilla->params;
 
     foreach my $field (@fields) {
         my $name = $field->name;
         my $value = $bug->$name;
+
+        next if !$field->is_visible_on_bug($bug)
+            || ($name eq 'classification' && !$params->{'useclassification'})
+            || ($name eq 'status_whiteboard' && !$params->{'usestatuswhiteboard'})
+            || ($name eq 'qa_contact' && !$params->{'useqacontact'})
+            || ($name eq 'target_milestone' && !$params->{'usetargetmilestone'});
 
         if (ref $value eq 'ARRAY') {
             $value = join(', ', @$value);
@@ -475,3 +483,15 @@ sub _get_new_bugmail_fields {
 }
 
 1;
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item relationships
+
+=item sendMail
+
+=item Send
+
+=back

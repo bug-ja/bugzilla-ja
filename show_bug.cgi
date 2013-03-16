@@ -6,8 +6,8 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
+use 5.10.1;
 use strict;
-
 use lib qw(. lib);
 
 use Bugzilla;
@@ -46,7 +46,7 @@ Bugzilla->switch_to_shadow_db unless $user->id;
 
 if ($single) {
     my $id = $cgi->param('id');
-    push @bugs, Bugzilla::Bug->check($id);
+    push @bugs, Bugzilla::Bug->check({ id => $id, cache => 1 });
     if (defined $cgi->param('mark')) {
         foreach my $range (split ',', $cgi->param('mark')) {
             if ($range =~ /^(\d+)-(\d+)$/) {
@@ -66,7 +66,7 @@ if ($single) {
 
         foreach my $bug_id (@ids) {
             next unless $bug_id;
-            my $bug = new Bugzilla::Bug($bug_id);
+            my $bug = new Bugzilla::Bug({ id => $bug_id, cache => 1 });
             if (!$bug->{error}) {
                 push(@check_bugs, $bug);
             }
@@ -110,7 +110,7 @@ if ($cgi->param("field")) {
 }
 
 unless ($user->is_timetracker) {
-    @fieldlist = grep($_ !~ /(^deadline|_time)$/, @fieldlist);
+    @fieldlist = grep($_ !~ /_time$/, @fieldlist);
 }
 
 foreach (@fieldlist) {

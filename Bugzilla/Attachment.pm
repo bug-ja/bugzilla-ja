@@ -5,9 +5,10 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-use strict;
-
 package Bugzilla::Attachment;
+
+use 5.10.1;
+use strict;
 
 =head1 NAME
 
@@ -45,7 +46,7 @@ use Bugzilla::Hook;
 use File::Copy;
 use List::Util qw(max);
 
-use base qw(Bugzilla::Object);
+use parent qw(Bugzilla::Object);
 
 ###############################
 ####    Initialization     ####
@@ -143,7 +144,7 @@ sub bug {
     my $self = shift;
 
     require Bugzilla::Bug;
-    $self->{bug} ||= Bugzilla::Bug->new($self->bug_id);
+    $self->{bug} ||= Bugzilla::Bug->new({ id => $self->bug_id, cache => 1 });
     return $self->{bug};
 }
 
@@ -189,9 +190,8 @@ the user who attached the attachment
 
 sub attacher {
     my $self = shift;
-    return $self->{attacher} if exists $self->{attacher};
-    $self->{attacher} = new Bugzilla::User($self->{submitter_id});
-    return $self->{attacher};
+    return $self->{attacher}
+      ||= new Bugzilla::User({ id => $self->{submitter_id}, cache => 1 });
 }
 
 =over
@@ -988,3 +988,29 @@ sub get_content_type {
 
 
 1;
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item set_filename
+
+=item set_is_obsolete
+
+=item DB_COLUMNS
+
+=item set_is_private
+
+=item set_content_type
+
+=item set_description
+
+=item get_content_type
+
+=item set_flags
+
+=item set_is_patch
+
+=item update
+
+=back

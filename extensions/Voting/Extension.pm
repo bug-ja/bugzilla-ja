@@ -6,8 +6,10 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::Extension::Voting;
+
+use 5.10.1;
 use strict;
-use base qw(Bugzilla::Extension);
+use parent qw(Bugzilla::Extension);
 
 use Bugzilla::Bug;
 use Bugzilla::BugMail;
@@ -628,7 +630,7 @@ sub _update_votes {
         # Set header_done to 1 only after the first bug.
         $vars->{'header_done'} = 1;
     }
-    $vars->{'votes_recorded'} = 1;
+    $vars->{'message'} = 'votes_recorded';
 }
 
 ######################

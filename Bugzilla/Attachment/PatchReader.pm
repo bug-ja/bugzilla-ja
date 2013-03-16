@@ -5,9 +5,13 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
+package Bugzilla::Attachment::PatchReader;
+
+use 5.10.1;
 use strict;
 
-package Bugzilla::Attachment::PatchReader;
+use IPC::Open3;
+use Symbol 'gensym';
 
 use Bugzilla::Error;
 use Bugzilla::Attachment;
@@ -99,8 +103,32 @@ sub process_interdiff {
     # Send through interdiff, send output directly to template.
     # Must hack path so that interdiff will work.
     $ENV{'PATH'} = $lc->{diffpath};
-    open my $interdiff_fh, "$lc->{interdiffbin} $old_filename $new_filename|";
-    binmode $interdiff_fh;
+
+    my ($pid, $interdiff_stdout, $interdiff_stderr);
+    if ($ENV{MOD_PERL}) {
+        require Apache2::RequestUtil;
+        require Apache2::SubProcess;
+        my $request = Apache2::RequestUtil->request;
+        (undef, $interdiff_stdout, $interdiff_stderr) = $request->spawn_proc_prog(
+            $lc->{interdiffbin}, [$old_filename, $new_filename]
+        );
+    } else {
+        $interdiff_stderr = gensym;
+        my $pid = open3(gensym, $interdiff_stdout, $interdiff_stderr,
+                        $lc->{interdiffbin}, $old_filename, $new_filename);
+    }
+    binmode $interdiff_stdout;
+
+    # Check for errors
+    {
+        local $/ = undef;
+        my $error = <$interdiff_stderr>;
+        if ($error) {
+            warn($error);
+            $warning = 'interdiff3';
+        }
+    }
+
     my ($reader, $last_reader) = setup_patch_readers("", $context);
 
     if ($format eq 'raw') {
@@ -113,7 +141,7 @@ sub process_interdiff {
     }
     else {
         # In case the HTML page is displayed with the UTF-8 encoding.
-        binmode $interdiff_fh, ':utf8' if Bugzilla->params->{'utf8'};
+        binmode $interdiff_stdout, ':utf8' if Bugzilla->params->{'utf8'};
 
         $vars->{'warning'} = $warning if $warning;
         $vars->{'bugid'} = $new_attachment->bug_id;
@@ -124,9 +152,9 @@ sub process_interdiff {
 
         setup_template_patch_reader($last_reader, $format, $context, $vars);
     }
-    $reader->iterate_fh($interdiff_fh, 'interdiff #' . $old_attachment->id .
+    $reader->iterate_fh($interdiff_stdout, 'interdiff #' . $old_attachment->id .
                         ' #' . $new_attachment->id);
-    close $interdiff_fh;
+    waitpid($pid, 0) if $pid;
     $ENV{'PATH'} = '';
 
     # Delete temporary files.
@@ -285,3 +313,21 @@ sub setup_template_patch_reader {
 1;
 
 __END__
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item get_unified_diff
+
+=item process_diff
+
+=item warn_if_interdiff_might_fail
+
+=item setup_template_patch_reader
+
+=item process_interdiff
+
+=item setup_patch_readers
+
+=back

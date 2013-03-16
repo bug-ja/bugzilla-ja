@@ -10,6 +10,7 @@ package Bugzilla::Install::DB;
 # NOTE: This package may "use" any modules that it likes,
 # localconfig is available, and params are up to date. 
 
+use 5.10.1;
 use strict;
 
 use Bugzilla::Constants;
@@ -23,6 +24,7 @@ use Bugzilla::Field;
 
 use Date::Parse;
 use Date::Format;
+use Digest;
 use IO::File;
 use List::MoreUtils qw(uniq);
 use URI;
@@ -700,7 +702,10 @@ sub update_table_definitions {
     # 2012-08-01 koosha.khajeh@gmail.com - Bug 187753
     _shorten_long_quips();
 
-    # 2012-12-23 LpSolit@gmail.com - Bug 824361
+    # 2012-12-29 reed@reedloden.com - Bug 785283
+    _add_password_salt_separator();
+
+    # 2013-01-02 LpSolit@gmail.com - Bug 824361
     _fix_longdescs_indexes();
 
     # 2013-02-04 dkl@mozilla.com - Bug 824346
@@ -3788,6 +3793,39 @@ sub _shorten_long_quips {
         print "\n";
     }
     $dbh->bz_alter_column('quips', 'quip', { TYPE => 'varchar(512)', NOTNULL => 1});
+}
+
+sub _add_password_salt_separator {
+    my $dbh = Bugzilla->dbh;
+
+    $dbh->bz_start_transaction();
+
+    my $profiles = $dbh->selectall_arrayref("SELECT userid, cryptpassword FROM profiles WHERE ("
+        . $dbh->sql_regexp("cryptpassword", "'^[^,]+{'") . ")");
+
+    if (@$profiles) {
+        say "Adding salt separator to password hashes...";
+
+        my $query = $dbh->prepare("UPDATE profiles SET cryptpassword = ? WHERE userid = ?");
+        my %algo_sizes;
+
+        foreach my $profile (@$profiles) {
+            my ($userid, $hash) = @$profile;
+            my ($algorithm) = $hash =~ /{([^}]+)}$/;
+
+            $algo_sizes{$algorithm} ||= length(Digest->new($algorithm)->b64digest);
+
+            # Calculate the salt length by taking the stored hash and
+            # subtracting the combined lengths of the hash size, the
+            # algorithm name, and 2 for the {} surrounding the name.
+            my $not_salt_len = $algo_sizes{$algorithm} + length($algorithm) + 2;
+            my $salt_len = length($hash) - $not_salt_len;
+
+            substr($hash, $salt_len, 0, ',');
+            $query->execute($hash, $userid);
+        }
+    }
+    $dbh->bz_commit_transaction();
 }
 
 sub _fix_flagclusions_indexes {

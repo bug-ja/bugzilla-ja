@@ -7,6 +7,7 @@
 
 package Bugzilla::Bug;
 
+use 5.10.1;
 use strict;
 
 use Bugzilla::Attachment;
@@ -35,7 +36,7 @@ use URI;
 use URI::QueryParam;
 use Scalar::Util qw(blessed);
 
-use base qw(Bugzilla::Object Exporter);
+use parent qw(Bugzilla::Object Exporter);
 @Bugzilla::Bug::EXPORT = qw(
     bug_alias_to_id
     LogActivityEntry
@@ -145,6 +146,9 @@ sub VALIDATORS {
         elsif ($field->type == FIELD_TYPE_DATETIME) {
             $validator = \&_check_datetime_field;
         }
+        elsif ($field->type == FIELD_TYPE_DATE) {
+            $validator = \&_check_date_field;
+        }
         elsif ($field->type == FIELD_TYPE_FREETEXT) {
             $validator = \&_check_freetext_field;
         }
@@ -232,7 +236,9 @@ use constant NUMERIC_COLUMNS => qw(
 );
 
 sub DATE_COLUMNS {
-    my @fields = @{ Bugzilla->fields({ type => FIELD_TYPE_DATETIME }) };
+    my @fields = (@{ Bugzilla->fields({ type => [FIELD_TYPE_DATETIME,
+                                                 FIELD_TYPE_DATE] })
+                   });
     return map { $_->name } @fields;
 }
 
@@ -317,9 +323,13 @@ sub new {
 
     # If we get something that looks like a word (not a number),
     # make it the "name" param.
-    if (!defined $param || (!ref($param) && $param !~ /^\d+$/)) {
+    if (!defined $param
+        || (!ref($param) && $param =~ /\D/)
+        || (ref($param) && $param->{id} =~ /\D/))
+    {
         if ($param) {
-            $param = { name => $param };
+            $param = { name => ref($param) ? $param->{id} : $param,
+                       cache => ref($param) ? $param->{cache} : 0 };
         }
         else {
             # We got something that's not a number.
@@ -353,16 +363,25 @@ sub new {
     return $self;
 }
 
+sub cache_key {
+    my $class = shift;
+    my $key = $class->SUPER::cache_key(@_)
+      || return;
+    return $key . ',' . Bugzilla->user->id;
+}
+
 sub check {
     my $class = shift;
-    my ($id, $field) = @_;
-
-    ThrowUserError('improper_bug_id_field_value', { field => $field }) unless defined $id;
+    my ($param, $field) = @_;
 
     # Bugzilla::Bug throws lots of special errors, so we don't call
     # SUPER::check, we just call our new and do our own checks.
-    $id = trim($id);
-    my $self = $class->new($id);
+    my $id = ref($param)
+        ? ($param->{id} = trim($param->{id}))
+        : ($param = trim($param));
+    ThrowUserError('improper_bug_id_field_value', { field => $field }) unless defined $id;
+
+    my $self = $class->new($param);
 
     if ($self->{error}) {
         # For error messages, use the id that was returned by new(), because
@@ -1982,8 +2001,13 @@ sub _check_field_is_mandatory {
     }
 }
 
+sub _check_date_field {
+    my ($invocant, $date) = @_;
+    return $invocant->_check_datetime_field($date, undef, {date_only => 1});
+}
+
 sub _check_datetime_field {
-    my ($invocant, $date_time) = @_;
+    my ($invocant, $date_time, $field, $params) = @_;
 
     # Empty datetimes are empty strings or strings only containing
     # 0's, whitespace, and punctuation.
@@ -1995,6 +2019,10 @@ sub _check_datetime_field {
     my ($date, $time) = split(' ', $date_time);
     if ($date && !validate_date($date)) {
         ThrowUserError('illegal_date', { date   => $date,
+                                         format => 'YYYY-MM-DD' });
+    }
+    if ($time && $params->{date_only}) {
+        ThrowUserError('illegal_date', { date   => $date_time,
                                          format => 'YYYY-MM-DD' });
     }
     if ($time && !validate_time($time)) {
@@ -3172,7 +3200,7 @@ sub assigned_to {
     my ($self) = @_;
     return $self->{'assigned_to_obj'} if exists $self->{'assigned_to_obj'};
     $self->{'assigned_to'} = 0 if $self->{'error'};
-    $self->{'assigned_to_obj'} ||= new Bugzilla::User($self->{'assigned_to'});
+    $self->{'assigned_to_obj'} ||= new Bugzilla::User({ id => $self->{'assigned_to'}, cache => 1 });
     return $self->{'assigned_to_obj'};
 }
 
@@ -3248,7 +3276,8 @@ sub component_obj {
     my ($self) = @_;
     return $self->{component_obj} if defined $self->{component_obj};
     return {} if $self->{error};
-    $self->{component_obj} = new Bugzilla::Component($self->{component_id});
+    $self->{component_obj} =
+        new Bugzilla::Component({ id => $self->{component_id}, cache => 1 });
     return $self->{component_obj};
 }
 
@@ -3456,7 +3485,8 @@ sub product {
 sub product_obj {
     my $self = shift;
     return {} if $self->{error};
-    $self->{product_obj} ||= new Bugzilla::Product($self->{product_id});
+    $self->{product_obj} ||=
+        new Bugzilla::Product({ id => $self->{product_id}, cache => 1 });
     return $self->{product_obj};
 }
 
@@ -3466,7 +3496,7 @@ sub qa_contact {
     return undef if $self->{'error'};
 
     if (Bugzilla->params->{'useqacontact'} && $self->{'qa_contact'}) {
-        $self->{'qa_contact_obj'} = new Bugzilla::User($self->{'qa_contact'});
+        $self->{'qa_contact_obj'} = new Bugzilla::User({ id => $self->{'qa_contact'}, cache => 1 });
     } else {
         $self->{'qa_contact_obj'} = undef;
     }
@@ -3477,7 +3507,7 @@ sub reporter {
     my ($self) = @_;
     return $self->{'reporter'} if exists $self->{'reporter'};
     $self->{'reporter_id'} = 0 if $self->{'error'};
-    $self->{'reporter'} = new Bugzilla::User($self->{'reporter_id'});
+    $self->{'reporter'} = new Bugzilla::User({ id => $self->{'reporter_id'}, cache => 1 });
     return $self->{'reporter'};
 }
 
@@ -3757,9 +3787,7 @@ sub editable_bug_fields {
         # Ensure field exists before attempting to remove it.
         splice(@fields, $location, 1) if ($location > -1);
     }
-    # Sorted because the old @::log_columns variable, which this replaces,
-    # was sorted.
-    return sort(@fields);
+    return @fields;
 }
 
 # XXX - When Bug::update() will be implemented, we should make this routine
@@ -4071,9 +4099,10 @@ sub check_can_change_field {
     # $PrivilegesRequired = PRIVILEGES_REQUIRED_REPORTER : the reporter, assignee or an empowered user;
     # $PrivilegesRequired = PRIVILEGES_REQUIRED_ASSIGNEE : the assignee or an empowered user;
     # $PrivilegesRequired = PRIVILEGES_REQUIRED_EMPOWERED : an empowered user.
-    
-    # Only users in the time-tracking group can change time-tracking fields.
-    if ( grep($_ eq $field, TIMETRACKING_FIELDS) ) {
+
+    # Only users in the time-tracking group can change time-tracking fields,
+    # including the deadline.
+    if (grep { $_ eq $field } (TIMETRACKING_FIELDS, 'deadline')) {
         if (!$user->is_timetracker) {
             $$PrivilegesRequired = PRIVILEGES_REQUIRED_EMPOWERED;
             return 0;
@@ -4307,3 +4336,269 @@ sub _multi_select_accessor {
 }
 
 1;
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item remove_cc
+
+=item add_see_also
+
+=item choices
+
+=item keywords
+
+=item blocked
+
+=item qa_contact
+
+=item add_comment
+
+=item bug_severity
+
+=item dup_id
+
+=item set_priority
+
+=item any_flags_requesteeble
+
+=item set_bug_status
+
+=item estimated_time
+
+=item set_platform
+
+=item statuses_available
+
+=item set_custom_field
+
+=item remove_see_also
+
+=item remove_from_db
+
+=item product_obj
+
+=item reporter_accessible
+
+=item set_summary
+
+=item LogActivityEntry
+
+=item set_assigned_to
+
+=item add_group
+
+=item bug_file_loc
+
+=item DATE_COLUMNS
+
+=item set_component
+
+=item delta_ts
+
+=item set_resolution
+
+=item version
+
+=item deadline
+
+=item fields
+
+=item dependson
+
+=item check_can_change_field
+
+=item update
+
+=item set_op_sys
+
+=item cache_key
+
+=item bug_group
+
+=item comments
+
+=item map_fields
+
+=item assigned_to
+
+=item user
+
+=item ValidateDependencies
+
+=item short_desc
+
+=item duplicate_ids
+
+=item isopened
+
+=item remaining_time
+
+=item set_deadline
+
+=item preload
+
+=item groups_in
+
+=item clear_resolution
+
+=item set_estimated_time
+
+=item in_group
+
+=item status
+
+=item get_activity
+
+=item reporter
+
+=item rep_platform
+
+=item DB_COLUMNS
+
+=item flag_types
+
+=item bug_status
+
+=item attachments
+
+=item flags
+
+=item set_flags
+
+=item actual_time
+
+=item component
+
+=item UPDATE_COLUMNS
+
+=item set_cclist_accessible
+
+=item product
+
+=item VALIDATORS
+
+=item show_attachment_flags
+
+=item set_comment_is_private
+
+=item set_severity
+
+=item send_changes
+
+=item add_tag
+
+=item bug_id
+
+=item reset_qa_contact
+
+=item remove_group
+
+=item set_alias
+
+=item set_dup_id
+
+=item set_target_milestone
+
+=item cc_users
+
+=item everconfirmed
+
+=item check_is_visible
+
+=item check_for_edit
+
+=item match
+
+=item VALIDATOR_DEPENDENCIES
+
+=item possible_duplicates
+
+=item set_url
+
+=item add_cc
+
+=item blocks_obj
+
+=item set_status_whiteboard
+
+=item product_id
+
+=item error
+
+=item reset_assigned_to
+
+=item status_whiteboard
+
+=item create
+
+=item set_all
+
+=item set_reporter_accessible
+
+=item classification_id
+
+=item tags
+
+=item modify_keywords
+
+=item priority
+
+=item keyword_objects
+
+=item set_dependencies
+
+=item depends_on_obj
+
+=item cclist_accessible
+
+=item cc
+
+=item duplicates
+
+=item component_obj
+
+=item see_also
+
+=item groups
+
+=item default_bug_status
+
+=item related_bugs
+
+=item editable_bug_fields
+
+=item resolution
+
+=item lastdiffed
+
+=item classification
+
+=item alias
+
+=item op_sys
+
+=item remove_tag
+
+=item percentage_complete
+
+=item EmitDependList
+
+=item bug_alias_to_id
+
+=item set_qa_contact
+
+=item creation_ts
+
+=item set_version
+
+=item component_id
+
+=item new_bug_statuses
+
+=item set_remaining_time
+
+=item target_milestone
+
+=back

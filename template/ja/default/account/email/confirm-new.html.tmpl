@@ -27,26 +27,26 @@
   <input type="hidden" name="a" value="confirm_new_account">
   <table>
     <tr>
-      <th align="right">メールアドレス:</th>
+      <th>メールアドレス:</th>
       <td>[% email FILTER html %]</td>
     </tr>
     <tr>
-      <th align="right"><small><i>(任意)</i></small> <label for="realname">実名</label>:</th>
+      <th><small><i>(任意)</i></small> <label for="realname">実名</label>:</th>
       <td><input type="text" id="realname" name="realname" value=""></td>
     </tr>
     <tr>
-      <th align="right"><label for="passwd1">パスワードの指定</label>:</th>
+      <th><label for="passwd1">パスワードの指定</label>:</th>
       <td>
         <input type="password" id="passwd1" name="passwd1" value="">
         (最低 [% constants.USER_PASSWORD_MIN_LENGTH FILTER none %] 文字)
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="passwd2">パスワードの確認</label>:</th>
+      <th><label for="passwd2">パスワードの確認</label>:</th>
       <td><input type="password" id="passwd2" name="passwd2" value=""></td>
     </tr>
     <tr>
-      <th align="right">&nbsp;</th>
+      <th>&nbsp;</th>
       <td><input type="submit" id="confirm" value="登録"></td>
     </tr>
   </table>

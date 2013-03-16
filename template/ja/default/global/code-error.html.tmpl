@@ -49,8 +49,8 @@
 
   [% ELSIF error == "chart_data_not_generated" %]
     [% admindocslinks = {'extraconfig.html' => 'チャートの設定'} %]
-    [% IF product %]
-      <em>[% product FILTER html %]</em> プロダクトのチャートは、
+    [% IF product.id %]
+      <em>[% product.name FILTER html %]</em> プロダクトのチャートは、
       チャートが作成されてからデータの収集がまだ行われていないため、
       現在利用できません。
     [% ELSE %]

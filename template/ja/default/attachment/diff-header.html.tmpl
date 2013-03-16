@@ -124,10 +124,11 @@
   この二つのパッチの差分は、[% terms.Bugzilla %]
   は異なったファイルのセットに対するパッチを比較する際に制限があるため、間違った場所に
   表示している可能性があります。
-  [% END %]
-  [% IF warning == "interdiff2" %]
+  [% ELSIF warning == "interdiff2" %]
   二つのパッチの差分は [% terms.Bugzilla %] が異なったリビジョンへのパッチを比較する際の
   制限のため、正確でない可能性があります。
+  [% ELSIF warning == "interdiff3" %]
+    interdiff がパッチを比較する際にエラーが発生しました。
   [% END %]
 </h2>
 [% ELSE %]

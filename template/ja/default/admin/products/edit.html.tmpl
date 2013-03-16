@@ -35,7 +35,7 @@
     [% PROCESS "admin/products/edit-common.html.tmpl" %]
 
     <tr>
-      <th align="right" valign="top">
+      <th valign="top">
         <a href="editcomponents.cgi?product=[% product.name FILTER uri %]">
         コンポーネントを編集:
         </a>
@@ -59,7 +59,7 @@
       </td>
     </tr>
     <tr>
-      <th align="right" valign="top">
+      <th valign="top">
         <a href="editversions.cgi?product=[% product.name FILTER uri %]">バージョンを編集:</a>
       </th>
       <td>
@@ -75,7 +75,7 @@
     </tr>
     [% IF Param('usetargetmilestone') %]
       <tr>
-        <th align="right" valign="top">
+        <th valign="top">
           <a href="editmilestones.cgi?product=[% product.name FILTER uri %]">
           マイルストーンを編集:</a>
         </th>
@@ -92,7 +92,7 @@
       </tr>
     [% END %]
     <tr>
-      <th align="right" valign="top">
+      <th valign="top">
         <a href="editproducts.cgi?action=editgroupcontrols&product=
           [%- product.name FILTER uri %]">
           グループによる制限を編集:
@@ -121,7 +121,7 @@
       </td>
     </tr>
     <tr>
-      <th align="right">[% terms.Bugs %]:</th>
+      <th>[% terms.Bugs %]:</th>
       <td><a href="buglist.cgi?product=[% product.name FILTER uri %]">
             [% product.bug_count FILTER html %]</a></td>
     </tr>

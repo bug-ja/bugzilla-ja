@@ -7,21 +7,22 @@
 
 package Bugzilla::Util;
 
+use 5.10.1;
 use strict;
 
-use base qw(Exporter);
+use parent qw(Exporter);
 @Bugzilla::Util::EXPORT = qw(trick_taint detaint_natural detaint_signed
                              html_quote url_quote xml_quote
                              css_class_quote html_light_quote
                              i_am_cgi correct_urlbase remote_ip validate_ip
                              do_ssl_redirect_if_required use_attachbase
-                             diff_arrays on_main_db say
+                             diff_arrays on_main_db
                              trim wrap_hard wrap_comment find_wrap_point
                              format_time validate_date validate_time datetime_from
                              is_7bit_clean bz_crypt generate_random_password
                              validate_email_syntax check_email_syntax clean_text
                              get_text template_var disable_utf8
-                             detect_encoding);
+                             detect_encoding email_filter);
 
 use Bugzilla::Constants;
 use Bugzilla::RNG qw(irand);
@@ -33,7 +34,6 @@ use Digest;
 use Email::Address;
 use List::Util qw(first);
 use Scalar::Util qw(tainted blessed);
-use Template::Filters;
 use Text::Wrap;
 use Encode qw(encode decode resolve_alias);
 use Encode::Guess;
@@ -63,7 +63,11 @@ sub detaint_signed {
 #             visible strings.
 # Bug 319331: Handle BiDi disruptions.
 sub html_quote {
-    my ($var) = Template::Filters::html_filter(@_);
+    my $var = shift;
+    $var =~ s/&/&amp;/g;
+    $var =~ s/</&lt;/g;
+    $var =~ s/>/&gt;/g;
+    $var =~ s/"/&quot;/g;
     # Obscure '@'.
     $var =~ s/\@/\&#64;/g;
     if (Bugzilla->params->{'utf8'}) {
@@ -407,13 +411,6 @@ sub diff_arrays {
     return (\@removed, \@added);
 }
 
-# XXX - This is a temporary subroutine till we require Perl 5.10.1.
-# This will happen before Bugzilla 5.0rc1.
-sub say (@) {
-    print @_;
-    print "\n";
-}
-
 sub trim {
     my ($str) = @_;
     if ($str) {
@@ -440,11 +437,6 @@ sub wrap_comment {
         $wrappedcomment .= ($line . "\n");
       }
       else {
-        # Due to a segfault in Text::Tabs::expand() when processing tabs with
-        # Unicode (see http://rt.perl.org/rt3/Public/Bug/Display.html?id=52104),
-        # we have to remove tabs before processing the comment. This restriction
-        # can go away when we require Perl 5.8.9 or newer.
-        $line =~ s/\t/    /g;
         $wrappedcomment .= (wrap('', '', $line) . "\n");
       }
     }
@@ -593,23 +585,16 @@ sub bz_crypt {
         if (Bugzilla->params->{'utf8'}) {
             utf8::encode($password) if utf8::is_utf8($password);
         }
-    
+
         # Crypt the password.
         $crypted_password = crypt($password, $salt);
-
-        # HACK: Perl has bug where returned crypted password is considered
-        # tainted. See http://rt.perl.org/rt3/Public/Bug/Display.html?id=59998
-        unless(tainted($password) || tainted($salt)) {
-            trick_taint($crypted_password);
-        } 
     }
     else {
         my $hasher = Digest->new($algorithm);
-        # We only want to use the first characters of the salt, no
-        # matter how long of a salt we may have been passed.
-        $salt = substr($salt, 0, PASSWORD_SALT_LENGTH);
+        # Newly created salts won't yet have a comma.
+        ($salt) = $salt =~ /^([^,]+),?/;
         $hasher->add($password, $salt);
-        $crypted_password = $salt . $hasher->b64digest . "{$algorithm}";
+        $crypted_password = $salt . ',' . $hasher->b64digest . "{$algorithm}";
     }
 
     # Return the crypted password.
@@ -722,10 +707,12 @@ sub get_text {
 
 sub template_var {
     my $name = shift;
-    my $cache = Bugzilla->request_cache->{util_template_var} ||= {};
-    my $template = Bugzilla->template_inner;
-    my $lang = $template->context->{bz_language};
+    my $request_cache = Bugzilla->request_cache;
+    my $cache = $request_cache->{util_template_var} ||= {};
+    my $lang = $request_cache->{template_current_lang}->[0];
     return $cache->{$lang}->{$name} if defined $cache->{$lang};
+
+    my $template = Bugzilla->template_inner($lang);
     my %vars;
     # Note: If we suddenly start needing a lot of template_var variables,
     # they should move into their own template, not field-descs.
@@ -739,11 +726,7 @@ sub template_var {
 
 sub display_value {
     my ($field, $value) = @_;
-    my $value_descs = template_var('value_descs');
-    if (defined $value_descs->{$field}->{$value}) {
-        return $value_descs->{$field}->{$value};
-    }
-    return $value;
+    return template_var('value_descs')->{$field}->{$value} // $value;
 }
 
 sub disable_utf8 {
@@ -1179,5 +1162,21 @@ if Bugzilla is currently using the shadowdb or not. Used like:
      my $dbh = Bugzilla->dbh;
      $dbh->do("INSERT ...");
  }
+
+=back
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item do_ssl_redirect_if_required
+
+=item validate_time
+
+=item is_ipv4
+
+=item is_ipv6
+
+=item display_value
 
 =back

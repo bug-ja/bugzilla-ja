@@ -5,9 +5,10 @@
 # This Source Code Form is "Incompatible With Secondary Licenses", as
 # defined by the Mozilla Public License, v. 2.0.
 
-use strict;
-
 package Bugzilla::Classification;
+
+use 5.10.1;
+use strict;
 
 use Bugzilla::Constants;
 use Bugzilla::Field;
@@ -15,7 +16,7 @@ use Bugzilla::Util;
 use Bugzilla::Error;
 use Bugzilla::Product;
 
-use base qw(Bugzilla::Field::ChoiceInterface Bugzilla::Object Exporter);
+use parent qw(Bugzilla::Field::ChoiceInterface Bugzilla::Object Exporter);
 @Bugzilla::Classification::EXPORT = qw(sort_products_by_classification);
 
 ###############################
@@ -259,3 +260,21 @@ A Classification is a higher-level grouping of Products.
 =back
 
 =cut
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item set_description
+
+=item sortkey
+
+=item set_name
+
+=item description
+
+=item remove_from_db
+
+=item set_sortkey
+
+=back

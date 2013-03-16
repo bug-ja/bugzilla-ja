@@ -362,7 +362,7 @@ END
 URL から patchutils をインストールしてください。(PatchReader Perl モジュール
 を要求します。)
 
-    http://cyberelk.net/tim/patchutils/
+    http://cyberelk.net/tim/software/patchutils/
 END
     ppm_repo_add => <<EOT,
 ***********************************************************************
@@ -373,15 +373,6 @@ END
 *   ppm repo add theory58S ##theory_url##
 *                                                                     *
 * を実行する必要があります。                                          *
-EOT
-    ppm_repo_up => <<EOT,
-*                                                                     *
-* その後、(管理者として) 次のコマンドを実行してください。             *
-*                                                                     *
-*   ppm repo up theory58S                                             *
-*                                                                     *
-* 最後のコマンドを何度も繰り返さないでください。繰り返した場合、      *
-* リストの最初に "theory58S" が何度も表示されることになります。       *
 EOT
     template_precompile   => "テンプレートの事前コンパイル中...",
     template_removal_failed => <<END,

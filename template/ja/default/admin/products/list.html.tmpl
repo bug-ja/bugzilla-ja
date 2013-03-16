@@ -29,19 +29,24 @@
 %]
 
 [% columns = [
-     { 
+     {
        name => "name"
        heading => "プロダクトを編集"
        contentlink => 'editproducts.cgi?action=edit&amp;product=%%name%%'
      },
-     { 
+     {
        name => "description"
        heading => "説明"
        allow_html_content => 1
      },
-     { 
+     {
        name => "is_active"
        heading => "$terms.Bugs の新規作成可能"
+       yesno_field => 1
+     },
+     {
+       name => "allows_unconfirmed"
+       heading => "UNCONFIRMED $terms.Bugs を利用する"
        yesno_field => 1
      },
 ] %]

@@ -39,19 +39,19 @@
       </td>
     </tr>
     <tr>
-      <th align="right"><label for="sortkey">ソート順:</label></th>
+      <th><label for="sortkey">ソート順:</label></th>
       <td><input id="sortkey" size="6" maxlength="6" name="sortkey" 
                  value="[%- value.sortkey FILTER html %]"></td>
     </tr>
     [% IF field.name == "bug_status" %]
       <tr>
-        <th align="right"><label for="is_open">ステータスの型:</label></th>
+        <th><label for="is_open">ステータスの型:</label></th>
         <td>[% IF value.is_open %]活動中[% ELSE %]終了済[% END %]</td>
       </tr>
     [% END %]
     [% IF field.value_field %]
       <tr>
-        <th align="right">
+        <th>
           <label for="visibility_value_id">
            [%+ field.value_field.description FILTER html %] が次の値のときに表示:
           </label>
@@ -76,7 +76,7 @@
       </tr>
     [% END %]
     <tr>
-      <th align="right"><label for="is_active">[% terms.bugs %] で利用可能にする:</label></th>
+      <th><label for="is_active">[% terms.bugs %] で利用可能にする:</label></th>
       <td><input id="is_active" name="is_active" type="checkbox" value="1"
            [%+ 'checked="checked"' IF value.is_active %]
            [%+ 'disabled="disabled"' IF value.is_default OR value.is_static %]>

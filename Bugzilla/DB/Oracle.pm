@@ -20,8 +20,11 @@ For interface details see L<Bugzilla::DB> and L<DBI>.
 =cut
 
 package Bugzilla::DB::Oracle;
+
+use 5.10.1;
 use strict;
-use base qw(Bugzilla::DB);
+
+use parent qw(Bugzilla::DB);
 
 use DBD::Oracle;
 use DBD::Oracle qw(:ora_types);
@@ -40,8 +43,6 @@ use constant BLOB_TYPE => { ora_type => ORA_BLOB };
 # The max size allowed for LOB fields, in kilobytes.
 use constant MIN_LONG_READ_LEN => 32 * 1024;
 use constant FULLTEXT_OR => ' OR ';
-
-our $fulltext_label = 0;
 
 sub new {
     my ($class, $params) = @_;
@@ -161,10 +162,11 @@ sub sql_from_days{
 
 sub sql_fulltext_search {
     my ($self, $column, $text) = @_;
+    state $label = 0;
     $text = $self->quote($text);
     trick_taint($text);
-    $fulltext_label++;
-    return "CONTAINS($column,$text,$fulltext_label) > 0", "SCORE($fulltext_label)";
+    $label++;
+    return "CONTAINS($column,$text,$label) > 0", "SCORE($label)";
 }
 
 sub sql_date_format {
@@ -714,7 +716,11 @@ sub _get_create_trigger_ddl {
 ############################################################################
 
 package Bugzilla::DB::Oracle::st;
-use base qw(DBI::st);
+
+use 5.10.1;
+use strict;
+
+use parent -norequire, qw(DBI::st);
  
 sub fetchrow_arrayref {
     my $self = shift;

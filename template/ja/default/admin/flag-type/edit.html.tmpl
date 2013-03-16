@@ -130,9 +130,9 @@
     <tr>
       <th>ソート順:</th>
       <td>
-        1 から [% constants.MAX_SMALLINT FILTER none %] の数値で、リストとして表示される際のソート順を指定できます。
+        0 から [% constants.MAX_SMALLINT FILTER none %] の数値で、リストとして表示される際のソート順を指定できます。
         表示順を気にしないか、アルファベット順で表示したい場合はこのままにしてください<br>
-        <input type="text" name="sortkey" value="[% type.sortkey || 1 %]" size="5" maxlength="5"
+        <input type="text" name="sortkey" value="[% type.sortkey || 0 %]" size="5" maxlength="5"
                [%- ' disabled="disabled"' UNLESS can_fully_edit %]>
       </td>
     </tr>

@@ -6,8 +6,11 @@
 # defined by the Mozilla Public License, v. 2.0.
 
 package Bugzilla::Component;
+
+use 5.10.1;
 use strict;
-use base qw(Bugzilla::Field::ChoiceInterface Bugzilla::Object);
+
+use parent qw(Bugzilla::Field::ChoiceInterface Bugzilla::Object);
 
 use Bugzilla::Constants;
 use Bugzilla::Util;
@@ -339,23 +342,16 @@ sub bug_ids {
 sub default_assignee {
     my $self = shift;
 
-    if (!defined $self->{'default_assignee'}) {
-        $self->{'default_assignee'} =
-            new Bugzilla::User($self->{'initialowner'});
-    }
-    return $self->{'default_assignee'};
+    return $self->{'default_assignee'}
+      ||= new Bugzilla::User({ id => $self->{'initialowner'}, cache => 1 });
 }
 
 sub default_qa_contact {
     my $self = shift;
 
-    return if !$self->{'initialqacontact'};
-
-    if (!defined $self->{'default_qa_contact'}) {
-        $self->{'default_qa_contact'} =
-            new Bugzilla::User($self->{'initialqacontact'});
-    }
-    return $self->{'default_qa_contact'};
+    return unless $self->{'initialqacontact'};
+    return $self->{'default_qa_contact'}
+      ||= new Bugzilla::User({id => $self->{'initialqacontact'}, cache => 1 });
 }
 
 sub flag_types {
@@ -650,3 +646,21 @@ Component.pm represents a Product Component object.
 =back
 
 =cut
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item is_set_on_bug
+
+=item product_id
+
+=item bug_ids
+
+=item set_is_active
+
+=item description
+
+=item is_active
+
+=back

@@ -19,7 +19,7 @@
     </td>
   </tr>
   <tr>
-    <th align="right">パスワード:</th>
+    <th>パスワード:</th>
     <td>
       <input type="hidden" name="old_login" value="[% user.login FILTER html %]">
       <input type="password" name="old_password">
@@ -30,14 +30,14 @@
   </tr>
   [% IF user.authorizer.can_change_password %]
     <tr>
-      <th align="right">新しいパスワード:</th>
+      <th>新しいパスワード:</th>
       <td>
         <input type="password" name="new_password1">
       </td>
     </tr>              
 
     <tr>
-      <th align="right">新しいパスワードの確認:</th>
+      <th>新しいパスワードの確認:</th>
       <td>
         <input type="password" name="new_password2">
       </td>
@@ -45,7 +45,7 @@
   [% END %]
 
   <tr>
-    <th align="right">名前 (任意、ですが登録を推奨します):</th>
+    <th>名前 (任意、ですが登録を推奨します):</th>
     <td>
       <input size="35" name="realname" value="[% realname FILTER html %]">
     </td>
@@ -55,26 +55,26 @@
     [% IF login_change_date %]
       [% IF new_login_name %]
         <tr>
-          <th align="right">変更先メールアドレス:</th>
+          <th>変更先メールアドレス:</th>
           <td>[% new_login_name FILTER html %]</td>
         </tr>
         <tr>
-          <th align="right">変更要請確認期限:</th>
+          <th>変更要請確認期限:</th>
           <td>[% login_change_date FILTER time %]</td>
         </tr>
       [% ELSE %]
         <tr>
-          <th align="right">確認済みメールアドレス:</th>
+          <th>確認済みメールアドレス:</th>
           <td>[% user.login FILTER html %]</td>
         </tr>
         <tr>
-          <th align="right">変更要請確認日付:</th>
+          <th>変更要請確認日付:</th>
           <td>[% login_change_date FILTER time %]</td>
         </tr>
       [% END %]
     [% ELSE %]
       <tr>
-        <th align="right">新しいメールアドレス:</th>
+        <th>新しいメールアドレス:</th>
         <td>
           <input size="35" name="new_login_name">
         </td>

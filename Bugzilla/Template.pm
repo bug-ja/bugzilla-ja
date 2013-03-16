@@ -8,6 +8,7 @@
 
 package Bugzilla::Template;
 
+use 5.10.1;
 use strict;
 
 use Bugzilla::Constants;
@@ -33,7 +34,7 @@ use IO::Dir;
 use List::MoreUtils qw(firstidx);
 use Scalar::Util qw(blessed);
 
-use base qw(Template);
+use parent qw(Template);
 
 use constant FORMAT_TRIPLE => '%19s|%-28s|%-28s';
 use constant FORMAT_3_SIZE => [19,28,28];
@@ -95,8 +96,8 @@ sub get_format {
     my $self = shift;
     my ($template, $format, $ctype) = @_;
 
-    $ctype ||= 'html';
-    $format ||= '';
+    $ctype //= 'html';
+    $format //= '';
 
     # ctype and format can have letters and a hyphen only.
     if ($ctype =~ /[^a-zA-Z\-]/ || $format =~ /[^a-zA-Z\-]/) {
@@ -239,13 +240,44 @@ sub quoteUrls {
     # empty string
     my $bug_word = template_var('terms')->{bug};
     my $bug_re = qr/\Q$bug_word\E\s*\#?\s*(\d+)/i;
-    my $comment_re = qr/comment\s*\#?\s*(\d+)/i;
+    my $comment_word = template_var('terms')->{comment};
+    my $comment_re = qr/(?:\Q$comment_word\E|comment)\s*\#?\s*(\d+)/i;
     $text =~ s~\b($bug_re(?:\s*,?\s*$comment_re)?|$comment_re)
               ~ # We have several choices. $1 here is the link, and $2-4 are set
                 # depending on which part matched
                (defined($2) ? get_bug_link($2, $1, { comment_num => $3, user => $user }) :
                               "<a href=\"$current_bugurl#c$4\">$1</a>")
               ~egox;
+
+    # Handle a list of bug ids: bugs 1, #2, 3, 4
+    # Currently, the only delimiter supported is comma.
+    # Concluding "and" and "or" are not supported.
+    my $bugs_word = template_var('terms')->{bugs};
+
+    my $bugs_re = qr/\Q$bugs_word\E\s*\#?\s*
+                     \d+(?:\s*,\s*\#?\s*\d+)+/ix;
+    while ($text =~ m/($bugs_re)/go) {
+        my $offset = $-[0];
+        my $length = $+[0] - $-[0];
+        my $match  = $1;
+
+        $match =~ s/((?:#\s*)?(\d+))/get_bug_link($2, $1);/eg;
+        # Replace the old string with the linkified one.
+        substr($text, $offset, $length) = $match;
+    }
+
+    my $comments_word = template_var('terms')->{comments};
+
+    my $comments_re = qr/(?:comments|\Q$comments_word\E)\s*\#?\s*
+                         \d+(?:\s*,\s*\#?\s*\d+)+/ix;
+    while ($text =~ m/($comments_re)/go) {
+        my $offset = $-[0];
+        my $length = $+[0] - $-[0];
+        my $match  = $1;
+
+        $match =~ s|((?:#\s*)?(\d+))|<a href="$current_bugurl#c$2">$1</a>|g;
+        substr($text, $offset, $length) = $match;
+    }
 
     # Old duplicate markers. These don't use $bug_word because they are old
     # and were never customizable.
@@ -270,7 +302,7 @@ sub get_attachment_link {
     my $dbh = Bugzilla->dbh;
     $user ||= Bugzilla->user;
 
-    my $attachment = new Bugzilla::Attachment($attachid);
+    my $attachment = new Bugzilla::Attachment({ id => $attachid, cache => 1 });
 
     if ($attachment) {
         my $title = "";
@@ -320,10 +352,10 @@ sub get_bug_link {
     $options->{user} ||= Bugzilla->user;
     my $dbh = Bugzilla->dbh;
 
-    if (defined $bug) {
+    if (defined $bug && $bug ne '') {
         if (!blessed($bug)) {
             require Bugzilla::Bug;
-            $bug = new Bugzilla::Bug($bug);
+            $bug = new Bugzilla::Bug({ id => $bug, cache => 1 });
         }
         return $link_text if $bug->{error};
     }
@@ -525,10 +557,9 @@ $Template::Stash::SCALAR_OPS->{ 0 } =
 $Template::Stash::SCALAR_OPS->{ truncate } = 
   sub {
       my ($string, $length, $ellipsis) = @_;
-      $ellipsis ||= "";
-      
       return $string if !$length || length($string) <= $length;
-      
+
+      $ellipsis ||= '';
       my $strlen = $length - length($ellipsis);
       my $newstr = substr($string, 0, $strlen) . $ellipsis;
       return $newstr;
@@ -1145,3 +1176,29 @@ Returns:     nothing
 =head1 SEE ALSO
 
 L<Bugzilla>, L<Template>
+
+=head1 B<Methods in need of POD>
+
+=over
+
+=item multiline_sprintf
+
+=item create
+
+=item css_files
+
+=item mtime_filter
+
+=item yui_resolve_deps
+
+=item process
+
+=item get_bug_link
+
+=item quoteUrls
+
+=item get_attachment_link
+
+=item SAFE_URL_REGEXP
+
+=back
