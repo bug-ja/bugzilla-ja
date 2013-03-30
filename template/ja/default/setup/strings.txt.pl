@@ -364,16 +364,6 @@ URL から patchutils をインストールしてください。(PatchReader Per
 
     http://cyberelk.net/tim/software/patchutils/
 END
-    ppm_repo_add => <<EOT,
-***********************************************************************
-* Windows ユーザ向けメモ                                              *
-***********************************************************************
-* 以下のモジュールをインストールするためには、最初に管理者として      *
-*                                                                     *
-*   ppm repo add theory58S ##theory_url##
-*                                                                     *
-* を実行する必要があります。                                          *
-EOT
     template_precompile   => "テンプレートの事前コンパイル中...",
     template_removal_failed => <<END,
 警告: ディレクトリ '##template_cache##' を削除できません。

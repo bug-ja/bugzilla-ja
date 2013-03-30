@@ -29,6 +29,12 @@
 [% END %]
 
 <p>
+  [% terms.Bugzilla %] が通知メールを送信するメールアドレス
+  <b>[% user.email FILTER html %]</b> を変更したい場合は、
+  "アカウント情報" タブをクリックしてください。
+</p>
+
+<p>
   "重要でない" [% terms.bugs %] への変更についての通知メールを受け取りたくない場合、
   下の設定からいくつかもしくは全ての通知メールの設定を変更することができます。
 </p>
@@ -161,7 +167,7 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 
 [% num_columns = relationships.size %]
 
-<table class="bz_emailprefs" border="1">
+<table class="bz_emailprefs" id="email_prefs" border="1">
   <tr>
     <td colspan="[% num_columns FILTER html %]" align="center" width="50%">
       <b>この [% terms.bug %] との関連性:</b>
@@ -173,7 +179,7 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 
   <tr>
     [% FOREACH relationship = relationships %]
-      <th align="center" width="9%">
+      <th width="9%">
         [% relationship.description FILTER html %]
       </th>
     [% END %]

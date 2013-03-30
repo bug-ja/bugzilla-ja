@@ -31,7 +31,7 @@
 <p>あなたの保存された検索は以下のとおりです:</p>
 
 <blockquote>
-  <table border="1" cellpadding="3">  
+  <table id="saved_search_prefs" border="1" cellpadding="3">
     <tr>
       <th>
         検索名
@@ -144,7 +144,7 @@
 [% IF user.queries_available.size %]                                           
   <p>以下のほかのユーザが保存した検索を共有できます:</p>
 
-  <table border="1" cellpadding="3">  
+  <table id="shared_search_prefs" border="1" cellpadding="3">
     <tr>
       <th>
         検索名

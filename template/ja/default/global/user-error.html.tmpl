@@ -1968,6 +1968,12 @@
     [% title = "このユーザは Insidergroup にいません" %]
     申し訳ありませんが、あなたはコメントや添付のプライベートフラグを変更できません。
 
+  [% ELSIF error == "webdot_too_large" %]
+    [% title = "依存グラフが大きすぎます" %]
+    依存グラフのデータが表示するには非常に多数の [% terms.bugs %] 
+    ([% constants.MAX_WEBDOT_BUGS FILTER html %] [%+ terms.bugs %] 以上)
+    を含んでいます。
+
   [% ELSIF error == "wrong_token_for_cancelling_email_change" %]
     [% title = BLOCK %] 無効な [% jawords.token FILTER html %] です [% END %]
     この [% jawords.token FILTER html %] は

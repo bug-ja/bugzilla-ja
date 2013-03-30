@@ -29,6 +29,12 @@
 [% END %]
 
 <p>
+  If you want to change your e-mail address <b>[% user.email FILTER html %]</b>
+  to which [% terms.Bugzilla %] sends notifications, click the "Account
+  Information" tab above.
+</p>
+
+<p>
   If you don't like getting a notification for "trivial"
   changes to [% terms.bugs %], you can use the settings below to
   filter some or all notifications.
@@ -161,7 +167,7 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
 
 [% num_columns = relationships.size %]
 
-<table class="bz_emailprefs" border="1">
+<table class="bz_emailprefs" id="email_prefs" border="1">
   <tr>
     <td colspan="[% num_columns FILTER html %]" align="center" width="50%">
       <b>When my relationship to this [% terms.bug %] is:</b>
@@ -173,7 +179,7 @@ document.write('<input type="button" value="Disable All Mail" onclick="SetCheckb
 
   <tr>
     [% FOREACH relationship = relationships %]
-      <th align="center" width="9%">
+      <th width="9%">
         [% relationship.description FILTER html %]
       </th>
     [% END %]

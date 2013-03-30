@@ -53,10 +53,8 @@
     <note>
       <para>
         Bugzilla を Windows で実行するには、ActiveState Perl &min-perl-ver; 
-        かそれ以上のバージョンが必要です。かなりの数のモジュールは ActiveState Perl 
-        のコア配布物に収録されています。追加で必要なモジュールは
-        Perl 5.10.1 を利用している場合は <ulink url="http://cpan.uwinnipeg.ca/PPMPackages/10xx/" />
-        からダウンロードできます。
+        かそれ以上のバージョンが必要です。ほとんどのモジュールは ActiveState Perl 
+        のコア配布物に収録されています。
       </para>
     </note>
 
