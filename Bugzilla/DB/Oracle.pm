@@ -74,7 +74,7 @@ sub new {
     my $dsn = "dbi:Oracle:host=$host;sid=$dbname";
     $dsn .= ";port=$port" if $port;
     my $attrs = { FetchHashKeyName => 'NAME_lc',  
-                  LongReadLen => max(Bugzilla->params->{'maxattachmentsize'},
+                  LongReadLen => max(Bugzilla->params->{'maxattachmentsize'} || 0,
                                      MIN_LONG_READ_LEN) * 1024,
                 };
     my $self = $class->db_new({ dsn => $dsn, user => $user, 
@@ -216,16 +216,16 @@ sub sql_position {
 }
 
 sub sql_in {
-    my ($self, $column_name, $in_list_ref) = @_;
+    my ($self, $column_name, $in_list_ref, $negate) = @_;
     my @in_list = @$in_list_ref;
-    return $self->SUPER::sql_in($column_name, $in_list_ref) if $#in_list < 1000;
+    return $self->SUPER::sql_in($column_name, $in_list_ref, $negate) if $#in_list < 1000;
     my @in_str;
     while (@in_list) {
         my $length = $#in_list + 1;
         my $splice = $length > 1000 ? 1000 : $length;
         my @sub_in_list = splice(@in_list, 0, $splice);
         push(@in_str, 
-             $self->SUPER::sql_in($column_name, \@sub_in_list)); 
+             $self->SUPER::sql_in($column_name, \@sub_in_list, $negate));
     }
     return "( " . join(" OR ", @in_str) . " )";
 }
@@ -550,7 +550,9 @@ sub bz_setup_database {
               . " RETURN NUMBER IS BEGIN RETURN LENGTH(COLUMN_NAME); END;");
     
     # Create types for group_concat
-    $self->do("DROP TYPE T_GROUP_CONCAT");
+    my $type_exists = $self->selectrow_array("SELECT 1 FROM user_types
+                                              WHERE type_name = 'T_GROUP_CONCAT'");
+    $self->do("DROP TYPE T_GROUP_CONCAT") if $type_exists;
     $self->do("CREATE OR REPLACE TYPE T_CLOB_DELIM AS OBJECT "
           . "( p_CONTENT CLOB, p_DELIMITER VARCHAR2(256)"
           . ", MAP MEMBER FUNCTION T_CLOB_DELIM_ToVarchar return VARCHAR2"
