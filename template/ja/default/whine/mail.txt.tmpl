@@ -52,7 +52,9 @@
 
    [% END %]
 
+ [% IF author.login == recipient.login %]
 [% terms.bug %] リストとしてみる: [% urlbase %]buglist.cgi?cmdtype=runnamed&namedcmd=[% query.name FILTER uri %]
+ [% END %]
  [% END %]
 
 [% ELSE %]

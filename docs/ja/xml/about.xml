@@ -70,8 +70,6 @@
     <para>
       これは、バージョン &bz-ver; 向けの Bugzilla ガイドです。
       現在利用中の Bugzilla にあったバージョンになっているはずです。
-      <!-- BZ-DEVEL --> Bugzilla のバージョンと一致しているはずですが、
-      このバージョンのガイドは開発版のものです。<!-- /BZ-DEVEL --> 
     </para>
     <para>
       最新版のこのガイドは常に <ulink url="http://www.bugzilla.org/docs/"/> から、
