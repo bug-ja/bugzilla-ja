@@ -67,9 +67,11 @@
       [% END %]
     </table>
 
-    <p align="left">
-    <a href="[% urlbase FILTER html %]buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% query.name FILTER uri %]">[% terms.bug %] リストとして表示</a>
-    </p>
+    [% IF author.login == recipient.login %]
+      <p align="left">
+        <a href="[% urlbase FILTER html %]buglist.cgi?cmdtype=runnamed&amp;namedcmd=[% query.name FILTER uri %]">[% terms.bug %] リストとして表示</a>
+      </p>
+    [% END %]
   [% END %]
 [% ELSE %]
   <h3>検索条件に合致する [% terms.bugs %] が見つかりませんでした。</h3>

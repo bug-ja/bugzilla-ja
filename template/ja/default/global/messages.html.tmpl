@@ -412,6 +412,8 @@
           [% CASE 'visible_to_me_remove' %]
             <li>このグループは次のグループのユーザを見ることができなくなりました:
               [%+ changes.visible_to_me_remove.join(', ') FILTER html %]</li>
+          [% CASE %]
+            [% Hook.process('group_updated_fields') %]
         [% END %]
       [% END %]
       </ul>

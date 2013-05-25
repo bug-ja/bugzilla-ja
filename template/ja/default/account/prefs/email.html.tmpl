@@ -44,7 +44,10 @@
 function SetCheckboxes(setting) {
   for (var count = 0; count < document.userprefsform.elements.length; count++) {
     var theinput = document.userprefsform.elements[count];
-    if (theinput.type == "checkbox" && !theinput.disabled) {
+    if (theinput.type == "checkbox"
+        && !theinput.disabled
+        && !theinput.name.match("remove_ignored_bug"))
+    {
       if (theinput.name.match("neg")) {
         theinput.checked = !setting;
       }
@@ -284,6 +287,39 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
   [% END %]
 </p>
 
-<hr>
+<b>[% terms.Bugs %] を無視する</b>
 
-<br>
+<p>
+  メール通知を一切受け取りたくない [% terms.bugs %] のリストを、カンマ区切りの
+  ID リストを入力することで設定することができます。メール通知を再有効化したい
+  場合、無視する [% terms.abug %] リストから、 [% terms.bug %] を選択してください。
+</p>
+[% IF user.bugs_ignored.size %]
+  <p>
+    あなたの今の無視リスト:
+    <table>
+    [% FOREACH bug = user.bugs_ignored %]
+      <tr>
+        <td>
+          <input type="checkbox" name="remove_ignored_bug_[% bug.id FILTER html %]" value="1">
+        </td>
+        <td><a href="[% urlbase FILTER html %]show_bug.cgi?id=[% bug.id FILTER uri %]">
+          [% bug.id FILTER html %]</a>
+        </td>
+        <td>[% bug.status FILTER html %]</td>
+        <td>
+          [% IF user.can_see_bug(bug.id) %]
+            - [% bug.summary FILTER html %]
+          [% ELSE %]
+            (プライベート)
+          [% END %]
+        </td>
+      </tr>
+    [% END %]
+    </table>
+  </p>
+[% END %]
+
+<p>[% terms.bugs %] を追加:<br>
+  <input type="text" id="add_ignored_bugs" 
+         name="add_ignored_bugs" size="60"></p>
