@@ -232,12 +232,7 @@ sub feature {
 
     my $success = 1;
     foreach my $module (@{ $feature_map->{$feature} }) {
-        # We can't use a string eval and "use" here (it kills Template-Toolkit,
-        # see https://rt.cpan.org/Public/Bug/Display.html?id=47929), so we have
-        # to do a block eval.
-        $module =~ s{::}{/}g;
-        $module .= ".pm";
-        eval { require $module; 1; } or $success = 0;
+        eval "require $module" or $success = 0;
     }
     $cache->{feature}->{$feature} = $success;
     return $success;
@@ -468,6 +463,9 @@ sub usage_mode {
         }
         elsif ($newval == USAGE_MODE_TEST) {
             $class->error_mode(ERROR_MODE_TEST);
+        }
+        elsif ($newval == USAGE_MODE_REST) {
+            $class->error_mode(ERROR_MODE_REST);
         }
         else {
             ThrowCodeError('usage_mode_invalid',
@@ -776,10 +774,10 @@ not an arrayref.
 
 =item C<user>
 
-C<undef> if there is no currently logged in user or if the login code has not
-yet been run.  If an sudo session is in progress, the C<Bugzilla::User>
-corresponding to the person who is being impersonated.  If no session is in
-progress, the current C<Bugzilla::User>.
+Default C<Bugzilla::User> object if there is no currently logged in user or
+if the login code has not yet been run.  If an sudo session is in progress,
+the C<Bugzilla::User> corresponding to the person who is being impersonated.
+If no session is in progress, the current C<Bugzilla::User>.
 
 =item C<set_user>
 

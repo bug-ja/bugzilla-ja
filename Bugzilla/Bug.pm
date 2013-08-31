@@ -301,20 +301,10 @@ use constant EXTRA_REQUIRED_FIELDS => qw(creation_ts target_milestone cc qa_cont
 
 #####################################################################
 
-# This and "new" catch every single way of creating a bug, so that we
-# can call _create_cf_accessors.
-sub _do_list_select {
-    my $invocant = shift;
-    $invocant->_create_cf_accessors();
-    return $invocant->SUPER::_do_list_select(@_);
-}
-
 sub new {
     my $invocant = shift;
     my $class = ref($invocant) || $invocant;
     my $param = shift;
-
-    $class->_create_cf_accessors();
 
     # Remove leading "#" mark if we've just been passed an id.
     if (!ref $param && $param =~ /^#(\d+)$/) {
@@ -361,6 +351,10 @@ sub new {
     }
 
     return $self;
+}
+
+sub initialize {
+    $_[0]->_create_cf_accessors();
 }
 
 sub cache_key {
@@ -1713,13 +1707,7 @@ sub _check_keywords {
         $keywords_in = trim($keywords_in);
         $keyword_array = [split(/[\s,]+/, $keywords_in)];
     }
-    
-    # On creation, only editbugs users can set keywords.
-    if (!ref $invocant) {
-        my $product = $params->{product};
-        return [] if !Bugzilla->user->in_group('editbugs', $product->id);
-    }
-    
+ 
     my %keywords;
     foreach my $keyword (@$keyword_array) {
         next unless $keyword;
@@ -3288,11 +3276,8 @@ sub cc_users {
 
 sub component {
     my ($self) = @_;
-    return $self->{component} if exists $self->{component};
     return '' if $self->{error};
-    ($self->{component}) = Bugzilla->dbh->selectrow_array(
-        'SELECT name FROM components WHERE id = ?',
-        undef, $self->{component_id});
+    $self->{component} //= $self->component_obj->name;
     return $self->{component};
 }
 
@@ -3308,21 +3293,15 @@ sub component_obj {
 
 sub classification_id {
     my ($self) = @_;
-    return $self->{classification_id} if exists $self->{classification_id};
     return 0 if $self->{error};
-    ($self->{classification_id}) = Bugzilla->dbh->selectrow_array(
-        'SELECT classification_id FROM products WHERE id = ?',
-        undef, $self->{product_id});
+    $self->{classification_id} //= $self->product_obj->classification_id;
     return $self->{classification_id};
 }
 
 sub classification {
     my ($self) = @_;
-    return $self->{classification} if exists $self->{classification};
     return '' if $self->{error};
-    ($self->{classification}) = Bugzilla->dbh->selectrow_array(
-        'SELECT name FROM classifications WHERE id = ?',
-        undef, $self->classification_id);
+    $self->{classification} //= $self->product_obj->classification->name;
     return $self->{classification};
 }
 
@@ -3498,11 +3477,8 @@ sub percentage_complete {
 
 sub product {
     my ($self) = @_;
-    return $self->{product} if exists $self->{product};
     return '' if $self->{error};
-    ($self->{product}) = Bugzilla->dbh->selectrow_array(
-        'SELECT name FROM products WHERE id = ?',
-        undef, $self->{product_id});
+    $self->{product} //= $self->product_obj->name;
     return $self->{product};
 }
 
@@ -3944,11 +3920,12 @@ sub get_activity {
             if ($operation->{'who'} && $who eq $operation->{'who'}
                 && $when eq $operation->{'when'}
                 && $fieldname eq $operation->{'fieldname'}
+                && ($comment_id || 0) == ($operation->{'comment_id'} || 0)
                 && ($attachid || 0) == ($operation->{'attachid'} || 0))
             {
                 my $old_change = pop @$changes;
-                $removed = _join_activity_entries($fieldname, $old_change->{'removed'}, $removed);
-                $added = _join_activity_entries($fieldname, $old_change->{'added'}, $added);
+                $removed = join_activity_entries($fieldname, $old_change->{'removed'}, $removed);
+                $added = join_activity_entries($fieldname, $old_change->{'added'}, $added);
             }
             $operation->{'who'} = $who;
             $operation->{'when'} = $when;
@@ -3958,7 +3935,7 @@ sub get_activity {
             $change{'added'} = $added;
 
             if ($comment_id) {
-                $change{'comment'} = Bugzilla::Comment->new($comment_id);
+                $operation->{comment_id} = $change{'comment'} = Bugzilla::Comment->new($comment_id);
             }
 
             push (@$changes, \%change);
@@ -3971,35 +3948,6 @@ sub get_activity {
     }
 
     return(\@operations, $incomplete_data);
-}
-
-sub _join_activity_entries {
-    my ($field, $current_change, $new_change) = @_;
-    # We need to insert characters as these were removed by old
-    # LogActivityEntry code.
-
-    return $new_change if $current_change eq '';
-
-    # Buglists and see_also need the comma restored
-    if ($field eq 'dependson' || $field eq 'blocked' || $field eq 'see_also') {
-        if (substr($new_change, 0, 1) eq ',' || substr($new_change, 0, 1) eq ' ') {
-            return $current_change . $new_change;
-        } else {
-            return $current_change . ', ' . $new_change;
-        }
-    }
-
-    # Assume bug_file_loc contain a single url, don't insert a delimiter
-    if ($field eq 'bug_file_loc') {
-        return $current_change . $new_change;
-    }
-
-    # All other fields get a space
-    if (substr($new_change, 0, 1) eq ' ') {
-        return $current_change . $new_change;
-    } else {
-        return $current_change . ' ' . $new_change;
-    }
 }
 
 # Update the bugs_activity table to reflect changes made in bugs.
@@ -4361,6 +4309,16 @@ sub _multi_select_accessor {
 }
 
 1;
+
+=head1 B<Methods>
+
+=over
+
+=item C<initialize>
+
+Ensures the accessors for custom fields are always created.
+
+=back
 
 =head1 B<Methods in need of POD>
 

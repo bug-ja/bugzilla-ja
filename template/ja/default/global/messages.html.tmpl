@@ -561,7 +561,8 @@
 
   [% ELSIF message_tag == "password_change_request" %]
     [% title = "パスワード変更要請" %]
-    パスワード変更のためのトークンがメールで送信されました。
+    パスワード変更のためのトークンがメールで <em>[% login_name FILTER html %]</em> 
+    に送信されました。
     メールに書かれている指示に従ってパスワードを変更してください。
 
   [% ELSIF message_tag == "password_changed" %]

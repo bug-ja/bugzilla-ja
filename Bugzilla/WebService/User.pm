@@ -19,6 +19,8 @@ use Bugzilla::User;
 use Bugzilla::Util qw(trim);
 use Bugzilla::WebService::Util qw(filter validate translate params_to_objects);
 
+use List::Util qw(first);
+
 # Don't need auth to login
 use constant LOGIN_EXEMPT => {
     login => 1,
@@ -73,14 +75,36 @@ sub login {
     $input_params->{'Bugzilla_password'} = $params->{password};
     $input_params->{'Bugzilla_remember'} = $remember;
 
-    Bugzilla->login();
-    return { id => $self->type('int', Bugzilla->user->id) };
+    my $user = Bugzilla->login();
+
+    my $result = { id => $self->type('int', $user->id) };
+
+    # We will use the stored cookie value combined with the user id
+    # to create a token that can be used with future requests in the
+    # query parameters
+    my $login_cookie = first { $_->name eq 'Bugzilla_logincookie' }
+                              @{ Bugzilla->cgi->{'Bugzilla_cookie_list'} };
+    if ($login_cookie) {
+        $result->{'token'} = $user->id . "-" . $login_cookie->value;
+    }
+
+    return $result;
 }
 
 sub logout {
     my $self = shift;
     Bugzilla->logout;
-    return undef;
+}
+
+sub valid_login {
+    my ($self, $params) = @_;
+    defined $params->{login}
+        || ThrowCodeError('param_required', { param => 'login' });
+    Bugzilla->login();
+    if (Bugzilla->user->id && Bugzilla->user->login eq $params->{login}) {
+        return $self->type('boolean', 1);
+    }
+    return $self->type('boolean', 0);
 }
 
 #################
@@ -127,7 +151,7 @@ sub create {
 # $call = $rpc->call( 'User.get', { ids => [1,2,3], 
 #         names => ['testusera@redhat.com', 'testuserb@redhat.com'] });
 sub get {
-    my ($self, $params) = validate(@_, 'names', 'ids');
+    my ($self, $params) = validate(@_, 'names', 'ids', 'match', 'group_ids', 'groups');
 
     Bugzilla->switch_to_shadow_db();
 
@@ -399,6 +423,10 @@ log in/out using an existing account.
 See L<Bugzilla::WebService> for a description of how parameters are passed,
 and what B<STABLE>, B<UNSTABLE>, and B<EXPERIMENTAL> mean.
 
+Although the data input and output is the same for JSONRPC, XMLRPC and REST,
+the directions for how to access the data via REST is noted in each method
+where applicable.
+
 =head1 Logging In and Out
 
 =head2 login
@@ -417,7 +445,7 @@ etc. This method logs in an user.
 
 =over
 
-=item C<login> (string) - The user's login name. 
+=item C<login> (string) - The user's login name.
 
 =item C<password> (string) - The user's password.
 
@@ -433,10 +461,12 @@ management of cookies across sessions.
 
 =item B<Returns>
 
-On success, a hash containing one item, C<id>, the numeric id of the
-user that was logged in.  A set of http cookies is also sent with the
-response.  These cookies must be sent along with any future requests
-to the webservice, for the duration of the session.
+On success, a hash containing two items, C<id>, the numeric id of the
+user that was logged in, and a C<token> which can be passed in
+the parameters as authentication in other calls. A set of http cookies
+is also sent with the response. These cookies *or* the token can be sent
+along with any future requests to the webservice, for the duration of the
+session.
 
 =item B<Errors>
 
@@ -479,6 +509,50 @@ Log out the user. Does nothing if there is no user logged in.
 =item B<Returns> (nothing)
 
 =item B<Errors> (none)
+
+=back
+
+=head2 valid_login
+
+B<UNSTABLE>
+
+=over
+
+=item B<Description>
+
+This method will verify whether a client's cookies or current login
+token is still valid or have expired. A valid username must be provided
+as well that matches.
+
+=item B<Params>
+
+=over
+
+=item C<login>
+
+The login name that matches the provided cookies or token.
+
+=item C<token>
+
+(string) Persistent login token current being used for authentication (optional).
+Cookies passed by client will be used before the token if both provided.
+
+=back
+
+=item B<Returns>
+
+Returns true/false depending on if the current cookies or token are valid
+for the provided username.
+
+=item B<Errors> (none)
+
+=item B<History>
+
+=over
+
+=item Added in Bugzilla B<5.0>.
+
+=back
 
 =back
 
@@ -541,6 +615,13 @@ actually receive an email. This function does not check that.
 You must be logged in and have the C<editusers> privilege in order to
 call this function.
 
+=item B<REST>
+
+POST /user
+
+The params to include in the POST body as well as the returned data format,
+are the same as below.
+
 =item B<Params>
 
 =over
@@ -584,6 +665,8 @@ password is under three characters.)
 
 =item Error 503 (Password Too Long) removed in Bugzilla B<3.6>.
 
+=item REST API call added in Bugzilla B<5.0>.
+
 =back
 
 =back
@@ -597,6 +680,14 @@ B<EXPERIMENTAL>
 =item B<Description>
 
 Updates user accounts in Bugzilla.
+
+=item B<REST>
+
+PUT /user/<user_id_or_name>
+
+The params to include in the PUT body as well as the returned data format,
+are the same as below. The C<ids> and C<names> params are overridden as they
+are pulled from the URL path.
 
 =item B<Params>
 
@@ -684,6 +775,14 @@ Logged-in users are not authorized to edit other users.
 
 =back
 
+=item B<History>
+
+=over
+
+=item REST API call added in Bugzilla B<5.0>.
+
+=back
+
 =back
 
 =head1 User Info
@@ -697,6 +796,18 @@ B<STABLE>
 =item B<Description>
 
 Gets information about user accounts in Bugzilla.
+
+=item B<REST>
+
+To get information about a single user:
+
+GET /user/<user_id_or_name>
+
+To search for users by name, group using URL params same as below:
+
+GET /user
+
+The returned data format is the same as below.
 
 =item B<Params>
 
@@ -919,6 +1030,8 @@ illegal to pass a group name you don't belong to.
 
 =item C<groups>, C<saved_searches>, and C<saved_reports> were added
 in Bugzilla B<4.4>.
+
+=item REST API call added in Bugzilla B<5.0>.
 
 =back
 

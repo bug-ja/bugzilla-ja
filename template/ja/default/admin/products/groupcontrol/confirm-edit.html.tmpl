@@ -11,6 +11,7 @@
 [% END %]
 
 [% PROCESS global/header.html.tmpl title = title %]
+
 [% FOREACH group = mandatory_groups %]
 <P>
 グループ '[% group.name FILTER html %]' はグループが新たに制限を加えるため、[% group.count %] 件の [%+ terms.bugs %] が更新されます。
@@ -24,14 +25,12 @@
 
   [% PROCESS "global/hidden-fields.html.tmpl" exclude="^Bugzilla_(login|password)$" %]
 
-  <br>
+  <p>
      上記の内容を含む変更を行うのであれば "続行" をクリックしてください。
      もし、この変更を行いたくないのであれば、"戻る" を使って前のページに戻ってください。
-  <p>
-    <input type="hidden" name="confirmed" value="confirmed">
-    <input type="submit" id="update" value="続行">
   </p>
-
+  <input type="hidden" name="confirmed" value="confirmed">
+  <input type="submit" id="update" value="続行">
 </form>
 
 

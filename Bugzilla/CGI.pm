@@ -56,7 +56,7 @@ sub new {
     # the rendering of pages.
     my $script = basename($0);
     if (my $path_info = $self->path_info) {
-        my @whitelist;
+        my @whitelist = ("rest.cgi");
         Bugzilla::Hook::process('path_info_whitelist', { whitelist => \@whitelist });
         if (!grep($_ eq $script, @whitelist)) {
             # IIS includes the full path to the script in PATH_INFO,
@@ -236,11 +236,11 @@ sub check_etag {
         $possible_etag =~ s/^\"//g;
         $possible_etag =~ s/\"$//g;
         if ($possible_etag eq $valid_etag or $possible_etag eq '*') {
-            print $self->header(-ETag => $possible_etag,
-                                -status => '304 Not Modified');
-            exit;
+            return 1;
         }
     }
+
+    return 0;
 }
 
 # Have to add the cookies in.

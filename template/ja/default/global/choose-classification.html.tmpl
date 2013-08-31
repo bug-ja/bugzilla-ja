@@ -12,13 +12,14 @@
   #%]
 
 [% IF target == "enter_bug.cgi" %]
-  [% title = "Classification の選択" %]
-  [% subheader = "Classification を選択してください" %]
+  [% title = "$terms.Bug 登録" %]
+  [% subheader = "Classification の選択" %]
 [% END %]
 
 [% DEFAULT title = "Classification の選択" %]
 [% PROCESS global/header.html.tmpl %]
 
+<h2>最初に、[% terms.abug %] を入力する classification を選択してください: </h2>
 <table>
   <tr>
     <th>

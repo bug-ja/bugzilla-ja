@@ -815,9 +815,14 @@
     <br>もしくは、ファイルが画像ファイルなら、圧縮形式、
     たとえば JPG や PNG などの形式に変換してもう一度試してください。
 
-  [% ELSIF error == "flag_requestee_disabled" %]
-    [% title = "特定のユーザに対してフラグを要請できません" %]
+  [% ELSIF error == "flag_type_requestee_disabled" %]
+    [% title = "指定のユーザに対してフラグを要請できません" %]
     あなたは特定のユーザに対して、<em>[% type.name FILTER html %]</em> を要請できません。
+
+  [% ELSIF error == "flag_requestee_disabled" %]
+    [% title = "要請先が無効です" %]
+    <em>[% requestee.identity FILTER html %]</em> は無効なアカウントなため、
+    要請できません。
 
   [% ELSIF error == "flag_requestee_needs_privs" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] のアカウントに権限が必要です [% END %]
@@ -1255,6 +1260,14 @@
     セキュリティー上の問題から、'[% method FILTER html %]' を利用するには 
     HTTP POST 経由である必要があります。
 
+  [% ELSIF error == "rest_invalid_resource" %]
+    '[% method FILTER html +%] [%+ path FILTER html %]' に対する REST API 
+    は発見できませんでした。
+
+  [% ELSIF error == "get_products_invalid_type" %]
+    生成型 '[% type FILTER html %]' は無効です。
+    'accessible'、'selectable'と'enterable' のみが有効です。
+
   [% ELSIF error == "keyword_already_exists" %]
     [% title = BLOCK %] 指定された [% jawords.keyword FILTER html %] は既に存在しています [% END %]
     [% name FILTER html %] という名前の [% jawords.keyword FILTER html %] は既に存在しています。
@@ -1450,6 +1463,8 @@
       編集する
     [% ELSIF action == "view" %]
       表示する
+    [% ELSIF action == 'summarize' %]
+      サマリーを表示する
     [% END %]
     [% terms.bugs %] が選択されていません。
 
@@ -1556,15 +1571,15 @@
      [% passregex = Param('password_complexity') %]
      パスワードには以下の文字を最低一文字含む必要があります:
      <ul>
-       [% IF passregex.search('letters') %]
+       [% IF passregex == 'letters_numbers_specialchars' %]
+         <li>文字</li>
+         <li>特殊文字</li>
+      [% ELSIF passregex.search('letters') %]
          <li>大文字</li>
          <li>小文字</li>
        [% END %]
        [% IF passregex.search('numbers') %]
          <li>数字</li>
-       [% END %]
-       [% IF passregex.search('specialchars') %]
-         <li>特殊文字</li>
        [% END %]
      </ul>
 

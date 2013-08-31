@@ -62,7 +62,13 @@
   <table>
     <tr>
       <td align="right">
-        <b>メールアドレス:</b>
+        <b>
+          [% IF Param('emailsuffix') %]
+            ログイン名:
+          [% ELSE %]
+            メールアドレス:
+          [% END %]
+        </b>
       </td>
       <td>
         <input size="35" id="login" name="login">

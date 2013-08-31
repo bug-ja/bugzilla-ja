@@ -273,10 +273,7 @@
     [%############%]    
     <tr>
       [% INCLUDE "bug/field-label.html.tmpl"
-        field = bug_fields.
-        rep_platform editable = 1
-        accesskey = "h"
-      %]
+           field = bug_fields.rep_platform, editable = 1, accesskey = "h" %]
       <td class="field_value">
        [% INCLUDE bug/field.html.tmpl
             bug = bug, field = bug_fields.rep_platform,
@@ -300,7 +297,7 @@
 [% BLOCK section_status %]
   <tr>
     <th class="field_label">
-      <a href="page.cgi?id=fields.html#status">Status</a>:
+      <a href="page.cgi?id=fields.html#bug_status">Status</a>:
     </th>
     <td id="bz_field_status">
       <span id="static_bug_status">
@@ -741,7 +738,7 @@
       </th>
       <td>
         [% IF user.id %]
-          [% IF NOT bug.cc || NOT bug.cc.contains(user.login) %]
+          [% IF NOT bug.cc.contains(user.login) %]
             <input type="checkbox" id="addselfcc" name="addselfcc"
               [% " checked=\"checked\""
                    IF user.settings.state_addselfcc.value == 'always'
@@ -751,7 +748,7 @@
             <br> 
           [% END %]
         [% END %]
-        [% bug.cc.size || 0  FILTER html %] 
+        [% bug.cc.size FILTER html %] 
         [% IF bug.cc.size == 1 %]
           user
         [% ELSE %]
@@ -782,7 +779,7 @@
                 %]
             </div>
           [% END %]
-          [% IF bug.cc %]
+          [% IF bug.cc.size %]
             <select id="cc" multiple="multiple" size="5"
               [% IF bug.user.canedit %]name="cc"[% END %]>
               [% FOREACH c = bug.cc %]
@@ -833,9 +830,11 @@
       </th>
       <td>
         <input type="hidden" name="defined_bug_ignored" value="1">
-        <input type="checkbox" name="bug_ignored" id="bug_ignored" value="1"
-               [% ' checked="checked"' IF user.is_bug_ignored(bug.id) %]>
-        (never email me about this [% terms.bug %])
+        <span title="You will still receive emails for flag requests directed at you.">
+          <input type="checkbox" name="bug_ignored" id="bug_ignored" value="1"
+                 [% ' checked="checked"' IF user.is_bug_ignored(bug.id) %]>
+          (never email me about this [% terms.bug %])
+        </span>
       </td>
     </tr>
   [% END %]
@@ -1106,7 +1105,7 @@
                class="status" cellspacing="0" cellpadding="0">
           <tr>
             <th class="field_label">
-              <a href="page.cgi?id=fields.html#status">Status</a>:
+              <a href="page.cgi?id=fields.html#bug_status">Status</a>:
             </th>
             <td>
               [% PROCESS bug/knob.html.tmpl %]

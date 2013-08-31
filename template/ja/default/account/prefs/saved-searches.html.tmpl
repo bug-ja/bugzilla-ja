@@ -54,6 +54,7 @@
           グループ内で共有
         </th>
       [% END %]
+      [% Hook.process('saved-header') %]
     </tr>
     <tr>
       <td>わたしの [% terms.Bugs %]</td>
@@ -78,6 +79,7 @@
           &mdash;
         </td>
       [% END %]
+      [% Hook.process('saved-row') %]
     </tr>
     [% FOREACH q = user.queries %]
       <tr>
@@ -132,6 +134,7 @@
             [% END %]
           </td>
         [% END %]
+        [% Hook.process('saved-row') %]
       </tr>
     [% END %]
   </table>

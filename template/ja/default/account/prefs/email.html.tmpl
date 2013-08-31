@@ -28,11 +28,13 @@
   </div>
 [% END %]
 
+[% IF user.authorizer.can_change_email && Param('allowemailchange') %]
 <p>
   [% terms.Bugzilla %] が通知メールを送信するメールアドレス
   <b>[% user.email FILTER html %]</b> を変更したい場合は、
   "アカウント情報" タブをクリックしてください。
 </p>
+[% END %]
 
 <p>
   "重要でない" [% terms.bugs %] への変更についての通知メールを受け取りたくない場合、

@@ -21,14 +21,14 @@
  %]
 
 <p>
-  [% "$terms.bug $bug.bug_id に戻る" FILTER bug_link(bug) FILTER none %]
+  [% "$terms.bug $bug.bug_id" FILTER bug_link(bug) FILTER none %] に戻る
 </p>
 
 [% PROCESS bug/activity/table.html.tmpl %]
 
 [% IF operations.size > 0 %]
   <p>
-    [% "$terms.bug $bug.bug_id に戻る" FILTER bug_link(bug) FILTER none %]
+    [% "$terms.bug $bug.bug_id" FILTER bug_link(bug) FILTER none %] に戻る
   </p>
 [% END %]
 

@@ -94,6 +94,7 @@ END
     feature_mod_perl          => 'mod_perl',
     feature_moving            => 'サイト間バグ移動',
     feature_patch_viewer      => 'パッチビューア',
+    feature_rest              => 'REST インターフェース',
     feature_smtp_auth         => 'SMTP 認証でのメール送信',
     feature_smtp_ssl          => 'SMTP 送信での SSL 利用',
     feature_updates           => 'システム更新通知',
