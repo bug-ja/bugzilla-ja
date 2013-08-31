@@ -274,10 +274,7 @@
     [%############%]    
     <tr>
       [% INCLUDE "bug/field-label.html.tmpl"
-        field = bug_fields.
-        rep_platform editable = 1
-        accesskey = "h"
-      %]
+                 field = bug_fields.rep_platform, editable = 1, accesskey = "h" %]
       <td class="field_value">
        [% INCLUDE bug/field.html.tmpl
             bug = bug, field = bug_fields.rep_platform,
@@ -301,7 +298,7 @@
 [% BLOCK section_status %]
   <tr>
     <th class="field_label">
-      <a href="page.cgi?id=fields.html#status">ステータス</a>:
+      <a href="page.cgi?id=fields.html#bug_status">ステータス</a>:
     </th>
     <td id="bz_field_status">
       <span id="static_bug_status">
@@ -738,7 +735,7 @@
       </th>
       <td>
         [% IF user.id %]
-          [% IF NOT bug.cc || NOT bug.cc.contains(user.login) %]
+          [% IF NOT bug.cc.contains(user.login) %]
             <input type="checkbox" id="addselfcc" name="addselfcc"
               [% " checked=\"checked\""
                    IF user.settings.state_addselfcc.value == 'always'
@@ -753,7 +750,7 @@
             あなたを含む
           [% END %]
         [% END %]
-        [% bug.cc.size || 0  FILTER html %] 
+        [% bug.cc.size FILTER html %]
         ユーザ
         [% IF user.id || bug.cc.size %]
           <span id="cc_edit_area_showhide_container" class="bz_default_hidden">
@@ -775,7 +772,7 @@
                 %]
             </div>
           [% END %]
-          [% IF bug.cc %]
+          [% IF bug.cc.size %]
             <select id="cc" multiple="multiple" size="5"
               [% IF bug.user.canedit %]name="cc"[% END %]>
               [% FOREACH c = bug.cc %]
@@ -1078,7 +1075,7 @@
                class="status" cellspacing="0" cellpadding="0">
           <tr>
             <th class="field_label">
-              <a href="page.cgi?id=fields.html#status">ステータス</a>:
+              <a href="page.cgi?id=fields.html#bug_status">ステータス</a>:
             </th>
             <td>
               [% PROCESS bug/knob.html.tmpl %]

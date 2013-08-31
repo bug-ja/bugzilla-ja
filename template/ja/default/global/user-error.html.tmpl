@@ -1556,17 +1556,17 @@
      [% passregex = Param('password_complexity') %]
      パスワードには以下の文字を最低一文字含む必要があります:
      <ul>
-       [% IF passregex.search('letters') %]
-         <li>大文字</li>
-         <li>小文字</li>
-       [% END %]
-       [% IF passregex.search('numbers') %]
-         <li>数字</li>
-       [% END %]
-       [% IF passregex.search('specialchars') %]
-         <li>特殊文字</li>
-       [% END %]
-     </ul>
+      [% IF passregex == 'letters_numbers_specialchars' %]
+        <li>文字</li>
+        <li>特殊文字</li>
+      [% ELSIF passregex.search('letters') %]
+        <li>大文字</li>
+        <li>小文字</li>
+      [% END %]
+      [% IF passregex.search('numbers') %]
+        <li>数字</li>
+      [% END %]
+    </ul>
 
   [% ELSIF error == "product_access_denied" %]
     [% title = "プロダクトにはアクセスできません" %]
