@@ -273,10 +273,10 @@
       <td valign="middle" class="bz_query_remember">
         <form method="get" action="buglist.cgi">
           <input type="text" id="save_newqueryname" name="newqueryname" size="20"
-                 value="[% defaultsavename FILTER html %]"> として
+                 title="新しい検索条件名" value="[% defaultsavename FILTER html %]"> として
           <input type="submit" id="remember" value="検索条件を保存">
           <input type="hidden" name="newquery" 
-                 title="新しい検索条件名" value="[% defaultsavename FILTER html %]"> 
+                 value="[% urlquerypart FILTER html %][% "&order=$qorder" FILTER html IF order %]"> 
           <input type="hidden" name="cmdtype" value="doit">
           <input type="hidden" name="remtype" value="asnamed">
           <input type="hidden" name="token" value="[% issue_hash_token(['savedsearch']) FILTER html %]">
