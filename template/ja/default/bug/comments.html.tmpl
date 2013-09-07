@@ -188,7 +188,7 @@
   # generated HTML
   #%]
 <pre class="bz_comment_text" 
-     [% ' id="comment_text_' _ count _ '"' IF mode == "edit" %]>
+     [% ' id="comment_text_' _ comment.count _ '"' IF mode == "edit" %]>
   [%- comment_text FILTER quoteUrls(bug, comment) -%]
 </pre>
     </div>
