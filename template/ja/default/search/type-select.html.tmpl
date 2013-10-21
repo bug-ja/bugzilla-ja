@@ -8,7 +8,7 @@
 
 [% PROCESS "global/field-descs.none.tmpl" %]
   
-<select name="[% name FILTER html %]" title="Search type"
+<select name="[% name FILTER html %]" title="検索式"
         class="[% class FILTER css_class_quote %]">
   [% FOREACH type = types %]
     <option value="[% type FILTER html %]"

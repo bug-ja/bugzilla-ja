@@ -150,13 +150,16 @@
             [% 'checked="checked"' IF !cgi.param('do_union') %]>AND *</label>
         <label><input type="radio" name="do_union" value="1" 
             [% 'checked="checked"' IF cgi.param('do_union') %]>OR *</label>
+        <select id="do_union" name="do_union">
+          <option value="0">要請者および被要請者に合致</option>
+          <option value="1" [% 'selected="selected"' IF cgi.param('do_union') %]>
+            要請者または被要請者に合致</option>
+        </select>
       </td>
       <td colspan="3"></td>
       <td><input type="submit" id="filter" value="絞り込む"></td>
     </tr>
   </table>
-
-  <p>(* 要請者と被要請者についての論理積・和です。)</p>
 </form>
 
 [% column_headers = {
