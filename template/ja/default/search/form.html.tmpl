@@ -175,9 +175,9 @@ TUI_hide_default('information_query');
     </div>
     のもの
     <select name="bug_id_type" id="bug_id_type">
-      <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>のみから</option>
+      <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>のみからの</option>
       <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>を除く</option>
-    </select> the results
+    </select> 結果
   </div>
 
   [% Hook.process('after_freetext_fields') %]
