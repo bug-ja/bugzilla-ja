@@ -105,7 +105,7 @@ my $serverpush =
     && exists $ENV{'HTTP_USER_AGENT'} 
       && $ENV{'HTTP_USER_AGENT'} =~ /(Mozilla.[3-9]|Opera)/
         && $ENV{'HTTP_USER_AGENT'} !~ /compatible/i
-          && $ENV{'HTTP_USER_AGENT'} !~ /(?:WebKit|Trident)/
+          && $ENV{'HTTP_USER_AGENT'} !~ /(?:WebKit|Trident|KHTML)/
             && !defined($cgi->param('serverpush'))
               || $cgi->param('serverpush');
 
@@ -905,7 +905,10 @@ if (scalar(@bugowners) > 1 && $user->in_group('editbugs')) {
 # the list more compact.
 $vars->{'splitheader'} = $cgi->cookie('SPLITHEADER') ? 1 : 0;
 
-$vars->{'quip'} = GetQuip();
+if ($user->settings->{'display_quips'}->{'value'} eq 'on') {
+    $vars->{'quip'} = GetQuip();
+}
+
 $vars->{'currenttime'} = localtime(time());
 
 # See if there's only one product in all the results (or only one product

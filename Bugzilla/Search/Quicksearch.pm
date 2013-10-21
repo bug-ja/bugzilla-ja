@@ -138,7 +138,7 @@ sub quicksearch {
 
         # Retain backslashes and quotes, to know which strings are quoted,
         # and which ones are not.
-        my @words = parse_line('\s+', 1, $searchstring);
+        my @words = _parse_line('\s+', 1, $searchstring);
         # If parse_line() returns no data, this means strings are badly quoted.
         # Rather than trying to guess what the user wanted to do, we throw an error.
         scalar(@words)
@@ -194,8 +194,9 @@ sub quicksearch {
 
         # Loop over all main-level QuickSearch words.
         foreach my $qsword (@qswords) {
-            my @or_operand = parse_line('\|', 1, $qsword);
+            my @or_operand = _parse_line('\|', 1, $qsword);
             foreach my $term (@or_operand) {
+                next unless defined $term;
                 my $negate = substr($term, 0, 1) eq '-';
                 if ($negate) {
                     $term = substr($term, 1);
@@ -208,7 +209,7 @@ sub quicksearch {
                 # Having ruled out the special cases, we may now split
                 # by comma, which is another legal boolean OR indicator.
                 # Remove quotes from quoted words, if any.
-                @words = parse_line(',', 0, $term);
+                @words = _parse_line(',', 0, $term);
                 foreach my $word (@words) {
                     if (!_special_field_syntax($word, $negate)) {
                         _default_quicksearch_word($word, $negate);
@@ -260,13 +261,36 @@ sub quicksearch {
 # Parts of quicksearch() #
 ##########################
 
+sub _parse_line {
+    my ($delim, $keep, $line) = @_;
+    return () unless defined $line;
+
+    # parse_line always treats ' as a quote character, making it impossible
+    # to sanely search for contractions. As this behavour isn't
+    # configurable, we replace ' with a placeholder to hide it from the
+    # parser.
+
+    # only treat ' at the start or end of words as quotes
+    # it's easier to do this in reverse with regexes
+    $line =~ s/(^|\s|:)'/$1\001/g;
+    $line =~ s/'($|\s)/\001$1/g;
+    $line =~ s/\\?'/\000/g;
+    $line =~ tr/\001/'/;
+
+    my @words = parse_line($delim, $keep, $line);
+    foreach my $word (@words) {
+        $word =~ tr/\000/'/ if defined $word;
+    }
+    return @words;
+}
+
 sub _bug_numbers_only {
     my $searchstring = shift;
     my $cgi = Bugzilla->cgi;
     # Allow separation by comma or whitespace.
     $searchstring =~ s/[,\s]+/,/g;
 
-    if ($searchstring !~ /,/) {
+    if ($searchstring !~ /,/ && !i_am_webservice()) {
         # Single bug number; shortcut to show_bug.cgi.
         print $cgi->redirect(
             -uri => correct_urlbase() . "show_bug.cgi?id=$searchstring");
@@ -287,8 +311,9 @@ sub _handle_alias {
         # We use this direct SQL because we want quicksearch to be VERY fast.
         my $bug_id = Bugzilla->dbh->selectrow_array(
             q{SELECT bug_id FROM bugs WHERE alias = ?}, undef, $alias);
-        # If the user cannot see the bug, do not resolve its alias.
-        if ($bug_id && Bugzilla->user->can_see_bug($bug_id)) {
+        # If the user cannot see the bug or if we are using a webservice,
+        # do not resolve its alias.
+        if ($bug_id && Bugzilla->user->can_see_bug($bug_id) && !i_am_webservice()) {
             $alias = url_quote($alias);
             print Bugzilla->cgi->redirect(
                 -uri => correct_urlbase() . "show_bug.cgi?id=$alias");
@@ -327,6 +352,7 @@ sub _handle_status_and_resolution {
 
 sub _handle_special_first_chars {
     my ($qsword, $negate) = @_;
+    return 0 if !defined $qsword || length($qsword) <= 1;
 
     my $firstChar = substr($qsword, 0, 1);
     my $baseWord = substr($qsword, 1);
@@ -365,10 +391,10 @@ sub _handle_field_names {
 
     # Generic field1,field2,field3:value1,value2 notation.
     # We have to correctly ignore commas and colons in quotes.
-    my @field_values = parse_line(':', 1, $or_operand);
+    my @field_values = _parse_line(':', 1, $or_operand);
     if (scalar @field_values == 2) {
-        my @fields = parse_line(',', 1, $field_values[0]);
-        my @values = parse_line(',', 1, $field_values[1]);
+        my @fields = _parse_line(',', 1, $field_values[0]);
+        my @values = _parse_line(',', 1, $field_values[1]);
         foreach my $field (@fields) {
             my $translated = _translate_field_name($field);
             # Skip and record any unknown fields

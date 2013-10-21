@@ -172,11 +172,13 @@ TUI_hide_default('information_query');
            value="[% default.bug_id.0 FILTER html %]" size="20">
            <div class="field_help">(カンマ区切りリスト)</div>
     </div>
-    のもの
-    <select name="bug_id_type" id="bug_id_type">
-      <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>のみから</option>
-      <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>を除く</option>
-    </select> the results
+    <span class="field_label field_label_sup">
+      のもの
+      <select name="bug_id_type" id="bug_id_type">
+        <option value="anyexact"[% " selected" IF default.bug_id_type.0 == "anyexact" %]>のみからの</option>
+        <option value="nowords"[% " selected" IF default.bug_id_type.0 == "nowords" %]>を除く</option>
+      </select> 結果
+    </span>
   </div>
 
   [% Hook.process('after_freetext_fields') %]

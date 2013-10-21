@@ -65,7 +65,7 @@
   # if we ever have a login system that can create accounts through
   # createaccount.cgi but can't change passwords.
   #%]
-  
+  [% password_complexity = Param('password_complexity') %]
 [% IF editusers %]
   [% IF user.authorizer.can_change_password %]
   <tr>
@@ -73,6 +73,13 @@
     <td>
       <input type="password" size="16" name="password" id="password"
              value="" autocomplete="off" />
+      [% IF password_complexity == "mixed_letters" %] 
+        (パスワードには英大文字・英小文字が最低各一文字必要です。)
+      [% ELSIF password_complexity == "letters_numbers" %] 
+        (パスワードには英大文字・英小文字・数字が最低各一文字必要です。)
+      [% ELSIF password_complexity == "letters_numbers_specialchars" %] 
+        (パスワードには英文字・数字・特殊文字が最低各一文字必要です。)
+      [% END %]
       [% IF editform %]<br />
         (新しいパスワードを入力してください。)
       [% END %]

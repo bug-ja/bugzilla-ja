@@ -270,10 +270,6 @@ use constant FIELD_MAP => {
     summary          => 'short_desc',
     url              => 'bug_file_loc',
     whiteboard       => 'status_whiteboard',
-
-    # These are special values for the WebService Bug.search method.
-    limit            => 'LIMIT',
-    offset           => 'OFFSET',
 };
 
 use constant REQUIRED_FIELD_MAP => {
@@ -2545,6 +2541,7 @@ sub _set_product {
             my @idlist = ($self->id);
             push(@idlist, map {$_->id} @{ $params->{other_bugs} })
                 if $params->{other_bugs};
+            @idlist = uniq @idlist;
             # Get the ID of groups which are no longer valid in the new product.
             my $gids = $dbh->selectcol_arrayref(
                 'SELECT bgm.group_id
@@ -2559,9 +2556,13 @@ sub _set_product {
                                         . Bugzilla->user->groups_as_string . '))
                                        OR gcm.othercontrol != ?) )',
                 undef, (@idlist, $product->id, CONTROLMAPNA, CONTROLMAPNA));
-            $vars{'old_groups'} = Bugzilla::Group->new_from_list($gids);            
+            $vars{'old_groups'} = Bugzilla::Group->new_from_list($gids);
+
+            # Did we come here from editing multiple bugs? (affects how we
+            # show optional group changes)
+            $vars{multiple_bugs} = (@idlist > 1) ? 1 : 0;
         }
-        
+
         if (%vars) {
             $vars{product} = $product;
             $vars{bug} = $self;
@@ -3953,7 +3954,11 @@ sub get_activity {
 # Update the bugs_activity table to reflect changes made in bugs.
 sub LogActivityEntry {
     my ($i, $col, $removed, $added, $whoid, $timestamp, $comment_id) = @_;
-    my $dbh = Bugzilla->dbh;
+    my $sth = Bugzilla->dbh->prepare_cached(
+      'INSERT INTO bugs_activity
+       (bug_id, who, bug_when, fieldid, removed, added, comment_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?)');
+
     # in the case of CCs, deps, and keywords, there's a possibility that someone
     # might try to add or remove a lot of them at once, which might take more
     # space than the activity table allows.  We'll solve this by splitting it
@@ -3977,10 +3982,7 @@ sub LogActivityEntry {
         trick_taint($addstr);
         trick_taint($removestr);
         my $fieldid = get_field_id($col);
-        $dbh->do("INSERT INTO bugs_activity
-                  (bug_id, who, bug_when, fieldid, removed, added, comment_id)
-                  VALUES (?, ?, ?, ?, ?, ?, ?)",
-                  undef, ($i, $whoid, $timestamp, $fieldid, $removestr, $addstr, $comment_id));
+        $sth->execute($i, $whoid, $timestamp, $fieldid, $removestr, $addstr, $comment_id);
     }
 }
 

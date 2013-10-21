@@ -18,22 +18,36 @@
 [% PROCESS global/header.html.tmpl
   title = title
 %]
-<p>
+
 [% IF changes._group_controls.now_na.size %]
   [% FOREACH g = changes._group_controls.now_na %]
-    このプロダクトには適用されなくなったグループ '[% g.name FILTER html %]' から [% terms.bugs %] を削除しています<p>
-    [% g.bug_count FILTER html %] 件の [%+ terms.bugs %] を処理しました<p>
+    <p>
+    このプロダクトには適用されなくなったグループ '[% g.name FILTER html %]' 
+    から [% terms.bugs %] を削除しています。<br>
+    [% IF g.bug_count == 1 %]
+      一件の [% terms.bug %] を削除しました。
+    [% ELSE %]
+      [% g.bug_count FILTER html %] 件の [%+ terms.bugs %] を削除しました。
+    [% END %]
+    </p>
   [% END %]
 [% END %]
 
 [% IF changes._group_controls.now_mandatory.size %]
   [% FOREACH g = changes._group_controls.now_mandatory %]
-    このプロダクトには適用されるグループ '[% g.name FILTER html %]' に [% terms.bugs %] を追加しています<p>
-    [% g.bug_count FILTER html %] 件の [%+ terms.bugs %] を処理しました<p>
+    <p>
+    このプロダクトに必ず適用されるグループ '[% g.name FILTER html %]' に 
+    [% terms.bugs %] を追加しています。<br>
+    [% IF g.bug_count == 1 %]
+      一件の [% terms.bug %] を追加しました。
+    [% ELSE %]
+      [% g.bug_count FILTER html %] 件の [%+ terms.bugs %] を追加しました。
+    [% END %]
+    </p>
   [% END %]
 [% END %]
 
-グループによる制限を更新しました。<p>
+<p>グループによる制限を更新しました。</p>
 
 [% PROCESS admin/products/footer.html.tmpl %]
 

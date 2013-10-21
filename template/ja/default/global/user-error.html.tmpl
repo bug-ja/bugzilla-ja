@@ -1078,6 +1078,13 @@
     [% admindocslinks = {'groups.html' => 'プロダクトのグループの割り当て'} %]
     [% jawords.group FILTER html %] の組み合わせ &quot;[% groupname FILTER html %]&quot; は無効です。
 
+  [% ELSIF error == "illegal_pronoun" %]
+    [% title = "無効な用語" %]
+    入力した用語 ([% pronoun FILTER html %]) は無効です。利用可能な用語から
+    選択する必要があります。
+    <a href="[% docs_urlbase FILTER html %]query.html#pronouns">用語について</a>
+    のリストを参照してください。
+
   [% ELSIF error == "illegal_query_name" %]
     [% title = BLOCK %] 指定された [% jawords.search_name FILTER html %] は無効です [% END %]
     [% jawords.search_name FILTER html %] には次の文字を含むことはできません。
@@ -1236,6 +1243,11 @@
       ロックアウトから回復するのは、"パスワードを忘れた" リンクから
       パスワードをリセットすることによっても可能です。
     [% END %]
+
+  [% ELSIF error == "invalid_cookies_or_token" %]
+    [% title = "無効なクッキーまたはトークン" %]
+    利用したクッキーもしくはトークンが無効であるか期限切れです。
+    新しいクッキーもしくはトークンを取得するために再ログインが必要です。
 
   [% ELSIF error == "json_rpc_get_method_required" %]
     JSON-RPC を GET で利用する場合、'method' パラメータを必ず指定する必要があります。

@@ -684,13 +684,13 @@ sub get_attachments_by_bug {
 
         # Preload datasizes.
         my $sizes =
-          $dbh->selectall_hashref('SELECT attach_id, LENGTH(thedata) AS size
+          $dbh->selectall_hashref('SELECT attach_id, LENGTH(thedata) AS datasize
                                    FROM attachments LEFT JOIN attach_data ON attach_id = id
                                    WHERE bug_id = ?',
                                    'attach_id', undef, $bug->id);
 
         # Force the size of attachments not in the DB to be recalculated.
-        $_->{datasize} = $sizes->{$_->id}->{size} || undef foreach @$attachments;
+        $_->{datasize} = $sizes->{$_->id}->{datasize} || undef foreach @$attachments;
     }
     return $attachments;
 }
@@ -900,10 +900,11 @@ sub update {
     }
 
     if (scalar(keys %$changes)) {
-      $dbh->do('UPDATE attachments SET modification_time = ? WHERE attach_id = ?',
-               undef, ($timestamp, $self->id));
-      $dbh->do('UPDATE bugs SET delta_ts = ? WHERE bug_id = ?',
-               undef, ($timestamp, $self->bug_id));
+        $dbh->do('UPDATE attachments SET modification_time = ? WHERE attach_id = ?',
+                 undef, ($timestamp, $self->id));
+        $dbh->do('UPDATE bugs SET delta_ts = ? WHERE bug_id = ?',
+                 undef, ($timestamp, $self->bug_id));
+        $self->{modification_time} = $timestamp;
     }
 
     return $changes;

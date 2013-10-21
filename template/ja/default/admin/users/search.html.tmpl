@@ -59,9 +59,13 @@
 [% END %]
 
 <p>
-  <input type="checkbox" name="enabled_only" value="1" id="enabled_only"
-         checked="checked">
-  <label for="enabled_only">有効なアカウントのみ</label>
+  検索対象を
+  <select name="is_enabled">
+      <option value="2">全ての</option>
+      <option value="1" selected>有効な</option>
+      <option value="0">無効な</option>
+  </select>
+  ユーザに限定する。
 </p>
 
 </form>

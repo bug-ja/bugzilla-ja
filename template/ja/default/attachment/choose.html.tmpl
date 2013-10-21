@@ -7,7 +7,7 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-   title = "添付の表示",
+   title = "添付の表示と追加",
    onload = "document.forms['choose-id'].id.focus()"
  %]
 
@@ -23,6 +23,13 @@
   <p>もしくは、[% terms.bug %] 報告に関連した添付のリストを表示します。</p>
   <p>[% terms.Bug %] ID: <input name="id" size="6">
   <input type="submit" name="action" value="表示" id="action">
+  </p>
+</form>
+
+<form method="get" action="attachment.cgi">
+  <p>もしくは、[% terms.bug %] ID を入力して新規作成します。</p>
+  <p>[% terms.Bug %] ID: <input name="bugid" size="6">
+    <button name="action" value="enter" id="action">新規添付の作成</button>
   </p>
 </form>
 
