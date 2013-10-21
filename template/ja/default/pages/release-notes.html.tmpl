@@ -50,6 +50,36 @@
 
 <h2 id="v42_point">4.2.x リリースでの更新点</h2>
 
+<h3>4.2.7</h3>
+
+<p>このリリースではいくつかのセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/4.0.10/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下の[% terms.bug %]修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li>Internet Explorer 11 および Konqueror といった KHTML ベースのブラウザにおいて、
+    [% terms.bugs %] リストが正常に表示されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=902515">[% terms.Bug %] 902515</a> および
+    <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=914262">[% terms.bug %] 914262</a>)</li>
+  <li><kbd>password_complexity</kbd> パラメータが 'letters_numbers_specialchars'
+    に設定されている場合に、数字および特殊文字のみが含まれるパスワードが有効でした。
+    現在は、英文字が入っていることも検証されます。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=897264">[% terms.Bug %] 897264</a>)</li>
+  <li>MySQL のように DB サーバが大文字・小文字を区別しない比較を行う場合、
+    トークンおよびログインクッキーがそれらの区別なしに比較されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=906745">[% terms.Bug %] 906745</a> および
+    <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=907438">[% terms.bug %] 907438</a>)</li>
+  <li>(X-Frame-Options といった) 全てのセキュリティーヘッダが XML-RPC でも帰るようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=787328">[% terms.Bug %] 787328</a>)</li>
+  <li>任意でない自由記述のカスタムフィールドがあり空白である場合に Oracle 
+    環境で新規 [% terms.bug %] 報告時にクラッシュしていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=919475">[% terms.Bug %] 919475</a>)</li>
+  <li>Oracle 環境下で <kbd>importxml.pl</kbd> を利用しての [% terms.bugs %] のインポートが不可能でした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=848063">[% terms.Bug %] 848063</a>)</li>
+</ul>
+
 <h3>4.2.6</h3>
 
 <p>The following important fixes/changes have been made in this release:</p>
