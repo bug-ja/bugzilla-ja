@@ -236,6 +236,10 @@
     シリーズ ID [% series_id FILTER html %] は無効です。
     このシリーズは削除された可能性があります。
 
+  [% ELSIF error == "invalid_timestamp" %]
+    入力されたタイムスタンプ <code>[% timestamp FILTER html %]</code> を、
+    正常な日時として解釈できませんでした。
+
   [% ELSIF error == "invalid_webservergroup" %]
     [% group FILTER html %] というグループは存在しません。
     [% constants.bz_locations.localconfig FILTER html %] の $webservergroup 
@@ -421,6 +425,9 @@
 
   [% ELSIF error == "token_generation_error" %]
     トークン生成システムで深刻な問題が発生しています。
+
+  [% ELSIF error == "cancel_token_does_not_exist" %]
+    キャンセルしようとしたトークンが存在しません。
 
   [% ELSIF error == "template_error" %]
     [% template_error_msg FILTER html %]
