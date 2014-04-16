@@ -417,10 +417,10 @@ use constant is_default => 0;
 
 sub is_set_on_bug {
     my ($self, $bug) = @_;
-    # We treat it like a hash always, so that we don't have to check if it's
-    # a hash or an object.
-    return 0 if !defined $bug->{component_id};
-    $bug->{component_id} == $self->id ? 1 : 0;
+    my $value = blessed($bug) ? $bug->component_id : $bug->{component};
+    $value = $value->id if blessed($value);
+    return 0 unless $value;
+    return $value == $self->id ? 1 : 0;
 }
 
 ###############################
@@ -506,7 +506,7 @@ Component.pm represents a Product Component object.
 
  Returns:     Integer with the number of bugs.
 
-=item C<bugs_ids()>
+=item C<bug_ids()>
 
  Description: Returns all bug IDs that belong to the component.
 

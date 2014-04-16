@@ -44,6 +44,52 @@
 
 <h2 id="v44_point">Updates in this 4.4.x Release</h2>
 
+<h3>4.4.2</h3>
+
+<p>以下の重要な修正・変更がこのリリースで追加されました :</p>
+
+<ul>
+  <li><kbd>checksetup.pl</kbd> が DBI 1.630 (1.63) を 1.614 より古いバージョンと
+    検出し、アップグレードが完了しませんでした。Perl 5.10.0 およびそれより以前
+    を利用している場合、
+    <a href="http://search.cpan.org/~jpeacock/version/lib/version.pod">version</a>
+    モジュールがインストールされていることを <kbd>checksetup.pl</kbd> の実行前に
+    確認してください。Perl 5.10.1 以降を利用の場合は、このモジュールは
+    インストール済みですので対処は不要です。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=938300">[% terms.Bug %] 938300</a>)</li>
+  <li>[% terms.Bugzilla %] 4.4 もしくは 4.4.1 へアップグレードする際に
+    <kbd>longdescs.comment_id</kbd> に関するエラーが MySQL 5.0 と 5.1 
+    を利用している場合に発生していました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=870369">[% terms.Bug %] 870369</a>)</li>
+  <li>ユニコード文字列を名前に含む保存された検索は、Digest::SHA 5.82 
+    とそれ以降の環境において動作していませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=964113">[% terms.Bug %] 964113</a>)</li>
+  <li>[% terms.Bugzilla %] 4.4.1 におけるレグレッションにより、<kbd>email_in.pl</kbd>
+    が "無効なトークン" エラーメッセージにより失敗していました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=928331">[% terms.Bug %] 928331</a> and
+    <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=930013">[% terms.bug %] 930013</a>)</li>
+  <li>PROJECT 環境変数が mod_perl 有効な環境においても正常に処理されるように
+    なりました。(この変数は同じコードベースで複数のサイトを実行可能にします。)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=843457">[% terms.Bug %] 843457</a>)</li>
+  <li>コンポーネントに依存して利用される必須のカスタムフィールドについて、
+    [% terms.bug %] の新規登録時に正しく要求されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=895813">[% terms.Bug %] 895813</a>)</li>
+  <li>Windows 8.1 が新規 [% terms.bugs %] の登録時に認識されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=928092">[% terms.Bug %] 928092</a>)</li>
+  <li>[% terms.Bugzilla %] は <kbd>shutdownhtml</kbd> が設定されており、
+    クッキーを利用しない認証形式の場合でもクラッシュしなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=748095">[% terms.Bug %] 748095</a>)</li>
+  <li><kbd>importxml.pl</kbd> は <kbd>maxattachmentsize</kbd> と
+    <kbd>maxlocalattachment</kbd> パラメータを [% terms.bugs %] インポートの際に
+    無視されなくなりました。これにより、大きな添付はパラメータが設定されて
+    いる場合は <kbd>data/attachments/</kbd> に保存されるようになりました。
+    添付がウェブブラウザから見られるようにするため、このスクリプトはウェブ
+    サーバユーザ (apache など) のユーザで実行する必要があります。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=360231">[% terms.Bug %] 360231</a>)</li>
+  <li>SQLite 利用下でのデフォルトの日時形式が修正されました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=938161">[% terms.Bug %] 938161</a>)</li>
+</ul>
+
 <h3>4.4.1</h3>
 
 <p>このリリースではいくつかのセキュリティー問題への修正を含みます。詳細に関しては、
