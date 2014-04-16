@@ -15,8 +15,12 @@ use Bugzilla::Constants;
 use Bugzilla::Error;
 use Bugzilla::Group;
 use Bugzilla::User;
-use Bugzilla::Util qw(trim);
+use Bugzilla::Util qw(trim detaint_natural);
 use Bugzilla::WebService::Util qw(filter validate translate params_to_objects);
+
+use List::Util qw(min);
+
+use List::Util qw(first);
 
 # Don't need auth to login
 use constant LOGIN_EXEMPT => {
@@ -72,14 +76,25 @@ sub login {
     $input_params->{'Bugzilla_password'} = $params->{password};
     $input_params->{'Bugzilla_remember'} = $remember;
 
-    Bugzilla->login();
-    return { id => $self->type('int', Bugzilla->user->id) };
+    my $user = Bugzilla->login();
+
+    my $result = { id => $self->type('int', $user->id) };
+
+    # We will use the stored cookie value combined with the user id
+    # to create a token that can be used with future requests in the
+    # query parameters
+    my $login_cookie = first { $_->name eq 'Bugzilla_logincookie' }
+                              @{ Bugzilla->cgi->{'Bugzilla_cookie_list'} };
+    if ($login_cookie) {
+        $result->{'token'} = $user->id . "-" . $login_cookie->value;
+    }
+
+    return $result;
 }
 
 sub logout {
     my $self = shift;
     Bugzilla->logout;
-    return undef;
 }
 
 #################
@@ -184,12 +199,17 @@ sub get {
                                             userid => $obj->id});
         }
     }
-    
+
     # User Matching
-    my $limit;
-    if ($params->{'maxusermatches'}) {
-        $limit = $params->{'maxusermatches'} + 1;
+    my $limit = Bugzilla->params->{maxusermatches};
+    if ($params->{limit}) {
+        detaint_natural($params->{limit})
+            || ThrowCodeError('param_must_be_numeric',
+                              { function => 'Bugzilla::WebService::User::match',
+                                param    => 'limit' });
+        $limit = $limit ? min($params->{limit}, $limit) : $params->{limit};
     }
+
     my $exclude_disabled = $params->{'include_disabled'} ? 0 : 1;
     foreach my $match_string (@{ $params->{'match'} || [] }) {
         my $matched = Bugzilla::User::match($match_string, $limit, $exclude_disabled);
@@ -200,7 +220,7 @@ sub get {
             }
         }
     }
-   
+
     my $in_group = $self->_filter_users_by_group(
         \@user_objects, $params);
 
@@ -432,10 +452,12 @@ management of cookies across sessions.
 
 =item B<Returns>
 
-On success, a hash containing one item, C<id>, the numeric id of the
-user that was logged in.  A set of http cookies is also sent with the
-response.  These cookies must be sent along with any future requests
-to the webservice, for the duration of the session.
+On success, a hash containing two items, C<id>, the numeric id of the
+user that was logged in, and a C<token> which can be passed in
+the parameters as authentication in other calls. A set of http cookies
+is also sent with the response. These cookies *or* the token can be sent
+along with any future requests to the webservice, for the duration of the
+session.
 
 =item B<Errors>
 
@@ -729,9 +751,6 @@ Bugzilla itself. Users will be returned whose real name or login name
 contains any one of the specified strings. Users that you cannot see will
 not be included in the returned list.
 
-Some Bugzilla installations have user-matching turned off, in which
-case you will only be returned exact matches.
-
 Most installations have a limit on how many matches are returned for
 each string, which defaults to 1000 but can be changed by the Bugzilla
 administrator.
@@ -740,6 +759,13 @@ Logged-out users cannot use this argument, and an error will be thrown
 if they try. (This is to make it harder for spammers to harvest email
 addresses from Bugzilla, and also to enforce the user visibility
 restrictions that are implemented on some Bugzillas.)
+
+=item C<limit> (int)
+
+Limit the number of users matched by the C<match> parameter. If value
+is greater than the system limit, the system limit will be used. This
+parameter is only used when user matching using the C<match> parameter
+is being performed.
 
 =item C<group_ids> (array)
 
@@ -884,6 +910,10 @@ querying your own account, even if you are in the editusers group.
 
 You passed an invalid login name in the "names" array or a bad
 group ID in the C<group_ids> argument.
+
+=item 52 (Invalid Parameter)
+
+The value used must be an integer greater then zero.
 
 =item 304 (Authorization Required)
 

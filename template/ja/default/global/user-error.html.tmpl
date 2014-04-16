@@ -1025,10 +1025,10 @@
   [% ELSIF error == "illegal_change" %]
     [% title = BLOCK %] 許可されていない変更を行おうとしました [% END %]
     <strong>[% field_descs.$field FILTER html %]</strong> のフィールドを
-    [% IF oldvalue.defined %]
+    [% IF oldvalue.defined AND oldvalue != "" %]
       <em>[% oldvalue.join(', ') FILTER html %]</em> から
     [% END %]
-    [% IF newvalue.defined %]
+    [% IF newvalue.defined AND newvalue != "" %]
       <em>[% newvalue.join(', ') FILTER html %]</em> へ
     [% END %]
     変更しようとしましたが、

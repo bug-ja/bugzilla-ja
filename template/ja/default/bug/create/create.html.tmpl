@@ -566,6 +566,9 @@ TUI_hide_default('attachment_text_field');
           (<strong>[% Param('insidergroup') FILTER html %]</strong> 
           グループのメンバーにしか見えなくなります)
         </label>
+        <script>
+          updateCommentTagControl(document.getElementById('comment_is_private'), 'comment');
+        </script>
       </td>
     </tr>
   [% END %]
