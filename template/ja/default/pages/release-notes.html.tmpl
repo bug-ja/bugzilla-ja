@@ -50,6 +50,36 @@
 
 <h2 id="v42_point">4.2.x リリースでの更新点</h2>
 
+<h3>4.2.8</h3>
+
+<p>このリリースでは一つの小さなセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/4.0.11/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下の[% terms.bug %]修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li><kbd>checksetup.pl</kbd> が DBI 1.630 (1.63) を 1.614 より古いバージョンと
+    検出し、アップグレードが完了しませんでした。Perl 5.10.0 およびそれより以前
+    を利用している場合、
+    <a href="http://search.cpan.org/~jpeacock/version/lib/version.pod">version</a>
+    モジュールがインストールされていることを <kbd>checksetup.pl</kbd> の実行前に
+    確認してください。Perl 5.10.1 以降を利用の場合は、このモジュールは
+    インストール済みですので対処は不要です。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=938300">[% terms.Bug %] 938300</a>)</li>
+  <li><kbd>checksetup.pl</kbd> が、無効なバージョン番号を Perl モジュールが
+    返しても "無効なバージョン形式 (非数値)" エラーで失敗しなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=781672">[% terms.Bug %] 781672</a>)</li>
+  <li>PROJECT 環境変数が mod_perl 有効な環境においても正常に処理されるように
+    なりました。(この変数は同じコードベースで複数のサイトを実行可能にします。)
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=843457">[% terms.Bug %] 843457</a>)</li>
+  <li>[% terms.Bugzilla %] は <kbd>shutdownhtml</kbd> が設定されており、
+    クッキーを利用しない認証形式の場合でもクラッシュしなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=748095">[% terms.Bug %] 748095</a>)</li>
+  <li>SQLite 利用下でのデフォルトの日時形式が修正されました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=938161">[% terms.Bug %] 938161</a>)</li>
+</ul>
+
 <h3>4.2.7</h3>
 
 <p>このリリースではいくつかのセキュリティー問題への修正を含みます。詳細に関しては、
@@ -82,26 +112,27 @@
 
 <h3>4.2.6</h3>
 
-<p>The following important fixes/changes have been made in this release:</p>
+<p>以下の重要な修正・変更がこのリリースで追加されました :</p>
 
 <ul>
-  <li>MySQL 5.6 is now supported.
+  <li>MySQL 5.6 がサポートされるようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=852560">[% terms.Bug %] 852560</a>)</li>
-  <li>A regression introduced in [% terms.Bugzilla %] 4.2.4 made Oracle crash
-    when installing [% terms.Bugzilla %] for the first time.
+  <li>[% terms.Bugzilla %] 4.2.4 で混入したレグレッションにより、Oracle 環境に
+    初めて [% terms.Bugzilla %] をインストールする際にクラッシュするようになっていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=858911">[% terms.Bug %] 858911</a>)</li>
-  <li>If a custom field depends on a product, component or classification,
-    the "mandatory" bit was ignored on [% terms.bug %] creation.
+  <li>カスタムフィールドがプロダクト、コンポーネント、もしくは classification
+    に依存している場合に、"mandatory" 設定が [% terms.bug %] 登録時に無視されていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=782210">[% terms.Bug %] 782210</a>)</li>
-  <li>Queries involving flags were broken in several ways. These queries
-    have been fixed.
+  <li>フラグを利用した検索がいくつかの場合に機能しませんでした。
+    それらの検索条件は利用可能になっています。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=828344">[% terms.Bug %] 828344</a>)</li>
-  <li>Tabular reports involving the empty resolution did not link [% terms.bug %]
-    counts correctly.
+  <li>解決方法なしの条件の表形式のレポートでは [% terms.bug %] 数へのリンクが
+    不正になっていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=212471">[% terms.Bug %] 212471</a>)</li>
-  <li>The <kbd>B[%%]ug.search</kbd> WebService method was returning all visible
-    [%+ terms.bugs %] when called with no arguments, ignoring the
-    <kbd>max_search_results</kbd> and <kbd>search_allow_no_criteria</kbd> parameters.
+  <li>引数なしの <kbd>B[%%]ug.search</kbd> ウェブサービスメソッドが全て閲覧可能な
+    [%+ terms.bugs %] を返す条件の場合に、
+    <kbd>max_search_results</kbd> と <kbd>search_allow_no_criteria</kbd> パラメータが
+    無視されていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=859118">[% terms.Bug %] 859118</a>)</li>
 </ul>
 
