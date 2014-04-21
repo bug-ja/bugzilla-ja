@@ -13,8 +13,6 @@ use Bugzilla::Constants;
 use Bugzilla::Util;
 use Bugzilla::Token;
 
-use Bugzilla::Auth::Login::Cookie qw(login_token);
-
 use List::Util qw(first);
 
 sub new {
@@ -53,6 +51,10 @@ sub persist_login {
                                    MAX_LOGINCOOKIE_AGE, 'DAY'));
 
     $dbh->bz_commit_transaction();
+
+    # We do not want WebServices to generate login cookies.
+    # All we need is the login token for User.login.
+    return $login_cookie if i_am_webservice();
 
     # Prevent JavaScript from accessing login cookies.
     my %cookieargs = ('-httponly' => 1);

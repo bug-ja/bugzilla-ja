@@ -44,6 +44,39 @@
 
 <h2 id="v44_point">Updates in this 4.4.x Release</h2>
 
+<h3>4.4.4</h3>
+
+<p>このリリースでは [% terms.Bugzilla %] 4.4.3 で修正された
+  <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=968576">セキュリティー [% terms.bug %] 968576</a>
+  でレグレッションした [% terms.bug %] において URL が正常に表示されなくなる問題を修正したものです。
+  (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=998323">[% terms.Bug %] 998323</a>)</p>
+
+<h3>4.4.3</h3>
+
+<p>このリリースでは二つのセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/4.0.11/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
+
+<p>加えて、以下の[% terms.bug %]修正がこのリリースでは行われました。</p>
+
+<ul>
+  <li><kbd>User.login</kbd> ウェブサービスメソッドが認証呼び出しに必要な
+    <kbd>token</kbd> 引数の値を返すようになりました。セキュリティー上の理由から、
+    このメソッドではログインクッキーが生成されなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=893195">[% terms.Bug %] 893195</a>)</li>
+  <li><kbd>User.get</kbd> ウェブサービスメソッドにおいて、<kbd>match</kbd>
+    条件においてアカウント名を返す際に <kbd>maxusermatches</kbd> パラメータが
+    適用されるようになりました。以前はこのメソッドは全ての合致したアカウントを返していました。
+    <kbd>User.get</kbd> メソッドにおいてより制限するためには、
+    <kbd>limit</kbd> 引数が利用できるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=962060">[% terms.Bug %] 962060</a>)</li>
+  <li>sudo クッキーが JavaScript からアクセスできなくなりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=966676">[% terms.Bug %] 966676</a>)</li>
+  <li>解決済みの [% terms.bugs %] を大量に含む巨大な依存ツリーがより高速に
+    表示されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=961789">[% terms.Bug %] 961789</a>)</li>
+</ul>
+
 <h3>4.4.2</h3>
 
 <p>以下の重要な修正・変更がこのリリースで追加されました :</p>

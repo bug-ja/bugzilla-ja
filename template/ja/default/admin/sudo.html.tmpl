@@ -65,9 +65,10 @@
     <p>
       最後に、<label for="Bugzilla_password">あなたの [% terms.Bugzilla %] パスワード</label>
       を入力してください :
-      <input type="hidden" name="Bugzilla_login" value="
-      [%- user.login FILTER html %]">
+      <input type="hidden" name="Bugzilla_login" value="[% user.login FILTER html %]">
       <input type="password" id="Bugzilla_password" name="Bugzilla_password" size="20">
+      <input type="hidden" name="Bugzilla_login_token"
+             value="[% login_request_token FILTER html %]">
       <br>
       これには二つの理由があります。ひとつには、あなたのすでにログイン中のアカウントで、
       だれかが変更を加えようとするのを防ぐため。二つ目に、本当にこの機能が必要なのか、
