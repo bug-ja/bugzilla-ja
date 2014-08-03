@@ -27,22 +27,30 @@
 
 <h2 id="v44_introduction">Introduction</h2>
 
-<p>Welcome to [% terms.Bugzilla %] 4.4! It has been over a year since we
-  released [% terms.Bugzilla %] 4.2 on February 2012, and this new major
-  release comes with several new features and improvements. This release
-  contains major improvements to WebServices, which were our main target in
-  this release, a rewritten tagging system, a real MIME type auto-detection for
-  attachments, improved support for Oracle, performance improvements and lots
-  of other enhancements.</p>
 
-<p>If you're upgrading, make sure to read <a href="#v44_upgrading">Notes On
-  Upgrading From a Previous Version</a>. If you are upgrading from a release
-  before 4.2, make sure to read the release notes for all the
-  <a href="#v44_previous">previous versions</a> in between your version and
-  this one, <strong>particularly the Upgrading section of each version's
-  release notes</strong>.</p>
+<p>[% terms.Bugzilla %] 4.4 にようこそ! 2012 年 2 月に [% terms.Bugzilla %] 
+  リリースして以来１年以上たちましたが、いくつかの新機能と機能改善が入った
+  新バージョンとして戻ってきました。このリリースではわれわれのメインのターゲット
+  だった WebService でのいくつかの機能改善、タグシステムの更新、添付の MIME 
+  型の自動認識機能、Oracle 対応の改善、パフォーマンスの改善などを含む、さま
+  ざまな改善が入っています。
 
-<h2 id="v44_point">Updates in this 4.4.x Release</h2>
+<p>
+
+<p>アップグレードを考えている場合、<a href="#v44_upgrading">以前のバージョン
+  からアップグレードする際の注意点</a>を読んでください。4.2 以前からアップグ
+  レードしようとしているユーザは、このバージョンとあなたの現在のバージョンの
+  間の<a href="#v44_previous">過去のバージョン</a>のリリースノートをすべて確
+  認してください。<strong>特にそれぞれのリリースノートの「アップグレードする
+  際の注意点」の部分は重要です。</strong></p>
+
+<h2 id="v44_point">4.4.x リリースでの更新点</h2>
+
+<h3>4.4.5</h3>
+
+<p>このリリースでは一つのセキュリティー問題への修正を含みます。詳細に関しては、
+  <a href="http://www.bugzilla.org/security/4.0.13/">セキュリティーアドバイザリ</a>
+  を参照してください。</p>
 
 <h3>4.4.4</h3>
 
@@ -168,7 +176,7 @@
 </ul>
 
 
-<h2 id="v44_req">Minimum Requirements</h2>
+<h2 id="v44_req">動作環境</h2>
 
 <p>Any requirements that are new since 4.2 will look like
   <span class="req_new">this</span>.</p>
@@ -1377,13 +1385,13 @@ MySQL, PostgreSQL, や Oracle を利用すべきです。</p>
 </ul>
 
 +
-<h2 id="v42_code_changes">Code Changes Which May Affect Customizations and Extensions</h2>
+<h2 id="v42_code_changes">カスタマイズと拡張に影響するコードの変更</h2>
 
 <ul>
-  <li>The <kbd>email/newchangedmail.txt.tmpl</kbd> template is now fully templatized,
-    meaning that the diff table displaying changes in [% terms.bug %] fields is
-    now generated in the template itself. This means [% terms.bug %]mails are now
-    fully localizable.</li>
+  <li><kbd>email/newchangedmail.txt.tmpl</kbd>が完全にテンプレート化されました。
+    これにより、[% terms.bug %] のフィールドで変更があった点の表の生成はテンプレート
+    自身により生成されるようになりました。また、[% terms.bug %]メールを完全に
+    ローカライズできるようになりました。</li>
   <li>The bugmail_recipients hook has been modified to pass <kbd>diffs</kbd> with
     changes made to the [% terms.bug %] as well as <kbd>users</kbd> including
     recipients of the email notification.</li>
