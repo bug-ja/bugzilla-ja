@@ -1348,12 +1348,12 @@ MySQL, PostgreSQL, や Oracle を利用すべきです。</p>
     quicksearch_map, user_preferences.</li>
 </ul>
 
-<h4>WebService Changes</h4>
+<h4>WebService についての変更</h4>
 
 <ul>
-  <li>Two new methods have been added: <kbd>Product.create</kbd> and
-    <kbd>Group.create</kbd>.</li>
-  <li><kbd>B[%%]ug.update</kbd> no longer throws an error when passing an empty
+  <li>2つの新規メソッドの追加: <kbd>Product.create</kbd> と <kbd>Group.create</kbd></li>
+  <li><kbd>B[%%]ug.update</kbd> 
+  no longer throws an error when passing an empty
     string to <kbd>see_also</kbd>. It now simply ignores this empty value.</li>
   <li><kbd>Product.get</kbd> now also returns data about the classification it
     belongs to as well as its components, milestones and versions. It also
@@ -1366,20 +1366,20 @@ MySQL, PostgreSQL, や Oracle を利用すべきです。</p>
 </ul>
 
 
-<h2 id="v42_issues">Outstanding Issues</h2>
+<h2 id="v42_issues">未解決の問題</h2>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=89822">
-    [%- terms.Bug %] 89822</a>: When changing multiple [% terms.bugs %] at
-    the same time, there is no "mid-air collision" protection.</li>
+    [%- terms.Bug %] 89822</a>: 複数の [% terms.bugs %] を同時に変更しよう
+    としたとき、"mid-air collision" からの保護がありません。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=276230">
-    [%- terms.Bug %] 276230</a>: The support for restricting access to
-    particular Categories of New Charts is not complete. You should treat the
-    <em>chartgroup</em> parameter as the only access mechanism available.</li>
+    [%- terms.Bug %] 276230</a>: 新形式のチャートでのカテゴリ限定のアクセス制限
+    は完全ではありません。<em>chartgroup</em> パラメータが存在する唯一の信用が
+    置けるアクセス制限機構です。</li>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=584742">
-    [%- terms.Bug %] 584742</a>: When viewing [% terms.abug %], WebKit-based
-    browsers can automatically reset a field's selected value when the field
-    has disabled values.</li>
+    [%- terms.Bug %] 584742</a>: [% terms.abug %] の表示において、WebKit ベース
+    のブラウザで、フィールドに無効化された値がある場合に自動的にフィールドの選択
+    がリセットされる現象が発生しています。</li>
   <li>バグリストでキーワードもしくはフラグを表示する際に Oracle がクラッシュしていました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=780053">[% terms.Bug %] 780053</a>)</li>
 </ul>
@@ -1392,25 +1392,25 @@ MySQL, PostgreSQL, や Oracle を利用すべきです。</p>
     これにより、[% terms.bug %] のフィールドで変更があった点の表の生成はテンプレート
     自身により生成されるようになりました。また、[% terms.bug %]メールを完全に
     ローカライズできるようになりました。</li>
-  <li>The bugmail_recipients hook has been modified to pass <kbd>diffs</kbd> with
-    changes made to the [% terms.bug %] as well as <kbd>users</kbd> including
-    recipients of the email notification.</li>
-  <li>YUI has been upgraded to 2.9.0.</li>
-  <li>The [% terms.Bugzilla %]-specific <kbd>url_quote</kbd> filter used in templates
-    has been removed and replaced by the <kbd>uri</kbd> filter from Template::Toolkit
-    as they are now similar.</li>
-  <li>Due to the major code refactor of <kbd>B[%%]ugzilla/Search.pm</kbd>, any
-    customization made against this file will probably need to be rewritten.</li>
-  <li><kbd>long_list.cgi</kbd>, <kbd>showattachment.cgi</kbd> and <kbd>xml.cgi</kbd>
-    have been removed from the codebase. As <a href="#v40_code_changes">announced</a>
-    in the release notes of [% terms.Bugzilla %] 4.0, these scripts were deprecated
-    since [% terms.Bugzilla %] 2.19.</li>
-  <li><kbd>sidebar.cgi</kbd> has been removed, because Gecko-based browsers no
-    longer support remote XUL, and its popularity is very low.</li>
-  <li><kbd>contrib/yp_nomail.sh</kbd> has been removed. This script is no longer
-    useful since [% terms.Bugzilla %] 3.0.</li>
-  <li><kbd>contrib/bugzilla_ldapsync.rb</kbd> has been removed. This script didn't
-    work for a long time.</li>
+  <li>bugmail_recipients フックが、メール通知の受信先が入っている <kbd>users</kbd> 
+    と同様に、[% terms.bug %] に加えられた変更についての <kbd>diffs</kbd> をそのま
+    ま通すように変更されました。</li>
+  <li>YUI を 2.9.0 に更新しました。</li>
+  <li>テンプレートで利用している [% terms.Bugzilla %] 独自フィルターの <kbd>url_quote</kbd>
+    が削除され、Template::Toolkit で実装されている似た機能の <kbd>uri</kbd> 
+    フィルターに置き換えられました。</li>
+  <li><kbd>B[%%]ugzilla/Search.pm</kbd> での大規模なコード整理により、このファイル
+    に対するカスタマイズはたいていの場合書き直す必要があります。</li>
+  <li><kbd>long_list.cgi</kbd>, <kbd>showattachment.cgi</kbd> と <kbd>xml.cgi</kbd>
+    は削除されました。[% terms.Bugzilla %] 4.0 のリリースノートの
+    <a href="#v40_code_changes">アナウンス</a> にあるように、これらのスクリプトは
+    [% terms.Bugzilla %] 2.19 から非推奨でした。</li>
+  <li><kbd>sidebar.cgi</kbd> は Gecko ベースのブラウザがリモート XUL をサポート
+    しなくなったことと、あまり使われていなかったため削除されました。</li>
+  <li><kbd>contrib/yp_nomail.sh</kbd> は削除されました。このスクリプトは 
+    [% terms.Bugzilla %] 3.0 以降、有用ではありませんでした。</li>
+  <li><kbd>contrib/bugzilla_ldapsync.rb</kbd> は削除されました。このスクリプトは
+    長い間動作していませんでした。</li>
 </ul>
 
 
