@@ -837,7 +837,7 @@
 [% IF !message %]
   [% message = BLOCK %]
     [% terms.Bugzilla %] のメッセージ機能を間違って利用しています。
-    '[% message_tag %]' が渡されました。正しい利用方法は、
+    '[% message_tag FILTER html %]' が渡されました。正しい利用方法は、
     タグを渡すようにして、messages.html.tmpl にタグを定義する必要があります。<br>
     <br>
     もし、あなたが [% terms.Bugzilla %] の利用者で、
