@@ -455,14 +455,15 @@ sub create {
 sub update {
     my $self = shift;
     my $dbh = Bugzilla->dbh;
-    my $timestamp = shift || $dbh->selectrow_array('SELECT NOW()');
+    my $timestamp = shift || $dbh->selectrow_array('SELECT LOCALTIMESTAMP(0)');
 
     my $changes = $self->SUPER::update(@_);
 
     if (scalar(keys %$changes)) {
         $dbh->do('UPDATE flags SET modification_date = ? WHERE id = ?',
                  undef, ($timestamp, $self->id));
-        $self->{'modification_date'} = format_time($timestamp, '%Y.%m.%d %T');
+        $self->{'modification_date'} =
+          format_time($timestamp, '%Y.%m.%d %T', Bugzilla->local_timezone);
     }
     return $changes;
 }
@@ -1006,18 +1007,32 @@ sub notify {
         $default_lang = Bugzilla::User->new()->setting('lang');
     }
 
+    # Get comments on the bug
+    my $all_comments = $bug->comments({ after => $bug->lastdiffed });
+    @$all_comments   = grep { $_->type || $_->body =~ /\S/ } @$all_comments;
+
+    # Get public only comments
+    my $public_comments = [ grep { !$_->is_private } @$all_comments ];
+
     foreach my $to (keys %recipients) {
         # Add threadingmarker to allow flag notification emails to be the
         # threaded similar to normal bug change emails.
         my $thread_user_id = $recipients{$to} ? $recipients{$to}->id : 0;
 
-        my $vars = { 'flag'            => $flag,
-                     'old_flag'        => $old_flag,
-                     'to'              => $to,
-                     'date'            => $timestamp,
-                     'bug'             => $bug,
-                     'attachment'      => $attachment,
-                     'threadingmarker' => build_thread_marker($bug->id, $thread_user_id) };
+        # We only want to show private comments to users in the is_insider group
+        my $comments = $recipients{$to} && $recipients{$to}->is_insider
+            ? $all_comments : $public_comments;
+
+        my $vars = {
+            flag            => $flag,
+            old_flag        => $old_flag,
+            to              => $to,
+            date            => $timestamp,
+            bug             => $bug,
+            attachment      => $attachment,
+            threadingmarker => build_thread_marker($bug->id, $thread_user_id),
+            new_comments    => $comments,
+        };
 
         my $lang = $recipients{$to} ?
           $recipients{$to}->setting('lang') : $default_lang;
