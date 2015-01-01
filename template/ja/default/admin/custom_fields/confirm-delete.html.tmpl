@@ -23,22 +23,22 @@
            doc_section = "custom-fields.html#delete-custom-fields"
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">フィールド</th>
-  <th valign="top" class="left">値</th>
+<table id="admin_table">
+  <tr class="column_header">
+  <th>フィールド</th>
+  <th>値</th>
 </tr>
 <tr>
-  <td valign="top">カスタムフィールド:</td>
-  <td valign="top">[% field.name FILTER html %]</td>
+  <td>カスタムフィールド</td>
+  <td>[% field.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">説明:</td>
-  <td valign="top">[% field.description FILTER html %]</td>
+  <td>説明</td>
+  <td>[% field.description FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">型:</td>
-  <td valign="top">[% field_types.${field.type} FILTER html %]</td>
+  <td>型</td>
+  <td>[% field_types.${field.type} FILTER html %]</td>
 </tr>
 </table>
 

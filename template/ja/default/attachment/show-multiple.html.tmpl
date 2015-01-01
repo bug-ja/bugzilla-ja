@@ -28,23 +28,20 @@
     してください。
   </div>
 [% END %]
-<br>
 
 [% FOREACH a = attachments %]
 
-  <div align="center">
-  <table class="attachment_info" cellspacing="0" cellpadding="4" border="1" width="75%">
+<div class="viewall_frame_container">
+  <table class="viewall_desc">
     <tr>
-      <td valign="top" bgcolor="#cccccc" colspan="6">
-        <big><b>添付 #[% a.id %]</b></big>
-      </td>
+      <th colspan="6" class="bz_attach_footer">添付 #[% a.id %]</th>
     </tr>
     <tr>
-      <td valign="top">
+      <td>
         [% a.description FILTER html FILTER obsolete(a.isobsolete) %]
       </td>
 
-      <td valign="top">
+      <td>
         [% IF a.ispatch %]
           <i>パッチ</i>
         [% ELSE %]
@@ -52,10 +49,10 @@
         [% END %]
       </td>
 
-      <td valign="top">[% a.attached FILTER time %]</td>
-      <td valign="top">[% a.datasize FILTER unitconvert %]</td>
+      <td>[% a.attached FILTER time %]</td>
+      <td>[% a.datasize FILTER unitconvert %]</td>
 
-      <td valign="top">
+      <td>
         [% IF a.flags.size == 0 %]
           <i>フラグなし</i>
         [% ELSE %]
@@ -70,7 +67,7 @@
         [% END %]
       </td>
 
-      <td valign="top">
+      <td>
         <a href="attachment.cgi?id=[% a.id %]&amp;action=edit">詳細</a>
       </td>
     </tr>
@@ -99,9 +96,7 @@
       <a href="attachment.cgi?id=[% a.id %]">添付をダウンロードする</a>。
     </b></p>
   [% END %]
-  </div>
-
-  <br><br>
+</div>
 
 [% END %]
 

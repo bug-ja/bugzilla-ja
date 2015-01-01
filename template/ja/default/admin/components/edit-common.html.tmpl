@@ -15,12 +15,12 @@
 [% DEFAULT desc_name = "description" %]
 
 <tr>
-  <th class="field_label"><label for="component">コンポーネント:</label></th>
+  <th><label for="component">コンポーネント:</label></th>
   <td><input size="64" maxlength="64" name="component" id="component"
              value="[%- comp.name FILTER html %]"></td>
 </tr>
 <tr>
-  <th class="field_label"><label for="[% desc_name FILTER html %]">コンポーネントの説明:</label></th>
+  <th><label for="[% desc_name FILTER html %]">コンポーネントの説明:</label></th>
   <td>
     [% INCLUDE global/textarea.html.tmpl
       name           = desc_name
@@ -33,7 +33,7 @@
   </td>
 </tr>
 <tr>
-  <th class="field_label"><label for="initialowner">既定の担当者:</label></td>
+  <th><label for="initialowner">既定の担当者:</label></td>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name => "initialowner"
@@ -45,7 +45,7 @@
 </tr>
 [% IF Param('useqacontact') %]
   <tr>
-    <th class="field_label"><label for="initialqacontact">既定の QA コンタクト:</label></td>
+    <th><label for="initialqacontact">既定の QA コンタクト:</label></td>
     <td>
       [% INCLUDE global/userselect.html.tmpl
          name => "initialqacontact"
@@ -58,7 +58,7 @@
   </tr>
 [% END %]
 <tr>
-  <th class="field_label"><label for="initialcc">既定の CC リスト:</label></th>
+  <th><label for="initialcc">既定の CC リスト:</label></th>
   <td>
     [% INCLUDE global/userselect.html.tmpl
        name     => "initialcc"
@@ -69,7 +69,7 @@
     %]
     <br>
     [% IF !Param("usemenuforusers") %]
-      <em>CC リストに追加するユーザ名をカンマ区切りで入力してください。</em>
+      <span class="bz_info">CC リストに追加するユーザ名をカンマ区切りで入力してください。</span>
     [% END %]
   </td>
 </tr>

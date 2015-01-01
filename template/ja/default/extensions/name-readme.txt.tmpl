@@ -9,15 +9,15 @@
 通常のテンプレートはこのディレクトリに配置されます。
 テンプレートは、以下のようにコードから読むことができます。
 
-use B[% %]ugzilla::Error;
-my $template = B[% %]ugzilla->template;
+use Bugzilla::Error;
+my $template = Bugzilla->template;
 $template->process('[% name FILTER lower %]/some-template.html.tmpl')
   or ThrowTemplateError($template->error());
 
 これが、このディレクトリにある some-template.html.tmpl というテンプレート
 ファイルの呼び出し方です。
 
-注意: あなたのテンプレートに付けたフルパスが、[% terms.Bugzilla %] や、
+注意: あなたのテンプレートに付けたフルパスが、Bugzilla や、
 ほかの拡張にすでに存在するテンプレートと重ならないように注意してください。
 重なると、それらのテンプレートを上書きすることになります。これが、システム
 が '[% name FILTER lower %]' ディレクトリを作成している理由であり、衝突な

@@ -40,9 +40,8 @@
    doc_section = "parameters.html"
 %]
 
-<table border="0" width="100%">
-  <tr>
-    <td>
+<div class="table">
+  <div class="cell">
       [%# NAVIGATION BAR %]
       <table id="menu">
         <tr>
@@ -66,21 +65,21 @@
           </tr>
         [% END %]
       </table>
-    </td>
-    <td>
-      [% IF curpanel == -1 %]
-        [% PROCESS admin/params/index.html.tmpl panels = panels %]
-      [% ELSE %]
+  </div>
 
+  <div class="cell">
         <div class="contribute"><strong>注:</strong>
-          B[% %]ugzilla はボランティアによって開発されています。
-          B[% %]ugzilla プロジェクトに協力する最善の手は、あなた自身が
+          Bugzilla はボランティアによって開発されています。
+          Bugzilla プロジェクトに協力する最善の手は、あなた自身が
           <a href="http://www.bugzilla.org/contribute/">貢献する</a> ことです !
           貢献するにはプログラマである必要はなく、必要なことはたくさんあります。
         </div>
 
+    [% IF curpanel == -1 %]
+      [% PROCESS admin/params/index.html.tmpl panels = panels %]
+    [% ELSE %]
         <p>
-          この画面で [% terms.Bugzilla %] の基本的な動作パラメータを編集できます。
+          この画面で Bugzilla の基本的な動作パラメータを編集できます。
           注意してください !<br>
           "リセット" チェックボックスをチェックした値は全て既定値に設定されます。
         </p>
@@ -93,9 +92,8 @@
           <input type="hidden" name="token" value="[% token FILTER html %]">
           <input type="submit" name="action" value="変更を保存">
         </form>
-      [% END %]
-    </td>
-  </tr>
-</table>
+    [% END %]
+  </div>
+</div>
 
 [% INCLUDE global/footer.html.tmpl %]

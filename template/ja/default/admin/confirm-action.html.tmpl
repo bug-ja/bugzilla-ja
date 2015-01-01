@@ -15,49 +15,40 @@
   #                   if he declines submission.
   #%]
 
-[% PROCESS global/header.html.tmpl title = "疑わしい操作が行われました"
-                                   style_urls = ['skins/standard/global.css'] %]
+[% PROCESS global/header.html.tmpl
+  title = "疑わしい操作が行われました"
+%]
 
 [% IF abuser %]
   <div class="throw_error">
-    <p>あなたが [% terms.Bugzilla %] の管理画面を閲覧する際に、トークンがランダムに生成され、
+    <p>あなたが Bugzilla の管理画面を閲覧する際に、トークンがランダムに生成され、
     データベースとあなたが読み込んだフォームの両方に保存されています。
-    これは [% terms.Bugzilla %] から生成されたフォームからの送信の結果であることを確実にするためです。
+    これは Bugzilla から生成されたフォームからの送信の結果であることを確実にするためです。
     残念ながら、そのトークンは正しく一致しませんでした。
     これは、あなたが正しいページから送信した訳ではないことを意味します。
     以下のトークンが使用されました:</p>
 
-    <table border="0" cellpadding="5" cellspacing="0">
-      [% IF token_action != expected_action %]
-        <tr>
-          <th>期待したアクション:</th>
-          <td>[% token_action FILTER html %]</td>
-        </tr>
-        <tr>
-          <th>&nbsp;</th>
-          <td>
+    [% IF token_action != expected_action %]
+      <p>
+        <span class="label">期待したアクション:</span>
+        [%+ token_action FILTER html %]
+        <br>
             この操作は期待されたものと一致しません ([% expected_action FILTER html %])。
-          </td>
-        </tr>
-      [% END %]
+      </p>
+    [% END %]
 
-      [% IF abuser != user.identity %]
-        <tr>
-          <th>生成元:</th>
-          <td>[% abuser FILTER html %]</td>
-        </tr>
-        <tr>
-          <th>&nbsp;</th>
-          <td>
+    [% IF abuser != user.identity %]
+      <p>
+        <span class="label">生成元:</span>
+        [%+ abuser FILTER html %]
+        <br>
             このトークンはあなたによって生成されていません。
             これは誰かがあなたを騙そうとした可能性があります!
-          </td>
-        </tr>
-      [% END %]
-    </table>
+      </p>
+    [% END %]
+  </div>
 
     <p>この問題を [%+ Param("maintainer") FILTER html %] に報告してください。</p>
-  </div>
 [% ELSE %]
   <div class="throw_error">
     あなたは正しいページから操作していません (あなたは '[% script_name FILTER html%]'

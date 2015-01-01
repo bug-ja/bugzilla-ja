@@ -30,29 +30,16 @@
 
 <p>あなたの保存された検索は以下のとおりです:</p>
 
-<blockquote>
-  <table id="saved_search_prefs" border="1" cellpadding="3">
-    <tr>
-      <th>
-        検索名
-      </th>
-      <th>
-        実行
-      </th>
-      <th>
-        編集
-      </th>
-      <th>
-        破棄
-      </th>
-      <th>
-        フッタに表示
-      </th>
+  <table id="saved_search_prefs">
+    <tr class="column_header">
+      <th>検索名</th>
+      <th>実行</th>
+      <th>編集</th>
+      <th>破棄</th>
+      <th>フッタに表示</th>
       [% may_share = user.in_group(Param('querysharegroup')) && queryshare_groups.size %]
       [% IF may_share %]
-        <th>
-          グループ内で共有
-        </th>
+        <th>グループ内で共有</th>
       [% END %]
       [% Hook.process('saved-header') %]
     </tr>
@@ -62,27 +49,19 @@
         [% filtered_username = user.login FILTER uri %]
         <a href="[% Param('mybugstemplate').replace('%userid%', filtered_username) %]">実行</a>
       </td>
-      <td>
-        &nbsp;
-      </td>
-      <td>
-        &nbsp;
-      </td>
+      <td></td>
+      <td></td>
       <td align="center">
-        <input type="checkbox" 
-               name="showmybugslink"
-               value="1"
-               [% " checked" IF user.showmybugslink %]>
+        <input type="checkbox" name="showmybugslink" value="1"
+               [%+ 'checked="checked"' IF user.showmybugslink %]>
       </td>
       [% IF may_share %]
-        <td>
-          &mdash;
-        </td>
+        <td>&mdash;</td>
       [% END %]
       [% Hook.process('saved-row') %]
     </tr>
     [% FOREACH q = user.queries %]
-      <tr>
+      <tr [% 'class="shared_search"' IF q.shared_with_group.id %]>
         <td>[% q.name FILTER html %]</td>
         <td>
           <a href="buglist.cgi?cmdtype=dorem&amp;remaction=run&amp;namedcmd=[% q.name FILTER uri %]
@@ -101,7 +80,7 @@
                      [% issue_hash_token([q.id, q.name]) FILTER uri %]">削除</a>
           [% END %]
         </td>
-        <td align="center">
+        <td class="center">
           <input type="checkbox" 
                  name="link_in_footer_[% q.id FILTER html %]"
                  value="1"
@@ -142,31 +121,18 @@
   <p>"フッタに追加" が選択されている全ての保存された検索について、
     変更を保存したそのときからグループのメンバー全員のフッタに表示されます。</p>
 [% END %]
-</blockquote>
 
 [% IF user.queries_available.size %]                                           
   <p>以下のほかのユーザが保存した検索を共有できます:</p>
 
-  <table id="shared_search_prefs" border="1" cellpadding="3">
-    <tr>
-      <th>
-        検索名
-      </th>
-      <th>
-        共有者
-      </th>
-      <th>
-        共有対象
-      </th>
-      <th>
-        実行
-      </th>
-      <th>
-        編集
-      </th>
-      <th>
-        フッタに表示
-      </th>
+  <table id="shared_search_prefs">
+    <tr class="column_header">
+      <th>検索名</th>
+      <th>共有者</th>
+      <th>共有対象</th>
+      <th>実行</th>
+      <th>編集</th>
+      <th>フッタに表示</th>
     </tr>
     [% FOREACH q = user.queries_available %]
       <tr>
@@ -182,7 +148,7 @@
           <a href="query.cgi?[% q.edit_link FILTER html %]&amp;known_name=
                    [% q.name FILTER uri %]">編集</a>
         </td>
-        <td align="center">
+        <td class="center">
           <input type="checkbox" 
                  name="link_in_footer_[% q.id FILTER html %]"
                  value="1"

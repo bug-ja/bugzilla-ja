@@ -55,11 +55,11 @@
 
   <p>
     [% IF matchmultiple %]
-      [% terms.Bugzilla %] は、前のページであなたが入力したひとつ以上の名前、
+      Bugzilla は、前のページであなたが入力したひとつ以上の名前、
       もしくはメールアドレスに合致するアカウントを決定できませんでした。
       <br>下の合致する可能性のあるリストからひとつ選択してください。
     [% ELSE %]
-      [% terms.Bugzilla %] は名前やメールアドレスを入力された際に、
+      Bugzilla は名前やメールアドレスを入力された際に、
       必ず確認するように設定されています。
       <br>次のリストは、入力したもしくは合致したアカウントの名前・メールアドレスです。
       これらが正しいかを確認してください。
@@ -79,30 +79,22 @@
   <p>前のページに戻って、他の名前やメールアドレスで試してください。</p>
 [% END %]
 
-  <table border="0">
-    <tr>
-      <td colspan="2">
-        <hr width="100%" size="1">
-      </td>
-    </tr>
-
-  [%# this is messy to allow later expansion %]
-
+<table id="user_match_table">
   [% FOREACH field = matches %]
     <tr>
-      <td align="left" valign="top">
+      <td>
         [% PROCESS field_names field_name=field.key %]:
       </td>
-      <td align="left" valign="top">
+      <td>
           [% FOREACH query = field.value %]
             <div class="user_match">
               <b>[% query.key FILTER html %]</b>
             [% IF query.value.users.size %]
                 [% IF query.value.users.size > 1 %]
                   [% IF query.value.status == 'fail' %]
-                    <font color="#FF0000">
+                    <span class="warning">
                       複数に合致しました。
-                    </font>
+                    </span>
                     前画面に戻り、より特定された名前・メールアドレスで再度試してください。
                   [% ELSE %]
                     [% IF query.value.status == 'trunc' %]
@@ -133,25 +125,20 @@
                   <b>[% query.value.users.0.identity FILTER html %]</b>
                 [% END %]
             [% ELSE %]
+              <span class="warning">
                 [% IF query.key.length < 3 %]
-                  <font color="#FF0000">は部分一致には短すぎます
-                  (最低 3 文字必要)</font>
+                  は部分一致には短すぎます (最低 3 文字必要)
                 [% ELSE %]
-                  <font color="#FF0000">はなにも合致しませんでした</font>
+                  はなにも合致しませんでした
                 [% END %]
+              </span>
             [% END %]
             </div>
         [% END %]
       </td>
     </tr>
-    <tr>
-      <td colspan="2">
-        <hr width="100%" size="1">
-      </td>
-    </tr>
   [% END %]
-
-  </table>
+</table>
 
 [% IF matchsuccess == 1 %]
 

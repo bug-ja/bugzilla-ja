@@ -8,37 +8,37 @@
 
 [% PROCESS global/header.html.tmpl
   title = "プロダクトの classification の変更"
+  style_urls = ['skins/standard/admin.css']
 %]
 
 <form method=post action="editclassifications.cgi">
-  <table border=0 cellpadding=4 cellspacing=0>
+  <table id="admin_table_edit">
     <tr>
       <th>Classification:</th>
-      <td valign="top" colspan=3>[% classification.name FILTER html %]</td>
-
+      <td colspan=3>[% classification.name FILTER html %]</td>
     </tr><tr>
       <th>説明:</th>
-      <td valign="top" colspan=3>
+      <td colspan=3>
         [% IF classification.description %]
           [% classification.description FILTER html_light %]
         [% ELSE %]
-          <font color="red">説明がありません</font>
+          <span class="warning">説明がありません</span>
         [% END %]
       </td>
 
     </tr><tr>
       <th>ソート順:</th>
-      <td valign="top" colspan=3>[% classification.sortkey FILTER html %]</td>
+      <td colspan=3>[% classification.sortkey FILTER html %]</td>
 
     </tr><tr>
       <th>プロダクト:</th>
-      <td valign="top">他の Classification</td>
+      <td>他の Classification</td>
       <td></td>
-      <td valign="top">この Classification</td>
+      <td>この Classification</td>
 
     </tr><tr>
       <td></td>
-      <td valign="top">
+      <td>
       <select name="prodlist" id="prodlist" multiple="multiple" size="20">
         [% FOREACH class = classifications %]
           [% IF class.id != classification.id %]
@@ -51,12 +51,12 @@
         [% END %]
       </select></td>
 
-      <td align="center">
+      <td>
         <input type=submit value="     追加 &gt;&gt;  " name="add_products"><br><br>
         <input type=submit value="&lt;&lt; 削除" name="remove_products">
       </td>
 
-      <td valign="middle" rowspan=2>
+      <td rowspan=2 class="max-width">
         <select name="myprodlist" id="myprodlist" multiple="multiple" size="20">
           [% FOREACH product = classification.products %]
             <option value="[% product.name FILTER html %]">

@@ -10,7 +10,8 @@
     [% product.name FILTER html %] のグループによる制限を編集
 [% END %]
 [% PROCESS global/header.html.tmpl 
-   title = title 
+  title = title 
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% display_headers = 1 %]
@@ -23,8 +24,8 @@
       <input type="hidden" name="product" value="[% product.name FILTER html %]">
       <input type="hidden" name="token" value="[% token FILTER html %]">
 
-  <table id="form" cellspacing="0" cellpadding="4" border="1">
-    <tr bgcolor="#6666ff">
+      <table id="admin_table">
+        <tr class="column_header">
       <th>グループ</th>
       <th>新規追加</th>
       <th>メンバーの操作</th>
@@ -37,9 +38,9 @@
     </tr>
 [% END %]
   [% IF !group.group.isactive %]
-    <tr bgcolor="#bbbbbb">
+    <tr class="disabled">
       <td>[% group.group.name FILTER html %]</td>
-      <td align="center" colspan="7">無効</td>
+      <td class="center" colspan="7">無効</td>
       <td>[% group.bug_count FILTER html %]</td>
     </tr>
   [% ELSE %]
@@ -129,12 +130,17 @@
 </p>
 <p>
 <b>新規追加</b> がいずれかのグループで選択されている場合、
-[% terms.bug %] の新規作成が、新規追加 を選択された全てのグループに所属しているユーザのみが可能なように制限されます。
+[% terms.bug %] の新規作成が、新規追加 を選択された
+[%+ IF Param('or_groups') %]ひとつ以上の[% ELSE %]全ての[% END %] 
+グループに所属しているユーザのみが可能なように制限されます。
 </p>
 <p>
 <b>編集可能</b> がいずれかのグループで選択されている場合、
-全てのグループに所属していないユーザにとっては閲覧専用となります。
-編集可能 なグループ全てに所属しているユーザのみが編集可能です。
+[%+ IF Param('or_groups') %]いずれかの[% ELSE %]全ての[% END %] 
+グループに所属していないユーザにとっては閲覧専用となります。
+編集可能 なグループ
+[%+ IF Param('or_groups') %]の最低ひとつ[% ELSE %]全てに[% END %]
+所属しているユーザのみが編集可能です。
 これはユーザが何を編集可能であるかを選択する追加の設定です。
 </p>
 <p>
@@ -160,7 +166,7 @@
 [% terms.bugs %] に対して以下の権限を持つことを示します
 </p>
 
-<table border=1>
+<table id="group_settings_desc">
   <tr>
     <th>
       メンバーの操作

@@ -91,6 +91,7 @@ END
     feature_jsonrpc_faster    => 'JSON-RPC の高速化',
     feature_new_charts        => '新形式のチャート',
     feature_old_charts        => '旧形式のチャート',
+    feature_memcached         => 'Memcached 機能',
     feature_mod_perl          => 'mod_perl',
     feature_moving            => 'サイト間バグ移動',
     feature_patch_viewer      => 'パッチビューア',
@@ -193,6 +194,22 @@ MySQL でのみ有効: MySQL で利用できる unix socket のパスを入力�
 白なら、MySQL の既定値が利用されます。通常は既定値を利用するはずです。
 END
     localconfig_db_user => "データベースサーバに接続するためのユーザ名。",
+    localconfig_db_mysql_ssl_ca_file => <<'END',
+信頼されたSSL CA証明書を並べたPEMファイルの場所です。
+ファイルはウェブサーバの実行ユーザから読めなければなりません。
+END
+    localconfig_db_mysql_ssl_ca_path => <<'END',
+PEM形式の信頼されたSSL CA証明書がおかれたディレクトリのパスです。
+ディレクトリとファイルはウェブサーバの実行ユーザから読めなければなりません。
+END
+    localconfig_db_mysql_ssl_client_cert => <<'END',
+データベースサーバに認証のために送信するPEM形式のクライアントSSL証明書のフルパスです。
+ファイルはウェブサーバの実行ユーザから読めなければなりません。
+END
+    localconfig_db_mysql_ssl_client_key => <<'END',
+クライアントSSL証明書に対応した秘密鍵のフルパスです。
+ファイルはパスワード保護されていてはならず、ウェブサーバの実行ユーザから読めなければなりません。
+END
     localconfig_diffpath => <<'END',
 "パッチ間の差異" 機能を利用するには、"diff" コマンドが存在するディレクトリを
 設定する必要があります。(パッチビューアのこの機能を利用するときのみ設定する必
@@ -333,8 +350,7 @@ END
       ますぐ止めて、contrib/recode.pl を実行することを *強く* お勧めします。
 END
     no_checksetup_from_cgi => <<END,
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
   <head>
     <title>checksetup.pl をウェブブラウザから実行することはできません</title>
@@ -345,7 +361,7 @@ END
     <p>
       このスクリプトをウェブブラウザから実行しては <b>なりません</b>。
       Bugzilla のインストールやアップグレードには、このスクリプトを
-      (Linux では <tt>bash</tt> や <tt>ssh</tt> で、Windows では <tt>cmd.exe</tt>
+      (Linux では <kbd>bash</kbd> や <kbd>ssh</kbd> で、Windows では <kbd>cmd.exe</kbd>
       上で) コマンドラインから実行し、表示される指示に従ってください。
     </p>
 

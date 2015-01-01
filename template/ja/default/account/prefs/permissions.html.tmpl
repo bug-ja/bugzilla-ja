@@ -17,12 +17,11 @@
   #           other people.
   #%]
 
-<table align="center">
-  <tr>
-    <td>
+    <div id="permissions">
       [% IF has_bits.size %]
-        あなたのアカウントには以下の権限が付与されています:
-        <table align="center">
+        <p>あなたのアカウントには以下の権限が付与されています:</p>
+
+        <table>
           [% FOREACH bit_description = has_bits %]
             <tr>
               <td>[% bit_description.name FILTER html %]</td>
@@ -34,47 +33,48 @@
         [% FOREACH privs = ["editcomponents", "canconfirm", "editbugs"] %]
           [% SET products = ${"local_$privs"} %]
           [% IF products && products.size %]
-            <br>
             <p>
               プロダクトごとの '[% privs FILTER html %]' の権限として、
               以下の権限が付与されています:
             </p>
-            <p>
+            <ul>
               [% FOREACH product = products %]
                 [% product.name FILTER html %]<br>
               [% END %]
-            </p>
+            </ul>
           [% END %]
         [% END %]
 
       [% ELSE %]
-        あなたのアカウントに付与されている権限はありません。
+        <p>あなたのアカウントに付与されている権限はありません。</p>
       [% END %]
 
       [% IF user.in_group('editusers') %]
-        <br>
-        あなたは、editusers 権限を持っています。
-        全てのユーザの権限を変更することができます。
+        <p>
+          あなたは、editusers 権限を持っています。
+          全てのユーザの権限を変更することができます。
+        </p>
       [% ELSIF set_bits.size %]
-        <br>
-        また、
-        <a href="editusers.cgi">ほかのユーザ</a> の次の権限を編集できます:
-          <table align="center">
+        <p>
+          また、
+          <a href="editusers.cgi">ほかのユーザ</a> の次の権限を編集できます:
+        </p>
+
+        <table>
           [% FOREACH bit_description = set_bits %]
             <tr>
               <td>[% bit_description.name FILTER html %]</td>
               <td>[% bit_description.desc FILTER html_light %]</td>
             </tr>
           [% END %]
-          </table>
+        </table>
       [% END %]
 
       [% IF user.in_group('bz_sudoers') %]
-        <br>
-        <b>bz_sudoers</b> グループのメンバーになっていますので、
-        <a href="relogin.cgi?action=prepare-sudo">ほかのユーザとして振舞うことが可能</a>
-        です。
+        <p>
+          <b>bz_sudoers</b> グループのメンバーになっていますので、
+          <a href="relogin.cgi?action=prepare-sudo">ほかのユーザとして振舞うことが可能</a>
+          です。
+        </p>
       [% END %]
-    </td>
-  </tr>
-</table>
+    </div>

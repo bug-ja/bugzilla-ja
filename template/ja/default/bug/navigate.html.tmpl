@@ -37,7 +37,7 @@
              [%- last_bug_list.first FILTER uri %]&amp;list_id=
              [%- my_search.id FILTER uri %]">先頭</a>
   [% ELSE %]
-    <i><font color="#777777">先頭</font></i>
+    <span class="navigation_link">先頭</span>
   [% END %]
 
   [% IF this_bug_idx + 1 < last_bug_list.size %]
@@ -45,7 +45,7 @@
              [%- last_bug_list.last FILTER uri %]&amp;list_id=
              [%- my_search.id FILTER uri %]">最後</a>
   [% ELSE %]
-    <i><font color="#777777">最後</font></i>
+    <span class="navigation_link">最後</span>
   [% END %]
 
   [% IF this_bug_idx > 0 %]
@@ -54,7 +54,7 @@
              [%- last_bug_list.$prev_bug FILTER uri %]&amp;list_id=
              [%- my_search.id FILTER uri %]">前</a>
   [% ELSE %]
-    <i><font color="#777777">前</font></i>
+    <span class="navigation_link">前</span>
   [% END %]
 
   [% IF this_bug_idx + 1 < last_bug_list.size %]
@@ -63,7 +63,7 @@
              [%- last_bug_list.$next_bug FILTER uri %]&amp;list_id=
              [%- my_search.id FILTER uri %]">次</a>
   [% ELSE %]
-    <i><font color="#777777">次</font></i>
+    <span class="navigation_link">次</span>
   [% END %]
 
   &nbsp;&nbsp;<a href="buglist.cgi?regetlastlist=

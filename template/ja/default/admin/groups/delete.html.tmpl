@@ -14,20 +14,28 @@
   #%]
 
 
+[% title = BLOCK %]'[% group.name FILTER html %]' グループの削除[% END %]
 [% PROCESS global/header.html.tmpl
-  title = "グループの削除"
+  title = title
+  style_urls = ['skins/standard/admin.css']
   doc_section = "groups.html"
 %]
 
-<table border="1">
-  <tr>
-    <th>ID</th>
-    <th>名前</th>
-    <th>説明</th>
+<table id="admin_table">
+  <tr class="column_header">
+    <th>フィールド</th>
+    <th>値</th>
   </tr>
   <tr>
+    <td>ID</td>
     <td>[% group.id FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>名前</td>
     <td>[% group.name FILTER html %]</td>
+  </tr>
+  <tr>
+    <td>説明</td>
     <td>[% group.description FILTER html_light %]</td>
   </tr>
 </table>
@@ -137,7 +145,8 @@
 
   <h2>確認</h2>
 
-  <p>本当にこのグループを削除してもよろしいですか?</p>
+  <p class="confirmation">
+  本当にこのグループを削除してもよろしいですか?</p>
   [% IF group.users.size || group.bugs.size || group.products.size 
         || group.flags.size
   %]

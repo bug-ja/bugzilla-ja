@@ -45,13 +45,13 @@
                         <dl>
                           <dt>DB</dt>
                           <dd>
-                            ${terms.Bugzilla} の組み込み認証方式。最も一般的な選択です。
+                            Bugzilla の組み込み認証方式。最も一般的な選択です。
                           </dd>
                           <dt>RADIUS</dt>
                           <dd>
                             RADIUS サーバを利用した RADIUS 認証方式です。
                             詳細に関しては
-                            $terms.Bugzilla のドキュメントを参照してください。
+                            Bugzilla のドキュメントを参照してください。
                             この方式を利用するには、
                             <a href=\"?section=radius\">追加パラメータ</a>
                             を設定する必要があります。
@@ -59,7 +59,7 @@
                           <dt>LDAP</dt>
                           <dd>
                             LDAP サーバを利用した LDAP 認証方式です。
-                            詳細に関しては $terms.Bugzilla のドキュメントを参照
+                            詳細に関しては Bugzilla のドキュメントを参照
                             してください。この方式を利用するには、
                             <a href=\"?section=ldap\">追加パラメータ</a>
                             の設定が必要です。
@@ -78,7 +78,7 @@
                       </li>
                       <li>
                         defaulton/defaultoff - 既定の動作は上の通りですが、
-                        $terms.Bugzilla はユーザの設定値も利用します。
+                        Bugzilla はユーザの設定値も利用します。
                       </li>
                     </ul>",
 
@@ -93,22 +93,22 @@
   webservice_email_filter =>
     "WebService API で返されるメールアドレスに対し、ユーザがログインしているかどうか" _
     "でフィルターするかどうかです。これは、ウェブ経由でのメールアドレスのフィルタ" _
-    "と同様に働きます。<tt>requirelogin</tt> が有効なら、このパラメータは" _
+    "と同様に働きます。<var>requirelogin</var> が有効なら、このパラメータは" _
     "Bugzilla を利用するためにログインが必要になり効果はなくなります。",
 
   emailregexp =>
     "有効なメールアドレスを定義する正規表現です。" _
     "デフォルトは正規のメールアドレスにマッチするようになっています。" _
-    "<a href='http://tools.ietf.org/html/rfc2822#section-3.4.1'>RFC 2822</a> " _
-    "の仕様に従うすべてのメールアドレスを受け入れるには <tt>.*</tt> に設定してください。" _
-    "もうひとつのよくある設定値は <tt>^[^@]+$</tt> で、" _
+    "<a href=\"http://tools.ietf.org/html/rfc2822#section-3.4.1\">RFC 2822</a> " _
+    "の仕様に従うすべてのメールアドレスを受け入れるには <kbd>.*</kbd> に設定してください。" _
+    "もうひとつのよくある設定値は <kbd>^[^@]+$</kbd> で、" _
     "@ を含まないローカルのユーザ名を意味します。",
 
-  emailregexpdesc => "<tt>emailregexp</tt> パラメータで許可されている有効なメールアドレス" _
+  emailregexpdesc => "<kbd>emailregexp</kbd> パラメータで許可されている有効なメールアドレス" _
                      "がなにであるかを説明する (英語の) 説明です。",
 
   emailsuffix => "メールが送信されるときにメールアドレスに追加される文字列です。" _
-                 "<tt>emailregexp</tt> パラメータをローカルユーザ名に限定した場合に、" _
+                 "<var>emailregexp</var> パラメータをローカルユーザ名に限定した場合に、" _
                  "username@my.local.hostname へメールを送信するために有用です。",
 
   createemailregexp => "新規ユーザ登録機能で自分で登録するのが許されるメールアドレス" _

@@ -39,7 +39,8 @@
         </label>
       </th>
       <td>
-        <input size="35" id="Bugzilla_login" name="Bugzilla_login">
+        <input size="35" id="Bugzilla_login" name="Bugzilla_login"
+               [%- ' type="email"' UNLESS Param('emailsuffix') %]>
         [% Param('emailsuffix') FILTER html %]
       </td>
     </tr>
@@ -97,7 +98,7 @@
       もし、[% terms.Bugzilla %] アカウントを持っていなければ、
       <a href="createaccount.cgi">新規アカウント登録</a> も可能です。
       [% IF Param("requirelogin") %]
-        この [% terms.Bugzilla %] は認証済みユーザのみアクセス可能ですので、
+        この Bugzilla は認証済みユーザのみアクセス可能ですので、
         ユーザアカウントが必須です。
       [% ELSIF target.match("_bug\.cgi$") %]
         新規 [% terms.bug %] の追加もしくはコメントの追加を行う場合、

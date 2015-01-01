@@ -10,17 +10,14 @@
   # You need to fulfill the interface to report-table.html.tmpl.
   #%]
 
+<!DOCTYPE html>
 <html>
-
-  [% title = "$terms.Bug リスト" %]
-
   <head>
-    <title>[% title FILTER html %]</title>
+    <title>[% "$terms.Bug List" FILTER html %]</title>
   </head>
 
   <body>
     [% PROCESS "reports/report-table.html.tmpl" %]
   </body>
-
 </html>
 

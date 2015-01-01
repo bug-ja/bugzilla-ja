@@ -725,7 +725,7 @@
     '[% old FILTER html %]' テーブルを '[% new FILTER html %]' に改名中...
 
   [% ELSIF message_tag == "install_urlbase_default" %]
-    [% terms.Bugzilla %] のインストールを行いましたが、
+    Bugzilla のインストールを行いましたが、
     'パラメータ' ページ (管理者アカウントのフッタからリンク)
     から設定を行ってください。これには、'urlbase' オプションを正しい 
     URL に設定することを含みます。
@@ -742,7 +742,7 @@
     とウェブサーバの両方から編集する必要がある特定のファイルやディレクトリが、誰
     にでも書き込み可能となり、かつ他のファイル (データベースのパスワードが保存さ
     れている localconfig を含む) が誰からでも読み込み可能になることを意味します。
-    これは、ローカルにアクセス可能な誰もがあなたの [% terms.Bugzilla %] サイトの
+    これは、ローカルにアクセス可能な誰もがあなたの Bugzilla サイトの
     操作が可能となることを意味し、かつおそらくウェブサーバが動作する権限で Perl 
     コードを実行可能になることを意味します。
 
@@ -753,7 +753,7 @@
     警告: localconfig の "webservergroup" に値を設定しましたが、a) このスクリプトを
     [% constants.ROOT_USER FILTER html %] で実行しているか、b) このグループに所属し
     ているのどちらでもないようです。この状態では権限問題やセキュリティーの低下が発
-    生します。もし、[% terms.Bugzilla %] を実行する上で問題が発生すれば、
+    生します。もし、Bugzilla を実行する上で問題が発生すれば、
     [% constants.ROOT_USER FILTER html %] としてログインし、このスクリプトを再実行
     するか、このグループのメンバーになるか、"webservergroup" パラメータを削除して
     ください。
@@ -762,7 +762,7 @@
     警告: webservergroup を [% constants.bz_locations.localconfig FILTER html %] 
     に設定しています。この設定は Windows で動かす限りは何もセキュリティー上の
     メリットをもたらさないことを把握してください。
-    あなたの [% terms.Bugzilla %] ディレクトリにあるファイルの権限が、あなたの
+    あなたの Bugzilla ディレクトリにあるファイルの権限が、あなたの
     システムにとって望ましいことを確認してください。不要な書き込み権限は削除して
     ください。
 
@@ -786,6 +786,30 @@
     [% title = "$terms.Bugzilla コンポーネント説明" %]
     プロダクト <em>[% product FILTER html %]</em> は存在しないか、アクセスできません。
     以下があなたが選択可能なプロダクトのリストです。
+
+  [% ELSIF message_tag == "quips_added" %]
+    あなたの quip <em>[% added_quip FILTER html %]</em> は追加されました。
+    [% IF Param("quip_list_entry_control") == "moderated" AND
+          !user.in_group('bz_quip_moderators') %]
+      承認されれば利用されます。
+    [% END %]
+
+  [% ELSIF message_tag == "quips_deleted" %]
+    quip <em>[% deleted_quip FILTER html %]</em> は削除されました。
+
+  [% ELSIF message_tag == "quips_approved_unapproved" %]
+    [% IF approved.size == 1 %]
+      ひとつの quip
+    [% ELSE %]
+      [% approved.size %] 複数の quip
+    [% END %]
+    が承認され、
+    [% IF unapproved.size == 1 %]
+      ひとつの quip
+    [% ELSE %]
+      [%+ unapproved.size %] 複数の quip
+    [% END %]
+    が承認されませんでした。
 
   [% ELSIF message_tag == "report_created" %]
     操作が完了し、<em>[% reportname FILTER html %]</em>という保存されたレポートが作成されました。
@@ -841,6 +865,12 @@
       [%+ series.subcategory FILTER html %] /
       [%+ series.name FILTER html %]</em>
       の削除を完了しました。
+
+  [% ELSIF message_tag == "series_updated" %]
+    [% title = "シリーズを更新しました" %]
+    シリーズ <em>[% default.category FILTER html %] /
+    [%+ default.subcategory FILTER html %] /
+    [%+ default.name FILTER html %]</em> を更新しました。
 
   [% ELSIF message_tag == "shutdown" %]
     [% title = "$terms.Bugzilla 停止中" %]
@@ -909,7 +939,7 @@
 [%# Give sensible error if the message function is used incorrectly. #%]
 [% IF !message %]
   [% message = BLOCK %]
-    [% terms.Bugzilla %] のメッセージ機能を間違って利用しています。
+    Bugzilla のメッセージ機能を間違って利用しています。
     '[% message_tag %]' が渡されました。正しい利用方法は、
     タグを渡すようにして、messages.html.tmpl にタグを定義する必要があります。<br>
     <br>

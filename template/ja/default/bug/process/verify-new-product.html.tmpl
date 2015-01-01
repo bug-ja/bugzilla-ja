@@ -18,7 +18,9 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-  title = '新プロダクトの詳細確認...' %]
+  title = '新プロダクトの詳細確認...'
+  style_urls = ['skins/standard/buglist.css']
+%]
 
 <form action="process_bug.cgi" method="post">
 
@@ -148,23 +150,23 @@
         }
       </script>
 
-      <table border="1">
+      <table id="groups_edit_multiple">
         <tr>
-          <th>この<br>グループから<br>[% terms.bugs %]<br>を削除</th>
-          <th>この<br>グループに<br>[% terms.bugs %]<br>を追加</th>
-          <th>グループ名:</th>
+          <th class="narrow_column">このグループから[% terms.bugs %]を削除</th>
+          <th class="narrow_column">このグループに[% terms.bugs %]を追加</th>
+          <th>グループ名</th>
         </tr>
 
         [% FOREACH group = optional_groups %]
         <tr>
-          <td align="center">
+          <td class="center">
             <input type="checkbox" name="defined_groups"
                    id="defined_group_[% group.group.id FILTER html %]"
                    value="[% group.group.name FILTER html %]"
                    [% IF cgi.param("defined_groups").contains(group.group.name) %] checked="checked"[% END %]
                    onchange="turn_off(this, 'group_[% group.group.id FILTER html %]')">
           </td>
-          <td align="center">
+          <td class="center">
             <input type="checkbox" name="groups"
                    id="group_[% group.group.id FILTER html %]"
                    value="[% group.group.name FILTER html %]"

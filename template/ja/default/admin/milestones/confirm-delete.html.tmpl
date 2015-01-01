@@ -21,24 +21,24 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">名前</th>
-  <th valign="top" class="left">値</th>
+<table id="admin_table">
+  <tr class="column_header">
+  <th>名前</th>
+  <th>値</th>
 </tr>
 <tr>
-  <td valign="top">マイルストーン:</td>
-  <td valign="top">[% milestone.name FILTER html %]</td>
+  <td>マイルストーン</td>
+  <td>[% milestone.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">対象プロダクト:</td>
-  <td valign="top">[% product.name FILTER html %]</td>
+  <td>対象プロダクト</td>
+  <td>[% product.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">[% terms.Bugs %]:</td>
-  <td valign="top">
+  <td>[% terms.Bugs %]</td>
+  <td>
 [% IF milestone.bug_count %]
-  <a title="マイルストーン '[% milestone.name FILTER html %]' 
+  <a title="マイルストーン '[% milestone.name FILTER html -%]' 
            がついている [% terms.bugs %] リスト"
      href="buglist.cgi?target_milestone=[% milestone.name FILTER uri %]&amp;product=
           [%- product.name FILTER uri %]">

@@ -15,6 +15,7 @@
 [% title = BLOCK %]プロダクト '[% product.name FILTER html %]' のコンポーネントを選択してください[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% edit_contentlink = BLOCK %]editcomponents.cgi?action=edit&amp;product=
@@ -67,7 +68,7 @@
   [% columns.push({
        name => 'bug_count'
        heading => "$terms.Bugs"
-       align => "right"
+       class => "right"
        contentlink => bug_count_contentlink
      }) %]
 

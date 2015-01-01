@@ -257,7 +257,8 @@ TUI_hide_default('attachment_text_field');
       field = bug_fields.version editable = 1 rowspan = 3 
     %]
     <td rowspan="3">
-      <select name="version" id="version" size="5">
+      <select name="version" id="version" size="5" aria-required="true"
+              class="required">
         [%- FOREACH v = version %]
           [% NEXT IF NOT v.is_active %]
           <option value="[% v.name FILTER html %]"
@@ -634,12 +635,12 @@ TUI_hide_default('attachment_text_field');
     <td colspan="3">
       <br>
         <strong>
-          選択された全てのグループに所属するユーザがこの [% terms.bug %] を見ることができます:
+          選択された[%+ IF Param('or_groups') %]少なくとも一つの[% ELSE %]全ての[% END %]グループに所属するユーザがこの [% terms.bug %] を見ることができます:
         </strong>
       <br>
-      <font size="-1">
+      <span class="bz_info">
         (全てのボックスを非選択にすると公開される [% terms.bug %] になります)
-      </font>
+      </span>
       <br>
       <br>
 

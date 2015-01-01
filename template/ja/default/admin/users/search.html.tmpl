@@ -27,7 +27,7 @@
 %]
 
 <form name="f" method="get" action="editusers.cgi">
-<input type="hidden" name="action" value="list" />
+<input type="hidden" name="action" value="list">
 <p>
 <select id="matchvalue" name="matchvalue">
   <option value="login_name">ログイン名</option>
@@ -35,7 +35,7 @@
   <option value="userid">ユーザ ID</option>
 </select>
 が
-<input size="32" name="matchstr" id="matchstr" />
+<input size="32" name="matchstr" id="matchstr">
 <select name="matchtype">
   <option value="substr" selected="selected">部分一致 (大文字・小文字を区別しない)</option>
   <option value="regexp">正規表現 (大文字・小文字を区別しない)</option>
@@ -43,10 +43,11 @@
   <option value="exact">完全一致 (このユーザを検索する)</option>
 </select>
 と一致するユーザを
-<input type="submit" id="search" value="検索" /></p>
+<input type="submit" id="search" value="検索">
+</p>
 
 [% IF restrictablegroups.size %]
-  <p><input type="checkbox" name="grouprestrict" value="1" id="grouprestrict" />
+  <p><input type="checkbox" name="grouprestrict" value="1" id="grouprestrict">
   <label for="grouprestrict">グループ</label>
   <select name="groupid"
           onchange="document.forms['f'].grouprestrict.checked=true">

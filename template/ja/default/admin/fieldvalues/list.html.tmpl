@@ -22,6 +22,7 @@
 [% title = BLOCK %]'[% field.description FILTER html %]' ([% field.name FILTER html %]) フィールドの値を選択してください[% END %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
 %]
 
 [% edit_contentlink = BLOCK %]editvalues.cgi?action=edit&amp;field=

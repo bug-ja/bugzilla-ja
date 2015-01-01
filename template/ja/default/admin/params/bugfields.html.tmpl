@@ -11,7 +11,7 @@
 %]
 
 [% param_descs = {
-  useclassification => "有効なら、$terms.Bugzilla はプロダクトを特定の classification " _
+  useclassification => "有効なら、Bugzilla はプロダクトを特定の classification " _
                        "と紐付けます。'editclassification' 権限がなければ、" _
                        "classification を編集することはできません。",
 
@@ -32,12 +32,15 @@
   defaultseverity => "新規 $terms.bugs における既定の深刻度",
 
   defaultplatform => "$terms.bug 入力フォームで既定値となるプラットフォームの値です。" _
-                     "空白にすると、$terms.Bugzilla はブラウザの情報を元に既定の" _
+                     "空白にすると、Bugzilla はブラウザの情報を元に既定の" _
                      "プラットフォームの値を決定します。",
 
   defaultopsys => "$terms.bug 入力フォームで既定値となる OS の値です。<br>" _
-                  "空白にすると、$terms.Bugzilla はブラウザの情報を元に既定の" _
+                  "空白にすると、Bugzilla はブラウザの情報を元に既定の" _
                   "OSの値を決定します。",
+
+  collapsed_comment_tags => "カンマ区切りのタグのリストで、コメントにつけられた場合に" _
+                            "既定で閉じて表示されます。",
 }
 
 %]

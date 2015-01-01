@@ -59,62 +59,37 @@ function SetCheckboxes(setting) {
     }
   }
 }
-
-document.write('<input type="button" value="全て有効" onclick="SetCheckboxes(true); return false;">\n');
-document.write('<input type="button" value="全て無効" onclick="SetCheckboxes(false); return false;">\n');
 // -->
 </script>
 
+<input type="button" value="全てのメールを有効" onclick="SetCheckboxes(true); return false;">
+<input type="button" value="全てのメールを無効" onclick="SetCheckboxes(false); return false;">
+
 <hr>
 
-<table>
-  <tr>
-    <td colspan="2">
-      <b>全体オプション:</b>
-    </td>
-  </tr>
+<h3>全体オプション</h3>
 
-  <tr>
-    <td width="150"></td>
-    <td>
-      [% prefname = "email-$constants.REL_ANY-$constants.EVT_FLAG_REQUESTED" %]
-      <input type="checkbox" name="[% prefname %]" id="[% prefname %]" 
-        value="1"
-        [% " checked"
-           IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_FLAG_REQUESTED} %]>
-      <label for="[% prefname %]">フラグの要請があったときに通知メールを送る</label>
-      <br>
-    </td>
-  </tr>
-  <tr>
-    <td width="150"></td>
-    <td>
-      [% prefname = "email-$constants.REL_ANY-$constants.EVT_REQUESTED_FLAG" %]
-      <input type="checkbox" name="[% prefname %]" id="[% prefname %]" 
-        value="1"
-        [% " checked"
-           IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_REQUESTED_FLAG} %]>
-      <label for="[% prefname %]">要請したフラグが設定されたときに通知メールを送る</label>
-      <br>
-    </td>
-  </tr>
+[% prefname = "email-$constants.REL_ANY-$constants.EVT_FLAG_REQUESTED" %]
+<input type="checkbox" name="[% prefname %]" id="[% prefname %]" value="1"
+       [%+ 'checked="checked"' IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_FLAG_REQUESTED} %]>
+<label for="[% prefname %]">フラグの要請があったときに通知メールを送る</label>
+<br>
+[% prefname = "email-$constants.REL_ANY-$constants.EVT_REQUESTED_FLAG" %]
+<input type="checkbox" name="[% prefname %]" id="[% prefname %]" value="1"
+       [%+ 'checked="checked"' IF user.mail_settings.${constants.REL_ANY}.${constants.EVT_REQUESTED_FLAG} %]>
+<label for="[% prefname %]">要請したフラグが設定されたときに通知メールを送る</label>
+
 [% IF user.is_global_watcher %]
-  <tr>
-    <td width="150"></td>
-    <td>
+  <p>
       すべての [% terms.bugs %] を監視しています。
       この権限から外れるには、
       <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
       に連絡してください。
-    </td>
-  </tr>
+  </p>
 [% END %]
-</table>
 
 <hr>
-<b>フィールド・条件によるオプション設定:</b>
-<br>
-<br>
+<h3>フィールド・条件によるオプション設定</h3>
 
 [% events = [
     { id = constants.EVT_ADDED_REMOVED,
@@ -172,40 +147,34 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
 
 [% num_columns = relationships.size %]
 
-<table class="bz_emailprefs" id="email_prefs" border="1">
-  <tr>
-    <td colspan="[% num_columns FILTER html %]" align="center" width="50%">
-      <b>この [% terms.bug %] との関連性:</b>
-    </td>
-    <td rowspan="2" width="40%">
-      <b>メールを受け取りたい条件:</b>
-    </td>
+<table id="email_prefs">
+  <tr class="column_header">
+    <th colspan="[% num_columns FILTER html %]">
+      この [% terms.bug %] との関連性:
+    </th>
+    <th>メールを受け取りたい条件</th>
   </tr>
 
   <tr>
     [% FOREACH relationship = relationships %]
-      <th width="9%">
-        [% relationship.description FILTER html %]
-      </th>
+      <th class="role_header">[% relationship.description FILTER html %]</th>
     [% END %]
   </tr>
-  
+
   [% FOREACH event = events %]  
     [% count = loop.count() %]
     <tr class="bz_row_[% count % 2 == 1 ? "odd" : "even" %]">
       [% FOREACH relationship = relationships %]
-        <td align="center">
-          <input type="checkbox" 
-            name="email-[% relationship.id %]-[% event.id %]"
-            value="1"
-            [%# The combinations don't always make sense; disable a couple %]
-            [% IF event.id == constants.EVT_ADDED_REMOVED AND 
-                  no_added_removed.contains(relationship.id) 
-            %]
-               disabled
-            [% ELSIF user.mail_settings.${relationship.id}.${event.id} %]
-               checked
-            [% END %]>
+        <td class="center">
+          <input type="checkbox" value="1"
+                 name="email-[% relationship.id %]-[% event.id %]"
+                 [%# The combinations don't always make sense; disable a couple %]
+                 [% IF event.id == constants.EVT_ADDED_REMOVED
+                       AND no_added_removed.contains(relationship.id) %]
+                   disabled="disabled"
+                 [% ELSIF user.mail_settings.${relationship.id}.${event.id} %]
+                   checked="checked"
+                 [% END %]>
         </td>
       [% END %]
       <td>
@@ -214,60 +183,50 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
     </tr>
   [% END %]
   
-  <tr>
-    <td colspan="[% num_columns FILTER html %]" 
-        align="center" width="50%">
-      &nbsp;
-    </td>
-    <td width="40%">
-      <b>次のとき以外 (上書きします):</b>
-    </td>
+  <tr class="column_header">
+    <th colspan="[% num_columns FILTER html %]">&nbsp;</th>
+    <th>次のとき以外 (上書きします)</th>
   </tr>
 
   [% FOREACH event = neg_events %]  
     [% count = loop.count() %]
     <tr class="bz_row_[% count % 2 == 1 ? "odd" : "even" %]">
       [% FOREACH relationship = relationships %]
-        <td align="center">
-          <input type="checkbox" 
-            name="neg-email-[% relationship.id %]-[% event.id %]"
-            value="1"
-            [% " checked" IF NOT user.mail_settings.${relationship.id}.${event.id} %]>
+        <td class="center">
+          <input type="checkbox" value="1"
+                 name="neg-email-[% relationship.id %]-[% event.id %]"
+                 [%+ 'checked="checked"' IF NOT user.mail_settings.${relationship.id}.${event.id} %]>
         </td>
       [% END %]
-      <td>
-        [% event.description FILTER html %]
-      </td>
+      <td>[% event.description FILTER html %]</td>
     </tr>
   [% END %]
-  
 </table>
 
 <hr>
-<b>ユーザの監視</b>
+<h3>ユーザの監視</h3>
 
 <p>
 ユーザを監視すると、メールの受信という意味で対象のユーザと同じ状況になることができます。
-メールは、<u>あなたの</u> ではなく、<u>対象の</u> [% terms.bug %] 
+メールは、<em>あなたの</em> ではなく、<em>対象の</em> [% terms.bug %] 
 との関係により設定と照合されます。(たとえば、担当者など)
 </p>
 
-<p>
 [% IF watchedusers.size %]
-あなたは、次のリストの全員を監視しています:
-  </p>
+  <p>あなたは、次のリストの全員を監視しています:</p>
   <p>
     <select id="watched_by_you" name="watched_by_you" multiple="multiple" size="5">
         [% FOREACH w = watchedusers %]
            <option value="[% w FILTER html %]">[% w FILTER html %]</option>
         [% END %]
-    </select> <br />
+    </select>
+    <br />
     <input type="checkbox" id="remove_watched_users" name="remove_watched_users">
     <label for="remove_watched_users">選択したユーザを監視対象から外す</label>
+  </p>
 [% ELSE %]
-誰も監視していません。
+  <p>誰も監視していません。</p>
 [% END %]
-</p>
 
 <p id="new_watched_by_you">ユーザを監視リストに追加する (カンマ区切りのリスト):
   [% INCLUDE global/userselect.html.tmpl
@@ -289,7 +248,8 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
   [% END %]
 </p>
 
-<b>[% terms.Bugs %] を無視する</b>
+<hr>
+<h3>[% terms.Bugs %] を無視する</h3>
 
 <p>
   メール通知を一切受け取りたくない [% terms.bugs %] のリストを、カンマ区切りの
@@ -322,6 +282,8 @@ document.write('<input type="button" value="全て無効" onclick="SetCheckboxes
   </p>
 [% END %]
 
-<p>[% terms.bugs %] を追加:<br>
+<p>
+  [% terms.bugs %] を追加:<br>
   <input type="text" id="add_ignored_bugs" 
-         name="add_ignored_bugs" size="60"></p>
+         name="add_ignored_bugs" size="60">
+</p>

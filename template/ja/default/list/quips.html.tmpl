@@ -15,36 +15,13 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-           title = "$terms.Bugzilla Quip System"
+           title = "Bugzilla Quip System"
            header = "Add your own clever headline"
+           style_urls = ['skins/standard/buglist.css']
  %]
 
-[% IF added_quip %]
-  <p>
-    <font color="red">
-      あなたの警句 '<tt>[% added_quip FILTER html %]</tt>' は追加されました。
-      [% IF Param("quip_list_entry_control") == "moderated" AND !user.in_group('bz_quip_moderators') %]
-        認証され次第利用されます。
-      [% END %]
-    </font>
-  </p>
-[% END %]
-
-[% IF deleted_quip %]
-  <p>
-    <font color="red">
-      警句 '<tt>[% deleted_quip FILTER html %]</tt>' は削除されました。
-    </font>
-  </p>
-[% END %]
-
-[% IF approved or unapproved %]
-  <p>[% approved.size %] 個が認証され、[% unapproved.size %] 個が未認証です。</p>
-[% END %]
-
-
 <p>
-  [% terms.Bugzilla %] はランダムな警句を選択し、[% terms.bug %] リストの先頭に表示します。
+  Bugzilla はランダムな警句を選択し、[% terms.bug %] リストの先頭に表示します。
 </p>
 
 [% IF Param("quip_list_entry_control") != "closed" %]
@@ -92,13 +69,17 @@
       <input type="hidden" name="action" value="approve">
       <input type="hidden" name="token"
              value="[% issue_hash_token(['approve-quips']) FILTER html %]">
-      <table border="1">
-        <thead><tr>
+      <table id="quips">
+        <thead>
+        <tr class="column_header">
           <th>警句</th>
           <th>作者</th>
           <th>動作</th>
           <th>状況</th>
-        </tr></thead><tbody>
+        </tr>
+        </thead>
+
+        <tbody>
         [% FOREACH quipid = quipids %]
           <tr>
             <td>[% quips.$quipid.quip FILTER html %]</td>
@@ -113,7 +94,7 @@
                 削除
               </a>
             </td>
-            <td>
+            <td class="center">
               <input type="hidden" name="defined_quipid_[% quipid FILTER html %]"
                      id="defined_quipid_[% quipid FILTER html %]"
                      value="1">

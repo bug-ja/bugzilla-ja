@@ -89,15 +89,17 @@ sub Send {
 
     if ($params->{dep_only}) {
         push(@diffs, { field_name => 'bug_status',
-                       old => $params->{changes}->{bug_status}->[0],
-                       new => $params->{changes}->{bug_status}->[1],
+                       old        => $params->{changes}->{bug_status}->[0],
+                       new        => $params->{changes}->{bug_status}->[1],
                        login_name => $changer->login,
-                       blocker => $params->{blocker} },
+                       who        => $changer,
+                       blocker    => $params->{blocker} },
                      { field_name => 'resolution',
-                       old => $params->{changes}->{resolution}->[0],
-                       new => $params->{changes}->{resolution}->[1],
+                       old        => $params->{changes}->{resolution}->[0],
+                       new        => $params->{changes}->{resolution}->[1],
                        login_name => $changer->login,
-                       blocker => $params->{blocker} });
+                       who        => $changer,
+                       blocker    => $params->{blocker} });
     }
     else {
         push(@diffs, _get_diffs($bug, $end, \%user_cache));
@@ -117,7 +119,10 @@ sub Send {
     # A user_id => roles hash to keep track of people.
     my %recipients;
     my %watching;
-    
+
+    # We also record bugs that are referenced
+    my @referenced_bug_ids = ();
+
     # Now we work out all the people involved with this bug, and note all of
     # the relationships in a hash. The keys are userids, the values are an
     # array of role constants.
@@ -161,7 +166,16 @@ sub Send {
                 $recipients{$uid}->{+REL_ASSIGNEE} = BIT_DIRECT if $uid;
             }
         }
+
+        if ($change->{field_name} eq 'dependson' || $change->{field_name} eq 'blocked') {
+            push @referenced_bug_ids, split(/[\s,]+/, $change->{old});
+            push @referenced_bug_ids, split(/[\s,]+/, $change->{new});
+        }
     }
+
+    my $referenced_bugs = scalar(@referenced_bug_ids)
+        ? Bugzilla::Bug->new_from_list([uniq @referenced_bug_ids])
+        : [];
 
     # Make sure %user_cache has every user in it so far referenced
     foreach my $user_id (keys %recipients) {
@@ -172,21 +186,24 @@ sub Send {
                             { bug => $bug, recipients => \%recipients,
                               users => \%user_cache, diffs => \@diffs });
 
-    # Find all those user-watching anyone on the current list, who is not
-    # on it already themselves.
-    my $involved = join(",", keys %recipients);
+    # We should not assume %recipients to have any entries.
+    if (scalar keys %recipients) {
+        # Find all those user-watching anyone on the current list, who is not
+        # on it already themselves.
+        my $involved = join(",", keys %recipients);
 
-    my $userwatchers =
-        $dbh->selectall_arrayref("SELECT watcher, watched FROM watch
-                                  WHERE watched IN ($involved)");
+        my $userwatchers =
+            $dbh->selectall_arrayref("SELECT watcher, watched FROM watch
+                                      WHERE watched IN ($involved)");
 
-    # Mark these people as having the role of the person they are watching
-    foreach my $watch (@$userwatchers) {
-        while (my ($role, $bits) = each %{$recipients{$watch->[1]}}) {
-            $recipients{$watch->[0]}->{$role} |= BIT_WATCHING
-                if $bits & BIT_DIRECT;
+        # Mark these people as having the role of the person they are watching
+        foreach my $watch (@$userwatchers) {
+            while (my ($role, $bits) = each %{$recipients{$watch->[1]}}) {
+                $recipients{$watch->[0]}->{$role} |= BIT_WATCHING
+                    if $bits & BIT_DIRECT;
+            }
+            push(@{$watching{$watch->[0]}}, $watch->[1]);
         }
-        push(@{$watching{$watch->[0]}}, $watch->[1]);
     }
 
     # Global watcher
@@ -249,16 +266,17 @@ sub Send {
             # Email the user if the dep check passed.
             if ($dep_ok) {
                 my $sent_mail = sendMail(
-                    { to       => $user, 
-                      bug      => $bug,
-                      comments => $comments,
-                      date     => $date,
-                      changer  => $changer,
-                      watchers => exists $watching{$user_id} ?
-                                  $watching{$user_id} : undef,
-                      diffs    => \@diffs,
+                    { to              => $user, 
+                      bug             => $bug,
+                      comments        => $comments,
+                      date            => $date,
+                      changer         => $changer,
+                      watchers        => exists $watching{$user_id} ?
+                                         $watching{$user_id} : undef,
+                      diffs           => \@diffs,
                       rels_which_want => \%rels_which_want,
-                      dep_only => $params->{dep_only}
+                      dep_only        => $params->{dep_only},
+                      referenced_bugs => $referenced_bugs,
                     });
                 push(@sent, $user->login) if $sent_mail;
             }
@@ -280,15 +298,16 @@ sub Send {
 sub sendMail {
     my $params = shift;
 
-    my $user   = $params->{to};
-    my $bug    = $params->{bug};
-    my @send_comments = @{ $params->{comments} };
-    my $date = $params->{date};
-    my $changer = $params->{changer};
-    my $watchingRef = $params->{watchers};
-    my @diffs = @{ $params->{diffs} };
-    my $relRef      = $params->{rels_which_want};
-    my $dep_only = $params->{dep_only};
+    my $user            = $params->{to};
+    my $bug             = $params->{bug};
+    my @send_comments   = @{ $params->{comments} };
+    my $date            = $params->{date};
+    my $changer         = $params->{changer};
+    my $watchingRef     = $params->{watchers};
+    my @diffs           = @{ $params->{diffs} };
+    my $relRef          = $params->{rels_which_want};
+    my $dep_only        = $params->{dep_only};
+    my $referenced_bugs = $params->{referenced_bugs};
 
     # Only display changes the user is allowed see.
     my @display_diffs;
@@ -350,6 +369,7 @@ sub sendMail {
         changer            => $changer,
         diffs              => \@display_diffs,
         changedfields      => \@changedfields,
+        referenced_bugs    => $user->visible_bugs($referenced_bugs),
         new_comments       => \@send_comments,
         threadingmarker    => build_thread_marker($bug->id, $user->id, !$bug->lastdiffed),
         bugmailtype        => $bugmailtype,
@@ -368,11 +388,14 @@ sub enqueue {
     # we need to flatten all objects to a hash before pushing to the job queue.
     # the hashes need to be inflated in the dequeue method.
     $vars->{bug}          = _flatten_object($vars->{bug});
-    $vars->{to_user}      = $vars->{to_user}->flatten_to_hash;
+    $vars->{to_user}      = _flatten_object($vars->{to_user});
     $vars->{changer}      = _flatten_object($vars->{changer});
     $vars->{new_comments} = [ map { _flatten_object($_) } @{ $vars->{new_comments} } ];
     foreach my $diff (@{ $vars->{diffs} }) {
         $diff->{who} = _flatten_object($diff->{who});
+        if (exists $diff->{blocker}) {
+            $diff->{blocker} = _flatten_object($diff->{blocker});
+        }
     }
     Bugzilla->job_queue->insert('bug_mail', { vars => $vars });
 }
@@ -389,6 +412,9 @@ sub dequeue {
     $vars->{new_comments} = [ map { Bugzilla::Comment->new_from_hash($_) } @{ $vars->{new_comments} } ];
     foreach my $diff (@{ $vars->{diffs} }) {
         $diff->{who} = Bugzilla::User->new_from_hash($diff->{who});
+        if (exists $diff->{blocker}) {
+            $diff->{blocker} = Bugzilla::Bug->new_from_hash($diff->{blocker});
+        }
     }
     # generate bugmail and send
     MessageToMTA(_generate_bugmail($vars), 1);
@@ -545,7 +571,10 @@ sub _get_new_bugmail_fields {
         # If there isn't anything to show, don't include this header.
         next unless $value;
 
-        push(@diffs, {field_name => $name, new => $value});
+        push(@diffs, {
+            field_name => $name,
+            who        => $bug->reporter,
+            new        => $value});
     }
 
     return @diffs;

@@ -16,31 +16,28 @@
   #%]
 
 [% PROCESS global/header.html.tmpl
-   title = "既定の設定"
- %]
+  title = "既定の設定"
+  style_urls = ['skins/standard/admin.css']
+%]
 
 [% PROCESS "global/setting-descs.none.tmpl" %]
 
 <p>
 ここでは既定の設定を変更できます。
-</p>
-<p>
 ここで設定した各設定の既定値はログインしていない全てのユーザで、
 ユーザ自身が値を設定していない場合に適用されます。
 </p>
-<p>
-'有効' のチェックボックスでこの設定がユーザによって設定可能かどうかを制御できます。<br>
-チェックが入っている場合、この設定はユーザの環境設定ページに表示され、
-ユーザ自身が望む設定に変更することができます。<br>
-チェックが入っていない場合、この設定はユーザの環境設定ページには表示されません。
-また、全員に既定値が自動的に適用されます。
-</p>
-<hr>
+<div>
+'有効' のチェックボックスでこの設定がユーザによって設定可能かどうかを制御できます。
+<ul>
+  <li>チェックが入っている場合、ユーザ自身が望む設定に変更することができます。</li>
+  <li>チェックが入っていない場合、全員に既定値が自動的に適用されます。</li>
+</ul>
+</div>
 
-[% IF settings.size %]
-    <form name="adminsettingform" method="post" action="editsettings.cgi">
-      <table border="1" cellpadding="4">
-      <tr>
+    <form id="settings" method="post" action="editsettings.cgi">
+      <table id="admin_table">
+        <tr class="column_header">
         <th>設定項目</th>
         <th>既定値</th>
         <th>有効</th>
@@ -49,7 +46,7 @@
       [% FOREACH name = settings.keys %]
           [% checkbox_name = name _ '-enabled' %]
           <tr>
-            <td align="right">
+            <td>
               [% setting_descs.$name OR name FILTER html %]
             </td>
             <td>
@@ -62,12 +59,11 @@
                 [% END %]
               </select>
             </td>
-            <td align="center">
+            <td class="center">
               <input type="checkbox"
                 name="[% checkbox_name FILTER html %]"
                 id="[% checkbox_name FILTER html %]"
                 [% " checked=\"checked\"" IF settings.${name}.is_enabled %]>
-              <br>
             </td>
           </tr>
       [% END %]
@@ -75,18 +71,7 @@
 
     <input type="hidden" name="action" value="update">
     <input type="hidden" name="token" value="[% token FILTER html %]">
-    <table>
-      <tr>
-        <td width="150"></td>
-        <td>
-          <input type="submit" id="update" value="変更を保存">
-        </td>
-      </tr>
-    </table>
-  
+    <input type="submit" id="update" value="変更を保存">
   </form>
-[% ELSE %]
-  変更可能な設定がありません。
-[% END %]
 
 [% PROCESS global/footer.html.tmpl %]

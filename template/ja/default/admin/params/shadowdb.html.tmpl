@@ -14,19 +14,19 @@
   shadowdbhost => "shadow database が存在するホスト",
 
   shadowdbport => "shadow database のポート番号。" _
-                  "<tt>shadowdbhost</tt> が空なら無視されます。注: ホストがローカルの場合、" _
+                  "<var>shadowdbhost</var> が空なら無視されます。注: ホストがローカルの場合、" _
                   "MySQL はこの設定を無視しますので、socket の設定を必ず行ってください。",
 
   shadowdbsock => "shadow database のホストがローカルの場合に、接続するための socket。" _
                   "この設定は、MySQL がローカルホストからの接続の際にポート番号を無視する" _
                   "ために、socket パス (unix ホストの場合) 経由で接続するために必要です。" _
                   "空の場合、そしてローカルホストにデータベースがある場合、" _
-                  "<tt>shadowdbport</tt> は無視されます。",
+                  "<var>shadowdbport</var> は無視されます。",
 
-  shadowdb => "空でなければ、$terms.Bugzilla はこのデータベース名を読み込み専用コピー" _
+  shadowdb => "空でなければ、Bugzilla はこのデータベース名を読み込み専用コピー" _
               "の代替データベースとして利用します。" _
               "読み込みのみの遅い操作をこのデータベースに対して行うことで、ほかの操作を" _
-              "ロックしないようにするためです。このデータベースは <tt>shadowdbhost</tt>" _
-              "上に存在する必要があります。$terms.Bugzilla はこのデータベースを更新しません" _
+              "ロックしないようにするためです。このデータベースは <var>shadowdbhost</var>" _
+              "上に存在する必要があります。Bugzilla はこのデータベースを更新しません" _
               "ので、データベースのレプリケーションの設定を行う必要があります。" }
 %]

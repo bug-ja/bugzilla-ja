@@ -18,36 +18,36 @@
     _ "<p>信頼できないユーザが、直接ブラウザで開いた場合に損害を与える"
     _ "可能性のあるファイルを添付できるようなサイトで利用可能な"
     _ "セキュリティー制限です。</p>"
-    _ "<p>有効にする場合は、<tt>attachment_base</tt> パラメータを設定することが"
+    _ "<p>有効にする場合は、<var>attachment_base</var> パラメータを設定することが"
     _ "強く推奨されます。",
 
   attachment_base =>
-    "<tt>allow_attachment_display</tt> パラメータが有効である場合、"
-    _ "悪意のある添付によりクッキーを奪取されたり $terms.Bugzilla "
+    "<var>allow_attachment_display</var> パラメータが有効である場合、"
+    _ "悪意のある添付によりクッキーを奪取されたり Bugzilla "
     _ "にあなたのアカウントで攻撃を行われたりする可能性があります。"
     _ "<p>これを防ぐために追加のセキュリティー対策を必要とする場合、"
-    _ "このパラメータを $terms.Bugzilla の <tt>urlbase</tt> や "
-    _ "<tt>sslbase</tt> でない別の URL に設定してください。"
-    _ "たとえば、異なるドメイン名でこの $terms.Bugzilla "
+    _ "このパラメータを Bugzilla の <var>urlbase</var> や "
+    _ "<var>sslbase</var> でない別の URL に設定してください。"
+    _ "たとえば、異なるドメイン名でこの Bugzilla "
     _ "サイトとまったく同じ場所を指すものなどです。</p>"
     _ "<p>注: もし"
-    _ " <a href=\"editparams.cgi?section=advanced#cookiedomain_desc\"><tt>cookiedomain</tt>"
-    _ "パラメータ</a> を設定している場合、<tt>attachment_base</tt> には、"
-    _ " <tt>cookiedomain</tt> と <em>まったく</em> "
+    _ " <a href=\"editparams.cgi?section=advanced#cookiedomain_desc\"><var>cookiedomain</var>"
+    _ "パラメータ</a> を設定している場合、<var>attachment_base</var> には、"
+    _ " <var>cookiedomain</var> と <em>まったく</em> "
     _ "マッチしないドメイン名にすべきです。</p>"
     _ "<p>この追加されたセキュリティー向けに、添付ファイルにアクセスしたときに"
-    _ "添付が追加された $terms.bug を示す ID に置換される <tt>%bugid%</tt> を URL "
+    _ "添付が追加された $terms.bug を示す ID に置換される <var>%bugid%</var> を URL "
     _ "に挿入することができます。これにより、添付ファイルからのアクセスは"
     _ "同じ $terms.bug への添付にのみに制限できます。なお、もちろん、"
     _ "この機能を使ったときに利用される可能性のあるすべてのドメイン名"
-    _ " (たとえば <tt>1234.your.domain.com</tt>) はすべて同じ $terms.Bugzilla "
+    _ " (たとえば <kbd>1234.your.domain.com</kbd>) はすべて同じ Bugzilla "
     _ "のインスタンスを示さなければならないことに注意してください。",
 
   allow_attachment_deletion => "有効なら、管理者が添付ファイルを削除できます。",
 
   maxattachmentsize => "データベースに保存する添付ファイルの最大サイズ (kB) です。" _
                        "これ以上のサイズのファイルを ${terms.abug} に添付しようとした場合、" _
-                       "$terms.Bugzilla は<a href='#maxlocalattachment'><tt>maxlocalattachment</tt> " _
+                       "Bugzilla は<a href=\"#maxlocalattachment\"><var>maxlocalattachment</var> " _
                        "パラメータ</a> をウェブサーバのローカルにファイルを保存するか" _
                        "を決定するために調べます。両方の制限を超えている場合、" _
                        "添付は拒否されます。" _
@@ -57,7 +57,7 @@
                         "添付ファイルの最大サイズ (MB) です。" _
                         "0 にすると、添付ファイルは一切ローカルに保存されません。",
   maxlocalattachment => "ウェブサーバのローカルに保存する添付ファイルの最大サイズ (kB) " _
-                        "です。<a href='#maxattachmentsize'><tt>maxattachmentsize</tt> " _
+                        "です。<a href=\"#maxattachmentsize\"><var>maxattachmentsize</var> " _
                         "パラメータ</a> 以下に設定すると" _
                         "サーバのローカルには一切保存されなくなります。" 
 

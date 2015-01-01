@@ -12,7 +12,7 @@
 [% isnew = bug.lastdiffed ? 0 : 1 %]
 <html>
     <head>
-      <base href="[% urlbase FILTER html %]" />
+      <base href="[% urlbase FILTER html %]">
     </head>
     <body>
       [% Hook.process('start') %]
@@ -21,7 +21,7 @@
       [% FOREACH comment = new_comments.reverse %]
         <div>
           [% IF comment.count %]
-            <b>[% INCLUDE global/user.html.tmpl who = comment.author %] からの
+            <b>[% INCLUDE global/user.html.tmpl user = to_user, who = comment.author %] からの
               [% "$terms.bug $bug.id" FILTER bug_link(bug, { full_url => 1, user => to_user }) FILTER none %] についての
               [% "コメント # ${comment.count}" FILTER bug_link(bug,
               {comment_num => comment.count, full_url => 1, user => to_user}) FILTER none %]</b>
@@ -30,9 +30,26 @@
         </div>
       [% END %]
       </p>
+
+      [% IF referenced_bugs.size %]
+        <div id="referenced">
+          <hr style="border: 1px dashed #969696">
+          <b>参照された [% terms.Bugs %]:</b>
+          <ul>
+            [% FOREACH ref_bug = referenced_bugs %]
+              <li>
+                [[% "${terms.Bug} ${ref_bug.id}" FILTER bug_link(ref_bug, {full_url => 1, user => to_user}) FILTER none %]] 
+                [% ref_bug.short_desc FILTER html %]
+              </li>
+            [% END %]
+          </ul>
+        </div>
+        <br>
+      [% END %]
+
       <hr>
       <span>次の理由でこのメールを受信しています:</span>
-      
+
       <ul>
       [% FOREACH reason = reasons %]
         [%  IF reason_descs.$reason  %]
@@ -52,8 +69,8 @@
   [% SET in_table = 0 %]
   [% last_changer = 0 %]
     [% FOREACH change = diffs %]
-      [% IF !isnew && changer.id != last_changer %]
-        [% last_changer = changer.id %]
+      [% IF !isnew && change.who.id != last_changer %]
+        [% last_changer = change.who.id %]
         [% IF in_table == 1 %]
           </table>
           [% SET in_table = 0 %]
@@ -63,7 +80,7 @@
              は、ステータスに変更があった [%+ "${terms.bug} ${change.blocker.id}"
              FILTER bug_link(change.blocker, {full_url => 1, user => to_user}) FILTER none %] に依存しています。
         [% ELSE %]
-              [% INCLUDE global/user.html.tmpl who = change.who %] が
+              [% INCLUDE global/user.html.tmpl user = to_user, who = change.who %] が
               [%+ "${terms.bug} ${bug.id}" FILTER bug_link(bug, {full_url => 1, user => to_user}) FILTER none %] を変更しました。
         [% END %]
           <br>

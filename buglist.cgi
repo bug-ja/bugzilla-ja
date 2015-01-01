@@ -279,22 +279,6 @@ sub GetGroups {
     return [values %legal_groups];
 }
 
-sub _close_standby_message {
-    my ($contenttype, $disp, $disp_prefix, $extension, $serverpush) = @_;
-    my $cgi = Bugzilla->cgi;
-    $cgi->set_dated_content_disp($disp, $disp_prefix, $extension);
-    
-    # Close the "please wait" page, then open the buglist page
-    if ($serverpush) {
-        print $cgi->multipart_end();
-        print $cgi->multipart_start(-type => $contenttype);
-    }
-    else {
-        print $cgi->header($contenttype);
-    }
-}
-
-
 ################################################################################
 # Command Execution
 ################################################################################
@@ -766,6 +750,7 @@ my $time_info = { 'estimated_time' => 0,
     
 my $bugowners = {};
 my $bugproducts = {};
+my $bugcomponents = {};
 my $bugstatuses = {};
 my @bugidlist;
 
@@ -798,6 +783,7 @@ foreach my $row (@$data) {
     # Record the assignee, product, and status in the big hashes of those things.
     $bugowners->{$bug->{'assigned_to'}} = 1 if $bug->{'assigned_to'};
     $bugproducts->{$bug->{'product'}} = 1 if $bug->{'product'};
+    $bugcomponents->{$bug->{'component'}} = 1 if $bug->{'component'};
     $bugstatuses->{$bug->{'bug_status'}} = 1 if $bug->{'bug_status'};
 
     $bug->{'secure_mode'} = undef;
@@ -930,11 +916,23 @@ if ($one_product && $user->can_enter_product($one_product)) {
     $vars->{'one_product'} = $one_product;
 }
 
+# See if there's only one component in all the results (or only one component
+# that we searched for), which allows us to provide more helpful links.
+my @components = keys %$bugcomponents;
+my $one_component;
+if (scalar(@components) == 1) {
+    $vars->{one_component} = $components[0];
+}
+# This is used in the "Zarroo Boogs" case.
+elsif (my @component_input = $cgi->param('component')) {
+    if (scalar(@component_input) == 1 and $component_input[0] ne '') {
+        $vars->{one_component}= $cgi->param('component');
+    }
+}
+
 # The following variables are used when the user is making changes to multiple bugs.
 if ($dotweak && scalar @bugs) {
     if (!$vars->{'caneditbugs'}) {
-        _close_standby_message('text/html', 
-                               'inline', "error", "html", $serverpush);
         ThrowUserError('auth_failure', {group  => 'editbugs',
                                         action => 'modify',
                                         object => 'multiple_bugs'});
@@ -1041,8 +1039,7 @@ if ($format->{'extension'} eq "csv") {
     $vars->{'human'} = $cgi->param('human');
 }
 
-_close_standby_message($contenttype, $disposition, $disp_prefix, 
-                       $format->{'extension'}, $serverpush);
+$cgi->close_standby_message($contenttype, $disposition, $disp_prefix, $format->{'extension'});
 
 ################################################################################
 # Content Generation

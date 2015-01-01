@@ -22,22 +22,22 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">フィールド</th>
-  <th valign="top" class="left">値</th>
+<table id="admin_table">
+  <tr class="column_header">
+  <th>フィールド</th>
+  <th>値</th>
 </tr>
 <tr>
-  <td valign="top">フィールド名:</td>
-  <td valign="top">[% field.description FILTER html %]</td>
+  <td>フィールド名</td>
+  <td>[% field.description FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">フィールド値:</td>
-  <td valign="top">[% value.name FILTER html %]</td>
+  <td>フィールド値</td>
+  <td>[% value.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">[% terms.Bugs %]:</td>
-  <td valign="top">
+  <td>[% terms.Bugs %]</td>
+  <td>
 [% IF value.bug_count %]
   <a title="[%- field.description FILTER html %]' が '
             [%- value.name FILTER html %]' である [% terms.bugs %] のリスト"
@@ -145,6 +145,6 @@
 
 [% PROCESS admin/fieldvalues/footer.html.tmpl
   no_edit_link = 1
- +%]
++%]
 
 [% PROCESS global/footer.html.tmpl %] 

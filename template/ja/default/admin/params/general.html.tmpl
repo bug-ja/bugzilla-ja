@@ -12,10 +12,10 @@
 %]
 
 [% param_descs = {
-  maintainer => "この ${terms.Bugzilla} サイトのメンテナのメールアドレス",
+  maintainer => "この Bugzilla サイトのメンテナのメールアドレス",
 
   docs_urlbase => "すべての $terms.Bugzilla ドキュメント URL の先頭に入る" _
-                  "共通の文字列。絶対 URL や urlbase に対する相対 URL が指定可能です。" _
+                  "共通の文字列。絶対 URL や <var>urlbase</var> に対する相対 URL が指定可能です。" _
                   "空白にするとすべてのドキュメントへのリンクが無効化されます。" _
                   "'%lang%' はユーザに最適な言語 (存在すれば) に置換されます。",
 
@@ -27,20 +27,20 @@
           "、このオプションを有効にしてください。</strong><br><br>注: このオプションを有効にしたら" _
           "すぐに <kbd>checksetup.pl</kbd> を実行してください。",
 
-  shutdownhtml => "これが空白でなければ、$terms.Bugzilla は完全に利用できなくなり、" _
+  shutdownhtml => "これが空白でなければ、Bugzilla は完全に利用できなくなり、" _
                   "それぞれの $terms.Bugzilla ページの代わりにこのテキストが表示されます。",
 
-  announcehtml => "これが空白でなければ、$terms.Bugzilla はここに設定されているものを" _
+  announcehtml => "これが空白でなければ、Bugzilla はここに設定されているものを" _
                   "すべての HTML ページの上部に表示します。ここに設定した HTML はまったく" _
-                  "何も処理されずに利用されます。<tt>&lt;div&gt;</tt> で囲むことを推奨" _
+                  "何も処理されずに利用されます。<code>&lt;div&gt;</code> で囲むことを推奨" _
                   "します。divに<em>id=message</em>を設定すれば、赤い囲みの緑表示、" _
                   "<em>class=bz_private</em>を設定すれば赤い背景の暗赤表示になります。" _
-                  "<tt>skins/standard/global.css</tt>や<tt>skins/custom/global.css</tt>" _
+                  "<code>skins/standard/global.css</code>や<code>skins/custom/global.css</code>" _
                   "で定義されているものがすべて動作します。中心寄せにしたい場合、" _
-                  "<em>style=\"text-align: center;\"</em> を利用してください。",
+                  "<em>class=\"center\"</em> を利用してください。",
 
-  upgrade_notification => "<p>$terms.Bugzilla は新リリースが存在するかの通知を表示できます。" _
-                          "通知は $terms.Bugzilla のホームページに管理者のみに表示されます。</p>" _
+  upgrade_notification => "<p>Bugzilla は新リリースが存在するかの通知を表示できます。" _
+                          "通知は Bugzilla のホームページに管理者のみに表示されます。</p>" _
                           "<ul><li>'development_snapshot' では、trunkの最新リリース (開発" _
                           "版スナップショットなど) が通知されます。</li>" _
                           "<li>'latest_stable_release' では、最新の安定版リリースが通知" _
@@ -50,4 +50,6 @@
                           "最新のリリース候補版について通知されます。</li>" _
                           "<li>'disabled' では、まったく何も通知しませんが、外部サーバへの" _
                           "接続を行わなくなります。</li></ul>" 
+    _ " <p>Bugzilla サーバが外部に接続するためにプロキシが必要な場合、高度な設定の"
+    _ " <var>proxy_url</var> パラメータも設定する必要があることに注意してください。",
 } %]

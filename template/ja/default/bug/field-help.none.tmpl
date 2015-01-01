@@ -22,7 +22,7 @@
 ##############
 
 alias =>
-  "${terms.Bugzilla} のほかの場所で探し出す際や参照するための手助けになるような、
+  "Bugzilla のほかの場所で探し出す際や参照するための手助けになるような、
    $terms.abug に割り当てられた短い唯一の名前です。",
 
 assigned_to =>
@@ -37,7 +37,7 @@ bug_file_loc =>
   _ "へのポインタなどです。",
 
 bug_id =>
-  "$terms.abug の数値の ID で、${terms.Bugzilla} 全体で唯一になる番号です。",
+  "$terms.abug の数値の ID で、Bugzilla 全体で唯一になる番号です。",
 
 bug_severity =>
   "$terms.bug がどの程度重要であるかもしくは機能要望であるかを示します。",
@@ -83,7 +83,7 @@ keywords =>
     事前定義されたキーワードリストから $terms.bugs に追加できます。",
 
 longdesc =>
-  "$terms.Bugs には $terms.Bugzilla ユーザがコメントをつけられます。
+  "$terms.Bugs には Bugzilla ユーザがコメントをつけられます。
    それらのコメントの文章を検索できます。",
 
 op_sys =>
@@ -217,7 +217,7 @@ email1 =>
         [% field_types.$field_type FILTER html %]
       [%- END %]
       [% vars.help_html.${help_field} = 
-        "この ${terms.Bugzilla} サイトの"
+        "この Bugzilla サイトの"
         _  "カスタムフィールド $field_type_desc です。" %]
     [% END %]
   [% END %]

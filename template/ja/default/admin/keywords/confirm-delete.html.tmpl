@@ -12,24 +12,30 @@
 
 [% PROCESS global/header.html.tmpl
   title = "キーワードの削除"
+  style_urls = ['skins/standard/admin.css']
 %]
 
-<p>
-  [% IF keyword.bug_count == 1 %]
-    このキーワードを利用している [% terms.bug %] がひとつあります。
-  [% ELSIF keyword.bug_count > 1 %]
-    このキーワードを利用している [% keyword.bug_count FILTER html %] 件の [%+ terms.bugs %] があります。
-  [% END %]
+<h2>確認</h2>
 
-  <b>本当に</b>この <code>[% keyword.name FILTER html %]</code> キーワードを削除してもよろしいですか?
+<p class="confirmation">
+  このキーワード <em>[% keyword.name FILTER html %]</em> は
+  [% IF keyword.bug_count == 1 %]
+    ひとつの [% terms.bug %] 
+  [% ELSIF keyword.bug_count > 1 %]
+    [% keyword.bug_count FILTER html %] 件の [%+ terms.bugs %] 
+  [% END %]
+  で利用されています。
+</p>
+
+<p>
+  本当にこのキーワードを削除してもよろしいですか?
 </p>
 
 <form method="post" action="editkeywords.cgi">
   <input type="hidden" name="id" value="[% keyword.id FILTER html %]">
   <input type="hidden" name="action" value="delete">
   <input type="hidden" name="token" value="[% token FILTER html %]">
-  <input type="submit" id="delete"
-         value="はい、このキーワードを削除します">
+  <input type="submit" id="delete" value="はい、削除します">
 </form>
 
 <p><a href="editkeywords.cgi">他のキーワードを編集する</a>。</p>

@@ -37,7 +37,7 @@
 
 <ul class="qs_help">
   <li>検索ボックスにひとつもしくは複数の単語を入力してください。
-    [%+ terms.Bugzilla %] は
+    Bugzilla は
     [%+ field_descs.product FILTER html %],
     [%+ field_descs.component FILTER html %], 
     [%+ IF use_keywords %][%+ field_descs.keywords FILTER html %],[% END %]
@@ -54,7 +54,7 @@
   </li>
 
   <li>検索語を追加すれば<strong>より絞られた</strong>結果になり、
-     増えることはありません。(言い換えると、[% terms.Bugzilla %]は
+     増えることはありません。(言い換えると、Bugzilla は
      検索条件を<em>全て</em>を満たす[% terms.bugs %]を検索し、
      検索条件の<em>いくつか</em>を満たす[% terms.bugs %]を検索するわけではありません。)</li>
 
@@ -62,7 +62,7 @@
     つまり、<kbd>table</kbd>は<kbd>Table</kbd>や<kbd>TABLE</kbd>などの
     全てにマッチします。</li>
 
-  <li>[% terms.Bugzilla %] は単純に入力された単語を検索するだけでなく、
+  <li>Bugzilla は単純に入力された単語を検索するだけでなく、
     その語を<strong>含む</strong>全ての単語にもマッチします。
     ですので、たとえば、"cat"での検索は、それを一部分に含むほかの語
     &mdash; たとえば、"<strong>cat</strong>ch"や"certifi<strong>cat</strong>e"
@@ -124,7 +124,7 @@
     <kbd>cf_</kbd>より<em>後の</em>名前については省略形として利用できます。
     たとえば、<kbd>[% first_field.name FILTER html %]</kbd>は、
     <kbd>[% first_field.name.replace('^cf_') FILTER html %]</kbd>
-    でも利用可能です。ただし、名前が標準的な[% terms.Bugzilla %]
+    でも利用可能です。ただし、名前が標準的な Bugzilla
     のフィールド名と衝突する場合は、標準的なフィールド名が優先されます。</p>
 [% END %]
 
@@ -134,7 +134,7 @@
   [% field_table.$description = quicksearch_field_names.${field} %]
 [% END %]
 
-<table cellspacing="0" cellpadding="0" border="0" class="qs_fields">
+<table class="qs_fields">
   <thead>
     <tr>
       <th class="field_name">フィールド</th>
@@ -215,7 +215,7 @@
   利用するのに加えて、特定のフィールドの検索には"ショートカット"
   として利用可能な文字や単語があります:</p>
 
-<table cellspacing="0" cellpadding="0" border="0" class="qs_fields">
+<table class="qs_fields">
   <thead>
     <tr>
       <th class="field_name">フィールド</th>

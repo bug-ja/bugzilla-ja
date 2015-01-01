@@ -22,47 +22,47 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">フィールド</th>
-  <th valign="top" class="left">値</th>
+<table id="admin_table">
+  <tr class="column_header">
+  <th>フィールド</th>
+  <th>値</th>
 </tr>
 <tr>
-  <td valign="top">コンポーネント:</td>
-  <td valign="top">[% comp.name FILTER html %]</td>
+  <td>コンポーネント</td>
+  <td>[% comp.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">コンポーネントの説明:</td>
-  <td valign="top">[% comp.description FILTER html_light %]</td>
+  <td>コンポーネントの説明</td>
+  <td>[% comp.description FILTER html_light %]</td>
 </tr>
 <tr>
-  <td valign="top">既定の担当者:</td>
-  <td valign="top">[% comp.default_assignee.login FILTER html %]</td>
+  <td>既定の担当者</td>
+  <td>[% comp.default_assignee.login FILTER html %]</td>
+</tr>
   
 [% IF Param('useqacontact') %]
-</tr>
 <tr>
-  <td valign="top">既定の QA コンタクト:</td>
-  <td valign="top">[% comp.default_qa_contact.login FILTER html %]</td>
+  <td>既定の QA コンタクト</td>
+  <td>[% comp.default_qa_contact.login FILTER html %]</td>
+</tr>
 [% END %]
   
-</tr>
 <tr>
-  <td valign="top">属するプロダクト:</td>
-  <td valign="top">[% product.name FILTER html %]</td>
+  <td>属するプロダクト</td>
+  <td>[% product.name FILTER html %]</td>
+</tr>
 
 [% IF product.description %]
-</tr>
 <tr>
-  <td valign="top">プロダクトの説明:</td>
-  <td valign="top">[% product.description FILTER html_light %]</td>
+  <td>プロダクトの説明</td>
+  <td>[% product.description FILTER html_light %]</td>
+</tr>
 [% END %]
 
 [% IF Param('usetargetmilestone') %]
-</tr>
 <tr>
-  <td valign="top">プロダクトのマイルストーンの URL:</td>
-  <td valign="top">
+  <td>プロダクトのマイルストーンの URL</td>
+  <td>
     <a href="[% product.milestone_url FILTER html %]">
       [% product.milestone_url FILTER html %]
     </a>
@@ -71,14 +71,14 @@
 
 </tr>
 <tr>
-  <TD VALIGN="top">[% terms.bugs %] を新規登録できるか:</TD>
-  <TD VALIGN="top">[% IF product.is_active && comp.isactive %]不可能[% ELSE %]可能[% END %]</td>
+  <td>[% terms.bugs %] を新規登録できるか</TD>
+  <td>[% IF product.is_active && comp.isactive %]可能[% ELSE %]不可能[% END %]</td>
 </tr>
 <tr>
-  <td valign="top">[% terms.Bugs %]:</td>
-  <td valign="top">
+  <td>[% terms.Bugs %]</td>
+  <td>
 [% IF comp.bug_count %]
-  <a title="List of [% terms.bugs %] for component '[% comp.name FILTER html %]'"
+  <a title="コンポーネント '[% comp.name FILTER html %]' の [% terms.bugs %] リスト"
      href="buglist.cgi?component=[% comp.name FILTER uri %]&amp;product=
           [%- product.name FILTER uri %]">[% comp.bug_count %]</a>
 [% ELSE %]
@@ -95,23 +95,19 @@
   [% IF !Param("allowbugdeletion") %]
   <p class="confirmation">
     [% comp.bug_count %] 件の [%+ terms.bugs %] 
-
     がこのコンポーネントに登録されています。これらの
-
     [% terms.bugs %] 
-
     を他のコンポーネントに移動させなければ、削除することはできません。
   </p>
   [% ELSE %]
 
-    <table border="0" cellpadding="20" width="70%" bgcolor="red"><tr><td>
-
+    <p class="confirmation">
       [% comp.bug_count %] 件の [%+ terms.bugs %] 
       がこのコンポーネントに登録されています! 
       このコンポーネントを削除すると、
       <b>全ての</b> 登録されている [% terms.bugs %] と
       その履歴が削除されます。
-      </td></tr></table>
+    </p>
 
   [% END %]
 

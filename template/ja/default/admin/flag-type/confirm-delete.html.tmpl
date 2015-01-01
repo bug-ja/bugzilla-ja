@@ -10,6 +10,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
   doc_section = "flags-overview.html#flags-delete"
 %]
 
@@ -23,27 +24,20 @@
            [%- token FILTER html %]">タイプを無効化する</a> こともできます。
    これを利用すれば、フラグタイプ[% IF flag_type.flag_count %]と、
    フラグ[% END %]は共にデータベースに残りますが、
-   [% terms.Bugzilla %] の UI では表示されなくなります。
+   Bugzilla の UI では表示されなくなります。
 </p>
 
-<table>
-   <tr>
-      <td colspan="2">
+<p class="confirmation">
          本当にこのフラグタイプを削除してもよろしいですか?
-      </td>
-   </tr>
-   <tr>
-      <td>
+</p>
+
+<p>
          <a href="editflagtypes.cgi?action=delete&amp;id=[% flag_type.id %]&amp;token=
                  [%- token FILTER html %]">はい、削除します
-         </a>
-      </td>
-      <td align="right">
+         </a> - 
          <a href="editflagtypes.cgi">
             いいえ、削除しません
          </a>
-      </td>
-   </tr>
-</table>
+</p>
 
 [% PROCESS global/footer.html.tmpl %]

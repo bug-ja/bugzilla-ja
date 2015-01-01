@@ -8,31 +8,28 @@
 
 [% PROCESS global/header.html.tmpl
   title = "classification の削除"
+  style_urls = ['skins/standard/admin.css']
 %]
 
-<table border=1 cellpadding=4 cellspacing=0>
-<tr bgcolor="#6666ff">
-  <th valign="top" class="left">フィールド</th>
-  <th valign="top" class="left">値</th>
-
+<table id="admin_table">
+  <tr class="column_header">
+  <th>フィールド</th>
+  <th>値</th>
 </tr><tr>
-  <td valign="top">Classification:</td>
-  <td valign="top">[% classification.name FILTER html %]</td>
-
+  <td>Classification</td>
+  <td>[% classification.name FILTER html %]</td>
 </tr><tr>
-  <td valign="top">説明:</td>
-  <td valign="top">
+  <td>説明</td>
+  <td>
     [% IF classification.description %]
       [% classification.description FILTER html_light %]
     [% ELSE %]
-      <font color="red">説明がありません</font>
+      <span class="warning">説明がありません</span>
     [% END %]
   </td>
-
 </tr><tr>
-  <td valign="top">ソート順:</td>
-  <td valign="top">[% classification.sortkey FILTER html %]</td>
-
+  <td>ソート順</td>
+  <td>[% classification.sortkey FILTER html %]</td>
 </tr>
 </table>
 

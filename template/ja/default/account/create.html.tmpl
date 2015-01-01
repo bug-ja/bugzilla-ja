@@ -32,17 +32,29 @@
   このメールアドレスに、あなたのアカウントを生成するかどうかの確認メールが送信されます。
   <b>メールを受信するまでログインはできません。</b>
   もし、ある程度の時間がたってもメールを受信しなかった場合は、
-  この [% terms.Bugzilla %] サイトのメンテナ
+  この Bugzilla サイトのメンテナ
   <a href="mailto:[% Param("maintainer") %]">[% Param("maintainer") %]</a>
   まで連絡を取ってください。
 </p>
+
+[% IF Param('allowemailchange') %]
+<p>
+  既にアカウントを持っており、あなたの
+  [% IF Param('emailsuffix') == '' %]
+    メールアドレス
+  [% ELSE %]
+    ログイン名
+  [% END %]
+  を変更したい場合、ログイン後の設定ページから変更できます。
+</p>
+[% END %]
 
 <p>
   より詳細な情報が必要となったときにコンタクトが取れるようにするため、
   新規 [% terms.bugs %] の報告やコメントの追加を行うにはユーザアカウントが必要です。
   これにより [% terms.bugs %] へのコメントや変更が誰により行われたかが
   明確に他のユーザにわかるようになります。<b>あなたのメールアドレスは、
-  ログインしていないユーザには<u>決して</u>表示されることはありません。
+  ログインしていないユーザには<em>決して</em>表示されることはありません。
   登録済みユーザのみが見ることができます。
 </p>
 
@@ -58,24 +70,16 @@
 [% END %]
 
 <form id="account_creation_form" method="get" action="createaccount.cgi">
-  <table>
-    <tr>
-      <td align="right">
-        <b>
-          [% IF Param('emailsuffix') %]
-            ログイン名:
-          [% ELSE %]
-            メールアドレス:
-          [% END %]
-        </b>
-      </td>
-      <td>
-        <input size="35" id="login" name="login">
-        [% Param('emailsuffix') FILTER html %]
-      </td>
-    </tr>
-  </table>
-  <br>
+  <span class="label">
+    [% IF Param('emailsuffix') %]
+      ログイン名:
+    [% ELSE %]
+      メールアドレス:
+    [% END %]
+  </span>
+  <input size="35" id="login" name="login"
+         [%- ' type="email"' UNLESS Param('emailsuffix') %]>
+  [% Param('emailsuffix') FILTER html %]
   <input type="hidden" id="token" name="token" value="[% issue_hash_token(['create_account']) FILTER html %]">
   <input type="submit" id="send" value="送信">
 </form>

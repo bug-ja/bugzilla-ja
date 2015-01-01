@@ -8,26 +8,26 @@
 
 [% 
    title = "必須の設定"
-   desc = "$terms.Bugzilla の最低限の動作に必須のパラメータ" 
+   desc = "Bugzilla の最低限の動作に必須のパラメータ" 
 %]
 
 [% param_descs = {
-  urlbase => "この $terms.Bugzilla の URL の共通する先頭部分 (トップページの URL)",
+  urlbase => "この Bugzilla の URL の共通する先頭部分 (トップページの URL)",
 
   sslbase => "この $terms.Bugzilla の HTTPS (SSL) 接続での URL の共通する先頭部分。",
 
   ssl_redirect =>
-    "有効の場合、$terms.Bugzilla はすべてのページが SSL でアクセスされるよう、" _
-    "HTTP でのアクセスを HTTPS へ <tt>sslbase</tt> パラメータを元にリダイレクトします。" _
-    "また、配信されるメールにおいても $terms.Bugzilla は <tt>sslbase</tt> を " _
-    "<tt>urlbase</tt> の代わりに利用するようになります。",
+    "有効の場合、Bugzilla はすべてのページが SSL でアクセスされるよう、" _
+    "HTTP でのアクセスを HTTPS へ <var>sslbase</var> パラメータを元にリダイレクトします。" _
+    "また、配信されるメールにおいても Bugzilla は <var>sslbase</var> を " _
+    "<var>urlbase</var> の代わりに利用するようになります。",
 
-  cookiepath => "$terms.Bugzilla のクッキーを利用できる範囲を制限するための、ウェブ" _
+  cookiepath => "Bugzilla のクッキーを利用できる範囲を制限するための、ウェブ" _
                 "サイトのルートに対する相対パスです。通常、これはあなたの URL の" _
                 "ベースの部分となり、/ (単一のスラッシュ) から始まります。" _
-                "たとえば、$terms.Bugzilla が 'http://www.somedomain.com/bugzilla/'" _
+                "たとえば、Bugzilla が 'http://www.somedomain.com/bugzilla/'" _
                 "で提供されているなら、このパラメータは /bugzilla/ となるべきです。" _
                 "/ に設定すると、同じウェブサーバか同じ仮想ホストで提供されている" _
-                "すべてのサービスに $terms.Bugzilla クッキーが公開されます。",
+                "すべてのサービスに Bugzilla クッキーが公開されます。",
 
 } %]

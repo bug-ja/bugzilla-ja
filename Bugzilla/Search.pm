@@ -307,7 +307,8 @@ use constant OPERATOR_FIELD_OVERRIDE => {
         _non_changed => \&_product_nonchanged,
     },
     tag => MULTI_SELECT_OVERRIDE,
-    
+    comment_tag => MULTI_SELECT_OVERRIDE,
+
     # Timetracking Fields
     deadline => { _non_changed => \&_deadline },
     percentage_complete => {
@@ -656,12 +657,7 @@ sub REPORT_COLUMNS {
     # or simply don't work with the current reporting system.
     my @no_report_columns = 
         qw(bug_id alias short_short_desc opendate changeddate
-           flagtypes.name keywords relevance);
-
-    # Multi-select fields are not currently supported.
-    my @multi_selects = @{Bugzilla->fields(
-        { obsolete => 0, type => FIELD_TYPE_MULTI_SELECT })};
-    push(@no_report_columns, map { $_->name } @multi_selects);
+           flagtypes.name relevance);
 
     # If you're not a time-tracker, you can't use time-tracking
     # columns.
@@ -1233,9 +1229,12 @@ sub _standard_joins {
     push(@joins, $security_join);
 
     if ($user->id) {
-        $security_join->{extra} =
-            ["NOT (" . $user->groups_in_sql('security_map.group_id') . ")"];
-            
+        # See also _standard_joins for the other half of the below statement
+        if (!Bugzilla->params->{'or_groups'}) {
+            $security_join->{extra} =
+                ["NOT (" . $user->groups_in_sql('security_map.group_id') . ")"];
+        }
+
         my $security_cc_join = {
             table => 'cc',
             as    => 'security_cc',
@@ -1309,10 +1308,17 @@ sub _standard_where {
     # until their group controls are set. So if a bug has a NULL creation_ts,
     # it shouldn't show up in searches at all.
     my @where = ('bugs.creation_ts IS NOT NULL');
-    
-    my $security_term = 'security_map.group_id IS NULL';
 
     my $user = $self->_user;
+    my $security_term = '';
+    # See also _standard_joins for the other half of the below statement
+    if (Bugzilla->params->{'or_groups'}) {
+        $security_term .= " (security_map.group_id IS NULL OR security_map.group_id IN (" . $user->groups_as_string . "))";
+    }
+    else {
+        $security_term = 'security_map.group_id IS NULL';
+    }
+
     if ($user->id) {
         my $userid = $user->id;
         # This indentation makes the resulting SQL more readable.
@@ -1992,10 +1998,17 @@ sub _quote_unless_numeric {
     my $numeric_field = $self->_chart_fields->{$field}->is_numeric;
     my $numeric_value = ($value =~ NUMBER_REGEX) ? 1 : 0;
     my $is_numeric = $numeric_operator && $numeric_field && $numeric_value;
+
+    # These operators are really numeric operators with numeric fields.
+    $numeric_operator = grep { $_ eq $operator } keys %{ SIMPLE_OPERATORS() };
+
     if ($is_numeric) {
         my $quoted = $value;
         trick_taint($quoted);
         return $quoted;
+    }
+    elsif ($numeric_field && !$numeric_value && $numeric_operator) {
+        ThrowUserError('number_not_numeric', { field => $field, num => $value });
     }
     return Bugzilla->dbh->quote($value);
 }
@@ -2855,6 +2868,13 @@ sub _multiselect_table {
         return "attachments INNER JOIN attach_data "
                . " ON attachments.attach_id = attach_data.id"
     }
+    elsif ($field eq 'comment_tag') {
+        $args->{_extra_where} = " AND longdescs.isprivate = 0"
+            if !$self->_user->is_insider;
+        $args->{full_field} = 'longdescs_tags.tag';
+        return "longdescs INNER JOIN longdescs_tags".
+               " ON longdescs.comment_id = longdescs_tags.comment_id";
+    }
     my $table = "bug_$field";
     $args->{full_field} = "bug_$field.value";
     return $table;
@@ -2863,9 +2883,10 @@ sub _multiselect_table {
 sub _multiselect_term {
     my ($self, $args, $not) = @_;
     my ($operator) = $args->{operator};
+    my $value = $args->{value} || '';
     # 'empty' operators require special handling
     return $self->_multiselect_isempty($args, $not)
-        if $operator =~ /^is(not)?empty$/;
+        if ($operator =~ /^is(not)?empty$/ || $value eq '---');
     my $table = $self->_multiselect_table($args);
     $self->_do_operator_function($args);
     my $term = $args->{term};

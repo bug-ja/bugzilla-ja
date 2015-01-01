@@ -29,13 +29,17 @@
 <hr>
 
 <p style="font-size:smaller">
- 複数の [% terms.bugs %] を変更する:</p>
 <ol style="font-size:smaller">
+</ol>
+<div class="bz_info">
+  複数の [% terms.bugs %] を変更する
+  <ol>
   <li>変更したい [% terms.bugs %] を選択してください。</li>
   <li>行う変更を下のフォームに入力してください。
     変更に説明が必要なものがあれば、コメントボックスに入れてください。</li>
   <li><em>実行</em> ボタンを押してください。</li>
-</ol>
+  </ol>
+</div>
 
 <table id="form">
   <tr>
@@ -258,11 +262,11 @@
 
   [% IF Param('usestatuswhiteboard') %]
     <tr>
-      <td align="right">
-        <b>ステータスホワイトボード:</b>
-      </td>
+      <th>
+        <label for="status_whiteboard">ステータスホワイトボード:</label>
+      </th>
       <td colspan="7">
-        <input name="status_whiteboard" 
+        <input name="status_whiteboard" id="status_whiteboard"
                value="[% dontchange FILTER html %]" size="60">
       </td>
     </tr>
@@ -287,7 +291,7 @@
 [% IF user.is_insider %]
   <input type="checkbox" name="comment_is_private" value="1"
          id="newcommentprivacy"
-         onClick="updateCommentTagControl(this, form)"/>
+         onClick="updateCommentTagControl(this, form)">
    <label for="newcommentprivacy">
      コメントをプライベートにします
      (<strong>[% Param('insidergroup') FILTER html %]</strong> 
@@ -317,23 +321,23 @@
   </script>
 
   <b>グループ:</b><br>
-  <table border="1">
+  <table id="groups_edit_multiple">
     <tr>
-      <th>この<br>グループ<br>から [% terms.bugs %] を<br>除く</th>
-      <th>この<br>グループ<br>に [% terms.bugs %] を<br>追加する</th>
-      <th>グループ名:</th>
+      <th class="narrow_column">このグループを [% terms.bugs %] から除く</th>
+      <th class="narrow_column">このグループを [% terms.bugs %] に追加する</th>
+      <th>グループ名</th>
     </tr>
 
     [% FOREACH group = groups %]
     <tr>
-      <td align="center">
+      <td class="center">
         <input type="checkbox" name="defined_groups" 
                id="defined_group_[% group.id %]"
                value="[% group.name FILTER html %]"
                onchange="turn_off(this, 'group_[% group.id %]')">
       </td>
       [% IF group.is_active %]
-        <td align="center">
+        <td class="center">
           <input type="checkbox" name="groups" 
                  id="group_[% group.id FILTER html %]"
                  value="[% group.name FILTER html %]"
@@ -355,7 +359,7 @@
   </table>
 
   [% IF foundinactive %]
-    <p style="font-size:smaller">(注: [% terms.Bugs %] は [% FILTER inactive %]無効なグループ[% END %]
+    <p class="bz_info">(注: [% terms.Bugs %] は [% FILTER inactive %]無効なグループ[% END %]
     には追加できません。削除のみ可能です。)</p>
   [% END %]
 

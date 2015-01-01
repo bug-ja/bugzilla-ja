@@ -432,15 +432,53 @@
 
         </section>
 
-        <section id="param-dependency-graphs">
-          <title>依存グラフ</title>
+        <section id="param-graphs">
+          <title>グラフ</title>
           <para>
-            このページでは、依存グラフを生成するための Web Dot サーバの場所か、
-            ローカルの Web Dot バイナリの場所を設定する一つのパラメータがあります。
-            Web Dot は <filename>.dot</filename> グラフ定義ファイルから画像を生成する、
-            CGI プログラムです。もし、Web Dot さーばもしくはバイナリが指定されなければ、
-            依存グラフは表示されません。
+            このページではグラフの生成についてのパラメータを設定します。
           </para>
+
+          <variablelist>
+
+          <varlistentry>
+            <term>
+              webdotbase
+            </term>
+            <listitem>
+              <para>
+                このパラメータは依存グラフを生成するための Web Dot サーバもしくは
+                ローカルの Web Dot ソフトを指定します。
+                Web Dot は <filename>.dot</filename> グラフ定義ファイルから画像を
+                生成する CGI プログラムです。Web Dot サーバかソフトが指定されなければ、
+                依存グラフは生成されません。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          <varlistentry>
+            <term>
+              font_file
+            </term>
+            <listitem>
+              <para>
+                チャートやグラフで利用される、文字のための TrueType フォントを指定
+                します。Unicode の基本多言語面 (BMP) のすべての言語をサポートしている、
+                Unifont が推奨されています。Linux では
+                <filename>/usr/share/fonts/TTF/unifont/unifont-6.3.20131006.ttf</filename>
+                に、Windows では
+                <filename>C:\Windows\Fonts\unifont-6.3.20131006.ttf</filename>.
+                にあります。
+              </para>
+              <para>
+                このフォントがシステムになければ、
+                <ulink url="http://unifoundry.com/unifont.html">Unifoundry.com</ulink>
+                からダウンロードして上記の場所にインストールしてください。
+                このフォントは無料でどのオペレーティングシステムにもインストール可能です。
+              </para>
+            </listitem>
+          </varlistentry>
+
+          </variablelist>
         </section>
 
         <section id="param-group-security">

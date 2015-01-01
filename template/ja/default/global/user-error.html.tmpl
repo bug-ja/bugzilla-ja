@@ -324,6 +324,8 @@
       classification
     [% ELSIF object == "components" %]
       [% jawords.component FILTER html %]
+    [% ELSIF object == "comment_tags" %]
+      コメントタグ
     [% ELSIF object == "custom_fields" %]
       [% jawords.custom_field FILTER html %]
     [% ELSIF object == "field_values" %]
@@ -439,7 +441,7 @@
     [% ELSE %]
       [%+ field_descs.see_also FILTER html %] URL は以下のうちの一つでなくてはなりません:
       <ul>
-        <li>[% terms.Bugzilla %]
+        <li>Bugzilla 
           サイトの <code>show_bug.cgi</code></li>
         <li>launchpad.net の b[% %]ug</li>
         <li>code.google.com の issue</li>
@@ -502,6 +504,24 @@
     [% title = BLOCK %] [% jawords.bug_comment FILTER html %] が長すぎます [% END %]
     [% jawords.bug_comment FILTER html %] は 
     [%+ constants.MAX_COMMENT_LENGTH FILTER html %] 文字以上にはできません。
+
+  [% ELSIF error == "comment_tag_disabled" %]
+    [% title = "コメントのタグ付けは無効です" %]
+    コメントのタグ付け機能は無効です。
+
+  [% ELSIF error == "comment_tag_invalid" %]
+    [% title = "無効なコメントタグ" %]
+    コメントタグ "[% tag FILTER html %]" は無効な文字か単語を含んでいます。
+
+  [% ELSIF error == "comment_tag_too_long" %]
+    [% title = "コメントタグが長すぎます" %]
+    コメントタグは
+    [%+ constants.MAX_COMMENT_TAG_LENGTH FILTER html %] 文字以上にはできません。
+
+  [% ELSIF error == "comment_tag_too_short" %]
+    [% title = "コメントタグが短すぎます" %]
+    コメントタグは最低でも
+    [%+ constants.MIN_COMMENT_TAG_LENGTH FILTER html %] 文字なければいけません。
 
   [% ELSIF error == "auth_classification_not_enabled" %]
     [% title = BLOCK %] 指定された classification は無効です [% END %]
@@ -656,7 +676,7 @@
 
   [% ELSIF error == "feature_disabled" %]
     [% install_string("feature_$feature") FILTER html %] 機能はこの
-    [% terms.Bugzilla %] では有効ではありません。
+    Bugzilla では有効ではありません。
     [% IF user.in_group('admin') %]
       この機能を有効にするには、 <kbd>checksetup.pl</kbd> を実行し
       必要要件を満たすように設定してください。
@@ -811,6 +831,7 @@
     [%# Hack to get the max value between both limits %]
     [%+ max_limit.nsort.last FILTER html %] KB を超えることはできません。<br />
     ファイルをウェブのどこかに保存して、
+    "貼り付けたテキストを添付ファイルとする" リンクをクリックして表示される、
     ファイルの URL を添付作成ページのテキストフィールドに入力してください。
     <br>もしくは、ファイルが画像ファイルなら、圧縮形式、
     たとえば JPG や PNG などの形式に変換してもう一度試してください。
@@ -911,6 +932,16 @@
     [% title = "フラグタイプを編集できません" %]
     フラグタイプ '[% flagtype.name FILTER html %]' の属性を編集できません。
     このフラグタイプはあなたが管理できるプロダクトに対しては提供されていません。
+
+  [% ELSIF error == "flag_not_unique" %]
+    [% title = "フラグが重複しています" %]
+    フラグ名 '[% value FILTER html %]' は複数回設定されています。
+    このフラグを更新するには ID を指定してください。
+
+  [% ELSIF error == "flag_type_not_unique" %]
+    [% title = "フラグ型が一意でありません" %]
+    フラグ型 '[% value FILTER html %]' は複数のフラグ型に合致します。
+    フラグを更新もしくは追加するには ID を指定してください。
 
   [% ELSIF error == "flag_type_not_multiplicable" %]
     [% docslinks = {'flags-overview.html' => 'フラグについて',
@@ -1051,9 +1082,9 @@
 
   [% ELSIF error == "illegal_date" %]
     [% title = BLOCK %] 指定された [% jawords.search_date FILTER html %] は無効です [% END %]
-    '<tt>[% date FILTER html %]</tt>' は有効な [% jawords.date FILTER html %] ではありません。
+    '<kbd>[% date FILTER html %]</kbd>' は有効な [% jawords.date FILTER html %] ではありません。
     [% IF format %]
-      '<tt>[% format FILTER html %]</tt>' の形式で入力してください。
+      '<code>[% format FILTER html %]</code>' の形式で入力してください。
     [% END %]
     
   [% ELSIF error == "illegal_email_address" %]
@@ -1103,9 +1134,9 @@
 
   [% ELSIF error == "illegal_time" %]
     [% title = BLOCK %] 指定された時刻は無効です [% END %]
-    '<tt>[% time FILTER html %]</tt>' は有効な [% jawords.search_time FILTER html %] ではありません。
+    '<kbd>[% time FILTER html %]</kbd>' は有効な [% jawords.search_time FILTER html %] ではありません。
     [% IF format %]
-      '<tt>[% format FILTER html %]</tt>' の形式で入力してください。
+      '<code>[% format FILTER html %]</code>' の形式で入力してください。
     [% END %]
 
   [% ELSIF error == "illegal_regexp" %]
@@ -1226,11 +1257,11 @@
 
   [% ELSIF error == "invalid_username" %]
     [% title = BLOCK %] [% jawords.account_login_name FILTER html %] が無効です [% END %]
-    <tt>[% name FILTER html %]</tt> は有効な [% jawords.account_login_name FILTER html %] ではありません。
+    <kbd>[% name FILTER html %]</kbd> は有効な [% jawords.account_login_name FILTER html %] ではありません。
     [% jawords.account_login_name FILTER html %] を間違えているか、まだ [% terms.Bugzilla %]
     アカウントを作成していない可能性があります。
 
-  [% ELSIF error == "invalid_username_or_password" %]
+  [% ELSIF error == "invalid_login_or_password" %]
     [% title = BLOCK %] ログイン名、もしくはパスワードが無効です [% END %]
     指定されたログイン名、もしくはパスワードが無効です。
     [%# People get two login attempts before being warned about
@@ -1316,7 +1347,7 @@
 
   [% ELSIF error == "migrate_from_invalid" %]
     '[% from FILTER html %]' は、移行元の [% terms.bug %] 
-    追跡システムとして有効ではありません。<kbd>B[% %]ugzilla/Migrate/</kbd>
+    追跡システムとして有効ではありません。<kbd>Bugzilla/Migrate/</kbd>
     ディレクトリが有効な移行元の [% terms.bug %] 追跡システムですのリスト。
 
   [% ELSIF error == "milestone_already_exists" %]
@@ -1706,7 +1737,7 @@
 
   [% ELSIF error == "quicksearch_unbalanced_quotes" %]
     [% title = "形式エラーのクエリ" %]
-    [% terms.Bugzilla %] はあなたのクエリを正常に解釈できませんでした:
+    Bugzilla はあなたのクエリを正常に解釈できませんでした:
     <em>[% string FILTER html %]</em><br>
     文字列を囲むのに引用符を利用している場合、両側ともあることを確認してください。
     文字列の中に引用符を含む場合は " でなく \" としてください。たとえば、
@@ -1805,7 +1836,7 @@
     [% jawords.search_content_field FILTER html %] を利用したときのみ利用可能です。
 
   [% ELSIF error == "search_grouped_field_invalid" %]
-    [% terms.Bugzilla %] では
+    Bugzilla では
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
     フィールドをグループ化した検索条件に利用できません。
 
@@ -1819,7 +1850,7 @@
     "[%+ field_descs.$field FILTER html %]" ([% field FILTER html %])
     フィールドを検索条件 "[% search_descs.$operator FILTER html %]" 
     ([% operator FILTER html %]) で利用することは
-    [% terms.Bugzilla %] ではサポートされていません。
+    Bugzilla ではサポートされていません。
 
   [% ELSIF error == "see_also_self_reference" %]
     [%+ field_descs.see_also FILTER html %] フィールド自身にこの
@@ -1983,12 +2014,12 @@
 
   [% ELSIF error == "user_match_failed" %]
     [% title = BLOCK %] [% jawords.login_name FILTER html %] が一致しませんでした [% END %]
-    <tt>[% name FILTER html %]</tt> は登録されていないか、
+    <kbd>[% name FILTER html %]</kbd> は登録されていないか、
     あなたのアカウントにこの [% jawords.user FILTER html %] を閲覧する権限がありません。
 
   [% ELSIF error == "user_match_too_many" %]
     [% title = "すべてに合致するエントリはありません" %]
-    [% terms.Bugzilla %] は [% fields.join(', ') FILTER html %] フィールドに入力された、
+    Bugzilla は [% fields.join(', ') FILTER html %] フィールドに入力された、
     ひとつ以上の名前・メールアドレスのすべてに合致するエントリを見つけられませんでした。
 
   [% ELSIF error == "user_not_insider" %]
@@ -2086,15 +2117,11 @@
    admindocslinks = admindocslinks
 %]
 
-<table cellpadding="20">
-  <tr>
-    <td id="error_msg" class="throw_error">
-      [% error_message FILTER none %]
-    </td>
-  </tr>
-</table>
+<div id="error_msg" class="throw_error">
+  [% error_message FILTER none %]
+</div>
 
-<p>
+<p id="post_err_msg">
   <b>戻るボタン</b> を利用し、再試行してください。
 </p>
 

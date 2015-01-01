@@ -17,54 +17,16 @@
    style_urls = [ 'skins/standard/index.css' ]
 %]
 
-
-<script type="text/javascript">
-<!--
-function onLoadActions() {
-  quicksearchHelpText('quicksearch_main', 'show');
-  if( window.external.AddSearchProvider ){
-    YAHOO.util.Dom.removeClass('quicksearch_plugin', 'bz_default_hidden');
-  }
-  document.getElementById('quicksearch_top').focus();
-}
-var quicksearch_message = "[% terms.abug %] # もしくは検索語を入力";
-
-function checkQuicksearch( form ) {
-  if (form.quicksearch.value == '' || form.quicksearch.value == quicksearch_message ) { 
-    alert('Please enter one or more search terms first.');
-    return false; 
-  }
-  return true;         
-}
-
-function quicksearchHelpText(el_id, action){
-  var el = document.getElementById(el_id);
-  if ( action == "show") {
-    if( el.value == "" ) {
-      el.value = quicksearch_message
-      YAHOO.util.Dom.addClass(el, "quicksearch_help_text");
-    }
-  } else {
-    if( el.value == quicksearch_message ) {
-      el.value = "";
-      YAHOO.util.Dom.removeClass(el, "quicksearch_help_text");
-    }
-  }
-}
-YAHOO.util.Event.onDOMReady(onLoadActions);
-//-->
-</script>
-
 [% IF release %]
   <div id="new_release">
     [% IF release.data %]
       [% IF release.deprecated %]
-        <p>[% terms.Bugzilla %] [%+ release.deprecated FILTER html %] 
+        <p>Bugzilla [%+ release.deprecated FILTER html %] 
         はもはやサポートされていません。
         あなたのシステムの安全性のためにも、アップグレードを強くお勧めします。</p>
       [% END %]
 
-      <p>新しい [% terms.Bugzilla %] のバージョン ([% release.data.latest_ver FILTER html %])
+      <p>新しい Bugzilla のバージョン ([% release.data.latest_ver FILTER html %])
       が
       <a href="[% release.data.url FILTER html %]">[% release.data.url FILTER html %]</a>
       から利用可能です。<br>
@@ -105,73 +67,106 @@ YAHOO.util.Event.onDOMReady(onLoadActions);
 [% END %]
 
 <div id="page-index">
-  <table>
-    <tr>
-      <td>
-        <h1 id="welcome">[% terms.Bugzilla %] へようこそ</h1>
-        <div class="intro">[% Hook.process('intro') %]</div>
+  <h1 id="welcome">[% terms.Bugzilla %] へようこそ</h1>
+  <div class="intro">[% Hook.process('intro') %]</div>
 
-        <div class="bz_common_actions">
-          <ul>
-            <li>
-              <a id="enter_bug" href="enter_bug.cgi"><span>
-              [%= terms.aBug %] を登録</span></a>
-            </li>
-            <li>
-              <a id="query" href="query.cgi"><span>検索</span></a>
-            </li>
-            <li>
-              <a id="account"
-                 [% IF user.id %]
-                   href="userprefs.cgi"><span>ユーザ設定</span></a>
-                 [% ELSIF Param('createemailregexp')
-                          && user.authorizer.user_can_create_account 
-                 %]
-                   href="createaccount.cgi"><span>新規アカウント作成</span></a>
-                 [% ELSE %]
-                   href="?GoAheadAndLogIn=1"><span>ログイン</span></a>
-                 [% END %]
-            </li>
-          </ul>
-        </div>
+  <div class="bz_common_actions">
+    <ul>
+      <li>
+        <a id="enter_bug" href="enter_bug.cgi"><span>[% terms.aBug %] を登録</span></a>
+      </li>
+      <li>
+        <a id="query" href="query.cgi"><span>検索</span></a>
+      </li>
+      <li>
+        <a id="account"
+           [% IF user.id %]
+             href="userprefs.cgi"><span>ユーザ設定</span></a>
+           [% ELSIF Param('createemailregexp')
+                    && user.authorizer.user_can_create_account 
+           %]
+             href="createaccount.cgi"><span>新規アカウント作成</span></a>
+           [% ELSE %]
+             href="?GoAheadAndLogIn=1"><span>ログイン</span></a>
+           [% END %]
+      </li>
+      [% IF Param("docs_urlbase") %]
+        <li>
+          <a id="help" href="[% docs_urlbase FILTER html %]using.html"><span>ドキュメント</span></a>
+        </li>
+      [% END %]
+    </ul>
+  </div>
 
-        <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi"
-              onsubmit="return checkQuicksearch(this);">
-          <div>
-            <input id="quicksearch_main" type="text" name="quicksearch"
-              title="簡易検索"
-              onfocus="quicksearchHelpText(this.id, 'hide');"
-              onblur="quicksearchHelpText(this.id, 'show');"
-            >
-            <input id="find" type="submit" value="簡易検索">
-            <ul class="additional_links" id="quicksearch_links">
-              <li>
-                <a href="page.cgi?id=quicksearch.html">簡易検索ヘルプ</a>
-              </li>
-              <li class="bz_default_hidden" id="quicksearch_plugin">
-                |
-                <a href="javascript:window.external.AddSearchProvider('[% urlbase FILTER html %]search_plugin.cgi')">
-                 簡易検索プラグインのインストール
-                </a>
-              </li>
-            </ul>
-            <ul class="additional_links">
-              <li>
-                <a href="[% docs_urlbase FILTER html %]using.html">
-                  [%- terms.Bugzilla %] ユーザーズガイド</a>
-              </li>
-              <li>
-                |
-                <a href="page.cgi?id=release-notes.html"> リリースノート</a>
-              </li>
-              [% Hook.process('additional_links') %]
-            </ul>
-          </div>
-        </form>
-        <div class="outro">[% Hook.process('outro') %]</div>
-      </td>
-    </tr>
-  </table>
+  <div>
+    <form id="quicksearchForm" name="quicksearchForm" action="buglist.cgi">
+      <input id="quicksearch_main" name="quicksearch" title="簡易検索"
+             placeholder="[% terms.abug %] # もしくは検索語を入力してください"
+             autofocus required>
+      <input id="find" type="submit" value="簡易検索">
+      <a href="page.cgi?id=quicksearch.html" title="簡易検索ヘルプ">[?]</a>
+    </form>
+
+    <ul class="additional_links">
+      [% Hook.process('additional_links') %]
+    </ul>
+  </div>
+
+  <div id="common_queries">
+    <h4>よく利用される検索:</h4>
+    <ul>
+      [% IF user.id %]
+        <li>
+          [% title = BLOCK %]自分が担当で活動中の [% terms.bugs %][% END %]
+          <a href="buglist.cgi?f1=assigned_to&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---">
+            [% title FILTER html %]</a> ([% assignee_count FILTER html %])
+          <a href="buglist.cgi?f1=assigned_to&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>
+        </li>
+        <li>
+          [% title = BLOCK %]自分が報告した活動中の [% terms.bugs %][% END %]
+          <a href="buglist.cgi?f1=reporter&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---">
+            [% title FILTER html %]</a> ([% reporter_count FILTER html %])
+          <a href="buglist.cgi?f1=reporter&amp;o1=equals&amp;v1=%25user%25&amp;resolution=---&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+             class="rss">&nbsp;</a>
+        </li>
+        [% IF Bugzilla.has_flags %]
+          <li>
+            [% title = BLOCK %]自分に要請されているフラグ[% END %]
+            <a href="request.cgi?action=queue&amp;requestee=[% user.login FILTER uri %]&amp;group=type&amp;do_union=0">
+              [% title FILTER html %]</a> ([% requestee_count FILTER html %])
+            <a href="buglist.cgi?f1=requestees.login_name&amp;o1=equals&amp;v1=%25user%25&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+               class="rss">&nbsp;</a>
+          </li>
+        [% END %]
+      [% END %]
+
+      <li>
+        <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=24h">過去24時間で</a>
+        [% title = BLOCK %]過去24時間で報告された [% terms.Bugs %][% END %]
+        <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=24h&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        | <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=7d">過去7日で</a>
+        [% title = BLOCK %]過去7日で報告された [% terms.Bugs %][% END %]
+        <a href="buglist.cgi?chfield=%5BBug%20creation%5D&amp;chfieldfrom=7d&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        報告された [% terms.Bugs %] 
+      </li>
+      <li>
+        <a href="buglist.cgi?chfieldfrom=24h">過去24時間で</a>
+        [% title = BLOCK %]過去24時間で変更された [% terms.Bugs %][% END %]
+        <a href="buglist.cgi?chfieldfrom=24h&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        | <a href="buglist.cgi?chfieldfrom=7d">過去7日で</a>
+        [% title = BLOCK %]過去7日で変更された [% terms.Bugs %][% END %]
+        <a href="buglist.cgi?chfieldfrom=7d&amp;ctype=atom&amp;title=[% title FILTER uri %]"
+           class="rss">&nbsp;</a>
+        変更された [% terms.Bugs %]
+      </li>
+    </ul>
+  </div>
+
+  <div class="outro">[% Hook.process('outro') %]</div>
 </div>
 
 [% PROCESS global/footer.html.tmpl %]

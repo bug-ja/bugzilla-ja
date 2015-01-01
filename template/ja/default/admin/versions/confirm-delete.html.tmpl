@@ -21,22 +21,22 @@
   style_urls = ['skins/standard/admin.css']
 %]
 
-<table border="1" cellpadding="4" cellspacing="0">
-<tr bgcolor="#6666FF">
-  <th valign="top" class="left">項目</th>
-  <th valign="top" class="left">値</th>
+<table id="admin_table">
+  <tr class="column_header">
+  <th>項目</th>
+  <th>値</th>
 </tr>
 <tr>
-  <td valign="top">バージョン:</td>
-  <td valign="top">[% version.name FILTER html %]</td>
+  <td>バージョン</td>
+  <td>[% version.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">プロダクトのバージョン:</td>
-  <td valign="top">[% product.name FILTER html %]</td>
+  <td>プロダクトのバージョン</td>
+  <td>[% product.name FILTER html %]</td>
 </tr>
 <tr>
-  <td valign="top">[% terms.Bugs %]:</td>
-  <td valign="top">
+  <td>[% terms.Bugs %]</td>
+  <td>
 [% IF version.bug_count %]
   <a title="バージョン [% version.name FILTER html %] が目標の [% terms.bugs %] リスト"
      href="buglist.cgi?version=[% version.name FILTER uri %]&amp;product=

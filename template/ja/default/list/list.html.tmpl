@@ -57,7 +57,6 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  style = style
   atomlink = "buglist.cgi?$urlquerypart&title=$title&ctype=atom" 
   yui = [ 'autocomplete', 'calendar' ]
   javascript_urls = [ "js/util.js", "js/field.js", "js/TUI.js" ]
@@ -84,7 +83,7 @@
   [% END %]
 
   [% IF user.settings.display_quips.value == 'on' %]
-    [% DEFAULT quip = "$terms.Bugzilla はランダムな警句をここに表示しようとしていますが、まだ登録されていません。" %]
+    [% DEFAULT quip = "Bugzilla はランダムな警句をここに表示しようとしていますが、まだ登録されていません。" %]
     <span class="bz_quip">
       <a href="quips.cgi"><em>[% quip FILTER html %]</em></a>
     </span>
@@ -94,7 +93,7 @@
 
 [% IF toolong %]
   <h2 class="bz_smallminded">
-    このリストは [% terms.Bugzilla %] の小さい頭には長すぎます。
+    このリストは Bugzilla の小さい頭には長すぎます。
     次/前/先頭/最後のボタンは各 [% terms.bugs %] 画面には表示されません。
   </h2>
 [% END %]
@@ -173,8 +172,6 @@
   </ul>
 [% END %]
 
-<br>
-
 [%############################################################################%]
 [%# Rest of Change Form                                                      #%]
 [%############################################################################%]
@@ -189,10 +186,9 @@
 [%# Navigation Bar                                                           #%]
 [%############################################################################%]
 
-<table>
-  <tr>
-    [% IF bugs.size > 0 %]
-      <td valign="middle" class="bz_query_buttons">
+  [% IF bugs.size > 0 %]
+    <div class="buglist_menu">
+      <div class="bz_query_buttons">
         <form method="post" action="show_bug.cgi">
           [% id = buglist.join(",") %]
           <input type="hidden" name="id" value="[% id FILTER html %]">
@@ -214,19 +210,18 @@
             <input type="submit" id="timesummary" value="時間の要約">
           </form>
           [% IF time_summary_limited %]
-            <small>
+            <span class="bz_info">
               時間の要約は上に表示されている [% terms.bugs %] のみ含んでいます。
               検索で見つかったすべての [% terms.bugs %] に対する時間を見る場合、
               <a href="buglist.cgi?[% urlquerypart FILTER html %]
                        [%- "&order=$qorder" FILTER html IF order %]&limit=0">
-                すべての検索結果を表示</a> してください。</small>
+                すべての検索結果を表示</a> してください。
+            </span>
           [% END %]
         [% END %]
-      </td>
-      
-      <td>&nbsp;</td>
-      
-      <td valign="middle" class="bz_query_links">
+      </div>
+
+      <div class="bz_query_links">
         <a href="buglist.cgi?
         [% urlquerypart FILTER html %]&amp;ctype=csv&amp;human=1">CSV</a> |
         <a href="buglist.cgi?
@@ -252,25 +247,21 @@
 
         [%# Links to more things users can do with this bug list. %]
         [% Hook.process("links") %]
-      </td>
-    [% END %]
-    
-    <td valign="middle" class="bz_query_edit">
+      </div>
+
+      <div class="bz_query_edit">
       <a href="[% PROCESS edit_search_url %]">検索条件の編集</a>
-    </td>
-      
-    [% IF searchtype == "saved" %]
-      <td valign="middle" nowrap="nowrap" class="bz_query_forget">
-        |
-        <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
+      </div>
+
+      [% IF searchtype == "saved" %]
+        <div class="bz_query_forget">
+          | <a href="buglist.cgi?cmdtype=dorem&amp;remaction=forget&amp;namedcmd=
                 [% searchname FILTER uri %]&amp;token=
                 [% issue_hash_token([search_id, searchname]) FILTER uri %]">検索条件を削除する'
                 [% searchname FILTER html %]'</a>
-      </td>
-    [% ELSE %]
-      <td>&nbsp;</td>
-      
-      <td valign="middle" class="bz_query_remember">
+        </div>
+      [% ELSE %]
+        <div class="bz_query_remember">
         <form method="get" action="buglist.cgi">
           <input type="text" id="save_newqueryname" name="newqueryname" size="20"
                  title="新しい検索条件名" value="[% defaultsavename FILTER html %]"> として
@@ -281,10 +272,10 @@
           <input type="hidden" name="remtype" value="asnamed">
           <input type="hidden" name="token" value="[% issue_hash_token(['savedsearch']) FILTER html %]">
         </form> 
-      </td>
-    [% END %]  
-  </tr>
-</table>
+        </div>
+      [% END %]  
+    </div>
+  [% END %]
 
 [% IF one_product.defined && bugs.size %]
   <p class="bz_query_single_product">
@@ -313,9 +304,14 @@
 [% BLOCK enter_bug_link %]
   <a href="enter_bug.cgi
            [%- IF one_product.defined %]?product=
-             [%- one_product.name FILTER uri %][% END %]">
+             [%- one_product.name FILTER uri %]
+             [%- IF one_component.defined %]&amp;component=
+               [%- one_component FILTER uri %][% END %][% END %]">
      [% IF one_product.defined %]
-       "[% one_product.name FILTER html %]" プロダクトへ
+       "[% one_product.name FILTER html %]" プロダクト
+       [% IF one_component.defined %]
+         の "[% one_component FILTER html %]" コンポーネント
+       [% END %]へ
      [% END %]
      新規 [% terms.bug %] の登録
    </a>

@@ -48,6 +48,18 @@ table#flags td {
   background-color: #f0f0f0;
   border: 1px solid black;
   text-align: left;
+  padding: 0.2em;
+}
+
+.section_head .link_here {
+  float: right;
+  padding-left: 1em;
+  padding-right: 0.5em;
+}
+
+.lines_count a {
+  padding-left: 0.5em;
+  padding-right: 1em;
 }
 
 table.file_table {
@@ -108,10 +120,7 @@ table.attachment_info td {
     padding-bottom: 0.4em;
 }
 
-#attachment_attributes label,
-#attachment_attributes span.label,
-#attachment_actions span.label
-{
+#attachment_attributes label {
     font-weight: bold;
 }
 
@@ -210,8 +219,25 @@ div#update_container {
     margin-left: 2%;
 }
 
-.viewall_frame {
+.viewall_frame_container {
     width: 75%;
+    margin: 2em auto;
+}
+
+.viewall_desc {
+    width: 100%;
+    border: 1px solid black;
+    border-spacing: 0px;
+    border-collapse: collapse;
+}
+
+.viewall_desc th, .viewall_desc td {
+    border: 1px solid black;
+    padding: 0.3em;
+}
+
+.viewall_frame {
+    width: 100%;
     height: 350px;
 }
 

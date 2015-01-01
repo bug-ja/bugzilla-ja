@@ -23,7 +23,7 @@
                                'data/mailer.testfile' に送信されずに保存されます。
                              </li>
                              <li>
-                               'none' は完全にメールを無効にします。$terms.Bugzilla
+                               'none' は完全にメールを無効にします。Bugzilla
                                はメールを送信するかのように動作しますが、
                                一切送信も保存も行われません。
                              </li>
@@ -32,14 +32,14 @@
   mailfrom => "$terms.Bugzilla メールデーモンが利用するメールアドレスです。" _
               "いくつかのメールシステムでは有効なメールアドレスである必要があります。",
 
-  use_mailer_queue => "大規模 $terms.Bugzilla サイトでは、$terms.bugs"
-    _ " の更新が非常に遅いことがありえます。これは、$terms.Bugzilla"
+  use_mailer_queue => "大規模 Bugzilla サイトでは、$terms.bugs"
+    _ " の更新が非常に遅いことがありえます。これは、Bugzilla"
     _ "がメールを一度に送ろうとすることによります。このパラメータを有効にすれば、"
-    _ "$terms.Bugzilla はメールをいったんキューに入れ、バックグラウンドで送信します。"
+    _ "Bugzilla はメールをいったんキューに入れ、バックグラウンドで送信します。"
     _ "この機能には、必要とされる Perl モジュール (<kbd>checksetup.pl</kbd>"
     _ "を参照) をインストールする必要があり、また <kbd>jobqueue.pl</kbd>"
     _ "デーモンを走らせる必要があります。(走らせない場合はメールが送信されません。)"
-    _ "この機能は、$terms.bug の更新に限らないすべての $terms.Bugzilla"
+    _ "この機能は、$terms.bug の更新に限らないすべての Bugzilla"
     _ "のメール送信に影響します。",
 
   smtpserver => "SMTP サーバアドレス (SMTP を選択した場合)",
@@ -52,7 +52,7 @@
 
   smtp_ssl => "SMTP で SSL を有効にします。",
 
-  smtp_debug => "有効なら、ウェブサーバのエラーログに $terms.Bugzilla と SMTP サーバ間" _
+  smtp_debug => "有効なら、ウェブサーバのエラーログに Bugzilla と SMTP サーバ間" _
                 "の詳細な通信ログが出力されます。メールに関する問題の解決のために" _
                 "この情報が有用でしょう。",
 

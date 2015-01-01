@@ -65,6 +65,22 @@ sub _rest_resources {
                 }
             }
         },
+        qr{^/bug/comment/tags/([^/]+)$}, {
+            GET => {
+                method => 'search_comment_tags',
+                params => sub {
+                    return { query => $_[0] };
+                },
+            },
+        },
+        qr{^/bug/comment/([^/]+)/tags$}, {
+            PUT => {
+                method => 'update_comment_tags',
+                params => sub {
+                    return { comment_id => $_[0] };
+                },
+            },
+        },
         qr{^/bug/([^/]+)/history$}, {
             GET => {
                 method => 'history',
@@ -135,7 +151,23 @@ sub _rest_resources {
                 }
             }
         },
-
+        qr{^/flag_types/([^/]+)/([^/]+)$}, {
+            GET => {
+                method => 'flag_types',
+                params => sub {
+                    return { product   => $_[0],
+                             component => $_[1] };
+                }
+            }
+        },
+        qr{^/flag_types/([^/]+)$}, {
+            GET => {
+                method => 'flag_types',
+                params => sub {
+                    return { product => $_[0] };
+                }
+            }
+        }
     ];
     return $rest_resources;
 }

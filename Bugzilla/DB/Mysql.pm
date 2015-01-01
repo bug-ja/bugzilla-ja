@@ -58,6 +58,18 @@ sub new {
         mysql_auto_reconnect => 1,
     );
     
+    # MySQL SSL options
+    my ($ssl_ca_file, $ssl_ca_path, $ssl_cert, $ssl_key) =
+        @$params{qw(db_mysql_ssl_ca_file db_mysql_ssl_ca_path
+                    db_mysql_ssl_client_cert db_mysql_ssl_client_key)};
+    if ($ssl_ca_file || $ssl_ca_path || $ssl_cert || $ssl_key) {
+        $attrs{'mysql_ssl'}             = 1;
+        $attrs{'mysql_ssl_ca_file'}     = $ssl_ca_file if $ssl_ca_file;
+        $attrs{'mysql_ssl_ca_path'}     = $ssl_ca_path if $ssl_ca_path;
+        $attrs{'mysql_ssl_client_cert'} = $ssl_cert    if $ssl_cert;
+        $attrs{'mysql_ssl_client_key'}  = $ssl_key     if $ssl_key;
+    }
+
     my $self = $class->db_new({ dsn => $dsn, user => $user, 
                                 pass => $pass, attrs => \%attrs });
 
@@ -94,6 +106,10 @@ sub new {
     # Allow large GROUP_CONCATs (largely for inserting comments 
     # into bugs_fulltext).
     $self->do('SET SESSION group_concat_max_len = 128000000');
+
+    # MySQL 5.5.2 and older have this variable set to true, which causes
+    # trouble, see bug 870369.
+    $self->do('SET SESSION sql_auto_is_null = 0');
 
     return $self;
 }

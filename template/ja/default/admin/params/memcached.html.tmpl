@@ -1,0 +1,22 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+[%
+   title = "Memcached"
+   desc = "Memcached 統合の設定"
+%]
+
+[% param_descs = {
+    memcached_servers =>
+      "このオプションが有効な場合、Bugzilla は Memcached を利用します。" _
+      "空白区切りの一つ以上のサーバを hostname:port 形式 (たとえば" _
+      " 127.0.0.1:11211) 出設定します。",
+
+    memcached_namespace =>
+      "Memcached 上で利用するキーにつけるプレフィックスを指定します。",
+  }
+%]

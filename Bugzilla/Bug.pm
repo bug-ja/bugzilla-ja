@@ -71,6 +71,7 @@ sub DB_COLUMNS {
         bug_status
         cclist_accessible
         component_id
+        creation_ts
         delta_ts
         estimated_time
         everconfirmed
@@ -89,7 +90,6 @@ sub DB_COLUMNS {
         version
     ),
     'reporter    AS reporter_id',
-    $dbh->sql_date_format('creation_ts', '%Y.%m.%d %H:%i') . ' AS creation_ts',
     $dbh->sql_date_format('deadline', '%Y-%m-%d') . ' AS deadline',
     @custom_names);
     
@@ -353,9 +353,9 @@ sub initialize {
     $_[0]->_create_cf_accessors();
 }
 
-sub cache_key {
+sub object_cache_key {
     my $class = shift;
-    my $key = $class->SUPER::cache_key(@_)
+    my $key = $class->SUPER::object_cache_key(@_)
       || return;
     return $key . ',' . Bugzilla->user->id;
 }
@@ -3416,7 +3416,8 @@ sub comments {
             $comment->{count} = $count++;
             $comment->{bug} = $self;
         }
-        Bugzilla::Comment->preload($self->{'comments'});
+        # Some bugs may have no comments when upgrading old installations.
+        Bugzilla::Comment->preload($self->{'comments'}) if $count;
     }
     my @comments = @{ $self->{'comments'} };
 
@@ -3822,7 +3823,7 @@ sub _bugs_in_order {
 # Get the activity of a bug, starting from $starttime (if given).
 # This routine assumes Bugzilla::Bug->check has been previously called.
 sub get_activity {
-    my ($self, $attach_id, $starttime) = @_;
+    my ($self, $attach_id, $starttime, $include_comment_tags) = @_;
     my $dbh = Bugzilla->dbh;
     my $user = Bugzilla->user;
 
@@ -3834,7 +3835,7 @@ sub get_activity {
     if (defined $starttime) {
         trick_taint($starttime);
         push (@args, $starttime);
-        $datepart = "AND bugs_activity.bug_when > ?";
+        $datepart = "AND bug_when > ?";
     }
 
     my $attachpart = "";
@@ -3854,7 +3855,7 @@ sub get_activity {
 
     my $query = "SELECT fielddefs.name, bugs_activity.attach_id, " .
         $dbh->sql_date_format('bugs_activity.bug_when', '%Y.%m.%d %H:%i:%s') .
-            ", bugs_activity.removed, bugs_activity.added, profiles.login_name, 
+            " AS bug_when, bugs_activity.removed, bugs_activity.added, profiles.login_name,
                bugs_activity.comment_id
           FROM bugs_activity
                $suppjoins
@@ -3865,8 +3866,42 @@ sub get_activity {
          WHERE bugs_activity.bug_id = ?
                $datepart
                $attachpart
-               $suppwhere
-      ORDER BY bugs_activity.bug_when, bugs_activity.id";
+               $suppwhere ";
+
+    if (Bugzilla->params->{'comment_taggers_group'}
+        && $include_comment_tags
+        && !$attach_id)
+    {
+        # Only includes comment tag activity for comments the user is allowed to see.
+        $suppjoins = "";
+        $suppwhere = "";
+        if (!Bugzilla->user->is_insider) {
+            $suppjoins = "INNER JOIN longdescs
+                          ON longdescs.comment_id = longdescs_tags_activity.comment_id";
+            $suppwhere = "AND longdescs.isprivate = 0";
+        }
+
+        $query .= "
+            UNION ALL
+            SELECT 'comment_tag' AS name,
+                   NULL AS attach_id," .
+                   $dbh->sql_date_format('longdescs_tags_activity.bug_when', '%Y.%m.%d %H:%i:%s') . " AS bug_when,
+                   longdescs_tags_activity.removed,
+                   longdescs_tags_activity.added,
+                   profiles.login_name,
+                   longdescs_tags_activity.comment_id as comment_id
+              FROM longdescs_tags_activity
+                   INNER JOIN profiles ON profiles.userid = longdescs_tags_activity.who
+                   $suppjoins
+             WHERE longdescs_tags_activity.bug_id = ?
+                   $datepart
+                   $suppwhere
+        ";
+        push @args, $self->id;
+        push @args, $starttime if defined $starttime;
+    }
+
+    $query .= "ORDER BY bug_when, comment_id";
 
     my $list = $dbh->selectall_arrayref($query, undef, @args);
 
@@ -4398,7 +4433,7 @@ Ensures the accessors for custom fields are always created.
 
 =item set_op_sys
 
-=item cache_key
+=item object_cache_key
 
 =item bug_group
 

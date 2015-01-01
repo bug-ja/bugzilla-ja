@@ -26,39 +26,23 @@
   [% numcols = 2 %]
 [% END %]
 
-<table cellpadding="0" cellspacing="0" id="components_header_table">
-  <tr>
-    <td class="instructions">
-      このプロダクトで活動中の [% terms.bugs %] を見たいコンポーネントを選択してください:
-    </td>
-    <td class="product_container">
-      <span class="product_name">[% product.name FILTER html %]</span>
-      <div class="product_desc">
-        [% product.description FILTER html_light %]
-      </div>
-    </td>
-  </tr>
-</table>
+<h1>[% product.name FILTER html %]</h1>
 
-<span class="components_header">コンポーネント</span>
+<div class="product_desc">[% product.description FILTER html_light %]</div>
+<p>このプロダクトで活動中の [% terms.bugs %] を見たいコンポーネントを選択してください。</p>
 
-<table summary="Components table"
-       class="component_table" cellspacing="0" cellpadding="0">
-  <thead>
+<table class="component_table">
   <tr>
-    <th>&nbsp;</th>
+    <th>コンポーネント</th>
     <th>既定の担当者</th>
     [% IF Param("useqacontact") %]
       <th>既定の QA コンタクト</th>
     [% END %]
   </tr>
-  </thead>
 
-  <tbody>
   [% FOREACH comp = product.components %]
     [% INCLUDE describe_comp %]
   [% END %]
-  </tbody>
 </table>
 
 [% PROCESS global/footer.html.tmpl %]

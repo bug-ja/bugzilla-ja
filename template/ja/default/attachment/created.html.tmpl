@@ -28,13 +28,13 @@
     [% PROCESS "bug/process/bugmail.html.tmpl" mailing_bugid = attachment.bug_id %]
     [% IF convertedbmp %]
       <p>
-        <b>注:</b> [% terms.Bugzilla %] はあなたの登録した BMP 画像を自動的に圧縮された
+        <b>注:</b> Bugzilla はあなたの登録した BMP 画像を自動的に圧縮された
         PNG 形式に変換しました。
       </p>
     [% END %]
     [% IF contenttypemethod == 'autodetect' %]
       <p>
-        <b>注:</b> [% terms.Bugzilla %] はファイル形式を自動判別し、
+        <b>注:</b> Bugzilla はファイル形式を自動判別し、
         <em>[% attachment.contenttype FILTER html %]</em> としました。もし、間違っている場合、
         添付の編集を
         <a href="attachment.cgi?id=[% attachment.id %]&amp;action=edit">詳細</a>

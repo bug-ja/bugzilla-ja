@@ -216,7 +216,7 @@ use constant DEFAULT_FIELDS => (
     {name => 'attachments.submitter',   desc => 'Attachment creator'},
 
     {name => 'target_milestone',      desc => 'Target Milestone',
-     buglist => 1},
+     in_new_bugmail => 1, buglist => 1},
     {name => 'creation_ts',           desc => 'Creation date',
      buglist => 1},
     {name => 'delta_ts',              desc => 'Last changed date',
@@ -255,6 +255,7 @@ use constant DEFAULT_FIELDS => (
      type => FIELD_TYPE_BUG_URLS},
     {name => 'tag',                   desc => 'Tags', buglist => 1,
      type => FIELD_TYPE_KEYWORDS},
+    {name => 'comment_tag',           desc => 'Comment Tag'},
 );
 
 ################

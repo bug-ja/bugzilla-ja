@@ -18,22 +18,23 @@
 [% END %]
 [% PROCESS global/header.html.tmpl
   title = title
+  style_urls = ['skins/standard/admin.css']
   yui = [ 'autocomplete' ]
   javascript_urls = [ "js/field.js" ]
 %]
 
 <form method="post" action="editcomponents.cgi">
-  <table border="0" cellpadding="4" cellspacing="0">
+  <table id="admin_table_edit">
 
     [% PROCESS "admin/components/edit-common.html.tmpl" %]
 
     <tr>
-      <th class="field_label"><label for="isactive">[% terms.Bugs %] で利用可能:</label></th>
+      <th><label for="isactive">[% terms.Bugs %] で利用可能:</label></th>
       <td><input id="isactive" name="isactive" type="checkbox" value="1" 
                  [% 'checked="checked"' IF comp.isactive %]></td>
     </tr>
     <tr>
-      <th class="field_label">[% terms.Bugs %]:</th>
+      <th>[% terms.Bugs %]:</th>
       <td>
 [% IF comp.bug_count > 0 %]
         <a title="[% terms.Bugs %] in component '[% comp.name FILTER html %]'"

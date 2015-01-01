@@ -17,7 +17,7 @@
   有効にするとブラウザに対してあなたのドメインで SSL 接続を常に有効にし、
   無効な証明書を受け入れなくさせることで、SSL 接続をより安全にできます。
   しかしながら、<code>ssl_redirect</code> パラメータが有効で、かつサイトにおける
-  [% terms.Bugzilla %] が一つ (たとえば、<code>urlbase</code> が
+  Bugzilla が一つ (たとえば、<code>urlbase</code> が
   <code>http://bugzilla.example.com/</code> であるような場合) しかなく、
   かつ将来にわたって <code>ssl_redirect</code> パラメータを無効にする
   予定がない場合にのみ利用してください。
@@ -33,29 +33,29 @@
       include_subdomains - Strict-Transport-Security を 
       <code>includeSubDomains</code> フラグとともに利用すると、
       全てのサブドメインに対して変更を強制します。特にこれは、
-      [% terms.Bugzilla %] ドメインのサブドメインとして
+      Bugzilla ドメインのサブドメインとして
       <code>attachment_base</code> が運用されているときに利用すると有用です。
     </li>
   </ul>
 [% END %]
 
 [% param_descs = {
-  cookiedomain => "$terms.Bugzilla クッキーのドメイン。通常空白にしてください。" _
+  cookiedomain => "Bugzilla クッキーのドメイン。通常空白にしてください。" _
                   "'www.foo.com' にサイトがあって、これを '.foo.com' に指定すると、" _
-                  "'bar.foo.com' といったドメインからも $terms.Bugzilla クッキーに" _
+                  "'bar.foo.com' といったドメインからも Bugzilla クッキーに" _
                   "アクセスできるようになります。同じウェブサーバに、ひとつ以上の" _
-                  "ホスト名が付いていて、$terms.Bugzilla クッキーを共有したい場合には" _
+                  "ホスト名が付いていて、Bugzilla クッキーを共有したい場合には" _
                   "有用です。",
 
   inbound_proxies =>
-    "$terms.Bugzilla への内向き通信がプロキシ経由の場合、"
-    _ "$terms.Bugzilla はすべてのユーザの IP アドレスがプロキシのものと"
+    "Bugzilla への内向き通信がプロキシ経由の場合、"
+    _ "Bugzilla はすべてのユーザの IP アドレスがプロキシのものと"
     _ "誤解してしまいます。このパラメータにカンマ区切りの IP アドレスの"
-    _ "リストを設定すれば、$terms.Bugzilla はそれらの IP アドレスからの"
+    _ "リストを設定すれば、Bugzilla はそれらの IP アドレスからの"
     _ " <code>X-Forwarded-For</code> ヘッダを解釈し、"
     _ "その値をユーザの IP アドレスとして認識します。",
 
-  proxy_url => "$terms.Bugzilla が新リリースのデータを取得するには、<tt>upgrade_notification</tt>" _
+  proxy_url => "Bugzilla が新リリースのデータを取得するには、<var>upgrade_notification</var>" _
                "パラメータにあるようにウェブにアクセスする必要があります。" _
                "プロキシの内側に設置されている場合、ウェブサーバのグループが HTTP_PROXY " _
                "環境変数を定義していなければ、ここに URL を入力する必要があります。" _

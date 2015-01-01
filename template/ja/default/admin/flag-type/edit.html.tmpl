@@ -23,10 +23,7 @@
 
 [% PROCESS global/header.html.tmpl
   title = title
-  style = "
-    table#form th { text-align: right; vertical-align: baseline; white-space: nowrap; }
-    table#form td { text-align: left; vertical-align: baseline; }
-  "
+  style_urls = ['skins/standard/admin.css']
   onload="var f = document.forms['flagtype_properties'];
           selectProduct(f.product, f.component, null, null, '__Any__');"
   javascript_urls=["js/productform.js"]
@@ -49,9 +46,9 @@
 
   [%# Add a hidden button at the top of the form so that the user pressing "return"
     # really submit the form, as expected. %]
-  <input type="submit" id="commit" value="更新" style="display: none;">
+  <input type="submit" id="commit" value="更新" class="bz_default_hidden">
 
-  <table id="form" cellspacing="0" cellpadding="4" border="0">
+  <table id="admin_table_edit">
     <tr>
       <th>名前:</th>
       <td>
@@ -91,8 +88,8 @@
         [% END %]
         <table>
           <tr>
-            <td style="vertical-align: top;">
-              <b>プロダクト/コンポーネント:</b><br>
+            <th class="top left">
+              プロダクト/コンポーネント:<br>
               <select name="product" onchange="selectProduct(this, this.form.component, null, null, '__どれでも__');">
                 <option value="">__どれでも__</option>
                 [% FOREACH prod = products %]
@@ -109,19 +106,19 @@
                                    name="categoryAction-include" value="利用可能">
               <input type="submit" id="categoryAction-exclude"
                                    name="categoryAction-exclude" value="利用不可">
-            </td>
-            <td style="vertical-align: top;">
-              <b>利用可能:</b><br>
+            </th>
+            <th class="top left">
+              利用可能:<br>
               [% PROCESS category_select name="inclusion_to_remove" categories = inclusions %]<br>
               <input type="submit" id="categoryAction-removeInclusion" 
                                    name="categoryAction-removeInclusion" value="利用可能から削除">
-            </td>
-            <td style="vertical-align: top;">
-              <b>利用不可:</b><br>
+            </th>
+            <th class="top left">
+              利用不可:<br>
               [% PROCESS category_select name="exclusion_to_remove" categories = exclusions %]<br>
               <input type="submit" id="categoryAction-removeExclusion" 
                                    name="categoryAction-removeExclusion" value="利用不可から削除">
-            </td>
+            </th>
           </tr>
         </table>
       </td>
