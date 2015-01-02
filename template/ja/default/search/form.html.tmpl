@@ -52,11 +52,8 @@ TUI_hide_default('information_query');
          value = default.short_desc.0
          type_selected = default.short_desc_type.0 
          accesskey = "s"
-         %]
-      <script type="text/javascript"> <!--
-          document.getElementById('short_desc').focus();
-      // -->
-      </script>
+         focus = 1
+      %]
 
       [% IF button_name %]
         <input type="submit" id="[% button_name FILTER css_class_quote %]_top"

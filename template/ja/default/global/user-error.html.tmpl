@@ -401,6 +401,14 @@
 
     [% Hook.process("auth_failure") %]
 
+  [% ELSIF error == "auth_untrusted_request" %]
+    [% title = "信頼できない認証要求" %]
+    あなたは <em>[% login FILTER html %]</em> アカウントでログインしようとしましたが、
+    [% terms.Bugzilla %] は信頼された要求とみなせません。ウェブブラウザがクッキーを受け入れ、
+    かつ外部サイトから遷移してきていないことを確認してください。
+    正常にログイン使用としている場合、
+    <a href="index.cgi?GoAheadAndLogIn=1">ここをクリック</a> してください。
+
   [% ELSIF error == "attachment_deletion_disabled" %]
     [% title = BLOCK %] 添付の削除はできません [% END %]
     この [% jawords.site FILTER html %] では添付は削除できません。

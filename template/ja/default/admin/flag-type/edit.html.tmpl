@@ -52,7 +52,7 @@
       <td>
         このタイプを識別するための短い名前<br>
         <input type="text" name="name" value="[% type.name FILTER html %]" size="50"
-               maxlength="50" [%- ' disabled="disabled"' UNLESS can_fully_edit %]>
+               maxlength="50" [%- ' disabled="disabled"' UNLESS can_fully_edit %] required>
       </td>
     </tr>
 
@@ -66,6 +66,7 @@
           cols           = 80
           defaultcontent = type.description
           disabled       = !can_fully_edit
+          mandatory      = 1
         %]
       </td>
     </tr>
@@ -88,12 +89,13 @@
           <tr>
             <th class="top left">
               プロダクト/コンポーネント:<br>
-              <select name="product" onchange="selectProduct(this, this.form.component, null, null, '__どれでも__');">
-                <option value="">__どれでも__</option>
-                [% FOREACH prod = products %]
-                  <option value="[% prod.name FILTER html %]">[% prod.name FILTER html %]</option>
-                [% END %]
-              </select><br>
+              [% INCLUDE "global/product-select.html.tmpl"
+                id       => "product"
+                name     => "product"
+                add      => "__Any__"
+                onchange => "selectProduct(this, this.form.component, null, null, '__Any__');"
+                products => products
+              %]<br>
               <select name="component">
                 <option value="">__どれでも__</option>
                 [% FOREACH comp = components %]
@@ -128,7 +130,7 @@
         0 から [% constants.MAX_SMALLINT FILTER none %] の数値で、リストとして表示される際のソート順を指定できます。
         表示順を気にしないか、アルファベット順で表示したい場合はこのままにしてください<br>
         <input type="text" name="sortkey" value="[% type.sortkey || 0 FILTER html %]" size="5"
-               maxlength="5" [% ' disabled="disabled"' UNLESS can_fully_edit %]>
+               maxlength="5" [% ' disabled="disabled"' UNLESS can_fully_edit %] required>
       </td>
     </tr>
 

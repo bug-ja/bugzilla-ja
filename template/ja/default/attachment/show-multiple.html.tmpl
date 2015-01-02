@@ -18,7 +18,7 @@
   title = title
   header = header
   subheader = filtered_summary
-  style_urls = ['skins/standard/create_attachment.css']
+  style_urls = ['skins/standard/bug.css']
 %]
 
 [% IF hide_obsolete %]
@@ -85,7 +85,7 @@
          classes = 'viewall_frame'
       %]
     [% ELSE %]
-      <iframe src="attachment.cgi?id=[% a.id %]" class="viewall_frame">
+      <iframe src="attachment.cgi?id=[% a.id %]" class="viewall_frame" sandbox>
         <b>あなたのブラウザが IFRAME をサポートしていないため、添付をこのページ内で見ることはできません。
         <a href="attachment.cgi?id=[% a.id %]">添付を別々のページで見る</a>。</b>
       </iframe>

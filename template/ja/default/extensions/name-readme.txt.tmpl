@@ -14,7 +14,7 @@ my $template = Bugzilla->template;
 $template->process('[% name FILTER lower %]/some-template.html.tmpl')
   or ThrowTemplateError($template->error());
 
-これが、このディレクトリにある some-template.html.tmpl というテンプレート
+これが、このディレクトリにある <kbd>some-template.html.tmpl</kbd> というテンプレート
 ファイルの呼び出し方です。
 
 注意: あなたのテンプレートに付けたフルパスが、Bugzilla や、

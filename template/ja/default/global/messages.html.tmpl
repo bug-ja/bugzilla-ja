@@ -56,16 +56,14 @@
         [% END %]
         [% IF groups_added_to.size %]
           <li>
-            アカウントは
+            アカウントは以下のグループに追加されました。
             [%+ groups_added_to.join(', ') FILTER html %]
-            グループに追加されました。
           </li>
         [% END %]
         [% IF groups_removed_from.size %]
           <li>
-            アカウントは
+            アカウントは以下のグループから削除されました。
             [%+ groups_removed_from.join(', ') FILTER html %]
-            グループから削除されました。
           </li>
         [% END %]
         [% IF groups_granted_rights_to_bless.size %]
@@ -941,7 +939,7 @@
   [% message = BLOCK %]
     Bugzilla のメッセージ機能を間違って利用しています。
     '[% message_tag %]' が渡されました。正しい利用方法は、
-    タグを渡すようにして、messages.html.tmpl にタグを定義する必要があります。<br>
+    タグを渡すようにして、<kbd>messages.html.tmpl</kbd> にタグを定義する必要があります。<br>
     <br>
     もし、あなたが [% terms.Bugzilla %] の利用者で、
     このメッセージを見ているなら、ページを保存して 

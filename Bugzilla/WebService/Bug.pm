@@ -344,7 +344,7 @@ sub render_comment {
 
 # Helper for Bug.comments
 sub _translate_comment {
-    my ($self, $comment, $filters) = @_;
+    my ($self, $comment, $filters, $types, $prefix) = @_;
     my $attach_id = $comment->is_about_attachment ? $comment->extra_data
                                                   : undef;
 
@@ -369,7 +369,7 @@ sub _translate_comment {
         ];
     }
 
-    return filter $filters, $comment_hash;
+    return filter($filters, $comment_hash, $types, $prefix);
 }
 
 sub get {
@@ -411,7 +411,7 @@ sub get {
     # Set the ETag before inserting the update tokens
     # since the tokens will always be unique even if
     # the data has not changed.
-    $self->bz_etag(\@bugs);
+    $self->bz_etag(\@hashes);
 
     $self->_add_update_tokens($params, \@bugs, \@hashes);
 
@@ -717,7 +717,8 @@ sub create {
 
     $dbh->bz_commit_transaction();
 
-    Bugzilla::BugMail::Send($bug->bug_id, { changer => $bug->reporter });
+    $bug->send_changes();
+
     return { id => $self->type('int', $bug->bug_id) };
 }
 
@@ -851,7 +852,7 @@ sub update_attachment {
           || ThrowUserError("invalid_attach_id", { attach_id => $id });
         my $bug = $attachment->bug;
         $attachment->_check_bug;
-        $attachment->validate_can_edit($bug->product_id)
+        $attachment->validate_can_edit
           || ThrowUserError("illegal_attachment_edit", { attach_id => $id });
 
         push @attachments, $attachment;
@@ -859,6 +860,7 @@ sub update_attachment {
     }
 
     my $flags = delete $params->{flags};
+    my $comment = delete $params->{comment};
 
     # Update the values
     foreach my $attachment (@attachments) {
@@ -875,6 +877,13 @@ sub update_attachment {
     my @result;
     foreach my $attachment (@attachments) {
         my $changes = $attachment->update();
+
+        if ($comment = trim($comment)) {
+            $attachment->bug->add_comment($comment,
+                { isprivate  => $attachment->isprivate,
+                  type       => CMT_ATTACHMENT_UPDATED,
+                  extra_data => $attachment->id });
+        }
 
         $changes = translate($changes, ATTACHMENT_MAPPED_RETURNS);
 
@@ -903,7 +912,8 @@ sub update_attachment {
 
     # Email users about the change
     foreach my $bug (values %bugs) {
-        Bugzilla::BugMail::Send($bug->id, { 'changer' => $user });
+        $bug->update();
+        $bug->send_changes();
     }
 
     # Return the information to the user
@@ -1184,7 +1194,7 @@ sub _bug_to_hash {
     # All the basic bug attributes are here, in alphabetical order.
     # A bug attribute is "basic" if it doesn't require an additional
     # database call to get the info.
-    my %item = (
+    my %item = %{ filter $params, {
         alias            => $self->type('string', $bug->alias),
         creation_time    => $self->type('dateTime', $bug->creation_ts),
         # No need to format $bug->deadline specially, because Bugzilla::Bug
@@ -1204,15 +1214,14 @@ sub _bug_to_hash {
         url              => $self->type('string', $bug->bug_file_loc),
         version          => $self->type('string', $bug->version),
         whiteboard       => $self->type('string', $bug->status_whiteboard),
-    );
-
+    } };
 
     # First we handle any fields that require extra SQL calls.
     # We don't do the SQL calls at all if the filter would just
     # eliminate them anyway.
     if (filter_wants $params, 'assigned_to') {
         $item{'assigned_to'} = $self->type('email', $bug->assigned_to->login);
-        $item{'assigned_to_detail'} = $self->_user_to_hash($bug->assigned_to, $params, 'assigned_to');
+        $item{'assigned_to_detail'} = $self->_user_to_hash($bug->assigned_to, $params, undef, 'assigned_to');
     }
     if (filter_wants $params, 'blocks') {
         my @blocks = map { $self->type('int', $_) } @{ $bug->blocked };
@@ -1227,11 +1236,11 @@ sub _bug_to_hash {
     if (filter_wants $params, 'cc') {
         my @cc = map { $self->type('email', $_) } @{ $bug->cc };
         $item{'cc'} = \@cc;
-        $item{'cc_detail'} = [ map { $self->_user_to_hash($_, $params, 'cc') } @{ $bug->cc_users } ];
+        $item{'cc_detail'} = [ map { $self->_user_to_hash($_, $params, undef, 'cc') } @{ $bug->cc_users } ];
     }
     if (filter_wants $params, 'creator') {
         $item{'creator'} = $self->type('email', $bug->reporter->login);
-        $item{'creator_detail'} = $self->_user_to_hash($bug->reporter, $params, 'creator');
+        $item{'creator_detail'} = $self->_user_to_hash($bug->reporter, $params, undef, 'creator');
     }
     if (filter_wants $params, 'depends_on') {
         my @depends_on = map { $self->type('int', $_) } @{ $bug->dependson };
@@ -1260,7 +1269,7 @@ sub _bug_to_hash {
         my $qa_login = $bug->qa_contact ? $bug->qa_contact->login : '';
         $item{'qa_contact'} = $self->type('email', $qa_login);
         if ($bug->qa_contact) {
-            $item{'qa_contact_detail'} = $self->_user_to_hash($bug->qa_contact, $params, 'qa_contact');
+            $item{'qa_contact_detail'} = $self->_user_to_hash($bug->qa_contact, $params, undef, 'qa_contact');
         }
     }
     if (filter_wants $params, 'see_also') {
@@ -1276,7 +1285,7 @@ sub _bug_to_hash {
     my @custom_fields = Bugzilla->active_custom_fields;
     foreach my $field (@custom_fields) {
         my $name = $field->name;
-        next if !filter_wants $params, $name;
+        next if !filter_wants($params, $name, ['default', 'custom']);
         if ($field->type == FIELD_TYPE_BUG_ID) {
             $item{$name} = $self->type('int', $bug->$name);
         }
@@ -1296,9 +1305,12 @@ sub _bug_to_hash {
 
     # Timetracking fields are only sent if the user can see them.
     if (Bugzilla->user->is_timetracker) {
-        $item{'estimated_time'} = $self->type('double', $bug->estimated_time);
-        $item{'remaining_time'} = $self->type('double', $bug->remaining_time);
-
+        if (filter_wants $params, 'estimated_time') {
+            $item{'estimated_time'} = $self->type('double', $bug->estimated_time);
+        }
+        if (filter_wants $params, 'remaining_time') {
+            $item{'remaining_time'} = $self->type('double', $bug->remaining_time);
+        }
         if (filter_wants $params, 'actual_time') {
             $item{'actual_time'} = $self->type('double', $bug->actual_time);
         }
@@ -1306,27 +1318,29 @@ sub _bug_to_hash {
 
     # The "accessible" bits go here because they have long names and it
     # makes the code look nicer to separate them out.
-    $item{'is_cc_accessible'} = $self->type('boolean', 
-                                            $bug->cclist_accessible);
-    $item{'is_creator_accessible'} = $self->type('boolean',
-                                                 $bug->reporter_accessible);
+    if (filter_wants $params, 'is_cc_accessible') {
+        $item{'is_cc_accessible'} = $self->type('boolean', $bug->cclist_accessible);
+    }
+    if (filter_wants $params, 'is_creator_accessible') {
+        $item{'is_creator_accessible'} = $self->type('boolean', $bug->reporter_accessible);
+    }
 
-    return filter $params, \%item;
+    return \%item;
 }
 
 sub _user_to_hash {
-    my ($self, $user, $filters, $prefix) = @_;
+    my ($self, $user, $filters, $types, $prefix) = @_;
     my $item = filter $filters, {
         id        => $self->type('int', $user->id),
         real_name => $self->type('string', $user->name),
         name      => $self->type('email', $user->login),
         email     => $self->type('email', $user->email),
-    }, $prefix;
+    }, $types, $prefix;
     return $item;
 }
 
 sub _attachment_to_hash {
-    my ($self, $attach, $filters) = @_;
+    my ($self, $attach, $filters, $types, $prefix) = @_;
 
     my $item = filter $filters, {
         creation_time    => $self->type('dateTime', $attach->attached),
@@ -1340,25 +1354,25 @@ sub _attachment_to_hash {
         is_private       => $self->type('int', $attach->isprivate),
         is_obsolete      => $self->type('int', $attach->isobsolete),
         is_patch         => $self->type('int', $attach->ispatch),
-    };
+    }, $types, $prefix;
 
     # creator/attacher require an extra lookup, so we only send them if
     # the filter wants them.
     foreach my $field (qw(creator attacher)) {
-        if (filter_wants $filters, $field) {
+        if (filter_wants $filters, $field, $types, $prefix) {
             $item->{$field} = $self->type('email', $attach->attacher->login);
         }
     }
 
-    if (filter_wants $filters, 'data') {
+    if (filter_wants $filters, 'data', $types, $prefix) {
         $item->{'data'} = $self->type('base64', $attach->data);
     }
 
-    if (filter_wants $filters, 'size') {
+    if (filter_wants $filters, 'size', $types, $prefix) {
         $item->{'size'} = $self->type('int', $attach->datasize);
     }
 
-    if (filter_wants $filters, 'flags') {
+    if (filter_wants $filters, 'flags', $types, $prefix) {
         $item->{'flags'} = [ map { $self->_flag_to_hash($_) } @{$attach->flags} ];
     }
 
@@ -2332,6 +2346,9 @@ Two items are returned:
 An array of hashes that contains information about the bugs with 
 the valid ids. Each hash contains the following items:
 
+These fields are returned by default or by specifying C<_default>
+in C<include_fields>.
+
 =over
 
 =item C<actual_time>
@@ -2578,7 +2595,11 @@ C<string> The value of the "status whiteboard" field on the bug.
 
 Every custom field in this installation will also be included in the
 return value. Most fields are returned as C<string>s. However, some
-field types have different return values:
+field types have different return values.
+
+Normally custom fields are returned by default similar to normal bug
+fields or you can specify only custom fields by using C<_custom> in
+C<include_fields>.
 
 =over
 
@@ -3043,6 +3064,14 @@ Note that unlike searching in the Bugzilla UI, substrings are not split
 on spaces. So searching for C<foo bar> will match "This is a foo bar"
 but not "This foo is a bar". C<['foo', 'bar']>, would, however, match
 the second item.
+
+=item C<tag>
+
+C<string> Searches for a bug with the specified tag.  If you specify an
+array, then any bugs that match I<any> of the tags will be returned.
+
+Note that tags are personal and only bugs belonging to the logged in
+user will be returned.
 
 =item C<target_milestone>
 
@@ -3587,6 +3616,10 @@ in the UI for this attachment.
 
 C<string> A short string describing the
 attachment.
+
+=item C<comment>
+
+C<string> An optional comment to add to the attachment's bug.
 
 =item C<content_type>
 

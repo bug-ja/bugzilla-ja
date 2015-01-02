@@ -428,15 +428,13 @@ sub mtime_filter {
 #  1. YUI CSS
 #  2. Standard Bugzilla stylesheet set (persistent)
 #  3. Third-party "skin" stylesheet set, per user prefs (persistent)
-#  4. Page-specific styles
-#  5. Custom Bugzilla stylesheet set (persistent)
+#  4. Custom Bugzilla stylesheet set (persistent)
 
 sub css_files {
     my ($style_urls, $yui, $yui_css) = @_;
-    
-    # global.css goes on every page, and so does IE-fixes.css.
-    my @requested_css = ('skins/standard/global.css', @$style_urls,
-                         'skins/standard/IE-fixes.css');
+
+    # global.css goes on every page.
+    my @requested_css = ('skins/standard/global.css', @$style_urls);
 
     my @yui_required_css;
     foreach my $yui_name (@$yui) {
@@ -680,6 +678,18 @@ sub create {
                 my ($data) = @_;
                 return encode_base64($data);
             },
+
+            # Strips out control characters excepting whitespace
+            strip_control_chars => sub {
+                my ($data) = @_;
+                state $use_utf8 = Bugzilla->params->{'utf8'};
+                # Only run for utf8 to avoid issues with other multibyte encodings 
+                # that may be reassigning meaning to ascii characters.
+                if ($use_utf8) {
+                    $data =~ s/(?![\t\r\n])[[:cntrl:]]//g;
+                }
+                return $data;
+            },
             
             # HTML collapses newlines in element attributes to a single space,
             # so form elements which may have whitespace (ie comments) need
@@ -895,7 +905,7 @@ sub create {
             # started the session.
             'sudoer' => sub { return Bugzilla->sudoer; },
 
-            # Allow templates to access the "corect" URLBase value
+            # Allow templates to access the "correct" URLBase value
             'urlbase' => sub { return Bugzilla::Util::correct_urlbase(); },
 
             # Allow templates to access docs url with users' preferred language
@@ -921,6 +931,11 @@ sub create {
 
             # Allow templates to generate a token themselves.
             'issue_hash_token' => \&Bugzilla::Token::issue_hash_token,
+
+            'get_login_request_token' => sub {
+                my $cookie = Bugzilla->cgi->cookie('Bugzilla_login_request_cookie');
+                return $cookie ? issue_hash_token(['login_request', $cookie]) : '';
+            },
 
             # A way for all templates to get at Field data, cached.
             'bug_fields' => sub {

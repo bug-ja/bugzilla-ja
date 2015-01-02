@@ -7,7 +7,6 @@
   #%]
 
 [%# INTERFACE:
-  # products: an array of product names the user is allowed to view.
   # datasets: an array of hashes with available statuses and resolutions.
   # url_image: URL of the generated graph.
   #%]
@@ -15,6 +14,7 @@
 [% PROCESS global/header.html.tmpl
   title = "$terms.Bug チャート"
   h1 = "$terms.Bugzilla チャート生成システムへようこそ"
+  style_urls = ['skins/standard/buglist.css']
   doc_section = "using.html#charts"
 %]
 
@@ -29,11 +29,12 @@
         <tr>
           <th>プロダクト:</th>
           <td>
-            <select id="product_id" name="product_id">
-              [% FOREACH product = products %]
-                <option value="[% product.id FILTER html %]">[% product.name || '-All-' FILTER html %]</option>
-              [% END %]
-            </select>
+            [% INCLUDE "global/product-select.html.tmpl"
+              id   => "product_id"
+              name => "product_id"
+              valueattribute => "id"
+              add  => "-All-"
+            %]
           </td>
         </tr>
         <tr>

@@ -994,16 +994,22 @@ function show_comment_preview(bug_id) {
     var Dom = YAHOO.util.Dom;
     var comment = document.getElementById('comment');
     var preview = document.getElementById('comment_preview');
+
     if (!comment || !preview) return;
     if (Dom.hasClass('comment_preview_tab', 'active_comment_tab')) return;
 
     preview.style.width = (comment.clientWidth - 4) + 'px';
     preview.style.height = comment.offsetHeight + 'px';
 
+    var comment_tab = document.getElementById('comment_tab');
     Dom.addClass(comment, 'bz_default_hidden');
-    Dom.removeClass('comment_tab', 'active_comment_tab');
+    Dom.removeClass(comment_tab, 'active_comment_tab');
+    comment_tab.setAttribute('aria-selected', 'false');
+
+    var preview_tab = document.getElementById('comment_preview_tab');
     Dom.removeClass(preview, 'bz_default_hidden');
-    Dom.addClass('comment_preview_tab', 'active_comment_tab');
+    Dom.addClass(preview_tab, 'active_comment_tab');
+    preview_tab.setAttribute('aria-selected', 'true');
 
     Dom.addClass('comment_preview_error', 'bz_default_hidden');
 
@@ -1054,8 +1060,56 @@ function show_comment_edit() {
     if (!comment || !preview) return;
     if (YAHOO.util.Dom.hasClass(comment, 'active_comment_tab')) return;
 
+    var preview_tab = document.getElementById('comment_preview_tab');
     YAHOO.util.Dom.addClass(preview, 'bz_default_hidden');
-    YAHOO.util.Dom.removeClass('comment_preview_tab', 'active_comment_tab');
+    YAHOO.util.Dom.removeClass(preview_tab, 'active_comment_tab');
+    preview_tab.setAttribute('aria-selected', 'false');
+
+    var comment_tab = document.getElementById('comment_tab');
     YAHOO.util.Dom.removeClass(comment, 'bz_default_hidden');
-    YAHOO.util.Dom.addClass('comment_tab', 'active_comment_tab');
+    YAHOO.util.Dom.addClass(comment_tab, 'active_comment_tab');
+    comment_tab.setAttribute('aria-selected', 'true');
+}
+
+function adjustRemainingTime() {
+    // subtracts time spent from remaining time
+    // prevent negative values if work_time > bz_remaining_time
+    var new_time = Math.max(bz_remaining_time - document.changeform.work_time.value, 0.0);
+    // get upto 2 decimal places
+    document.changeform.remaining_time.value = Math.round(new_time * 100)/100;
+}
+
+function updateRemainingTime() {
+    // if the remaining time is changed manually, update bz_remaining_time
+    bz_remaining_time = document.changeform.remaining_time.value;
+}
+
+var keys = [];
+function keys_pressed(e, bug_id) {
+    // Store an entry for every key pressed
+    keys[e.keyCode] = true;
+
+    // (Ctrl XOR cmd) + Shift + P
+    if ((!keys[17] != !keys[224]) && keys[16] && keys[80]) {
+        // Check if we are already in preview mode
+        if (YAHOO.util.Dom.hasClass('comment_preview_tab', 'active_comment_tab')){
+            show_comment_edit();
+            document.getElementById('comment').focus();
+            YAHOO.util.Event.preventDefault(e);
+        }
+
+        else {
+            // Ensure that we switch to preview mode only if the textarea is in focus
+            var comment = document.getElementById('comment');
+            if (document.activeElement == comment) {
+                show_comment_preview(bug_id);
+                YAHOO.util.Event.preventDefault(e);
+            }
+        }
+    }
+}
+
+function keys_released(e) {
+    // Mark keys that were released
+    keys[e.keyCode] = false;
 }

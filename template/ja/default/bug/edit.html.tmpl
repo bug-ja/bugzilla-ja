@@ -37,24 +37,7 @@
 <!--
   
 [% IF user.is_timetracker %]
-  var fRemainingTime = [% bug.remaining_time %]; // holds the original value
-  function adjustRemainingTime() {
-      // subtracts time spent from remaining time
-      var new_time;
-
-      // prevent negative values if work_time > fRemainingTime
-      new_time =
-          Math.max(fRemainingTime - document.changeform.work_time.value, 0.0);
-      // get upto 2 decimal places
-      document.changeform.remaining_time.value =
-          Math.round(new_time * 100)/100;
-  }
-
-  function updateRemainingTime() {
-      // if the remaining time is changed manually, update fRemainingTime
-      fRemainingTime = document.changeform.remaining_time.value;
-  }
-
+  var bz_remaining_time = [% bug.remaining_time %];
 [% END %]
 
 [% IF user.id %]
@@ -260,11 +243,20 @@
     [%#############%]
 
     <tr>
-       [% INCLUDE bug/field.html.tmpl
-            bug = bug, field = bug_fields.product,
-            override_legal_values = bug.choices.product
-            desc_url = 'describecomponents.cgi', value = bug.product
-            editable = bug.check_can_change_field('product', 0, 1) %]
+      [% PROCESS "bug/field-label.html.tmpl"
+         field = bug_fields.product
+         desc_url = 'describecomponents.cgi'
+         value = bug.product
+        %]
+      <td class="field_value" id="field_container_product">
+        [% INCLUDE "global/product-select.html.tmpl"
+           id    => "product"
+           name  => "product"
+           value => bug.product
+           products => bug.choices.product
+           isselect => bug.check_can_change_field('product', 0, 1)
+         %]
+       </td>
     </tr>
 
     [%# Classification is here so that it can be used in value controllers

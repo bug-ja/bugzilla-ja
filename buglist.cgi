@@ -553,6 +553,9 @@ if ($dotweak) {
 
 if ($format->{'extension'} eq 'ics') {
     push(@selectcolumns, "opendate") if !grep($_ eq 'opendate', @selectcolumns);
+    if (Bugzilla->params->{'timetrackinggroup'}) {
+        push(@selectcolumns, "deadline") if !grep($_ eq 'deadline', @selectcolumns);
+    }
 }
 
 if ($format->{'extension'} eq 'atom') {
@@ -848,7 +851,6 @@ else { # remaining_time <= 0
 
 $vars->{'bugs'} = \@bugs;
 $vars->{'buglist'} = \@bugidlist;
-$vars->{'buglist_joined'} = join(',', @bugidlist);
 $vars->{'columns'} = $columns;
 $vars->{'displaycolumns'} = \@displaycolumns;
 

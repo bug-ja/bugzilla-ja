@@ -675,13 +675,23 @@ sub groups {
             FROM user_group_map
            WHERE user_id = ? AND isbless = 0}, undef, $self->id);
 
-    my $rows = $dbh->selectall_arrayref(
-        "SELECT DISTINCT grantor_id, member_id
-           FROM group_group_map
-          WHERE grant_type = " . GROUP_MEMBERSHIP);
+    my $cache_key = 'group_grant_type_' . GROUP_MEMBERSHIP;
+    my $membership_rows = Bugzilla->memcached->get_config({
+        key => $cache_key,
+    });
+    if (!$membership_rows) {
+        $membership_rows = $dbh->selectall_arrayref(
+            "SELECT DISTINCT grantor_id, member_id
+               FROM group_group_map
+              WHERE grant_type = " . GROUP_MEMBERSHIP);
+        Bugzilla->memcached->set_config({
+            key  => $cache_key,
+            data => $membership_rows,
+        });
+    }
 
     my %group_membership;
-    foreach my $row (@$rows) {
+    foreach my $row (@$membership_rows) {
         my ($grantor_id, $member_id) = @$row; 
         push (@{ $group_membership{$member_id} }, $grantor_id);
     }
@@ -755,34 +765,42 @@ sub bless_groups {
         return $self->{'bless_groups'};
     }
 
+    if (Bugzilla->params->{usevisibilitygroups}
+        && !$self->visible_groups_inherited) {
+        return [];
+    }
+
     my $dbh = Bugzilla->dbh;
 
-    # Get all groups for the user where:
-    #    + They have direct bless privileges
-    #    + They are a member of a group that inherits bless privs.
-    my @group_ids = map {$_->id} @{ $self->groups };
-    @group_ids = (-1) if !@group_ids;
-    my $query =
-        'SELECT DISTINCT groups.id
-           FROM groups, user_group_map, group_group_map AS ggm
-          WHERE user_group_map.user_id = ?
-                AND ( (user_group_map.isbless = 1
-                       AND groups.id=user_group_map.group_id)
-                     OR (groups.id = ggm.grantor_id
-                         AND ggm.grant_type = ' . GROUP_BLESS . '
-                         AND ' . $dbh->sql_in('ggm.member_id', \@group_ids)
-                     . ') )';
-
-    # If visibilitygroups are used, restrict the set of groups.
-    if (Bugzilla->params->{'usevisibilitygroups'}) {
-        return [] if !$self->visible_groups_as_string;
-        # Users need to see a group in order to bless it.
+    # Get all groups for the user where they have direct bless privileges.
+    my $query = "
+        SELECT DISTINCT group_id
+          FROM user_group_map
+         WHERE user_id = ?
+               AND isbless = 1";
+    if (Bugzilla->params->{usevisibilitygroups}) {
         $query .= " AND "
-            . $dbh->sql_in('groups.id', $self->visible_groups_inherited);
+            . $dbh->sql_in('group_id', $self->visible_groups_inherited);
+    }
+
+    # Get all groups for the user where they are a member of a group that
+    # inherits bless privs.
+    my @group_ids = map { $_->id } @{ $self->groups };
+    if (@group_ids) {
+        $query .= "
+            UNION
+            SELECT DISTINCT grantor_id
+            FROM group_group_map
+            WHERE grant_type = " . GROUP_BLESS . "
+                AND " . $dbh->sql_in('member_id', \@group_ids);
+        if (Bugzilla->params->{usevisibilitygroups}) {
+            $query .= " AND "
+                . $dbh->sql_in('grantor_id', $self->visible_groups_inherited);
+        }
     }
 
     my $ids = $dbh->selectcol_arrayref($query, undef, $self->id);
-    return $self->{'bless_groups'} = Bugzilla::Group->new_from_list($ids);
+    return $self->{bless_groups} = Bugzilla::Group->new_from_list($ids);
 }
 
 sub in_group {
@@ -888,7 +906,7 @@ sub can_edit_product {
                            CASE WHEN canedit = 1 AND group_id IN ($groups) THEN 1 ELSE 0 END AS cnt_group_member
                     FROM group_control_map
                     WHERE product_id = $prod_id) AS p");
-        return ($cnt_can_edit == 0 or $cnt_group_member > 0);
+        return (!$cnt_can_edit or $cnt_group_member);
     }
     else {
         # For and-groups, a user needs to be in all canedit groups. Therefore
