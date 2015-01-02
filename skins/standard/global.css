@@ -323,6 +323,9 @@ div#docslinks {
     color: #65379c;
     /* Make quoted text not wrap. */
     white-space: pre;
+    overflow: auto;
+    display: block;
+    margin-bottom: -1em;
 }
 
 .bz_comment_user, .bz_comment_time, .bz_comment_number, 
@@ -367,6 +370,11 @@ div#docslinks {
     background-color: lightgreen;
     margin: 0;
     padding: 1em 0;
+}
+
+.bz_comment_collapse_reason,
+.bz_default_collapsed .bz_comment_number {
+    font-weight: normal;
 }
 
 /** End Comments **/
@@ -555,7 +563,15 @@ div.user_match {
     padding: 0.5em 1em;
 }
 
-.collapsed {
+.collapsed,
+.bz_default_collapsed .bz_private_checkbox,
+.bz_default_collapsed .bz_comment_user,
+.bz_default_collapsed .bz_comment_user_images,
+.bz_default_collapsed .bz_comment_time,
+.bz_default_collapsed .bz_comment_tags,
+.bz_default_collapsed .bz_comment_text,
+.bz_default_collapsed .bz_collapsed_actions
+{
     display: none;
 }
 
@@ -885,10 +901,6 @@ ul.additional_links li {
 
 ul.additional_links li.bz_default_hidden {
     display: none;
-}
-
-input.quicksearch_help_text {
-    color: #ccc;
 }
 
 /* index.cgi (end) */

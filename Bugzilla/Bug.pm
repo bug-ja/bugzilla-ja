@@ -28,6 +28,7 @@ use Bugzilla::Group;
 use Bugzilla::Status;
 use Bugzilla::Comment;
 use Bugzilla::BugUrl;
+use Bugzilla::BugUserLastVisit;
 
 use List::MoreUtils qw(firstidx uniq part);
 use List::Util qw(min max first);
@@ -255,7 +256,6 @@ use constant MAX_LINE_LENGTH => 254;
 # use.)
 use constant FIELD_MAP => {
     blocks           => 'blocked',
-    cc_accessible    => 'cclist_accessible',
     commentprivacy   => 'comment_is_private',
     creation_time    => 'creation_ts',
     creator          => 'reporter',
@@ -504,6 +504,49 @@ sub preload {
     # If we don't do this, can_see_bug will do one call per bug in
     # the dependency and duplicate lists, in Bugzilla::Template::get_bug_link.
     $user->visible_bugs(\@all_dep_ids);
+
+    foreach my $bug (@$bugs) {
+        $bug->_preload_referenced_bugs();
+    }
+}
+
+# Helps load up bugs referenced in comments by retrieving them with a single
+# query from the database and injecting bug objects into the object-cache.
+sub _preload_referenced_bugs {
+    my $self = shift;
+    my @referenced_bug_ids;
+
+    # inject current duplicates into the object-cache first
+    foreach my $bug (@{ $self->duplicates }) {
+        $bug->object_cache_set()
+            unless Bugzilla::Bug->object_cache_get($bug->id);
+    }
+
+    # preload bugs from comments
+    require Bugzilla::Template;
+    foreach my $comment (@{ $self->comments }) {
+        if ($comment->type == CMT_HAS_DUPE || $comment->type == CMT_DUPE_OF) {
+            # duplicate bugs that aren't currently in $self->duplicates
+            push @referenced_bug_ids, $comment->extra_data
+                unless Bugzilla::Bug->object_cache_get($comment->extra_data);
+        }
+        else {
+            # bugs referenced in comments
+            Bugzilla::Template::quoteUrls($comment->body, undef, undef, undef,
+                sub {
+                    my $bug_id = $_[0];
+                    push @referenced_bug_ids, $bug_id
+                        unless Bugzilla::Bug->object_cache_get($bug_id);
+                });
+        }
+    }
+
+    # inject into object-cache
+    my $referenced_bugs = Bugzilla::Bug->new_from_list(
+        [ uniq @referenced_bug_ids ]);
+    foreach my $bug (@$referenced_bugs) {
+        $bug->object_cache_set();
+    }
 }
 
 sub possible_duplicates {
@@ -1045,6 +1088,11 @@ sub update {
         $dbh->do('UPDATE bugs SET delta_ts = ? WHERE bug_id = ?',
                  undef, ($delta_ts, $self->id));
         $self->{delta_ts} = $delta_ts;
+    }
+
+    # Update last-visited
+    if ($user->is_involved_in_bug($self)) {
+        $self->update_user_last_visit($user, $delta_ts);
     }
 
     # Update bug ignore data if user wants to ignore mail for this bug
@@ -3874,10 +3922,23 @@ sub EmitDependList {
 # Creates a lot of bug objects in the same order as the input array.
 sub _bugs_in_order {
     my ($self, $bug_ids) = @_;
-    my $bugs = $self->new_from_list($bug_ids);
-    my %bug_map = map { $_->id => $_ } @$bugs;
-    my @result = map { $bug_map{$_} } @$bug_ids;
-    return \@result;
+    my %bug_map;
+    # there's no need to load bugs from the database if they are already in the
+    # object-cache
+    my @missing_ids;
+    foreach my $bug_id (@$bug_ids) {
+        if (my $bug = Bugzilla::Bug->object_cache_get($bug_id)) {
+            $bug_map{$bug_id} = $bug;
+        }
+        else {
+            push @missing_ids, $bug_id;
+        }
+    }
+    my $bugs = $self->new_from_list(\@missing_ids);
+    foreach my $bug (@$bugs) {
+        $bug_map{$bug->id} = $bug;
+    }
+    return [ map { $bug_map{$_} } @$bug_ids ];
 }
 
 # Get the activity of a bug, starting from $starttime (if given).
@@ -4048,11 +4109,12 @@ sub get_activity {
 
 # Update the bugs_activity table to reflect changes made in bugs.
 sub LogActivityEntry {
-    my ($i, $col, $removed, $added, $whoid, $timestamp, $comment_id) = @_;
+    my ($bug_id, $field, $removed, $added, $user_id, $timestamp, $comment_id,
+        $attach_id) = @_;
     my $sth = Bugzilla->dbh->prepare_cached(
-      'INSERT INTO bugs_activity
-       (bug_id, who, bug_when, fieldid, removed, added, comment_id)
-       VALUES (?, ?, ?, ?, ?, ?, ?)');
+        'INSERT INTO bugs_activity
+        (bug_id, who, bug_when, fieldid, removed, added, comment_id, attach_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
 
     # in the case of CCs, deps, and keywords, there's a possibility that someone
     # might try to add or remove a lot of them at once, which might take more
@@ -4076,8 +4138,26 @@ sub LogActivityEntry {
         }
         trick_taint($addstr);
         trick_taint($removestr);
-        my $fieldid = get_field_id($col);
-        $sth->execute($i, $whoid, $timestamp, $fieldid, $removestr, $addstr, $comment_id);
+        my $fieldid = get_field_id($field);
+        $sth->execute($bug_id, $user_id, $timestamp, $fieldid, $removestr,
+            $addstr, $comment_id, $attach_id);
+    }
+}
+
+# Update bug_user_last_visit table
+sub update_user_last_visit {
+    my ($self, $user, $last_visit_ts) = @_;
+    my $lv = Bugzilla::BugUserLastVisit->match({ bug_id  => $self->id,
+                                                 user_id => $user->id })->[0];
+
+    if ($lv) {
+        $lv->set(last_visit_ts => $last_visit_ts);
+        $lv->update;
+    }
+    else {
+        Bugzilla::BugUserLastVisit->create({ bug_id        => $self->id,
+                                             user_id       => $user->id,
+                                             last_visit_ts => $last_visit_ts });
     }
 }
 
@@ -4407,6 +4487,7 @@ sub _multi_select_accessor {
 
 1;
 
+__END__
 =head1 B<Methods>
 
 =over
@@ -4414,6 +4495,11 @@ sub _multi_select_accessor {
 =item C<initialize>
 
 Ensures the accessors for custom fields are always created.
+
+=item C<update_user_last_visit($user, $last_visit)>
+
+Creates or updates a L<Bugzilla::BugUserLastVisit> for this bug and the supplied
+$user, the timestamp given as $last_visit.
 
 =back
 

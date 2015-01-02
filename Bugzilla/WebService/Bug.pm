@@ -352,7 +352,6 @@ sub _translate_comment {
         id         => $self->type('int', $comment->id),
         bug_id     => $self->type('int', $comment->bug_id),
         creator    => $self->type('email', $comment->author->login),
-        author     => $self->type('email', $comment->author->login),
         time       => $self->type('dateTime', $comment->creation_ts),
         creation_time => $self->type('dateTime', $comment->creation_ts),
         is_private => $self->type('boolean', $comment->is_private),
@@ -375,7 +374,7 @@ sub _translate_comment {
 sub get {
     my ($self, $params) = validate(@_, 'ids');
 
-    Bugzilla->switch_to_shadow_db();
+    Bugzilla->switch_to_shadow_db() unless Bugzilla->user->id;
 
     my $ids = $params->{ids};
     defined $ids || ThrowCodeError('param_required', { param => 'ids' });
@@ -1008,7 +1007,7 @@ sub update_see_also {
 sub attachments {
     my ($self, $params) = validate(@_, 'ids', 'attachment_ids');
 
-    Bugzilla->switch_to_shadow_db();
+    Bugzilla->switch_to_shadow_db() unless Bugzilla->user->id;
 
     if (!(defined $params->{ids}
           or defined $params->{attachment_ids}))
@@ -1082,38 +1081,6 @@ sub update_tags {
     }
 
     return { changes => \%changes };
-}
-
-sub flag_types {
-    my ($self, $params) = @_;
-    my $dbh  = Bugzilla->switch_to_shadow_db();
-    my $user = Bugzilla->user;
-
-    defined $params->{product}
-        || ThrowCodeError('param_required',
-                          { function => 'Bug.flag_types',
-                            param   => 'product' });
-
-    my $product   = delete $params->{product};
-    my $component = delete $params->{component};
-
-    $product = Bugzilla::Product->check({ name => $product, cache => 1 });
-    $component = Bugzilla::Component->check(
-        { name => $component, product => $product, cache => 1 }) if $component;
-
-    my $flag_params = { product_id => $product->id };
-    $flag_params->{component_id} = $component->id if $component;
-    my $matched_flag_types = Bugzilla::FlagType::match($flag_params);
-
-    my $flag_types = { bug => [], attachment => [] };
-    foreach my $flag_type (@$matched_flag_types) {
-        push(@{ $flag_types->{bug} }, $self->_flagtype_to_hash($flag_type, $product))
-            if $flag_type->target_type eq 'bug';
-        push(@{ $flag_types->{attachment} }, $self->_flagtype_to_hash($flag_type, $product))
-            if $flag_type->target_type eq 'attachment';
-    }
-
-    return $flag_types;
 }
 
 sub update_comment_tags {
@@ -1280,6 +1247,9 @@ sub _bug_to_hash {
     if (filter_wants $params, 'flags') {
         $item{'flags'} = [ map { $self->_flag_to_hash($_) } @{$bug->flags} ];
     }
+    if (filter_wants $params, 'tags', 'extra') {
+        $item{'tags'} = $bug->tags;
+    }
 
     # And now custom fields
     my @custom_fields = Bugzilla->active_custom_fields;
@@ -1349,19 +1319,16 @@ sub _attachment_to_hash {
         bug_id           => $self->type('int', $attach->bug_id),
         file_name        => $self->type('string', $attach->filename),
         summary          => $self->type('string', $attach->description),
-        description      => $self->type('string', $attach->description),
         content_type     => $self->type('string', $attach->contenttype),
         is_private       => $self->type('int', $attach->isprivate),
         is_obsolete      => $self->type('int', $attach->isobsolete),
         is_patch         => $self->type('int', $attach->ispatch),
     }, $types, $prefix;
 
-    # creator/attacher require an extra lookup, so we only send them if
+    # creator requires an extra lookup, so we only send them if
     # the filter wants them.
-    foreach my $field (qw(creator attacher)) {
-        if (filter_wants $filters, $field, $types, $prefix) {
-            $item->{$field} = $self->type('email', $attach->attacher->login);
-        }
+    if (filter_wants $filters, 'creator', $types, $prefix) {
+        $item->{'creator'} = $self->type('email', $attach->attacher->login);
     }
 
     if (filter_wants $filters, 'data', $types, $prefix) {
@@ -1398,56 +1365,6 @@ sub _flag_to_hash {
     }
 
     return $item;
-}
-
-sub _flagtype_to_hash {
-    my ($self, $flagtype, $product) = @_;
-    my $user = Bugzilla->user;
-
-    my @values = ('X');
-    push(@values, '?') if ($flagtype->is_requestable && $user->can_request_flag($flagtype));
-    push(@values, '+', '-') if $user->can_set_flag($flagtype);
-
-    my $item = {
-        id          => $self->type('int'    , $flagtype->id),
-        name        => $self->type('string' , $flagtype->name),
-        description => $self->type('string' , $flagtype->description),
-        type        => $self->type('string' , $flagtype->target_type),
-        values      => \@values,
-        is_active   => $self->type('boolean', $flagtype->is_active),
-        is_requesteeble  => $self->type('boolean', $flagtype->is_requesteeble),
-        is_multiplicable => $self->type('boolean', $flagtype->is_multiplicable)
-    };
-
-    if ($product) {
-        my $inclusions = $self->_flagtype_clusions_to_hash($flagtype->inclusions, $product->id);
-        my $exclusions = $self->_flagtype_clusions_to_hash($flagtype->exclusions, $product->id);
-        # if we have both inclusions and exclusions, the exclusions are redundant
-        $exclusions = [] if @$inclusions && @$exclusions;
-        # no need to return anything if there's just "any component"
-        $item->{inclusions} = $inclusions if @$inclusions && $inclusions->[0] ne '';
-        $item->{exclusions} = $exclusions if @$exclusions && $exclusions->[0] ne '';
-    }
-
-    return $item;
-}
-
-sub _flagtype_clusions_to_hash {
-    my ($self, $clusions, $product_id) = @_;
-    my $result = [];
-    foreach my $key (keys %$clusions) {
-        my ($prod_id, $comp_id) = split(/:/, $clusions->{$key}, 2);
-        if ($prod_id == 0 || $prod_id == $product_id) {
-            if ($comp_id) {
-                my $component = Bugzilla::Component->new({ id => $comp_id, cache => 1 });
-                push @$result, $component->name;
-            }
-            else {
-                return [ '' ];
-            }
-        }
-    }
-    return $result;
 }
 
 sub _add_update_tokens {
@@ -1719,104 +1636,6 @@ You specified an invalid field name or id.
 
 =back
 
-=head2 flag_types
-
-B<UNSTABLE>
-
-=over
-
-=item B<Description>
-
-Get information about valid flag types that can be set for bugs and attachments.
-
-=item B<REST>
-
-You have several options for retreiving information about flag types. The first
-part is the request method and the rest is the related path needed.
-
-To get information about all flag types for a product:
-
-GET /rest/flag_types/<product>
-
-To get information about flag_types for a product and component:
-
-GET /rest/flag_types/<product>/<component>
-
-The returned data format is the same as below.
-
-=item B<Params>
-
-You must pass a product name and an optional component name.
-
-=over
-
-=item C<product>   (string) - The name of a valid product.
-
-=item C<component> (string) - An optional valid component name associated with the product.
-
-=back
-
-=item B<Returns>
-
-A hash containing two keys, C<bug> and C<attachment>. Each key value is an array of hashes,
-containing the following keys:
-
-=over
-
-=item C<id>
-
-C<int> An integer id uniquely identifying this flag type.
-
-=item C<name>
-
-C<string> The name for the flag type.
-
-=item C<type>
-
-C<string> The target of the flag type which is either C<bug> or C<attachment>.
-
-=item C<description>
-
-C<string> The description of the flag type.
-
-=item C<values>
-
-C<array> An array of string values that the user can set on the flag type.
-
-=item C<is_requesteeble>
-
-C<boolean> Users can ask specific other users to set flags of this type.
-
-=item C<is_multiplicable>
-
-C<boolean> Multiple flags of this type can be set for the same bug or attachment.
-
-=back
-
-=item B<Errors>
-
-=over
-
-=item 106 (Product Access Denied)
-
-Either the product does not exist or you don't have access to it.
-
-=item 51 (Invalid Component)
-
-The component provided does not exist in the product.
-
-=back
-
-=item B<History>
-
-=over
-
-=item Added in Bugzilla B<5.0>.
-
-=back
-
-=back
-
 =head2 legal_values
 
 B<DEPRECATED> - Use L</fields> instead.
@@ -1997,10 +1816,6 @@ C<string> The file name of the attachment.
 
 C<string> A short string describing the attachment.
 
-Also returned as C<description>, for backwards-compatibility with older
-Bugzillas. (However, this backwards-compatibility will go away in Bugzilla
-5.0.)
-
 =item C<content_type>
 
 C<string> The MIME type of the attachment.
@@ -2021,10 +1836,6 @@ C<boolean> True if the attachment is a patch, False otherwise.
 =item C<creator>
 
 C<string> The login name of the user that created the attachment.
-
-Also returned as C<attacher>, for backwards-compatibility with older
-Bugzillas. (However, this backwards-compatibility will go away in Bugzilla
-5.0.)
 
 =item C<flags>
 
@@ -2222,10 +2033,6 @@ C<string> The actual text of the comment.
 =item creator
 
 C<string> The login name of the comment's author.
-
-Also returned as C<author>, for backwards-compatibility with older
-Bugzillas. (However, this backwards-compatibility will go away in Bugzilla
-5.0.)
 
 =item time
 
@@ -2634,6 +2441,18 @@ C<string> The user's Bugzilla login.
 C<string> The user's email address. Currently this is the same value as the name.
 
 =back
+
+=back
+
+These fields are returned only by specifying "_extra" or the field name in "include_fields".
+
+=over
+
+=item C<tags>
+
+C<array> of C<string>s.  Each array item is a tag name.
+
+Note that tags are personal to the currently logged in user.
 
 =back
 
@@ -3065,13 +2884,12 @@ on spaces. So searching for C<foo bar> will match "This is a foo bar"
 but not "This foo is a bar". C<['foo', 'bar']>, would, however, match
 the second item.
 
-=item C<tag>
+=item C<tags>
 
 C<string> Searches for a bug with the specified tag.  If you specify an
 array, then any bugs that match I<any> of the tags will be returned.
 
-Note that tags are personal and only bugs belonging to the logged in
-user will be returned.
+Note that tags are personal to the currently logged in user.
 
 =item C<target_milestone>
 

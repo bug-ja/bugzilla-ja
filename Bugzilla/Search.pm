@@ -235,6 +235,9 @@ use constant OPERATOR_FIELD_OVERRIDE => {
     assigned_to => {
         _non_changed => \&_user_nonchanged,
     },
+    assigned_to_realname => {
+        _non_changed => \&_user_nonchanged,
+    },
     cc => {
         _non_changed => \&_user_nonchanged,
     },
@@ -242,6 +245,9 @@ use constant OPERATOR_FIELD_OVERRIDE => {
         _non_changed => \&_user_nonchanged,
     },
     reporter => {
+        _non_changed => \&_user_nonchanged,
+    },
+    reporter_realname => {
         _non_changed => \&_user_nonchanged,
     },
     'requestees.login_name' => {
@@ -253,7 +259,10 @@ use constant OPERATOR_FIELD_OVERRIDE => {
     qa_contact => {
         _non_changed => \&_user_nonchanged,
     },
-    
+    qa_contact_realname => {
+        _non_changed => \&_user_nonchanged,
+    },
+
     # General Bug Fields
     alias        => { _non_changed => \&_nullable },
     'attach_data.thedata' => MULTI_SELECT_OVERRIDE,
@@ -320,6 +329,10 @@ use constant OPERATOR_FIELD_OVERRIDE => {
         changedafter  => \&_work_time_changedbefore_after,
         _default      => \&_work_time,
     },
+    last_visit_ts => {
+        _non_changed => \&_last_visit_ts,
+        _default     => \&_last_visit_ts_invalid_operator,
+    },
     
     # Custom Fields
     FIELD_TYPE_FREETEXT, { _non_changed => \&_nullable },
@@ -349,6 +362,10 @@ sub SPECIAL_PARSING {
         creation_ts => \&_datetime_translate,
         deadline    => \&_date_translate,
         delta_ts    => \&_datetime_translate,
+
+        # last_visit field that accept both a 1d, 1w, 1m, 1y format and the
+        # %last_changed% pronoun.
+        last_visit_ts => \&_last_visit_datetime,
     };
     foreach my $field (Bugzilla->active_custom_fields) {
         if ($field->type == FIELD_TYPE_DATETIME) {
@@ -399,6 +416,7 @@ use constant FIELD_MAP => {
     bugidtype => 'bug_id_type',
     changedin => 'days_elapsed',
     long_desc => 'longdesc',
+    tags      => 'tag',
 };
 
 # Some fields are not sorted on themselves, but on other fields.
@@ -514,7 +532,14 @@ sub COLUMN_JOINS {
                 from => 'map_bug_tag.tag_id',
                 to => 'id',
             },
-        }
+        },
+        last_visit_ts => {
+            as    => 'bug_user_last_visit',
+            table => 'bug_user_last_visit',
+            extra => ['bug_user_last_visit.user_id = ' . $user->id],
+            from  => 'bug_id',
+            to    => 'bug_id',
+        },
     };
     return $joins;
 };
@@ -554,9 +579,6 @@ sub COLUMNS {
     # of short_short_desc.)
     my %columns = (
         relevance            => { title => 'Relevance'  },
-        assigned_to_realname => { title => 'Assignee'   },
-        reporter_realname    => { title => 'Reporter'   },
-        qa_contact_realname  => { title => 'QA Contact' },
     );
 
     # Next we define columns that have special SQL instead of just something
@@ -587,6 +609,7 @@ sub COLUMNS {
         'longdescs.count' => 'COUNT(DISTINCT map_longdescs_count.comment_id)',
 
         tag => $dbh->sql_group_concat('DISTINCT map_tag.name'),
+        last_visit_ts => 'bug_user_last_visit.last_visit_ts',
     );
 
     # Backward-compatibility for old field names. Goes new_name => old_name.
@@ -612,7 +635,7 @@ sub COLUMNS {
              $sql = $dbh->sql_string_until($sql, $dbh->quote('@'));
         }
         $special_sql{$col} = $sql;
-        $columns{"${col}_realname"}->{name} = "map_${col}.realname";
+        $special_sql{"${col}_realname"} = "map_${col}.realname";
     }
 
     foreach my $col (@id_fields) {
@@ -2037,6 +2060,13 @@ sub _quote_unless_numeric {
 
 sub build_subselect {
     my ($outer, $inner, $table, $cond, $negate) = @_;
+    if ($table =~ /\battach_data\b/) {
+        # It takes a long time to scan the whole attach_data table
+        # unconditionally, so we return the subselect and let the DB optimizer
+        # restrict the search based on other search criteria.
+        my $not = $negate ? "NOT" : "";
+        return "$outer $not IN (SELECT DISTINCT $inner FROM $table WHERE $cond)";
+    }
     # Execute subselects immediately to avoid dependent subqueries, which are
     # large performance hits on MySql
     my $q = "SELECT DISTINCT $inner FROM $table WHERE $cond";
@@ -2140,6 +2170,21 @@ sub _timestamp_translate {
 sub _datetime_translate {
     return shift->_timestamp_translate(0, @_);
 }
+
+sub _last_visit_datetime {
+    my ($self, $args) = @_;
+    my $value = $args->{value};
+
+    $self->_datetime_translate($args);
+    if ($value eq $args->{value}) {
+        # Failed to translate a datetime. let's try the pronoun expando.
+        if ($value eq '%last_changed%') {
+            $self->_add_extra_column('changeddate');
+            $args->{value} = $args->{quoted} = 'bugs.delta_ts';
+        }
+    }
+}
+
 
 sub _date_translate {
     return shift->_timestamp_translate(1, @_);
@@ -2360,6 +2405,20 @@ sub _user_nonchanged {
     if ($args->{value_is_id}) {
         $null_alternate = 0;
     }
+    elsif (substr($field, -9) eq '_realname') {
+        my $as = "name_${field}_$chart_id";
+        # For fields with periods in their name.
+        $as =~ s/\./_/;
+        my $join = {
+            table => 'profiles',
+            as    => $as,
+            from  => substr($args->{full_field}, 0, -9),
+            to    => 'userid',
+            join  => (!$is_in_other_table and !$is_nullable) ? 'INNER' : undef,
+        };
+        push(@$joins, $join);
+        $args->{full_field} = "$as.realname";
+    }
     else {
         my $as = "name_${field}_$chart_id";
         # For fields with periods in their name.
@@ -2374,7 +2433,7 @@ sub _user_nonchanged {
         push(@$joins, $join);
         $args->{full_field} = "$as.login_name";
     }
-    
+
     # We COALESCE fields that can be NULL, to make "not"-style operators
     # continue to work properly. For example, "qa_contact is not equal to bob"
     # should also show bugs where the qa_contact is NULL. With COALESCE,
@@ -2620,6 +2679,21 @@ sub _percentage_complete {
     # We need actual_time in _select_columns, otherwise we can't use
     # it in the expression for searching percentage_complete.
     $self->_add_extra_column('actual_time');
+}
+
+sub _last_visit_ts {
+    my ($self, $args) = @_;
+
+    $args->{full_field} = $self->COLUMNS->{last_visit_ts}->{name};
+    $self->_add_extra_column('last_visit_ts');
+}
+
+sub _last_visit_ts_invalid_operator {
+    my ($self, $args) = @_;
+
+    ThrowUserError('search_field_operator_invalid',
+        { field    => $args->{field},
+          operator => $args->{operator} });
 }
 
 sub _days_elapsed {

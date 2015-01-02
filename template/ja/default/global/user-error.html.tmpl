@@ -1008,6 +1008,11 @@
     から参照されています。
     先にこのグループへの全ての参照を削除してください。
 
+  [% ELSIF error == "group_cannot_view" %]
+    [% title = "グループを閲覧できません" %]
+    グループを閲覧するには、'editusers' もしくは 'creategroups' グループのメンバーであるか、
+    どちらかのグループの権限を与えられなければなりません。
+
   [% ELSIF error == "group_exists" %]
     [% title = BLOCK %] [% jawords.group FILTER html %] は既に存在しています [% END %]
     [% jawords.group FILTER html %] [% name FILTER html %] は既に存在しています。
@@ -2040,6 +2045,11 @@
   [% ELSIF error == "user_not_insider" %]
     [% title = "このユーザは Insidergroup にいません" %]
     申し訳ありませんが、あなたはコメントや添付のプライベートフラグを変更できません。
+
+  [% ELSIF error == "user_not_involved" %]
+    [% title = "ユーザが $terms.Bug と関係ありません" %]
+    申し訳ありませんが、あなたには [% terms.Bug %] [%+
+        bug_id FILTER bug_link(bug_id) FILTER none %] 関係性がありません。
 
   [% ELSIF error == "webdot_too_large" %]
     [% title = "依存グラフが大きすぎます" %]

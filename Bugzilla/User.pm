@@ -19,10 +19,13 @@ use Bugzilla::Product;
 use Bugzilla::Classification;
 use Bugzilla::Field;
 use Bugzilla::Group;
+use Bugzilla::BugUserLastVisit;
 
 use DateTime::TimeZone;
 use List::Util qw(max);
+use List::MoreUtils qw(any);
 use Scalar::Util qw(blessed);
+use Storable qw(dclone);
 use URI;
 use URI::QueryParam;
 
@@ -142,12 +145,80 @@ sub super_user {
     return $user;
 }
 
+sub _update_groups {
+    my $self = shift;
+    my $group_changes = shift;
+    my $changes = shift;
+    my $dbh = Bugzilla->dbh;
+
+    # Update group settings.
+    my $sth_add_mapping = $dbh->prepare(
+        qq{INSERT INTO user_group_map (
+                  user_id, group_id, isbless, grant_type
+                 ) VALUES (
+                  ?, ?, ?, ?
+                 )
+          });
+    my $sth_remove_mapping = $dbh->prepare(
+        qq{DELETE FROM user_group_map
+            WHERE user_id = ?
+              AND group_id = ?
+              AND isbless = ?
+              AND grant_type = ?
+          });
+
+    foreach my $is_bless (keys %$group_changes) {
+        my ($removed, $added) = @{$group_changes->{$is_bless}};
+
+        foreach my $group (@$removed) {
+            $sth_remove_mapping->execute(
+                $self->id, $group->id, $is_bless, GRANT_DIRECT
+             );
+        }
+        foreach my $group (@$added) {
+            $sth_add_mapping->execute(
+                $self->id, $group->id, $is_bless, GRANT_DIRECT
+             );
+        }
+
+        if (! $is_bless) {
+            my $query = qq{
+                INSERT INTO profiles_activity
+                    (userid, who, profiles_when, fieldid, oldvalue, newvalue)
+                VALUES ( ?, ?, now(), ?, ?, ?)
+            };
+
+            $dbh->do(
+                $query, undef,
+                $self->id, Bugzilla->user->id,
+                get_field_id('bug_group'),
+                join(', ', map { $_->name } @$removed),
+                join(', ', map { $_->name } @$added)
+            );
+        }
+        else {
+            # XXX: should create profiles_activity entries for blesser changes.
+        }
+
+        Bugzilla->memcached->clear_config({ key => 'user_groups.' . $self->id });
+
+        my $type = $is_bless ? 'bless_groups' : 'groups';
+        $changes->{$type} = [
+            [ map { $_->name } @$removed ],
+            [ map { $_->name } @$added ],
+        ];
+    }
+}
+
 sub update {
     my $self = shift;
     my $options = shift;
-    
+
+    my $group_changes = delete $self->{_group_changes};
+
     my $changes = $self->SUPER::update(@_);
     my $dbh = Bugzilla->dbh;
+    $self->_update_groups($group_changes, $changes);
 
     if (exists $changes->{login_name}) {
         # Delete all the tokens related to the userid
@@ -262,6 +333,112 @@ sub set_password { $_[0]->set('cryptpassword', $_[1]); }
 sub set_disabledtext {
     $_[0]->set('disabledtext', $_[1]);
     $_[0]->set('is_enabled', $_[1] ? 0 : 1);
+}
+
+sub set_groups {
+    my $self = shift;
+    $self->_set_groups(GROUP_MEMBERSHIP, @_);
+}
+
+sub set_bless_groups {
+    my $self = shift;
+
+    # The person making the change needs to be in the editusers group
+    Bugzilla->user->in_group('editusers')
+        || ThrowUserError("auth_failure", {group  => "editusers",
+                                           reason => "cant_bless",
+                                           action => "edit",
+                                           object => "users"});
+
+    $self->_set_groups(GROUP_BLESS, @_);
+}
+
+sub _set_groups {
+    my $self     = shift;
+    my $is_bless = shift;
+    my $changes  = shift;
+    my $dbh = Bugzilla->dbh;
+
+    # The person making the change is $user, $self is the person being changed
+    my $user = Bugzilla->user;
+
+    # Input is a hash of arrays. Key is 'set', 'add' or 'remove'. The array
+    # is a list of group ids and/or names.
+
+    # First turn the arrays into group objects.
+    $changes = $self->_set_groups_to_object($changes);
+
+    # Get a list of the groups the user currently is a member of
+    my $ids = $dbh->selectcol_arrayref(
+        q{SELECT DISTINCT group_id
+            FROM user_group_map
+           WHERE user_id = ? AND isbless = ? AND grant_type = ?},
+        undef, $self->id, $is_bless, GRANT_DIRECT);
+
+    my $current_groups = Bugzilla::Group->new_from_list($ids);
+    my $new_groups = dclone($current_groups);
+
+    # Record the changes
+    if (exists $changes->{set}) {
+        $new_groups = $changes->{set};
+
+        # We need to check the user has bless rights on the existing groups
+        # If they don't, then we need to add them back to new_groups
+        foreach my $group (@$current_groups) {
+            if (! $user->can_bless($group->id)) {
+                push @$new_groups, $group
+                    unless grep { $_->id eq $group->id } @$new_groups;
+            }
+        }
+    }
+    else {
+        foreach my $group (@{$changes->{remove} // []}) {
+            @$new_groups = grep { $_->id ne $group->id } @$new_groups;
+        }
+        foreach my $group (@{$changes->{add} // []}) {
+            push @$new_groups, $group
+                unless grep { $_->id eq $group->id } @$new_groups;
+        }
+    }
+
+    # Stash the changes, so self->update can actually make them
+    my @diffs = diff_arrays($current_groups, $new_groups, 'id');
+    if (scalar(@{$diffs[0]}) || scalar(@{$diffs[1]})) {
+        $self->{_group_changes}{$is_bless} = \@diffs;
+    }
+}
+
+sub _set_groups_to_object {
+    my $self = shift;
+    my $changes = shift;
+    my $user = Bugzilla->user;
+
+    foreach my $key (keys %$changes) {
+        # Check we were given an array
+        unless (ref($changes->{$key}) eq 'ARRAY') {
+            ThrowCodeError(
+                'param_invalid',
+                { param => $changes->{$key}, function => $key }
+            );
+        }
+
+        # Go through the array, and turn items into group objects
+        my @groups = ();
+        foreach my $value (@{$changes->{$key}}) {
+            my $type = $value =~ /^\d+$/ ? 'id' : 'name';
+            my $group = Bugzilla::Group->new({$type => $value});
+
+            if (! $group || ! $user->can_bless($group->id)) {
+                ThrowUserError('auth_failure',
+                    { group  => $value, reason => 'cant_bless',
+                      action => 'edit', object => 'users' });
+            }
+            push @groups, $group;
+        }
+        $changes->{$key} = \@groups;
+    }
+
+    return $changes;
 }
 
 sub update_last_seen_date {
@@ -669,64 +846,98 @@ sub groups {
     return $self->{groups} if defined $self->{groups};
     return [] unless $self->id;
 
-    my $dbh = Bugzilla->dbh;
-    my $groups_to_check = $dbh->selectcol_arrayref(
-        q{SELECT DISTINCT group_id
-            FROM user_group_map
-           WHERE user_id = ? AND isbless = 0}, undef, $self->id);
-
-    my $cache_key = 'group_grant_type_' . GROUP_MEMBERSHIP;
-    my $membership_rows = Bugzilla->memcached->get_config({
-        key => $cache_key,
+    my $user_groups_key = "user_groups." . $self->id;
+    my $groups = Bugzilla->memcached->get_config({
+        key => $user_groups_key
     });
-    if (!$membership_rows) {
-        $membership_rows = $dbh->selectall_arrayref(
-            "SELECT DISTINCT grantor_id, member_id
-               FROM group_group_map
-              WHERE grant_type = " . GROUP_MEMBERSHIP);
+
+    if (!$groups) {
+        my $dbh = Bugzilla->dbh;
+        my $groups_to_check = $dbh->selectcol_arrayref(
+            "SELECT DISTINCT group_id
+               FROM user_group_map
+              WHERE user_id = ? AND isbless = 0", undef, $self->id);
+
+        my $grant_type_key = 'group_grant_type_' . GROUP_MEMBERSHIP;
+        my $membership_rows = Bugzilla->memcached->get_config({
+            key => $grant_type_key,
+        });
+        if (!$membership_rows) {
+            $membership_rows = $dbh->selectall_arrayref(
+                "SELECT DISTINCT grantor_id, member_id
+                FROM group_group_map
+                WHERE grant_type = " . GROUP_MEMBERSHIP);
+            Bugzilla->memcached->set_config({
+                key  => $grant_type_key,
+                data => $membership_rows,
+            });
+        }
+
+        my %group_membership;
+        foreach my $row (@$membership_rows) {
+            my ($grantor_id, $member_id) = @$row;
+            push (@{ $group_membership{$member_id} }, $grantor_id);
+        }
+
+        # Let's walk the groups hierarchy tree (using FIFO)
+        # On the first iteration it's pre-filled with direct groups
+        # membership. Later on, each group can add its own members into the
+        # FIFO. Circular dependencies are eliminated by checking
+        # $checked_groups{$member_id} hash values.
+        # As a result, %groups will have all the groups we are the member of.
+        my %checked_groups;
+        my %groups;
+        while (scalar(@$groups_to_check) > 0) {
+            # Pop the head group from FIFO
+            my $member_id = shift @$groups_to_check;
+
+            # Skip the group if we have already checked it
+            if (!$checked_groups{$member_id}) {
+                # Mark group as checked
+                $checked_groups{$member_id} = 1;
+
+                # Add all its members to the FIFO check list
+                # %group_membership contains arrays of group members
+                # for all groups. Accessible by group number.
+                my $members = $group_membership{$member_id};
+                my @new_to_check = grep(!$checked_groups{$_}, @$members);
+                push(@$groups_to_check, @new_to_check);
+
+                $groups{$member_id} = 1;
+            }
+        }
+        $groups = [ keys %groups ];
+
         Bugzilla->memcached->set_config({
-            key  => $cache_key,
-            data => $membership_rows,
+            key  => $user_groups_key,
+            data => $groups,
         });
     }
 
-    my %group_membership;
-    foreach my $row (@$membership_rows) {
-        my ($grantor_id, $member_id) = @$row; 
-        push (@{ $group_membership{$member_id} }, $grantor_id);
-    }
-    
-    # Let's walk the groups hierarchy tree (using FIFO)
-    # On the first iteration it's pre-filled with direct groups 
-    # membership. Later on, each group can add its own members into the
-    # FIFO. Circular dependencies are eliminated by checking
-    # $checked_groups{$member_id} hash values.
-    # As a result, %groups will have all the groups we are the member of.
-    my %checked_groups;
-    my %groups;
-    while (scalar(@$groups_to_check) > 0) {
-        # Pop the head group from FIFO
-        my $member_id = shift @$groups_to_check;
-        
-        # Skip the group if we have already checked it
-        if (!$checked_groups{$member_id}) {
-            # Mark group as checked
-            $checked_groups{$member_id} = 1;
-            
-            # Add all its members to the FIFO check list
-            # %group_membership contains arrays of group members 
-            # for all groups. Accessible by group number.
-            my $members = $group_membership{$member_id};
-            my @new_to_check = grep(!$checked_groups{$_}, @$members);
-            push(@$groups_to_check, @new_to_check);
-
-            $groups{$member_id} = 1;
-        }
-    }
-
-    $self->{groups} = Bugzilla::Group->new_from_list([keys %groups]);
-
+    $self->{groups} = Bugzilla::Group->new_from_list($groups);
     return $self->{groups};
+}
+
+sub last_visited {
+    my ($self) = @_;
+
+    return Bugzilla::BugUserLastVisit->match({ user_id => $self->id });
+}
+
+sub is_involved_in_bug {
+    my ($self, $bug) = @_;
+    my $user_id    = $self->id;
+    my $user_login = $self->login;
+
+    return unless $user_id;
+    return 1 if $user_id == $bug->assigned_to->id;
+    return 1 if $user_id == $bug->reporter->id;
+
+    if (Bugzilla->params->{'useqacontact'} and $bug->qa_contact) {
+        return 1 if $user_id == $bug->qa_contact->id;
+    }
+
+    return any { $user_login eq $_ } @{ $bug->cc };
 }
 
 # It turns out that calling ->id on objects a few hundred thousand
@@ -766,7 +977,7 @@ sub bless_groups {
     }
 
     if (Bugzilla->params->{usevisibilitygroups}
-        && !$self->visible_groups_inherited) {
+        && !@{ $self->visible_groups_inherited }) {
         return [];
     }
 
@@ -1237,6 +1448,30 @@ sub get_accessible_products {
     return [ sort { $a->name cmp $b->name } values %products ];
 }
 
+sub can_administer {
+    my $self = shift;
+
+    if (not defined $self->{can_administer}) {
+        my $can_administer = 0;
+
+        $can_administer = 1 if $self->in_group('admin')
+            || $self->in_group('tweakparams')
+            || $self->in_group('editusers')
+            || $self->can_bless
+            || (Bugzilla->params->{'useclassification'} && $self->in_group('editclassifications'))
+            || $self->in_group('editcomponents')
+            || scalar(@{$self->get_products_by_permission('editcomponents')})
+            || $self->in_group('creategroups')
+            || $self->in_group('editkeywords')
+            || $self->in_group('bz_canusewhines');
+
+        Bugzilla::Hook::process('user_can_administer', { can_administer => \$can_administer });
+        $self->{can_administer} = $can_administer;
+    }
+
+    return $self->{can_administer};
+}
+
 sub check_can_admin_product {
     my ($self, $product_name) = @_;
 
@@ -1424,6 +1659,8 @@ sub derive_regexp_groups {
             $group_delete->execute($id, $group, GRANT_REGEXP) if $present;
         }
     }
+
+    Bugzilla->memcached->clear_config({ key => "user_groups.$id" });
 }
 
 sub product_responsibilities {
@@ -2665,6 +2902,10 @@ not be aware of the existence of the product.
 
  Returns:     an array of product objects.
 
+=item C<can_administer>
+
+Returns 1 if the user can see the admin menu. Otherwise, returns 0
+
 =item C<check_can_admin_product($product_name)>
 
  Description: Checks whether the user is allowed to administrate the product.
@@ -2766,6 +3007,66 @@ i.e. if the 'globalwatchers' parameter contains the user.
 Returns true if the user can attach tags to comments.
 i.e. if the 'comment_taggers_group' parameter is set and the user belongs to
 this group.
+
+=item C<last_visited>
+
+Returns an arrayref L<Bugzilla::BugUserLastVisit> objects.
+
+=item C<is_involved_in_bug($bug)>
+
+Returns true if any of the following conditions are met, false otherwise.
+
+=over
+
+=item *
+
+User is the assignee of the bug
+
+=item *
+
+User is the reporter of the bug
+
+=item *
+
+User is the QA contact of the bug (if Bugzilla is configured to use a QA
+contact)
+
+=item *
+
+User is in the cc list for the bug.
+
+=back
+
+=item C<set_groups>
+
+C<hash> These specify the groups that this user is directly a member of.
+To set these, you should pass a hash as the value. The hash may contain
+the following fields:
+
+=over
+
+=item C<add> An array of C<int>s or C<string>s. The group ids or group names
+that the user should be added to.
+
+=item C<remove> An array of C<int>s or C<string>s. The group ids or group names
+that the user should be removed from.
+
+=item C<set> An array of C<int>s or C<string>s. An exact set of group ids
+and group names that the user should be a member of. NOTE: This does not
+remove groups from the user where the person making the change does not
+have the bless privilege for.
+
+If you specify C<set>, then C<add> and C<remove> will be ignored. A group in
+both the C<add> and C<remove> list will be added. Specifying a group that the
+user making the change does not have bless rights will generate an error.
+
+=back
+
+=item C<set_bless_groups>
+
+C<hash> - This is the same as set_groups, but affects what groups a user
+has direct membership to bless that group. It takes the same inputs as
+set_groups.
 
 =back
 

@@ -17,6 +17,7 @@ use Bugzilla::Hook;
 use Bugzilla::Install::Requirements;
 use Bugzilla::Install::Util qw(install_string template_include_path 
                                include_languages);
+use Bugzilla::Classification;
 use Bugzilla::Keyword;
 use Bugzilla::Util;
 use Bugzilla::Error;
@@ -26,9 +27,11 @@ use Bugzilla::Token;
 use Cwd qw(abs_path);
 use MIME::Base64;
 use Date::Format ();
+use Digest::MD5 qw(md5_hex);
 use File::Basename qw(basename dirname);
 use File::Find;
 use File::Path qw(rmtree mkpath);
+use File::Slurp;
 use File::Spec;
 use IO::Dir;
 use List::MoreUtils qw(firstidx);
@@ -144,9 +147,10 @@ sub get_format {
 # If you want to modify this routine, read the comments carefully
 
 sub quoteUrls {
-    my ($text, $bug, $comment, $user) = @_;
+    my ($text, $bug, $comment, $user, $bug_link_func) = @_;
     return $text unless $text;
     $user ||= Bugzilla->user;
+    $bug_link_func ||= \&get_bug_link;
 
     # We use /g for speed, but uris can have other things inside them
     # (http://foo/bug#3 for example). Filtering that out filters valid
@@ -200,7 +204,7 @@ sub quoteUrls {
         map { qr/$_/ } grep($_, Bugzilla->params->{'urlbase'}, 
                             Bugzilla->params->{'sslbase'})) . ')';
     $text =~ s~\b(${urlbase_re}\Qshow_bug.cgi?id=\E([0-9]+)(\#c([0-9]+))?)\b
-              ~($things[$count++] = get_bug_link($3, $1, { comment_num => $5, user => $user })) &&
+              ~($things[$count++] = $bug_link_func->($3, $1, { comment_num => $5, user => $user })) &&
                ("\x{FDD2}" . ($count-1) . "\x{FDD3}")
               ~egox;
 
@@ -247,7 +251,7 @@ sub quoteUrls {
     $text =~ s~\b($bug_re(?:$s*,?$s*$comment_re)?|$comment_re)
               ~ # We have several choices. $1 here is the link, and $2-4 are set
                 # depending on which part matched
-               (defined($2) ? get_bug_link($2, $1, { comment_num => $3, user => $user }) :
+               (defined($2) ? $bug_link_func->($2, $1, { comment_num => $3, user => $user }) :
                               "<a href=\"$current_bugurl#c$4\">$1</a>")
               ~egx;
 
@@ -263,7 +267,7 @@ sub quoteUrls {
         my $length = $+[0] - $-[0];
         my $match  = $1;
 
-        $match =~ s/((?:#$s*)?(\d+))/get_bug_link($2, $1);/eg;
+        $match =~ s/((?:#$s*)?(\d+))/$bug_link_func->($2, $1);/eg;
         # Replace the old string with the linkified one.
         substr($text, $offset, $length) = $match;
     }
@@ -286,7 +290,7 @@ sub quoteUrls {
     $text =~ s~(?<=^\*\*\*\ This\ bug\ has\ been\ marked\ as\ a\ duplicate\ of\ )
                (\d+)
                (?=\ \*\*\*\Z)
-              ~get_bug_link($1, $1, { user => $user })
+              ~$bug_link_func->($1, $1, { user => $user })
               ~egmx;
 
     # Now remove the encoding hacks in reverse order
@@ -422,10 +426,12 @@ sub mtime_filter {
 
 # Set up the skin CSS cascade:
 #
-#  1. YUI CSS
-#  2. Standard Bugzilla stylesheet set (persistent)
-#  3. Third-party "skin" stylesheet set, per user prefs (persistent)
-#  4. Custom Bugzilla stylesheet set (persistent)
+#  1. standard/global.css
+#  2. YUI CSS
+#  3. Standard Bugzilla stylesheet set
+#  4. Third-party "skin" stylesheet set, per user prefs
+#  5. Inline css passed to global/header.html.tmpl
+#  6. Custom Bugzilla stylesheet set
 
 sub css_files {
     my ($style_urls, $yui, $yui_css) = @_;
@@ -448,7 +454,12 @@ sub css_files {
             push(@{ $by_type{$key} }, $set->{$key});
         }
     }
-    
+
+    # build unified
+    $by_type{unified_standard_skin} = _concatenate_css($by_type{standard},
+                                                       $by_type{skin});
+    $by_type{unified_custom} = _concatenate_css($by_type{custom});
+
     return \%by_type;
 }
 
@@ -456,28 +467,84 @@ sub _css_link_set {
     my ($file_name) = @_;
 
     my %set = (standard => mtime_filter($file_name));
-    
-    # We use (^|/) to allow Extensions to use the skins system if they
-    # want.
-    if ($file_name !~ m{(^|/)skins/standard/}) {
+
+    # We use (?:^|/) to allow Extensions to use the skins system if they want.
+    if ($file_name !~ m{(?:^|/)skins/standard/}) {
         return \%set;
     }
 
     my $skin = Bugzilla->user->settings->{skin}->{value};
     my $cgi_path = bz_locations()->{'cgi_path'};
     my $skin_file_name = $file_name;
-    $skin_file_name =~ s{(^|/)skins/standard/}{skins/contrib/$skin/};
+    $skin_file_name =~ s{(?:^|/)skins/standard/}{skins/contrib/$skin/};
     if (my $mtime = _mtime("$cgi_path/$skin_file_name")) {
         $set{skin} = mtime_filter($skin_file_name, $mtime);
     }
 
     my $custom_file_name = $file_name;
-    $custom_file_name =~ s{(^|/)skins/standard/}{skins/custom/};
+    $custom_file_name =~ s{(?:^|/)skins/standard/}{skins/custom/};
     if (my $custom_mtime = _mtime("$cgi_path/$custom_file_name")) {
         $set{custom} = mtime_filter($custom_file_name, $custom_mtime);
     }
-    
+
     return \%set;
+}
+
+sub _concatenate_css {
+    my @sources = map { @$_ } @_;
+    return unless @sources;
+
+    my %files =
+        map {
+            (my $file = $_) =~ s/(^[^\?]+)\?.+/$1/;
+            $_ => $file;
+        } @sources;
+
+    my $cgi_path   = bz_locations()->{cgi_path};
+    my $skins_path = bz_locations()->{assetsdir};
+
+    # build minified files
+    my @minified;
+    foreach my $source (@sources) {
+        next unless -e "$cgi_path/$files{$source}";
+        my $file = $skins_path . '/' . md5_hex($source) . '.css';
+        if (!-e $file) {
+            my $content = read_file("$cgi_path/$files{$source}");
+
+            # minify
+            $content =~ s{/\*.*?\*/}{}sg;   # comments
+            $content =~ s{(^\s+|\s+$)}{}mg; # leading/trailing whitespace
+            $content =~ s{\n}{}g;           # single line
+
+            # rewrite urls
+            $content =~ s{url\(([^\)]+)\)}{_css_url_rewrite($source, $1)}eig;
+
+            write_file($file, "/* $files{$source} */\n" . $content . "\n");
+        }
+        push @minified, $file;
+    }
+
+    # concat files
+    my $file = $skins_path . '/' . md5_hex(join(' ', @sources)) . '.css';
+    if (!-e $file) {
+        my $content = '';
+        foreach my $source (@minified) {
+            $content .= read_file($source);
+        }
+        write_file($file, $content);
+    }
+
+    $file =~ s/^\Q$cgi_path\E\///;
+    return mtime_filter($file);
+}
+
+sub _css_url_rewrite {
+    my ($source, $url) = @_;
+    # rewrite relative urls as the unified stylesheet lives in a different
+    # directory from the source
+    $url =~ s/(^['"]|['"]$)//g;
+    return $url if substr($url, 0, 1) eq '/';
+    return 'url(../../' . dirname($source) . '/' . $url . ')';
 }
 
 # YUI dependency resolution
@@ -952,6 +1019,11 @@ sub create {
 
             'css_files' => \&css_files,
             yui_resolve_deps => \&yui_resolve_deps,
+
+            # All classifications (sorted by sortkey, name)
+            'all_classifications' => sub {
+                return [map { $_->name } Bugzilla::Classification->get_all()];
+            },
 
             # Whether or not keywords are enabled, in this Bugzilla.
             'use_keywords' => sub { return Bugzilla::Keyword->any_exist; },

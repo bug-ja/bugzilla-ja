@@ -31,6 +31,18 @@ use constant REL_EXAMPLE => -127;
 
 our $VERSION = '1.0';
 
+sub user_can_administer {
+    my ($self, $args) = @_;
+    my $can_administer = $args->{can_administer};
+
+    # If you add an option to the admin pages (e.g. by using the Hooks in
+    # template/en/default/admin/admin.html.tmpl), you may want to allow
+    # users in another group view admin.cgi
+    #if (Bugzilla->user->in_group('other_group')) {
+    #    $$can_administer = 1;
+    #}
+}
+
 sub admin_editusers_action {
     my ($self, $args) = @_;
     my ($vars, $action, $user) = @$args{qw(vars action user)};
@@ -947,6 +959,20 @@ sub webservice_error_codes {
     
     my $error_map = $args->{error_map};
     $error_map->{'example_my_error'} = 10001;
+}
+
+sub webservice_before_call {
+    my ($self, $args) = @_;
+
+    # This code doesn't actually *do* anything, it's just here to show you
+    # how to use this hook.
+    my $method      = $args->{method};
+    my $full_method = $args->{full_method};
+
+    # Uncomment this line to see a line in your webserver's error log whenever
+    # a webservice call is made
+    #warn "RPC call $full_method made by ",
+    #   Bugzilla->user->login || 'an anonymous user', "\n";
 }
 
 sub webservice_fix_credentials {

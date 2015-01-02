@@ -95,7 +95,8 @@ sub members_non_inherited {
 sub _get_members {
     my ($self, $grant_type) = @_;
     my $dbh = Bugzilla->dbh;
-    my $grant_clause = $grant_type ? "AND grant_type = $grant_type" : "";
+    my $grant_clause = defined($grant_type) ? "AND grant_type = $grant_type"
+                                            : "";
     my $user_ids = $dbh->selectcol_arrayref(
         "SELECT DISTINCT user_id
            FROM user_group_map
@@ -216,6 +217,7 @@ sub update {
     Bugzilla::Hook::process('group_end_of_update', 
                             { group => $self, changes => $changes });
     $dbh->bz_commit_transaction();
+    Bugzilla->memcached->clear_config();
     return $changes;
 }
 

@@ -81,8 +81,9 @@ use constant WS_ERROR_CODE => {
     illegal_field => 104,
     freetext_too_long => 104,
     # Component errors
-    require_component       => 105,
-    component_name_too_long => 105,
+    require_component         => 105,
+    component_name_too_long   => 105,
+    product_unknown_component => 105,
     # Invalid Product
     no_products         => 106,
     entry_access_denied => 106,
@@ -184,12 +185,20 @@ use constant WS_ERROR_CODE => {
     empty_group_description => 802,
     invalid_regexp => 803,
     invalid_group_name => 804,
+    group_cannot_view => 805,
 
     # Classification errors are 900-1000
     auth_classification_not_enabled => 900,
 
     # Search errors are 1000-1100
     buglist_parameters_required => 1000,
+
+    # Flag type errors are 1100-1200
+    flag_type_name_invalid        => 1101,
+    flag_type_description_invalid => 1102,
+    flag_type_cc_list_invalid     => 1103,
+    flag_type_sortkey_invalid     => 1104,
+    flag_type_not_editable        => 1105,
 
     # Errors thrown by the WebService itself. The ones that are negative 
     # conform to http://xmlrpc-epi.sourceforge.net/specs/rfc.fault_codes.php
@@ -266,12 +275,14 @@ sub WS_DISPATCH {
     Bugzilla::Hook::process('webservice', { dispatch => \%hook_dispatch });
 
     my $dispatch = {
-        'Bugzilla'       => 'Bugzilla::WebService::Bugzilla',
-        'Bug'            => 'Bugzilla::WebService::Bug',
-        'Classification' => 'Bugzilla::WebService::Classification',
-        'Group'          => 'Bugzilla::WebService::Group',
-        'Product'        => 'Bugzilla::WebService::Product',
-        'User'           => 'Bugzilla::WebService::User',
+        'Bugzilla'         => 'Bugzilla::WebService::Bugzilla',
+        'Bug'              => 'Bugzilla::WebService::Bug',
+        'Classification'   => 'Bugzilla::WebService::Classification',
+        'FlagType'         => 'Bugzilla::WebService::FlagType',
+        'Group'            => 'Bugzilla::WebService::Group',
+        'Product'          => 'Bugzilla::WebService::Product',
+        'User'             => 'Bugzilla::WebService::User',
+        'BugUserLastVisit' => 'Bugzilla::WebService::BugUserLastVisit',
         %hook_dispatch
     };
     return $dispatch;

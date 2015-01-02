@@ -17,6 +17,8 @@
            title = title
 %]
 
+[% password_complexity = Param('password_complexity') %]
+
 <p>
   アカウントを作成するには、パスワードを指定する必要があります。
   メールアドレスと実名 (設定されれば) はあなたの行った変更とともに表示されます。
@@ -38,7 +40,15 @@
       <th><label for="passwd1">パスワードの指定</label>:</th>
       <td>
         <input type="password" id="passwd1" name="passwd1" value="" required>
-        (最低 [% constants.USER_PASSWORD_MIN_LENGTH FILTER none %] 文字)
+        (パスワードは最低 [% constants.USER_PASSWORD_MIN_LENGTH FILTER none %] 文字で
+        [% IF password_complexity == "mixed_letters" %]
+          、最低1文字ずつの大文字・小文字を含んでい
+        [% ELSIF password_complexity == "letters_numbers" %]
+          、最低1文字ずつの大文字・小文字・数字を含んでい
+        [% ELSIF password_complexity == "letters_numbers_specialchars" %] 
+          、最低1文字ずつの英文字・数字・特殊文字を含んでい
+        [% END ~%]
+        なくてはなりません。)
       </td>
     </tr>
     <tr>

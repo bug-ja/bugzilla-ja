@@ -12,7 +12,6 @@ use strict;
 
 use parent qw(Bugzilla::WebService::Server::JSONRPC);
 
-use Bugzilla;
 use Bugzilla::Constants;
 use Bugzilla::Error;
 use Bugzilla::Hook;
@@ -24,9 +23,11 @@ use Bugzilla::WebService::Util qw(taint_data fix_credentials);
 use Bugzilla::WebService::Server::REST::Resources::Bug;
 use Bugzilla::WebService::Server::REST::Resources::Bugzilla;
 use Bugzilla::WebService::Server::REST::Resources::Classification;
+use Bugzilla::WebService::Server::REST::Resources::FlagType;
 use Bugzilla::WebService::Server::REST::Resources::Group;
 use Bugzilla::WebService::Server::REST::Resources::Product;
 use Bugzilla::WebService::Server::REST::Resources::User;
+use Bugzilla::WebService::Server::REST::Resources::BugUserLastVisit;
 
 use Scalar::Util qw(blessed reftype);
 use MIME::Base64 qw(decode_base64);

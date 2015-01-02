@@ -196,7 +196,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.5.4";
+use constant BUGZILLA_VERSION => "4.5.4+";
 
 # Location of the remote and local XML files to track new releases.
 use constant REMOTE_FILE => 'http://updates.bugzilla.org/bugzilla-update.xml';
@@ -682,6 +682,7 @@ sub _bz_locations {
         # The script should really generate these graphs directly...
         'webdotdir'   => "$datadir/webdot",
         'extensionsdir' => "$libpath/extensions",
+        'assetsdir'   => "$datadir/assets",
     };
 }
 
