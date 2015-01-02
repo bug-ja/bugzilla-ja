@@ -15,7 +15,7 @@
 [% title = BLOCK %]'[% email FILTER html %]' のアカウント新規作成[% END %]
 [% PROCESS "global/header.html.tmpl"
            title = title
-           onload = "document.forms['confirm_account_form'].realname.focus();" %]
+%]
 
 <p>
   アカウントを作成するには、パスワードを指定する必要があります。
@@ -32,7 +32,7 @@
     </tr>
     <tr>
       <th><small><i>(任意)</i></small> <label for="realname">実名</label>:</th>
-      <td><input type="text" id="realname" name="realname" value=""></td>
+      <td><input id="realname" name="realname" autofocus></td>
     </tr>
     <tr>
       <th><label for="passwd1">パスワードの指定</label>:</th>

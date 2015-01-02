@@ -90,28 +90,14 @@ Bugzilla は [% terms.bug %] の説明やコメントを与えられた語で検
       <label for="content">検索語:</label>
     </th>
     <td>
-      <input name="content" size="40" id="content"
-             value="[% default.content.0 FILTER html %]">
-      <script type="text/javascript"> <!--
-          document.forms['queryform'].content.focus(); 
-      // -->
-      </script>
+      <input name="content" size="40" id="content" autofocus
+             value="[% default.content.0 FILTER html %]"
+             [%- " required" UNLESS Param('search_allow_no_criteria') %]>
     </td>
   </tr>
   <tr>
     <td></td>
-    <td>
-    
-      [% IF Param('search_allow_no_criteria') %]
-        <input type="submit" id="search" value="検索">
-      [% ELSE %]
-        <input type="submit" id="search" value="検索"
-             onclick="if (this.form.content.value == '')
-                      {alert('この検索語は省略不可能です。検索条件として、' +
-                             '最低一語を指定する必要があります。');
-                       return false;} return true;">
-      [% END %]
-    </td>
++    <td><input type="submit" id="search" value="検索"></td>
   </tr>
 </table>
 </form>

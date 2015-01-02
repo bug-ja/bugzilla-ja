@@ -23,6 +23,7 @@
 <script type="text/javascript">
 var descriptions = [
 [% FOREACH c = product.components %]
+  [% NEXT IF NOT c.is_active %]
   '[% c.description FILTER js %]',
 [% END %]
 ];
@@ -123,6 +124,7 @@ function PutDescription() {
           [% default.component_ = "General" %]
         [% END %]
         [% FOREACH c = product.components %]
+          [% NEXT IF NOT c.is_active %]
           <option value="[% c.name FILTER html %]"
                   [%+ 'selected="selected"' IF c.name == default.component_ %]>
             [% c.name FILTER html %]
@@ -223,9 +225,10 @@ function PutDescription() {
     <th>説明 (詳細)</th>
     <td>
       [% INCLUDE global/textarea.html.tmpl
-        name    = 'comment'
-        minrows = 6
-        cols    = constants.COMMENT_COLS
+        name      = 'comment'
+        minrows   = 6
+        cols      = constants.COMMENT_COLS
+        mandatory = 1
       %]
       <p>
         要約に関して詳細に述べてください。なにが問題か可能な限り具体的に書いてください。
@@ -367,11 +370,7 @@ function PutDescription() {
 <h3 id="step3">手順 3/3 - [% terms.bug %] 報告の登録</h3>
 
 <p>
-  <input type="submit" id="report" value="    [% terms.Bug %] 報告を登録する    "
-   onclick="if (this.form.comment.value == '')
-   { alert('この [% terms.bug %] の何らかの詳細を入力してください。');
-     this.form.comment.focus();
-     return false; } return true;">
+  <input type="submit" id="report" value="Submit [% terms.Bug %] Report">
 </p>
 
 <p>

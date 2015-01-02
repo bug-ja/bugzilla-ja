@@ -8,19 +8,15 @@
 
 [% INCLUDE global/header.html.tmpl
    title  = "$terms.Bugzilla 簡易検索",
-   style_urls = ['skins/standard/page.css']         
-   onload = 'document.forms[\'f\'].quicksearch.focus()'
+   style_urls = ['skins/standard/page.css']
  %]
 
 [% USE Bugzilla %]
 
 <p><label for="quicksearch">検索対象のひとつ以上の単語 (もしくは単語の断片) を入力してください :</label></p>
 
-<form name="f" action="buglist.cgi" method="get"
-      onsubmit="if (this.quicksearch.value == '')
-                { alert('ひとつ以上の単語を入力してください。');
-                  return false; } return true;">
-  <input type="text" size="40" name="quicksearch" id="quicksearch">
+<form name="f" action="buglist.cgi" method="get">
+  <input size="40" name="quicksearch" id="quicksearch" autofocus required>
   <input type="submit" value="検索" id="find">
 </form>
 
@@ -206,6 +202,49 @@
     <p><em><kbd>url|location bar|field -focus</kbd></em> での検索は
       (<kbd>url</kbd> OR <kbd>location</kbd>) AND (<kbd>bar</kbd> OR 
       <kbd>field</kbd>) AND (NOT <kbd>focus</kbd>) を意味します。</p>
+  </li>
++
+  <li>
+    既定の演算子も定義されており、コロン (:) はその値の <strong>部分一致</strong>
+    を意味します。以下の検索がサポートされています。
+    <ul>
+      <li>
+        <strong>:</strong> (部分一致):<br>
+        <kbd><em>summary:foo</em></kbd> は要約 (<kbd>summary</kbd>) に 
+        <kbd>foo</kbd> を含む [% terms.bugs %] を検索します。
+      </li>
+      <li>
+        <strong>=</strong> (一致):<br>
+        <kbd><em>summary=foo</em></kbd> は要約 (<kbd>summary</kbd>) が 
+        <kbd>foo</kbd> である [% terms.bugs %] を検索します。
+      </li>
+      <li>
+        <strong>!=</strong> (不一致):<br>
+        <kbd><em>summary!=foo</em></kbd> は要約 (<kbd>summary</kbd>) が 
+        <kbd>foo</kbd> でない [% terms.bugs %] を検索します。
+      </li>
+      <li>
+        <strong>&gt;</strong> (より大きい):<br>
+        <kbd><em>creation_ts&gt;-2w</em></kbd> は作成日が2週間前より後で、
+        かつ2週間前ちょうどではない [% terms.bugs %] を検索します。
+     </li>
+      <li>
+        <strong>&gt;=</strong> (等しいかより大きい):<br>
+        <kbd><em>creation_ts&gt;=-2w</em></kbd> は作成日が2週間前より後か、
+        2週間前ちょうども含む [% terms.bugs %] を検索します。
+      </li>
+      <li>
+        <strong>&lt;</strong> (より小さい):<br>
+        <kbd><em>creation_ts&lt;-2w</em></kbd> は作成日が2週間前より前で、
+        かつ2週間前ちょうどではない [% terms.bugs %] を検索します。
+
+      </li>
+      <li>
+        <strong>&lt;=</strong> (等しいかより小さい):<br>
+        <kbd><em>creation_ts&lt;=-2w</em></kbd> は作成日が2週間前より前か、
+        2週間前ちょうども含む [% terms.bugs %] を検索します。
+      </li>
+    </ul>
   </li>
 </ul>
 

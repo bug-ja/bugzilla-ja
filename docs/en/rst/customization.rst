@@ -1,4 +1,4 @@
-
+.. highlight:: perl
 
 .. _customization:
 
@@ -307,7 +307,7 @@ should be used inside the form.
 
 An example of this is the mozilla.org
 `guided
-bug submission form <|landfillbase|enter_bug.cgi?product=WorldControl;format=guided>`_. The code for this comes with the Bugzilla
+bug submission form <http://landfill.bugzilla.org/bugzilla-tip/enter_bug.cgi?product=WorldControl;format=guided>`_. The code for this comes with the Bugzilla
 distribution as an example for you to copy. It can be found in the
 files
 :file:`create-guided.html.tmpl` and
@@ -406,7 +406,7 @@ In between those sections, you'll find snippets of code like:
 
     # Allow the assignee to change anything.
     if ($ownerid eq $whoid) {
-    return 1;
+        return 1;
     }
 
 It's fairly obvious what this piece of code does.
@@ -428,12 +428,12 @@ or a negative check, which returns 0 (deny.) E.g.:
 ::
 
     if ($field eq "qacontact") {
-    if (Bugzilla->user->in_group("quality_assurance")) {
-    return 1;
-    }
-    else {
-    return 0;
-    }
+        if (Bugzilla->user->in_group("quality_assurance")) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 
 This says that only users in the group "quality_assurance" can change
@@ -444,14 +444,14 @@ Getting more weird:
 ::
 
     if (($field eq "priority") &&
-    (Bugzilla->user->email =~ /.*\\@example\\.com$/))
+        (Bugzilla->user->email =~ /.*\\@example\\.com$/))
     {
-    if ($oldvalue eq "P1") {
-    return 1;
-    }
-    else {
-    return 0;
-    }
+        if ($oldvalue eq "P1") {
+            return 1;
+        }
+        else {
+            return 0;
+        }
     }
 
 This says that if the user is trying to change the priority field,

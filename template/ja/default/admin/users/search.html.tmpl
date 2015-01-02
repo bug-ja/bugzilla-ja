@@ -18,7 +18,6 @@
 [% PROCESS global/header.html.tmpl
   title = "ユーザの検索"
   style_urls = ['skins/standard/editusers.css']
-  onload = "document.forms['f'].matchstr.focus()"
   doc_section = "useradmin.html#user-account-search"
 %]
 
@@ -35,7 +34,7 @@
   <option value="userid">ユーザ ID</option>
 </select>
 が
-<input size="32" name="matchstr" id="matchstr">
+<input size="32" name="matchstr" id="matchstr" autofocus>
 <select name="matchtype">
   <option value="substr" selected="selected">部分一致 (大文字・小文字を区別しない)</option>
   <option value="regexp">正規表現 (大文字・小文字を区別しない)</option>
