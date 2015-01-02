@@ -18,7 +18,7 @@
 [% PROCESS global/header.html.tmpl
   title = title
   style_urls = ['skins/standard/admin.css']
-  doc_section = "groups.html"
+  doc_section = "administration.html#groups-and-group-security"
 %]
 
 <table id="admin_table">
@@ -112,7 +112,7 @@
           ([% active.join(', ') FILTER html %])
           [% IF hidden %]
             <strong>警告: このプロダクトは現在隠されています。
-            このグループを削除すると公開されるようになります。
+            このグループを削除すると他に制約がなければ公開されるようになります。
             </strong>
           [% END %]</li>
       [% END %]

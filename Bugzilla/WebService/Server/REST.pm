@@ -15,9 +15,10 @@ use parent qw(Bugzilla::WebService::Server::JSONRPC);
 use Bugzilla;
 use Bugzilla::Constants;
 use Bugzilla::Error;
+use Bugzilla::Hook;
+use Bugzilla::Util qw(correct_urlbase html_quote);
 use Bugzilla::WebService::Constants;
 use Bugzilla::WebService::Util qw(taint_data fix_credentials);
-use Bugzilla::Util qw(correct_urlbase html_quote);
 
 # Load resource modules
 use Bugzilla::WebService::Server::REST::Resources::Bug;
@@ -39,6 +40,8 @@ sub handle {
 
     # Determine how the data should be represented. We do this early so
     # errors will also be returned with the proper content type.
+    # If no accept header was sent or the content types specified were not
+    # matched, we default to the first type in the whitelist.
     $self->content_type($self->_best_content_type(REST_CONTENT_TYPE_WHITELIST()));
 
     # Using current path information, decide which class/method to
@@ -121,6 +124,9 @@ sub response {
     elsif (exists $json_data->{result}) {
         $result = $json_data->{result};
     }
+
+    Bugzilla::Hook::process('webservice_rest_response',
+        { rpc => $self, result => \$result, response => $response });
 
     # Access Control
     $response->header("Access-Control-Allow-Origin", "*");
@@ -224,8 +230,6 @@ sub _argument_type_check {
 
     taint_data($params);
 
-    Bugzilla->input_params($params);
-
     # Now, convert dateTime fields on input.
     my $method = $self->bz_method_name;
     my $pkg = $self->{dispatch_path}->{$self->path_info};
@@ -259,6 +263,10 @@ sub _argument_type_check {
     my $isa_string = 'our @ISA = qw(' . ref($self) . " $pkg)";
     eval "package $new_class;$isa_string;";
     bless $self, $new_class;
+
+    # Allow extensions to modify the params post login
+    Bugzilla::Hook::process('webservice_rest_request',
+                            { rpc => $self, params => $params });
 
     if ($params_is_array) {
         $params = [$params];
@@ -375,6 +383,9 @@ sub _find_resource {
         $resources->{$module} = $module->rest_resources;
     }
 
+    Bugzilla::Hook::process('webservice_rest_resources',
+                            { rpc => $self, resources => $resources });
+
     # Use the resources hash from each module loaded earlier to determine
     # which handler to use based on a regex match of the CGI path.
     # Also any matches found in the regex will be passed in later to the
@@ -440,6 +451,10 @@ sub _best_content_type {
 sub _simple_content_negotiation {
     my ($self, @types) = @_;
     my @accept_types = $self->_get_content_prefs();
+    # Return the types as-is if no accept header sent, since sorting will be a no-op.
+    if (!@accept_types) {
+        return @types;
+    }
     my $score = sub { $self->_score_type(shift, @accept_types) };
     return sort {$score->($b) <=> $score->($a)} @types;
 }
@@ -478,7 +493,7 @@ sub _get_content_prefs {
     # Sort the types by score, subscore by order, and pull out just the name
     @prefs = map {$_->{name}} sort {$b->{score} <=> $a->{score} ||
                                     $a->{order} <=> $b->{order}} @prefs;
-    return @prefs, '*/*';  # Allows allow for */*
+    return @prefs;
 }
 
 1;

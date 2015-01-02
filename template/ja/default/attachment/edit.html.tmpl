@@ -20,7 +20,7 @@
   title = title
   header = header
   subheader = subheader
-  doc_section = "attachments.html"
+  doc_section = "using.html#attachments"
   javascript_urls = ['js/attachment.js', 'js/field.js']
   style_urls = ['skins/standard/attachment.css']
   yui = [ 'autocomplete' ]
@@ -250,13 +250,12 @@
             <label for="comment">コメント ([% terms.bug %] への):</label>
             [% classNames = 'block' %]
             [% classNames = "$classes bz_private" IF attachment.isprivate %]
-            [% INCLUDE global/textarea.html.tmpl
-              id      = 'comment'
-              name    = 'comment'
-              minrows = 10
-              cols    = 80
-              wrap    = 'soft'
-              classes = classNames
+            [% INCLUDE bug/comment.html.tmpl
+               bug     = attachment.bug
+               minrows = 10
+               cols    = 80
+               classes = classNames
+               wrap    = 'soft'
             %]
             [% IF NOT attachment.bug.cc.contains(user.login) %]
               <input type="checkbox" id="addselfcc" name="addselfcc"

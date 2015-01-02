@@ -1787,20 +1787,30 @@ sub _handle_chart {
     my ($field, $operator, $value) = $condition->fov;
     return if (!defined $field or !defined $operator or !defined $value);
     $field = FIELD_MAP->{$field} || $field;
-    
-    my $string_value;
+
+    my ($string_value, $orig_value);
+    state $is_mysql = $dbh->isa('Bugzilla::DB::Mysql') ? 1 : 0;
+
     if (ref $value eq 'ARRAY') {
         # Trim input and ignore blank values.
         @$value = map { trim($_) } @$value;
         @$value = grep { defined $_ and $_ ne '' } @$value;
         return if !@$value;
+        $orig_value = join(',', @$value);
+        if ($field eq 'longdesc' && $is_mysql) {
+            @$value = map { _convert_unicode_characters($_) } @$value;
+        }
         $string_value = join(',', @$value);
     }
     else {
         return if $value eq '';
+        $orig_value = $value;
+        if ($field eq 'longdesc' && $is_mysql) {
+            $value = _convert_unicode_characters($value);
+        }
         $string_value = $value;
     }
-    
+
     $self->_chart_fields->{$field}
         or ThrowCodeError("invalid_field_name", { field => $field });
     trick_taint($field);
@@ -1844,7 +1854,7 @@ sub _handle_chart {
     # do_search_function modified them.   
     $self->search_description({
         field => $field, type => $operator,
-        value => $string_value, term => $search_args{term},
+        value => $orig_value, term => $search_args{term},
     });
 
     foreach my $join (@{ $search_args{joins} }) {
@@ -1853,6 +1863,18 @@ sub _handle_chart {
     }
 
     $condition->translated(\%search_args);
+}
+
+# XXX - This is a hack for MySQL which doesn't understand Unicode characters
+# above U+FFFF, see Bugzilla::Comment::_check_thetext(). This hack can go away
+# once we require MySQL 5.5.3 and use utf8mb4.
+sub _convert_unicode_characters {
+    my $string = shift;
+
+    # Perl 5.13.8 and older complain about non-characters.
+    no warnings 'utf8';
+    $string =~ s/([\x{10000}-\x{10FFFF}])/"\x{FDD0}[" . uc(sprintf('U+%04x', ord($1))) . "]\x{FDD1}"/eg;
+    return $string;
 }
 
 ##################################
@@ -3354,7 +3376,7 @@ value for this field. At least one search criteria must be defined if the
 
 =item C<sharer>
 
-When a saved search is shared by a user, this is his user ID.
+When a saved search is shared by a user, this is their user ID.
 
 =item C<user>
 

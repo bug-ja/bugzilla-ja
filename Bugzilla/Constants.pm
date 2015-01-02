@@ -111,8 +111,9 @@ use Memoize;
     FIELD_TYPE_BUG_ID
     FIELD_TYPE_BUG_URLS
     FIELD_TYPE_KEYWORDS
+    FIELD_TYPE_INTEGER
     FIELD_TYPE_HIGHEST_PLUS_ONE
-    
+
     EMPTY_DATETIME_REGEX
 
     ABNORMAL_SELECTS
@@ -193,7 +194,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.5.2";
+use constant BUGZILLA_VERSION => "4.5.2+";
 
 # Location of the remote and local XML files to track new releases.
 use constant REMOTE_FILE => 'http://updates.bugzilla.org/bugzilla-update.xml';
@@ -398,9 +399,10 @@ use constant FIELD_TYPE_BUG_ID  => 6;
 use constant FIELD_TYPE_BUG_URLS => 7;
 use constant FIELD_TYPE_KEYWORDS => 8;
 use constant FIELD_TYPE_DATE => 9;
+use constant FIELD_TYPE_INTEGER => 10;
 # Add new field types above this line, and change the below value in the
 # obvious fashion
-use constant FIELD_TYPE_HIGHEST_PLUS_ONE => 10;
+use constant FIELD_TYPE_HIGHEST_PLUS_ONE => 11;
 
 use constant EMPTY_DATETIME_REGEX => qr/^[0\-:\sA-Za-z]+$/; 
 
@@ -430,8 +432,8 @@ use constant MAX_LOGIN_ATTEMPTS => 5;
 # account is locked.
 use constant LOGIN_LOCKOUT_INTERVAL => 30;
 
-# The time in minutes a user must wait before he can request another email to
-# create a new account or change his password.
+# The time in minutes a user must wait before they can request another email to
+# create a new account or change their password.
 use constant ACCOUNT_CHANGE_INTERVAL => 10;
 
 # The maximum number of seconds the Strict-Transport-Security header
@@ -588,10 +590,10 @@ use constant MAX_WEBDOT_BUGS => 2000;
 # This is the name of the algorithm used to hash passwords before storing
 # them in the database. This can be any string that is valid to pass to
 # Perl's "Digest" module. Note that if you change this, it won't take
-# effect until a user logs in or changes his password.
+# effect until a user logs in or changes their password.
 use constant PASSWORD_DIGEST_ALGORITHM => 'SHA-256';
 # How long of a salt should we use? Note that if you change this, it
-# won't take effect until a user logs in or changes his password.
+# won't take effect until a user logs in or changes their password.
 use constant PASSWORD_SALT_LENGTH => 8;
 
 # Certain scripts redirect to GET even if the form was submitted originally
@@ -600,7 +602,7 @@ use constant PASSWORD_SALT_LENGTH => 8;
 # See http://support.microsoft.com/kb/208427 for why MSIE is different
 use constant CGI_URI_LIMIT => ($ENV{'HTTP_USER_AGENT'} || '') =~ /MSIE/ ? 2083 : 8000;
 
-# If the user isn't allowed to change a field, we must tell him who can.
+# If the user isn't allowed to change a field, we must tell them who can.
 # We store the required permission set into the $PrivilegesRequired
 # variable which gets passed to the error template.
 

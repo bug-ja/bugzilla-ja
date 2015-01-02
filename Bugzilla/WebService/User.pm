@@ -16,10 +16,10 @@ use Bugzilla::Constants;
 use Bugzilla::Error;
 use Bugzilla::Group;
 use Bugzilla::User;
-use Bugzilla::Util qw(trim);
-use Bugzilla::WebService::Util qw(filter validate translate params_to_objects);
+use Bugzilla::Util qw(trim detaint_natural);
+use Bugzilla::WebService::Util qw(filter filter_wants validate translate params_to_objects);
 
-use List::Util qw(first);
+use List::Util qw(first min);
 
 # Don't need auth to login
 use constant LOGIN_EXEMPT => {
@@ -193,7 +193,7 @@ sub get {
     my $obj_by_ids;
     $obj_by_ids = Bugzilla::User->new_from_list($params->{ids}) if $params->{ids};
 
-    # obj_by_ids are only visible to the user if he can see 
+    # obj_by_ids are only visible to the user if they can see
     # the otheruser, for non visible otheruser throw an error
     foreach my $obj (@$obj_by_ids) {
         if (Bugzilla->user->can_see_user($obj)){
@@ -209,12 +209,17 @@ sub get {
                                             userid => $obj->id});
         }
     }
-    
+
     # User Matching
-    my $limit;
-    if ($params->{'maxusermatches'}) {
-        $limit = $params->{'maxusermatches'} + 1;
+    my $limit = Bugzilla->params->{maxusermatches};
+    if ($params->{limit}) {
+        detaint_natural($params->{limit})
+            || ThrowCodeError('param_must_be_numeric',
+                              { function => 'Bugzilla::WebService::User::match',
+                                param    => 'limit' });
+        $limit = $limit ? min($params->{limit}, $limit) : $params->{limit};
     }
+
     my $exclude_disabled = $params->{'include_disabled'} ? 0 : 1;
     foreach my $match_string (@{ $params->{'match'} || [] }) {
         my $matched = Bugzilla::User::match($match_string, $limit, $exclude_disabled);
@@ -226,9 +231,7 @@ sub get {
         }
     }
 
-    my $in_group = $self->_filter_users_by_group(
-        \@user_objects, $params);
-
+    my $in_group = $self->_filter_users_by_group(\@user_objects, $params);
     foreach my $user (@$in_group) {
         my $user_info = {
             id        => $self->type('int', $user->id),
@@ -244,15 +247,27 @@ sub get {
         }
 
         if (Bugzilla->user->id == $user->id) {
-            $user_info->{saved_searches} = [map { $self->_query_to_hash($_) } @{ $user->queries }];
-            $user_info->{saved_reports}  = [map { $self->_report_to_hash($_) } @{ $user->reports }];
+            if (filter_wants($params, 'saved_searches')) {
+                $user_info->{saved_searches} = [
+                    map { $self->_query_to_hash($_) } @{ $user->queries }
+                ];
+            }
+            if (filter_wants($params, 'saved_reports')) {
+                $user_info->{saved_reports}  = [
+                    map { $self->_report_to_hash($_) } @{ $user->reports }
+                ];
+            }
         }
 
-        if (Bugzilla->user->id == $user->id || Bugzilla->user->in_group('editusers')) {
-            $user_info->{groups} = [map {$self->_group_to_hash($_)} @{ $user->groups }];
-        }
-        else {
-            $user_info->{groups} = $self->_filter_bless_groups($user->groups);
+        if (filter_wants($params, 'groups')) {
+            if (Bugzilla->user->id == $user->id || Bugzilla->user->in_group('editusers')) {
+                $user_info->{groups} = [
+                    map { $self->_group_to_hash($_) } @{ $user->groups }
+                ];
+            }
+            else {
+                $user_info->{groups} = $self->_filter_bless_groups($user->groups);
+            }
         }
 
         push(@users, filter($params, $user_info));
@@ -486,7 +501,7 @@ specified with the error.
 =item 305 (New Password Required)
 
 The current password is correct, but the user is asked to change
-his password.
+their password.
 
 =item 50 (Param Required)
 
@@ -619,7 +634,7 @@ call this function.
 
 =item B<REST>
 
-POST /user
+POST /rest/user
 
 The params to include in the POST body as well as the returned data format,
 are the same as below.
@@ -685,7 +700,7 @@ Updates user accounts in Bugzilla.
 
 =item B<REST>
 
-PUT /user/<user_id_or_name>
+PUT /rest/user/<user_id_or_name>
 
 The params to include in the PUT body as well as the returned data format,
 are the same as below. The C<ids> and C<names> params are overridden as they
@@ -803,11 +818,11 @@ Gets information about user accounts in Bugzilla.
 
 To get information about a single user:
 
-GET /user/<user_id_or_name>
+GET /rest/user/<user_id_or_name>
 
 To search for users by name, group using URL params same as below:
 
-GET /user
+GET /rest/user
 
 The returned data format is the same as below.
 
@@ -843,9 +858,6 @@ Bugzilla itself. Users will be returned whose real name or login name
 contains any one of the specified strings. Users that you cannot see will
 not be included in the returned list.
 
-Some Bugzilla installations have user-matching turned off, in which
-case you will only be returned exact matches.
-
 Most installations have a limit on how many matches are returned for
 each string, which defaults to 1000 but can be changed by the Bugzilla
 administrator.
@@ -854,6 +866,13 @@ Logged-out users cannot use this argument, and an error will be thrown
 if they try. (This is to make it harder for spammers to harvest email
 addresses from Bugzilla, and also to enforce the user visibility
 restrictions that are implemented on some Bugzillas.)
+
+=item C<limit> (int)
+
+Limit the number of users matched by the C<match> parameter. If value
+is greater than the system limit, the system limit will be used. This
+parameter is only used when user matching using the C<match> parameter
+is being performed.
 
 =item C<group_ids> (array)
 
@@ -917,7 +936,7 @@ disabled/closed.
 =item groups
 
 C<array> An array of group hashes the user is a member of. If the currently
-logged in user is querying his own account or is a member of the 'editusers'
+logged in user is querying their own account or is a member of the 'editusers'
 group, the array will contain all the groups that the user is a
 member of. Otherwise, the array will only contain groups that the logged in
 user can bless. Each hash describes the group and contains the following items:
@@ -998,6 +1017,10 @@ querying your own account, even if you are in the editusers group.
 
 You passed an invalid login name in the "names" array or a bad
 group ID in the C<group_ids> argument.
+
+=item 52 (Invalid Parameter)
+
+The value used must be an integer greater than zero.
 
 =item 304 (Authorization Required)
 

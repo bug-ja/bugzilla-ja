@@ -1058,12 +1058,12 @@
     [% END %]
 
   [% ELSIF error == "illegal_change" %]
-    [% title = BLOCK %] 許可されていない変更を行おうとしました [% END %]
+    [% title = "許可されていない変更を行おうとしました" %]
     <strong>[% field_descs.$field FILTER html %]</strong> のフィールドを
-    [% IF oldvalue.defined %]
+    [% IF oldvalue.defined AND oldvalue != "" %]
       <em>[% oldvalue.join(', ') FILTER html %]</em> から
     [% END %]
-    [% IF newvalue.defined %]
+    [% IF newvalue.defined AND newvalue != "" %]
       <em>[% newvalue.join(', ') FILTER html %]</em> へ
     [% END %]
     変更しようとしましたが、
@@ -1542,10 +1542,17 @@
     入力する [% terms.bugs %] に対する [% jawords.product FILTER html %] が定義されていないか、
     あなたのアカウントにはアクセスする権限がありません。
 
+  [% ELSIF error == "number_not_integer" %]
+    [% title = "整数が必要です" %]
+    <em>[% field_descs.$field FILTER html %]</em> フィールドに
+    入力された値 '[% num FILTER html %]' は整数ではありません。
+    (少数など)
+
   [% ELSIF error == "number_not_numeric" %]
     [% title = BLOCK %] 数値が必要です [% END %]
-    The value '[% num FILTER html %]' in the 
-    <em>[% field_descs.$field FILTER html %]</em> フィールド値が数値ではありません。
+    <em>[% field_descs.$field FILTER html %]</em> フィールドに入力された値
+    '[% num FILTER html %]' 
+    は数値ではありません。
 
   [% ELSIF error == "number_too_large" %]
     [% title = BLOCK %] 指定された数値は大きすぎます [% END %]

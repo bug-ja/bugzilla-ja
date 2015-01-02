@@ -25,15 +25,20 @@
 [% filtered_login = user.login FILTER html %]
 
 [% tabs = [{ name => "settings", label => "一般的な設定",
-              link => "userprefs.cgi?tab=settings", saveable => "1" },
+              link => "userprefs.cgi?tab=settings", saveable => "1",
+              doc_section => "using.html#general-preferences" },
             { name => "email", label => "メール設定", 
-              link => "userprefs.cgi?tab=email", saveable => "1" },
+              link => "userprefs.cgi?tab=email", saveable => "1",
+              doc_section => "using.html#email-preferences" },
             { name => "saved-searches", label => "保存された検索", 
-              link => "userprefs.cgi?tab=saved-searches", saveable => "1" },
+              link => "userprefs.cgi?tab=saved-searches", saveable => "1",
+              doc_section => "using.html#saved-searches" },
             { name => "account", label => "アカウント情報",
-              link => "userprefs.cgi?tab=account", saveable => "1" },
+              link => "userprefs.cgi?tab=account", saveable => "1",
+              doc_section => "using.html#account-information" },
             { name => "permissions", label => "権限", 
-              link => "userprefs.cgi?tab=permissions", saveable => "0" } ] %]
+              link => "userprefs.cgi?tab=permissions", saveable => "0",
+              doc_section => "using.html#permissions" } ] %]
 
 [% Hook.process('tabs') %]
 
@@ -49,7 +54,7 @@
    subheader = filtered_login
    style_urls = ['skins/standard/admin.css']
    javascript_urls = ['js/util.js', 'js/field.js']
-   doc_section = "userpreferences.html"
+   doc_section = current_tab.doc_section
    yui = ['autocomplete']
  %]
 

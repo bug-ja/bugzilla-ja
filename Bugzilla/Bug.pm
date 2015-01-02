@@ -32,8 +32,6 @@ use Bugzilla::BugUrl;
 use List::MoreUtils qw(firstidx uniq part);
 use List::Util qw(min max first);
 use Storable qw(dclone);
-use URI;
-use URI::QueryParam;
 use Scalar::Util qw(blessed);
 
 use parent qw(Bugzilla::Object Exporter);
@@ -54,6 +52,8 @@ use constant LIST_ORDER => ID_FIELD;
 # Bugs have their own auditing table, bugs_activity.
 use constant AUDIT_CREATES => 0;
 use constant AUDIT_UPDATES => 0;
+# This will be enabled later
+use constant USE_MEMCACHED => 0;
 
 # This is a sub because it needs to call other subroutines.
 sub DB_COLUMNS {
@@ -157,6 +157,9 @@ sub VALIDATORS {
         }
         elsif ($field->type == FIELD_TYPE_TEXTAREA) {
             $validator = \&_check_textarea_field;
+        }
+        elsif ($field->type == FIELD_TYPE_INTEGER) {
+            $validator = \&_check_integer_field;
         }
         else {
             $validator = \&_check_default_field;
@@ -520,8 +523,10 @@ sub possible_duplicates {
     my $dbh = Bugzilla->dbh;
     my $user = Bugzilla->user;
     my @words = split(/[\b\s]+/, $short_desc || '');
-    # Exclude punctuation from the array.
-    @words = map { /(\w+)/; $1 } @words;
+    # Remove leading/trailing punctuation from words
+    foreach my $word (@words) {
+        $word =~ s/(?:^\W+|\W+$)//g;
+    }
     # And make sure that each word is longer than 2 characters.
     @words = grep { defined $_ and length($_) > 2 } @words;
 
@@ -1614,9 +1619,9 @@ sub _check_dup_id {
     }
 
     # Should we add the reporter to the CC list of the new bug?
-    # If he can see the bug...
+    # If they can see the bug...
     if ($self->reporter->can_see_bug($dupe_of)) {
-        # We only add him if he's not the reporter of the other bug.
+        # We only add them if they're not the reporter of the other bug.
         $self->{_add_dup_cc} = 1
             if $dupe_of_bug->reporter->id != $self->reporter->id;
     }
@@ -1631,11 +1636,11 @@ sub _check_dup_id {
             $self->{_add_dup_cc} = $add_confirmed;
         }
         else {
-            # Note that here we don't check if he user is already the reporter
-            # of the dupe_of bug, since we already checked if he can *see*
+            # Note that here we don't check if the user is already the reporter
+            # of the dupe_of bug, since we already checked if they can *see*
             # the bug, above. People might have reporter_accessible turned
             # off, but cclist_accessible turned on, so they might want to
-            # add the reporter even though he's already the reporter of the
+            # add the reporter even though they're already the reporter of the
             # dup_of bug.
             my $vars = {};
             my $template = Bugzilla->template;
@@ -1778,7 +1783,7 @@ sub _check_reporter {
     }
     else {
         # On bug creation, the reporter is the logged in user
-        # (meaning that he must be logged in first!).
+        # (meaning that they must be logged in first!).
         Bugzilla->login(LOGIN_REQUIRED);
         $reporter = Bugzilla->user->id;
     }
@@ -2106,6 +2111,27 @@ sub _check_textarea_field {
     $text =~ s/\r?\n/\r\n/g;
 
     return $text;
+}
+
+sub _check_integer_field {
+    my ($invocant, $value, $field) = @_;
+    $value = defined($value) ? trim($value) : '';
+
+    if ($value eq '') {
+        return 0;
+    }
+
+    my $orig_value = $value;
+    if (!detaint_signed($value)) {
+        ThrowUserError("number_not_integer",
+                       {field => $field, num => $orig_value});
+    }
+    elsif ($value > MAX_INT_32) {
+        ThrowUserError("number_too_large",
+                       {field => $field, num => $orig_value, max_num => MAX_INT_32});
+    }
+
+    return $value;
 }
 
 sub _check_relationship_loop {
@@ -2780,31 +2806,23 @@ sub add_comment {
     push(@{$self->{added_comments}}, $params);
 }
 
-# There was a lot of duplicate code when I wrote this as three separate
-# functions, so I just combined them all into one. This is also easier for
-# process_bug to use.
 sub modify_keywords {
     my ($self, $keywords, $action) = @_;
-    
-    $action ||= 'set';
-    if (!grep($action eq $_, qw(add remove set))) {
+
+    if (!$action || !grep { $action eq $_ } qw(add remove set)) {
         $action = 'set';
     }
-    
-    $keywords = $self->_check_keywords($keywords);
 
-    my (@result, $any_changes);
+    $keywords = $self->_check_keywords($keywords);
+    my @old_keywords = @{ $self->keyword_objects };
+    my @result;
+
     if ($action eq 'set') {
         @result = @$keywords;
-        # Check if anything was added or removed.
-        my @old_ids = map { $_->id } @{$self->keyword_objects};
-        my @new_ids = map { $_->id } @result;
-        my ($removed, $added) = diff_arrays(\@old_ids, \@new_ids);
-        $any_changes = scalar @$removed || scalar @$added;
     }
     else {
         # We're adding or deleting specific keywords.
-        my %keys = map {$_->id => $_} @{$self->keyword_objects};
+        my %keys = map { $_->id => $_ } @old_keywords;
         if ($action eq 'add') {
             $keys{$_->id} = $_ foreach @$keywords;
         }
@@ -2812,11 +2830,17 @@ sub modify_keywords {
             delete $keys{$_->id} foreach @$keywords;
         }
         @result = values %keys;
-        $any_changes = scalar @$keywords;
     }
+
+    # Check if anything was added or removed.
+    my @old_ids = map { $_->id } @old_keywords;
+    my @new_ids = map { $_->id } @result;
+    my ($removed, $added) = diff_arrays(\@old_ids, \@new_ids);
+    my $any_changes = scalar @$removed || scalar @$added;
+
     # Make sure we retain the sort order.
     @result = sort {lc($a->name) cmp lc($b->name)} @result;
-    
+
     if ($any_changes) {
         my $privs;
         my $new = join(', ', (map {$_->name} @result));
@@ -3157,7 +3181,7 @@ sub _resolve_ultimate_dup_id {
         # If $dupes{$this_dup} is already set to 1, then a loop
         # already exists which does not involve this bug.
         # As the user is not responsible for this loop, do not
-        # prevent him from marking this bug as a duplicate.
+        # prevent them from marking this bug as a duplicate.
         return $last_dup if exists $dupes{$this_dup};
         $dupes{$this_dup} = 1;
         $last_dup = $this_dup;
@@ -3412,9 +3436,18 @@ sub comments {
     if (!defined $self->{'comments'}) {
         $self->{'comments'} = Bugzilla::Comment->match({ bug_id => $self->id });
         my $count = 0;
+        state $is_mysql = Bugzilla->dbh->isa('Bugzilla::DB::Mysql') ? 1 : 0;
         foreach my $comment (@{ $self->{'comments'} }) {
             $comment->{count} = $count++;
             $comment->{bug} = $self;
+            # XXX - hack for MySQL. Convert [U+....] back into its Unicode
+            # equivalent for characters above U+FFFF as MySQL older than 5.5.3
+            # cannot store them, see Bugzilla::Comment::_check_thetext().
+            if ($is_mysql) {
+                # Perl 5.13.8 and older complain about non-characters.
+                no warnings 'utf8';
+                $comment->{thetext} =~ s/\x{FDD0}\[U\+((?:[1-9A-F]|10)[0-9A-F]{4})\]\x{FDD1}/chr(hex $1)/eg
+            }
         }
         # Some bugs may have no comments when upgrading old installations.
         Bugzilla::Comment->preload($self->{'comments'}) if $count;
@@ -3798,17 +3831,24 @@ sub editable_bug_fields {
 # Join with bug_status and bugs tables to show bugs with open statuses first,
 # and then the others
 sub EmitDependList {
-    my ($myfield, $targetfield, $bug_id) = (@_);
+    my ($my_field, $target_field, $bug_id, $exclude_resolved) = @_;
+    my $cache = Bugzilla->request_cache->{bug_dependency_list} ||= {};
+
     my $dbh = Bugzilla->dbh;
-    my $list_ref = $dbh->selectcol_arrayref(
-          "SELECT $targetfield
+    $exclude_resolved = $exclude_resolved ? 1 : 0;
+    my $is_open_clause = $exclude_resolved ? 'AND is_open = 1' : '';
+
+    $cache->{"${target_field}_sth_$exclude_resolved"} ||= $dbh->prepare(
+          "SELECT $target_field
              FROM dependencies
-                  INNER JOIN bugs ON dependencies.$targetfield = bugs.bug_id
+                  INNER JOIN bugs ON dependencies.$target_field = bugs.bug_id
                   INNER JOIN bug_status ON bugs.bug_status = bug_status.value
-            WHERE $myfield = ?
-            ORDER BY is_open DESC, $targetfield",
-            undef, $bug_id);
-    return $list_ref;
+            WHERE $my_field = ? $is_open_clause
+            ORDER BY is_open DESC, $target_field");
+
+    return $dbh->selectcol_arrayref(
+        $cache->{"${target_field}_sth_$exclude_resolved"},
+        undef, $bug_id);
 }
 
 # Creates a lot of bug objects in the same order as the input array.
@@ -4101,7 +4141,7 @@ sub check_can_change_field {
         return 1;
     }
 
-    # If the user isn't allowed to change a field, we must tell him who can.
+    # If the user isn't allowed to change a field, we must tell them who can.
     # We store the required permission set into the $PrivilegesRequired
     # variable which gets passed to the error template.
     #
@@ -4153,7 +4193,7 @@ sub check_can_change_field {
     # is not allowed to change.
 
     # The reporter may not:
-    # - reassign bugs, unless the bugs are assigned to him;
+    # - reassign bugs, unless the bugs are assigned to them;
     #   in that case we will have already returned 1 above
     #   when checking for the assignee of the bug.
     if ($field eq 'assigned_to') {
@@ -4170,7 +4210,7 @@ sub check_can_change_field {
         $$PrivilegesRequired = PRIVILEGES_REQUIRED_ASSIGNEE;
         return 0;
     }
-    # - change the priority (unless he could have set it originally)
+    # - change the priority (unless they could have set it originally)
     if ($field eq 'priority'
         && !Bugzilla->params->{'letsubmitterchoosepriority'})
     {

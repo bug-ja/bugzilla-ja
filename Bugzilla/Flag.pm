@@ -461,6 +461,7 @@ sub update {
         $dbh->do('UPDATE flags SET modification_date = ? WHERE id = ?',
                  undef, ($timestamp, $self->id));
         $self->{'modification_date'} = format_time($timestamp, '%Y.%m.%d %T');
+        Bugzilla->memcached->clear({ table => 'flags', id => $self->id });
     }
     return $changes;
 }
@@ -607,6 +608,7 @@ sub force_retarget {
         if ($is_retargetted) {
             $dbh->do('UPDATE flags SET type_id = ? WHERE id = ?',
                      undef, ($flag->type_id, $flag->id));
+            Bugzilla->memcached->clear({ table => 'flags', id => $flag->id });
         }
         else {
             # Track deleted attachment flags.
@@ -667,7 +669,7 @@ sub _check_requestee {
         # Make sure the user didn't specify a requestee unless the flag
         # is specifically requestable. For existing flags, if the requestee
         # was set before the flag became specifically unrequestable, the
-        # user can either remove him or leave him alone.
+        # user can either remove them or leave them alone.
         ThrowUserError('flag_type_requestee_disabled', { type => $self->type })
           if !$self->type->is_requesteeble;
 

@@ -318,6 +318,30 @@ sub comments {
     return { bugs => \%bugs, comments => \%comments };
 }
 
+sub render_comment {
+    my ($self, $params) = @_;
+
+    unless (defined $params->{text}) {
+        ThrowCodeError('params_required',
+                       { function => 'Bug.render_comment',
+                         params   => ['text'] });
+    }
+
+    Bugzilla->switch_to_shadow_db();
+    my $bug = $params->{id} ? Bugzilla::Bug->check($params->{id}) : undef;
+
+    my $tmpl = '[% text FILTER quoteUrls(bug) %]';
+    my $html;
+    my $template = Bugzilla->template;
+    $template->process(
+        \$tmpl,
+        { bug => $bug, text => $params->{text}},
+        \$html
+    );
+
+    return { html => $html };
+}
+
 # Helper for Bug.comments
 sub _translate_comment {
     my ($self, $comment, $filters) = @_;
@@ -1467,11 +1491,11 @@ part is the request method and the rest is the related path needed.
 
 To get information about all fields:
 
-GET /field/bug
+GET /rest/field/bug
 
 To get information related to a single field:
 
-GET /field/bug/<id_or_name>
+GET /rest/field/bug/<id_or_name>
 
 The returned data format is the same as below.
 
@@ -1698,11 +1722,11 @@ part is the request method and the rest is the related path needed.
 
 To get information about all flag types for a product:
 
-GET /flag_types/<product>
+GET /rest/flag_types/<product>
 
 To get information about flag_types for a product and component:
 
-GET /flag_types/<product>/<component>
+GET /rest/flag_types/<product>/<component>
 
 The returned data format is the same as below.
 
@@ -1720,7 +1744,7 @@ You must pass a product name and an optional component name.
 
 =item B<Returns>
 
-A hash containing a two keys, C<bug> and C<attachment>. Each key value is an array of hashes,
+A hash containing two keys, C<bug> and C<attachment>. Each key value is an array of hashes,
 containing the following keys:
 
 =over
@@ -1793,11 +1817,11 @@ Tells you what values are allowed for a particular field.
 
 To get information on the values for a field based on field name:
 
-GET /field/bug/<field_name>/values
+GET /rest/field/bug/<field_name>/values
 
 To get information based on field name and a specific product:
 
-GET /field/bug/<field_name>/<product_id>/values
+GET /rest/field/bug/<field_name>/<product_id>/values
 
 The returned data format is the same as below.
 
@@ -1863,11 +1887,11 @@ insidergroup or if you are the submitter of the attachment.
 
 To get all current attachments for a bug:
 
-GET /bug/<bug_id>/attachment
+GET /rest/bug/<bug_id>/attachment
 
 To get a specific attachment based on attachment ID:
 
-GET /bug/attachment/<attachment_id>
+GET /rest/bug/attachment/<attachment_id>
 
 The returned data format is the same as below.
 
@@ -2090,11 +2114,11 @@ and/or comment ids.
 
 To get all comments for a particular bug using the bug ID or alias:
 
-GET /bug/<id_or_alias>/comment
+GET /rest/bug/<id_or_alias>/comment
 
 To get a specific comment based on the comment ID:
 
-GET /bug/comment/<comment_id>
+GET /rest/bug/comment/<comment_id>
 
 The returned data format is the same as below.
 
@@ -2266,7 +2290,7 @@ Note: Can also be called as "get_bugs" for compatibilty with Bugzilla 3.0 API.
 
 To get information about a particular bug using its ID or alias:
 
-GET /bug/<id_or_alias>
+GET /rest/bug/<id_or_alias>
 
 The returned data format is the same as below.
 
@@ -2455,7 +2479,7 @@ C<boolean> True if this bug is open, false if it is closed.
 =item C<is_creator_accessible>
 
 C<boolean> If true, this bug can be accessed by the creator (reporter)
-of the bug, even if he or she is not a member of the groups the bug
+of the bug, even if they are not a member of the groups the bug
 is restricted to.
 
 =item C<keywords>
@@ -2711,7 +2735,7 @@ Gets the history of changes for particular bugs in the database.
 
 To get the history for a specific bug ID:
 
-GET /bug/<bug_id>/history
+GET /rest/bug/<bug_id>/history
 
 The returned data format will be the same as below.
 
@@ -3129,7 +3153,7 @@ likely change in the future.
 
 To create a new bug in Bugzilla:
 
-POST /bug
+POST /rest/bug
 
 The params to include in the POST body as well as the returned data format,
 are the same as below.
@@ -3220,7 +3244,7 @@ product.
 
 C<array> An array of hashes with flags to add to the bug. To create a flag,
 at least the status and the type_id or name must be provided. An optional
-requestee can be passed if the flag type is requesteeble.
+requestee can be passed if the flag type is requestable to a specific user.
 
 =over
 
@@ -3238,7 +3262,7 @@ C<string> The flags new status (i.e. "?", "+", "-" or "X" to clear a flag).
 
 =item C<requestee>
 
-C<string> The login of the requestee if the flag type is requesteeable.
+C<string> The login of the requestee if the flag type is requestable to a specific user.
 
 =back
 
@@ -3367,7 +3391,7 @@ This allows you to add an attachment to a bug in Bugzilla.
 
 To create attachment on a current bug:
 
-POST /bug/<bug_id>/attachment
+POST /rest/bug/<bug_id>/attachment
 
 The params to include in the POST body, as well as the returned
 data format are the same as below. The C<ids> param will be
@@ -3428,7 +3452,7 @@ Defaults to False if not specified.
 
 C<array> An array of hashes with flags to add to the attachment. to create a flag,
 at least the status and the type_id or name must be provided. An optional requestee
-can be passed if the flag type is requesteeble.
+can be passed if the flag type is requestable to a specific user.
 
 =over
 
@@ -3446,7 +3470,7 @@ C<string> The flags new status (i.e. "?", "+", "-" or "X" to clear a flag).
 
 =item C<requestee>
 
-C<string> The login of the requestee if the flag type is requesteeable.
+C<string> The login of the requestee if the flag type is requestable to a specific user.
 
 =back
 
@@ -3539,7 +3563,7 @@ This allows you to update attachment metadata in Bugzilla.
 
 To update attachment metadata on a current attachment:
 
-PUT /bug/attachment/<attach_id>
+PUT /rest/bug/attachment/<attach_id>
 
 The params to include in the POST body, as well as the returned
 data format are the same as below. The C<ids> param will be
@@ -3608,7 +3632,7 @@ C<string> The flags new status (i.e. "?", "+", "-" or "X" to clear a flag).
 
 =item C<requestee>
 
-C<string> The login of the requestee if the flag type is requesteeable.
+C<string> The login of the requestee if the flag type is requestable to a specific user.
 
 =item C<id>
 
@@ -3752,7 +3776,7 @@ This allows you to add a comment to a bug in Bugzilla.
 
 To create a comment on a current bug:
 
-POST /bug/<bug_id>/comment
+POST /rest/bug/<bug_id>/comment
 
 The params to include in the POST body as well as the returned data format,
 are the same as below.
@@ -3854,7 +3878,7 @@ out about the changes.
 
 To update the fields of a current bug:
 
-PUT /bug/<bug_id>
+PUT /rest/bug/<bug_id>
 
 The params to include in the PUT body as well as the returned data format,
 are the same as below. The C<ids> param will be overridden as it is
@@ -4003,7 +4027,7 @@ C<string> The flags new status (i.e. "?", "+", "-" or "X" to clear a flag).
 
 =item C<requestee>
 
-C<string> The login of the requestee if the flag type is requesteeable.
+C<string> The login of the requestee if the flag type is requestable to a specific user.
 
 =item C<id>
 
@@ -4093,7 +4117,7 @@ C<string> The full login name of the bug's QA Contact.
 =item C<is_creator_accessible>
 
 C<boolean> Whether or not the bug's reporter is allowed to access
-the bug, even if he or she isn't in a group that can normally access
+the bug, even if they aren't in a group that can normally access
 the bug.
 
 =item C<remaining_time>
@@ -4565,7 +4589,7 @@ Searches for tags which contain the provided substring.
 
 To search for comment tags:
 
-GET /bug/comment/tags/<query>
+GET /rest/bug/comment/tags/<query>
 
 =item B<Params>
 
@@ -4621,7 +4645,7 @@ Adds or removes tags from a comment.
 
 To update the tags comments attached to a comment:
 
-PUT /bug/comment/tags
+PUT /rest/bug/comment/tags
 
 The params to include in the PUT body as well as the returned data format,
 are the same as below.
@@ -4671,6 +4695,48 @@ The comment tag provided is shorter than the minimum length.
 The comment tag provided is longer than the maximum length.
 
 =back
+
+=item B<History>
+
+=over
+
+=item Added in Bugzilla B<5.0>.
+
+=back
+
+=back
+
+=head2 render_comment
+
+B<UNSTABLE>
+
+=over
+
+=item B<Description>
+
+Returns the HTML rendering of the provided comment text.
+
+=item B<Params>
+
+=over
+
+=item C<text>
+
+B<Required> C<strings> Text comment text to render.
+
+=item C<id>
+
+C<int> The ID of the bug to render the comment against.
+
+=back
+
+=item B<Returns>
+
+C<html> containing the HTML rendering.
+
+=item B<Errors>
+
+This method can throw all of the errors that L</get> throws.
 
 =item B<History>
 
