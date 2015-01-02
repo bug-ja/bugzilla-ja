@@ -13,12 +13,6 @@
   に新規添付を登録する。
 [% END %]
 [% subheader = BLOCK %][% bug.short_desc FILTER html %][% END %]
-[% javascript = BLOCK %]
-  YAHOO.util.Event.onDOMReady(function() {
-    YAHOO.util.Event.addListener(window, 'keydown', keys_pressed, [% bug.id FILTER none %]);
-    YAHOO.util.Event.addListener(window, 'keyup', keys_released);
-  });
-[% END %]
 
 [% PROCESS global/header.html.tmpl
   title = title
