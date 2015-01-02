@@ -24,7 +24,7 @@
   この [% terms.Bugzilla %] の操作を続行するには、正しいログイン名とパスワードが必要です。
 </p>
 
-<form name="login" action="[% target FILTER html %]" method="POST"
+<form name="login" action="[% urlbase FILTER html %][% target FILTER html %]" method="POST"
 [%- IF Bugzilla.cgi.param("data") %] enctype="multipart/form-data"[% END %]>
   <table>
     <tr>
