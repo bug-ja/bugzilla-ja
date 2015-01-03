@@ -404,7 +404,7 @@ You can use it to find a bug by its number or its alias, too.
 
 You'll find the Quicksearch box in Bugzilla's footer area.
 On Bugzilla's front page, there is an additional
-`Help <../../page.cgi?id=quicksearch.html>`_
+`quicksearcgh help <../../../page.cgi?id=quicksearch.html>`_
 link which details how to use it.
 
 .. _casesensitivity:
@@ -749,7 +749,11 @@ Other strings which get linkified in the obvious manner are:
 
 + bug 12345
 
++ bugs 123, 456, 789
+
 + comment 7
+
++ comments 1, 2, 3, 4
 
 + bug 23456, comment 53
 
@@ -784,6 +788,23 @@ gets a pointless piece of mail they would otherwise have avoided.
 Don't use sigs in comments. Signing your name ("Bill") is acceptable,
 if you do it out of habit, but full mail/news-style
 four line ASCII art creations are not.
+
+.. _markdown:
+
+Markdown
+--------
+
+Markdown lets you write your comments in a structured plain-text format and
+have your comments generated as HTML. For example, you may use Markdown for
+making a part of your comment look italic or bold in the generated HTML. Bugzilla
+supports most of the structures defined by `standard Markdown <http://daringfireball.net/projects/markdown/basics>`_.
+but does NOT support inline images and inline HTML. For a complete reference on
+supported Markdown structures, please see the `syntax help <../../../page.cgi?id=markdown.html>`_
+link next to the markdown checkbox for new comments.
+
+To use the Markdown feature, make sure that ``Enable Markdown support for comments`` is set to ``on``
+in your :ref:`userpreferences` and that you also check the ``Use Markdown for this comment`` option below
+the comment box when you want to submit a new comment.
 
 .. _comment-wrapping:
 
@@ -1004,6 +1025,22 @@ field at the top of the page.
 If you attempt to change your email address, a confirmation
 email is sent to both the old and new addresses, with a link to use to
 confirm the change. This helps to prevent account hijacking.
+
+.. _apikey:
+
+API Keys
+========
+
+API keys are used to authenticate WebService API calls. You can create more than
+one API key if required. Each API key has an optional description which can help
+you record what each key is used for.
+
+On this page, you can unrevoke, revoke and change the description of existing
+API keys for your login. A revoked key means that it cannot be used. The
+description for purely for your information, and is optional.
+
+You can also create a new API key by selecting the check box under the 'New
+API key' section of the page.
 
 .. _permissionsettings:
 

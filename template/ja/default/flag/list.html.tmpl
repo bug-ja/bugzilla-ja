@@ -119,6 +119,9 @@
                 class="flag_select flag_type-[% type.id %]"
                 [% IF !can_edit_flag %] disabled="disabled"[% END %]>
         [%# Only display statuses the user is allowed to set. %]
+        [% IF edit_multiple_bugs %]
+          <option value="--do_not_change--">--変更なし--</option>
+        [% END %]
         [% IF !flag || (can_edit_flag && user.can_request_flag(type)) || flag.setter_id == user.id %]
           <option value="X"></option>
         [% END %]
@@ -168,6 +171,16 @@
           [% END %]
         </td>
       [% END %]
+      <td>
+        [% IF type.is_multiplicable && edit_multiple_bugs %]
+          <input type="checkbox" name="flags_add-[% type.id %]"
+                 id="flags_add-[% type.id %]" value="1">
+          <label for="flags_add-[% type.id %]"
+                 title="有効にすると、常に新規フラグを作成します。無効のままにすると既存のフラグを更新し、必要なら新規作成します。">
+            常に追加
+          </label>
+        [% END %]
+      </td>
     </tr>
   </tbody>
 [% END %]

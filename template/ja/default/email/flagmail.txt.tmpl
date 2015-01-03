@@ -68,11 +68,14 @@ X-Bugzilla-Type: request
 
 [%- FILTER bullet = wrap(80) %]
 
-[% USE Bugzilla %]
-[%-# .defined is necessary to avoid a taint issue, see bug 509794. %]
-[% IF Bugzilla.cgi.param("comment").defined && Bugzilla.cgi.param("comment").length > 0 %]
-------- [% user.identity %] による追加のコメント
-[%+ Bugzilla.cgi.param("comment") FILTER strip_control_chars %]
+[% FOREACH comment = new_comments %]
+
+[%- IF comment.count %]
+--- [% comment.author.identity %] によるコメント #[% comment.count %] ---
+[% ELSE %]
+--- 説明 ---
+[% END %]
+[%+ comment.body_full({ is_bugmail => 1, wrap => 1 }) FILTER strip_control_chars %]
 [% END %]
 
 [%- END %]

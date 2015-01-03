@@ -26,7 +26,7 @@
               [% "コメント # ${comment.count}" FILTER bug_link(bug,
               {comment_num => comment.count, full_url => 1, user => to_user}) FILTER none %]</b>
           [% END %]
-        <pre>[% comment.body_full({ wrap => 1 }) FILTER quoteUrls(bug, comment, to_user) %]</pre>
+        <pre>[% comment.body_full({ wrap => 1 }) FILTER markdown(bug, comment, to_user) %]</pre>
         </div>
       [% END %]
       </p>

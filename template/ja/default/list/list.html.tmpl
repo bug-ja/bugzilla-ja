@@ -188,8 +188,8 @@
 [%# Navigation Bar                                                           #%]
 [%############################################################################%]
 
-  [% IF bugs.size > 0 %]
-    <div class="buglist_menu">
+  <div class="buglist_menu">
+    [% IF bugs.size > 0 %]
       <div class="bz_query_buttons">
         <form method="post" action="show_bug.cgi">
           [% buglist_joined = buglist.join(",") %]
@@ -254,9 +254,10 @@
       </div>
 
       <br>
-      <div class="bz_query_edit">
+    [% END %]
+    <div class="bz_query_edit">
         <a href="[% PROCESS edit_search_url %]"><button>検索条件の編集</button></a>
-      </div>
+    </div>
 
       [% IF searchtype == "saved" %]
         <div class="bz_query_forget">
@@ -280,7 +281,6 @@
         </div>
       [% END %]  
     </div>
-  [% END %]
 
 [% IF one_product.defined && bugs.size %]
   <p class="bz_query_single_product">

@@ -1,0 +1,82 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[%# INTERFACE:
+  # api_keys: array. Array of api keys this user has.
+  # any_revoked: boolean. True is any keys have been revoked.
+  #%]
+
+<p>
+  API キーは WebService API 呼び出しの認証で利用します。必要であれば一つ以上の API
+  キーを作成することも可能です。各 API キーにはそれぞれに説明をつけられ、どのキーが
+  どの目的かを判別できるようになっています。ログインでの利用方法については
+  <a href="[% docs_urlbase FILTER html %]api/Bugzilla/WebService.html#LOGGING_IN">ドキュメント</a>
+  を参照してください。
+</p>
+
+<h3>発行済み API キー</h3>
+
+<p>API キーの説明の更新、無効化、再有効化が可能です。</p>
+
+<table id="email_prefs">
+  <tr class="column_header">
+    <th>API キー</th>
+    <th>説明 (任意)</th>
+    <th>最終利用日</th>
+    <th>無効化済か</th>
+  </tr>
+
+  [% FOREACH api_key IN api_keys %]
+    <tr[% IF api_key.revoked %] class="apikey_revoked"[% END %]>
+      <td>[% api_key.api_key FILTER html %]</td>
+      <td>
+        <input name="description_[% api_key.id FILTER html %]"
+          id="description_[% api_key.id FILTER html %]"
+          value="[% api_key.description FILTER html %]">
+      </td>
+      [% IF api_key.last_used %]
+        <td>[% api_key.last_used FILTER time %]</td>
+      [% ELSE %]
+        <td class="center"><i>未利用</i></td>
+      [% END %]
+      <td class="center">
+        <input type="checkbox" value="1"
+          name="revoked_[% api_key.id FILTER html %]"
+          id="revoked_[% api_key.id FILTER html %]"
+          [% IF api_key.revoked %] checked="checked" [% END %]>
+      </td>
+    </tr>
+  [% END %]
+  [% UNLESS api_keys.size %]
+    <tr><td colspan="4">あなたには API キーは未発行です。</td></tr>
+  [% END %]
+</table>
+
+[% IF any_revoked %]
+  <a id="apikey_revoked_controller" class="bz_default_hidden"
+     href="javascript:TUI_toggle_class('apikey_revoked')">無効化済を隠す</a>
+  [%# Show the link if the browser supports JS %]
+  <script type="text/javascript">
+    TUI_hide_default('apikey_revoked');
+    TUI_alternates['apikey_revoked'] = '無効化済も表示する';
+    YAHOO.util.Dom.removeClass('apikey_revoked_controller',
+                               'bz_default_hidden');
+  </script>
+[% END %]
+
+<h3>新規 API キー発行</h3>
+
+<p>新規 API 発行には、以下のチェックボックスをチェックして必要であれば説明を
+入力してください。ランダムな API キーが発行されます。</p>
+
+<p>
+  <input type="checkbox" name="new_key" id="new_key">
+  新規 API キーの発行と、そのキーの説明
+  <input name="new_description" id="new_description">
+</p>
+

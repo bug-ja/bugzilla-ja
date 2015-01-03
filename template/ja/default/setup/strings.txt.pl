@@ -88,7 +88,6 @@ END
     feature_inbound_email     => 'システム向け Email',
     feature_jobqueue          => 'メールキュー',
     feature_jsonrpc           => 'JSON-RPC インターフェース',
-    feature_jsonrpc_faster    => 'JSON-RPC の高速化',
     feature_new_charts        => '新形式のチャート',
     feature_old_charts        => '旧形式のチャート',
     feature_memcached         => 'Memcached 機能',
@@ -102,6 +101,7 @@ END
     feature_xmlrpc            => 'XML-RPC インターフェース',
     feature_detect_charset    => 'テキスト添付での自動文字コード検出',
     feature_typesniffer       => '添付の MIME 型を判別',
+    feature_markdown          => 'コメントでの Markdown 形式のサポート',
 
     file_remove => 'ファイル ##name## を削除中...',
     file_rename => 'ファイル名を ##from## から ##to## へ変更中...',

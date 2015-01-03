@@ -278,6 +278,14 @@
     [% terms.Bug FILTER html %] の [% jawords.bug_alias FILTER html %] は 20 文字 (byte) 以上にはできません。
     より短いものにしてください。
 
+  [% ELSIF error == "api_key_not_valid" %]
+    [% title = "無効な API キー" %]
+    指定された API キーは無効です。正しく入力されているか確認してください。
+
+  [% ELSIF error == "api_key_revoked" %]
+    [% title = "無効な API キー" %]
+    指定された API キーは作成したユーザにより無効化されています。
+
   [% ELSIF error == "attachment_bug_id_mismatch" %]
     [% title = "無効な添付です" %]
     異なる [% terms.bugs %] からの添付を操作しようとしました。。
@@ -400,6 +408,11 @@
     は許可されていません。
 
     [% Hook.process("auth_failure") %]
+
+  [% ELSIF error == "auth_invalid_token" %]
+    [% title = 'トークンエラー' %]
+    トークン '[% token FILTER html %]' は無効です。3日より前に表示したページから
+    操作を行おうとしたからかもしれません。
 
   [% ELSIF error == "auth_untrusted_request" %]
     [% title = "信頼できない認証要求" %]
@@ -1616,18 +1629,15 @@
     [% title = BLOCK %] [% jawords.account_password FILTER html %] が一致しませんでした [% END %]
     入力された二つの [% jawords.account_password FILTER html %] が一致していません。
 
-  [% ELSIF error == "password_current_too_short" %]
-    [% title = "パスワードの再設定が必要です" %]
-    あなたの現在のパスワードは
-    [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 文字より短く、
-    新しいパスワードの長さの制限を満たしていません。
-    ログインする前に <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER html %]">
-    新しいパスワードの申請</a> が必要です。
-
   [% ELSIF error == "password_too_short" %]
     [% title = BLOCK %] [% jawords.account_password FILTER html %] が短すぎます [% END %]
     入力された [% jawords.account_password FILTER html %] は短すぎます。
     [%+ constants.USER_PASSWORD_MIN_LENGTH FILTER html %] 文字以上にしてください。
+    [% IF locked_user %]
+      再度ログインするには、
+      <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      新規パスワード作成</a> を行う必要があります。
+    [% END %]
 
   [% ELSIF error == "password_not_complex" %]
      [% title = "パスワードが要求された基準を満たしていません" %]
@@ -1645,6 +1655,11 @@
          <li>数字</li>
        [% END %]
      </ul>
+    [% IF locked_user %]
+      再度ログインするには
+      <a href="token.cgi?a=reqpw&amp;loginname=[% locked_user.email FILTER uri %]&amp;token=[% issue_hash_token(['reqpw']) FILTER uri %]">
+      新規パスワード作成</a> を行う必要があります。
+    [% END %]
 
   [% ELSIF error == "product_access_denied" %]
     [% title = "プロダクトにはアクセスできません" %]

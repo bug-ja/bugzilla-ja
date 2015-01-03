@@ -1,4 +1,4 @@
-#!/usr/bin/perl -wT
+#!/usr/bin/perl -T
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -8,6 +8,8 @@
 
 use 5.10.1;
 use strict;
+use warnings;
+
 use lib qw(. lib);
 
 use Bugzilla;
@@ -194,8 +196,9 @@ sub validateContext
 {
   my $context = $cgi->param('context') || "patch";
   if ($context ne "file" && $context ne "patch") {
-    detaint_natural($context)
-      || ThrowUserError("invalid_context", { context => $cgi->param('context') });
+      my $orig_context = $context;
+      detaint_natural($context)
+        || ThrowUserError("invalid_context", { context => $orig_context });
   }
 
   return $context;
@@ -513,13 +516,14 @@ sub insert {
 
     # Get the filehandle of the attachment.
     my $data_fh = $cgi->upload('data');
+    my $attach_text = $cgi->param('attach_text');
 
     my $attachment = Bugzilla::Attachment->create(
         {bug           => $bug,
          creation_ts   => $timestamp,
-         data          => scalar $cgi->param('attach_text') || $data_fh,
+         data          => $attach_text || $data_fh,
          description   => scalar $cgi->param('description'),
-         filename      => $cgi->param('attach_text') ? "file_$bugid.txt" : scalar $cgi->upload('data'),
+         filename      => $attach_text ? "file_$bugid.txt" : $data_fh,
          ispatch       => scalar $cgi->param('ispatch'),
          isprivate     => scalar $cgi->param('isprivate'),
          mimetype      => $content_type,

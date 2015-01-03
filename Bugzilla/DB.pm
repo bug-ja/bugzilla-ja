@@ -9,6 +9,7 @@ package Bugzilla::DB;
 
 use 5.10.1;
 use strict;
+use warnings;
 
 use DBI;
 
@@ -16,6 +17,7 @@ use DBI;
 use parent -norequire, qw(DBI::db);
 
 use Bugzilla::Constants;
+use Bugzilla::Mailer;
 use Bugzilla::Install::Requirements;
 use Bugzilla::Install::Util qw(install_string);
 use Bugzilla::Install::Localconfig;
@@ -1209,12 +1211,13 @@ sub bz_start_transaction {
 
 sub bz_commit_transaction {
     my ($self) = @_;
-    
+
     if ($self->{private_bz_transaction_count} > 1) {
         $self->{private_bz_transaction_count}--;
     } elsif ($self->bz_in_transaction) {
         $self->commit();
         $self->{private_bz_transaction_count} = 0;
+        Bugzilla::Mailer->send_staged_mail();
     } else {
        ThrowCodeError('not_in_transaction');
     }

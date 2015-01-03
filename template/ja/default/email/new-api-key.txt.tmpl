@@ -1,0 +1,33 @@
+[%# This Source Code Form is subject to the terms of the Mozilla Public
+  # License, v. 2.0. If a copy of the MPL was not distributed with this
+  # file, You can obtain one at http://mozilla.org/MPL/2.0/.
+  #
+  # This Source Code Form is "Incompatible With Secondary Licenses", as
+  # defined by the Mozilla Public License, v. 2.0.
+  #%]
+
+[%# INTERFACE:
+  # user: The Bugzilla::User object of the user being created
+  # new_key: The API key created
+  #%]
+
+From: [% Param('mailfrom') %]
+To: [% user.email %]
+Subject: [% terms.Bugzilla %]: 新規 API キー発行
+X-Bugzilla-Type: admin
+
+[このメールは自動生成です]
+
+[% IF new_key.description %]'[% new_key.description %]' のための[% END %]
+新規 [% terms.Bugzilla %] API キーが生成されました。以下の URL でキーを閲覧・
+更新できます。
+
+[%+ urlbase %]userprefs.cgi?tab=apikey
+
+重要: 新規キーを要求していない場合、あなたの [% terms.Bugzilla %] アカウントが
+乗っ取られたかもしれません。その場合、キーを上記 URL で無効化し、パスワードを
+直ちに変更してください。
+
+セキュリティー上の懸念により、このメールにはキーは記載されていません。
+
+アカウントについて何らかの問題があれば、[% Param('maintainer') %] まで連絡してください。

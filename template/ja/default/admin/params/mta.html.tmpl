@@ -14,7 +14,12 @@
   mail_delivery_method => "メールをどのように送信するか、もしくはまったく送信しないかを設定してください。<br>
                            <ul>
                              <li>
-                               'Sendmail'、'SMTP'、'Qmail' は全て MTA です。
+                               'SMTP' はリモートのメールサーバに SMTP プロトコルで
+                               送信します。
+                             </li>
+                             <li>
+                               'Sendmail' は Bugzilla ホストにインストールされた
+                               sendmail 互換の MTA を利用します。
                                Windows で sendmail の設定を利用したい場合は、
                                何らかのサードパーティーの sendmail 互換ソフトをインストールする必要があります。
                              </li>
@@ -23,7 +28,7 @@
                                'data/mailer.testfile' に送信されずに保存されます。
                              </li>
                              <li>
-                               'none' は完全にメールを無効にします。Bugzilla
+                               'None' は完全にメールを無効にします。Bugzilla
                                はメールを送信するかのように動作しますが、
                                一切送信も保存も行われません。
                              </li>
