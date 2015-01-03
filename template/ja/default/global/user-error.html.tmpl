@@ -344,6 +344,8 @@
       [% jawords.group_access FILTER html %]
     [% ELSIF object == "groups" %]
       [% jawords.group FILTER html %]
+    [% ELSIF object == "job_queue" %]
+      ジョブキュー
     [% ELSIF object == "keywords" %]
       [% jawords.keyword FILTER html %]
     [% ELSIF object == "milestones" %]
@@ -471,7 +473,7 @@
         <li>Trac サイトのチケット</li>
         <li>MantisBT サイトの b[% %]ug</li>
         <li>sourceforge.net の b[% %]ug</li>
-        <li>github.com の issue</li>
+        <li>github.com の issue・pull リクエスト</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% END %]
@@ -1208,11 +1210,6 @@
     のいずれかであり、
     <em>bar</em> は特殊文字 ("=", "?", など) を含められません。
 
-  [% ELSIF error == "invalid_context" %]
-    [% title = BLOCK %] コンテキストが無効です [% END %]
-    コンテキスト [% context FILTER html %] は無効です (有効な値は数値か、
-    "file" もしくは "patch" です)。
-
   [% ELSIF error == "invalid_datasets" %]
     [% title = BLOCK %] [% jawords.report_dataset FILTER html %] が無効です [% END %]
     [% jawords.report_dataset FILTER html %] <em>[% datasets.join(":") FILTER html %]</em> は無効です。
@@ -1366,6 +1363,9 @@
   [% ELSIF error == "login_required" %]
     [%# ウェブベースでない LOGIN_REQUIRED に対してのエラーメッセージです %]
     [% terms.Bugzilla %] のこの部分を利用するにはログインが必要です。
+
+  [% ELSIF error == "markdown_disabled" %]
+    Markdown 機能は有効化されていません。
 
   [% ELSIF error == "migrate_config_created" %]
     ファイル <kbd>[% file FILTER html %]</kbd> に移行前に設定すべき項目が含まれますが、
@@ -1980,8 +1980,9 @@
     [% constants.ACCOUNT_CHANGE_INTERVAL FILTER html %] 分間待ってから再申請してください。
 
   [% ELSIF error == "unknown_action" %]
+    [% title = "未知の操作" %]
     [% IF action %]
-       [% action FILTER html %] という操作は存在しません!
+       "[% action.truncate(20, "...") FILTER html %]" という操作は存在しません!
     [% ELSE %]
        あなたが何をしたいのかわかりません。
     [% END %]

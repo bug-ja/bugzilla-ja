@@ -191,6 +191,8 @@
       group access
     [% ELSIF object == "groups" %]
       groups
+    [% ELSIF object == "job_queue" %]
+      the job queue
     [% ELSIF object == "keywords" %]
       keywords
     [% ELSIF object == "milestones" %]
@@ -290,7 +292,7 @@
         <li>A ticket in a Trac installation.</li>
         <li>A b[% %]ug in a MantisBT installation.</li>
         <li>A b[% %]ug on sourceforge.net.</li>
-        <li>An issue on github.com.</li>
+        <li>An issue/pull request on github.com.</li>
         [% Hook.process('bug_url_invalid_tracker') %]
       </ul>
     [% END %]
@@ -1025,11 +1027,6 @@
     is one of <em>[% constants.LEGAL_CONTENT_TYPES.join(', ') FILTER html %]</em>
     and <em>bar</em> must not contain any special characters (such as "=", "?", ...).
 
-  [% ELSIF error == "invalid_context" %]
-    [% title = "Invalid Context" %]
-    The context [% context FILTER html %] is invalid (must be a number,
-    "file" or "patch").
-
   [% ELSIF error == "invalid_datasets" %]
     [% title = "Invalid Datasets" %]
     Invalid datasets <em>[% datasets.join(":") FILTER html %]</em>. Only digits,
@@ -1185,6 +1182,9 @@
   [% ELSIF error == "login_required" %]
     [%# Used for non-web-based LOGIN_REQUIRED situations. %]
     You must log in before using this part of [% terms.Bugzilla %].
+
+  [% ELSIF error == "markdown_disabled" %]
+    Markdown feature is not enabled.
 
   [% ELSIF error == "migrate_config_created" %]
     The file <kbd>[% file FILTER html %]</kbd> contains configuration
@@ -1807,10 +1807,11 @@
     then try again.
 
   [% ELSIF error == "unknown_action" %]
+    [% title = "Unknown Action" %]
     [% IF action %]
-       Unknown action [% action FILTER html %]!
+      Unknown action "[% action.truncate(20, "...") FILTER html %]"!
     [% ELSE %]
-       I could not figure out what you wanted to do.
+      I could not figure out what you wanted to do.
     [% END %]
 
   [% ELSIF error == "unknown_tab" %]

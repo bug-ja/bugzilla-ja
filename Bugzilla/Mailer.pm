@@ -25,7 +25,7 @@ use Encode qw(encode);
 use Encode::MIME::Header;
 use Email::MIME;
 use Email::Sender::Simple qw(sendmail);
-use Email::Sender::Transport::SMTP;
+use Email::Sender::Transport::SMTP::Persistent;
 use Bugzilla::Sender::Transport::Sendmail;
 
 sub MessageToMTA {
@@ -40,6 +40,8 @@ sub MessageToMTA {
         Bugzilla->job_queue->insert('send_mail', { msg => $msg });
         return;
     }
+
+    my $dbh = Bugzilla->dbh;
 
     my $email;
     if (ref $msg) {
@@ -58,12 +60,48 @@ sub MessageToMTA {
     # email immediately, in case the transaction is rolled back. Instead we
     # insert it into the mail_staging table, and bz_commit_transaction calls
     # send_staged_mail() after the transaction is committed.
-    if (! $send_now && Bugzilla->dbh->bz_in_transaction()) {
+    if (! $send_now && $dbh->bz_in_transaction()) {
         # The e-mail string may contain tainted values.
         my $string = $email->as_string;
         trick_taint($string);
-        Bugzilla->dbh->do("INSERT INTO mail_staging (message) VALUES(?)", undef, $string);
+        $dbh->do("INSERT INTO mail_staging (message) VALUES(?)", undef, $string);
         return;
+    }
+
+    # Ensure that we are not sending emails too quickly to recipients.
+    if (Bugzilla->params->{use_mailer_queue}
+        && (EMAIL_LIMIT_PER_MINUTE || EMAIL_LIMIT_PER_HOUR))
+    {
+        $dbh->do(
+            "DELETE FROM email_rates WHERE message_ts < "
+            . $dbh->sql_date_math('LOCALTIMESTAMP(0)', '-', '1', 'HOUR'));
+
+        my $recipient = $email->header('To');
+
+        if (EMAIL_LIMIT_PER_MINUTE) {
+            my $minute_rate = $dbh->selectrow_array(
+                "SELECT COUNT(*)
+                   FROM email_rates
+                  WHERE recipient = ?  AND message_ts >= "
+                        . $dbh->sql_date_math('LOCALTIMESTAMP(0)', '-', '1', 'MINUTE'),
+                undef,
+                $recipient);
+            if ($minute_rate >= EMAIL_LIMIT_PER_MINUTE) {
+                die EMAIL_LIMIT_EXCEPTION;
+            }
+        }
+        if (EMAIL_LIMIT_PER_HOUR) {
+            my $hour_rate = $dbh->selectrow_array(
+                "SELECT COUNT(*)
+                   FROM email_rates
+                  WHERE recipient = ?  AND message_ts >= "
+                        . $dbh->sql_date_math('LOCALTIMESTAMP(0)', '-', '1', 'HOUR'),
+                undef,
+                $recipient);
+            if ($hour_rate >= EMAIL_LIMIT_PER_HOUR) {
+                die EMAIL_LIMIT_EXCEPTION;
+            }
+        }
     }
 
     # We add this header to uniquely identify all email that we
@@ -127,8 +165,11 @@ sub MessageToMTA {
     }
 
     if ($method eq "SMTP") {
-        $transport = Email::Sender::Transport::SMTP->new({
-            host  => Bugzilla->params->{'smtpserver'},
+        my ($host, $port) = split(/:/, Bugzilla->params->{'smtpserver'}, 2);
+        $transport = Bugzilla->request_cache->{smtp} //=
+          Email::Sender::Transport::SMTP::Persistent->new({
+            host  => $host,
+            defined($port) ? (port => $port) : (),
             sasl_username => Bugzilla->params->{'smtp_username'},
             sasl_password => Bugzilla->params->{'smtp_password'},
             helo => $hostname,
@@ -177,6 +218,17 @@ sub MessageToMTA {
         if ($@) {
             ThrowCodeError('mail_send_error', { msg => $@->message, mail => $email });
         }
+    }
+
+    # insert into email_rates
+    if (Bugzilla->params->{use_mailer_queue}
+        && (EMAIL_LIMIT_PER_MINUTE || EMAIL_LIMIT_PER_HOUR))
+    {
+        $dbh->do(
+            "INSERT INTO email_rates(recipient, message_ts) VALUES (?, LOCALTIMESTAMP(0))",
+            undef,
+            $email->header('To')
+        );
     }
 }
 

@@ -59,7 +59,29 @@
   maxlocalattachment => "ウェブサーバのローカルに保存する添付ファイルの最大サイズ (kB) " _
                         "です。<a href=\"#maxattachmentsize\"><var>maxattachmentsize</var> " _
                         "パラメータ</a> 以下に設定すると" _
-                        "サーバのローカルには一切保存されなくなります。" 
+                        "サーバのローカルには一切保存されなくなります。" _
+                        "データベースでなくディスクに全ての添付を保管したい場合、" _
+                        "<a href=\"#maxattachmentsize\"><var>maxattachmentsize</var>" _
+                        "パラメータ</a>を 0 にしてください。",
+
+
+  xsendfile_header =>
+    "既定では、添付ファイルは CGI スクリプトにより提供されます。" _
+    "もし巨大ファイルに対してローカルへの保存を" _
+    "<a href=\"#maxlocalattachment\"><var>maxlocalattachment</var> パラメータ</a> " _
+    "で有効にすれば、メモリに全体をコピーせずにウェブサーバが直接ファイルを提供" _
+    "するようにでき、パフォーマンス改善を行うことができます。このためには、" _
+    "以下のようにウェブサーバを適切に設定し、正しいヘッダを設定してください。" _
+    "<ul>" _
+    "<li>Apache: <code>X-Sendfile</code> ヘッダ; " _
+    "<code><a href=\"https://tn123.org/mod_xsendfile/\">mod_xsendfile</a></code> モジュール</li>を参照" _
+    "<li>nginx: <code>X-Accel-Redirect</code> ヘッダ;  "_
+    "<a href=\"http://wiki.nginx.org/X-accel\">ウェブサーバドキュメント</a> を追加設定の参考にしてください</li>" _
+    "<li>lighttpd: <code>X-LIGHTTPD-send-file</code> ヘッダ;  " _
+    "<a href=\"http://redmine.lighttpd.net/projects/1/wiki/X-LIGHTTPD-send-file\">ウェブサーバドキュメント</a> を追加設定の参考にしてください</li>" _
+    "</ul><br>" _
+    "ただし、データベースに保管されている添付については、 apache/nginx/lighttpd " _
+    "ともに CGI によって処理されます。"
 
 }
 %]

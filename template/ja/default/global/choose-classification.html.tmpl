@@ -19,6 +19,9 @@
 [% DEFAULT title = "Classification の選択" %]
 [% PROCESS global/header.html.tmpl %]
 
+[% USE Bugzilla %]
+[% previous_params = Bugzilla.cgi.canonicalise_query('classification') %]
+
 <h2>最初に、[% terms.abug %] を入力する classification を選択してください: </h2>
 <table id="choose_classification">
   <tr>

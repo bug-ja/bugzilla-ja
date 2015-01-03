@@ -153,10 +153,6 @@ END
 
 0 に設定すれば、checksetup.pl は .htaccess ファイルを作成しません。
 END
-    localconfig_cvsbin => <<'END',
-パッチビューアで CVS 統合機能を利用したい場合、このオプションに "cvs" 実行フ
-ァイルのフルパスを設定してください。
-END
     localconfig_db_check => <<'END',
 checksetup.pl にデータベース設定を検証させますか？
 ある種のデータベースサーバ・Perl モジュール・状況の組み合わせでは、この機能は

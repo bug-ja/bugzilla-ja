@@ -243,6 +243,15 @@
     textarea {
         font-family: monospace;
     }
+
+    blockquote {
+        border-left: 0.2em solid #CCC;
+        color: #65379C;
+        padding: 0;
+        margin-left: 0.5em;
+        margin-bottom: -1em;
+        white-space: pre;
+    }
 /* generic (end) */
 
 /* Links that control whether or not something is visible. */
@@ -310,7 +319,7 @@ div#docslinks {
 }
 
 /* tbody.file pre is for the Diff view of attachments. */
-.bz_comment_text, .uneditable_textarea, tbody.file pre {
+pre.bz_comment_text, .uneditable_textarea, tbody.file pre {
      font-family: monospace;
      white-space: pre-wrap;
 }
@@ -721,6 +730,10 @@ input.required, select.required, span.required_explanation {
 #comment_preview_text {
     margin: 0px;
     width: auto;
+}
+
+.comment_preview_pre {
+    white-space: pre;
 }
 
 #comment_preview_loading {
