@@ -1896,8 +1896,9 @@
     [% constants.ACCOUNT_CHANGE_INTERVAL FILTER html %] 分間待ってから再申請してください。
 
   [% ELSIF error == "unknown_action" %]
+    [% title = "未定義の操作" %]
     [% IF action %]
-       [% action FILTER html %] という操作は存在しません!
+       "[% action.truncate(20, "...") FILTER html %]" という操作は存在しません!
     [% ELSE %]
        あなたが何をしたいのかわかりません。
     [% END %]

@@ -49,6 +49,24 @@ use constant READ_ONLY => qw(
     search
 );
 
+use constant PUBLIC_METHODS => qw(
+    add_attachment
+    add_comment
+    attachments
+    comments
+    create
+    fields
+    get
+    history
+    legal_values
+    possible_duplicates
+    render_comment
+    search
+    update
+    update_see_also
+    update_tags
+);
+
 ######################################################
 # Add aliases here for old method name compatibility #
 ######################################################
@@ -707,19 +725,10 @@ sub add_comment {
     # Append comment
     $bug->add_comment($comment, { isprivate => $params->{is_private},
                                   work_time => $params->{work_time} });
-    
-    # Capture the call to bug->update (which creates the new comment) in 
-    # a transaction so we're sure to get the correct comment_id.
-    
-    my $dbh = Bugzilla->dbh;
-    $dbh->bz_start_transaction();
-    
     $bug->update();
-    
-    my $new_comment_id = $dbh->bz_last_key('longdescs', 'comment_id');
-    
-    $dbh->bz_commit_transaction();
-    
+
+    my $new_comment_id = $bug->{added_comments}[0]->id;
+
     # Send mail.
     Bugzilla::BugMail::Send($bug->bug_id, { changer => $user });
 
