@@ -46,13 +46,32 @@
 
 <h2 id="v44_point">4.4.x リリースでの更新点</h2>
 
+<h3>4.4.9</h3>
+
+<p>このリリースには以下の [% terms.bug %] 修正が含まれています:</p>
+
+<ul>
+  <li>"insidergroup" に入っていないユーザが、特定のユーザによる [% terms.bugs %] への
+    プライベートコメント追加を認知できる状態でした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1151290">[% terms.Bug %] 1151290</a>)</li>
+  <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1090275">[% terms.bug %] 1090275</a>
+    によるレグレッションにより、ウェブサービスのメソッド <kbd>B[%%]ug.get_bugs</kbd> と
+    <kbd>B[%%]ug.get_history</kbd> が許可されない状態でした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1154099">[% terms.Bug %] 1154099</a>)</li>
+  <li>[% terms.Bugzilla %] が Apache 2.4 での新しい <kbd>.htaccess</kbd> の形式に対応しました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1121477">[% terms.Bug %] 1121477</a>)</li>
+  <li>CVE-2014-1517 でのレグレッションにより [% terms.Bugzilla %] 4.4.3 では
+    sudo セッションを開始する際の管理者パスワードが無視されていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1132887">[% terms.Bug %] 1132887</a>)</li>
+</ul>
+
 <h3>4.4.8</h3>
 
 <p>このリリースには以下の [% terms.bug %] 修正が含まれています:</p>
 
 <ul>
   <li><a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1090275">
-    [% terms.bug %] 10902750</a>の修正によるレグレッションである、<kbd>JSON-RPC</kbd>
+    [% terms.bug %] 1090275</a>の修正によるレグレッションである、<kbd>JSON-RPC</kbd>
     API 呼び出しが、適切なエラーメッセージを送出せずにクラッシュする可能性があるという
     問題を修正しました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1124716">[% terms.Bug %] 1124716</a>)</li>
