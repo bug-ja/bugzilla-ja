@@ -169,7 +169,8 @@ sub REQUIRED_MODULES {
     );
 
     if (ON_WINDOWS) {
-        push(@modules, {
+        push(@modules,
+        {
             package => 'Win32',
             module  => 'Win32',
             # 0.35 fixes a memory leak in GetOSVersion, which we use.
@@ -180,7 +181,14 @@ sub REQUIRED_MODULES {
             module  => 'Win32::API',
             # 0.55 fixes a bug with char* that might affect Bugzilla::RNG.
             version => '0.55',
-        });
+        },
+        {
+            package => 'DateTime-TimeZone-Local-Win32',
+            module  => 'DateTime::TimeZone::Local::Win32',
+            # We require DateTime::TimeZone 1.64, so this version must match.
+            version => '1.64',
+        }
+        );
     }
 
     my $extra_modules = _get_extension_requirements('REQUIRED_MODULES');
@@ -426,6 +434,7 @@ use constant FEATURE_FILES => (
     moving        => ['importxml.pl'],
     auth_ldap     => ['Bugzilla/Auth/Verify/LDAP.pm'],
     auth_radius   => ['Bugzilla/Auth/Verify/RADIUS.pm'],
+    documentation => ['docs/makedocs.pl'],
     inbound_email => ['email_in.pl'],
     jobqueue      => ['Bugzilla/Job/*', 'Bugzilla/JobQueue.pm',
                       'Bugzilla/JobQueue/*', 'jobqueue.pl'],

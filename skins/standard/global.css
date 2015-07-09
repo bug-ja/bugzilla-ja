@@ -53,12 +53,9 @@
         padding: 0.5em;
     }
 
-    #common_links {
-        clear: both;
-    }
-
     #lang_links_container {
         float: right;
+        white-space: nowrap;
     }
 
     #lang_links_container .links {
