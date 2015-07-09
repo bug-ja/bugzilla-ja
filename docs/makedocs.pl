@@ -12,11 +12,13 @@
 #
 # 1) Sphinx documentation builder (python-sphinx package on Debian/Ubuntu)
 #
-# 2) pdflatex, which means the following Debian/Ubuntu packages:
-#    * texlive-latex-base
-#    * texlive-latex-recommended
-#    * texlive-latex-extra
-#    * texlive-fonts-recommended
+# 2a) rst2pdf
+# or
+# 2b) pdflatex, which means the following Debian/Ubuntu packages:
+#     * texlive-latex-base
+#     * texlive-latex-recommended
+#     * texlive-latex-extra
+#     * texlive-fonts-recommended
 #
 # All these TeX packages together are close to a gig :-| But after you've
 # installed them, you can remove texlive-latex-extra-doc to save 400MB.
@@ -26,7 +28,8 @@ use strict;
 
 use Cwd;
 use File::Find;
-use File::Copy;
+use File::Basename;
+use File::Copy::Recursive qw(rcopy);
 
 # We need to be in this directory to use our libraries.
 BEGIN {
@@ -48,7 +51,7 @@ if (eval { require Pod::Simple }) {
     $pod_simple = 1;
 };
 
-use Bugzilla::Constants qw(BUGZILLA_VERSION);
+use Bugzilla::Constants qw(BUGZILLA_VERSION bz_locations);
 
 use File::Path qw(rmtree);
 use File::Which qw(which);
@@ -126,23 +129,34 @@ foreach my $lang (@langs) {
 
     next if grep { $_ eq '--pod-only' } @ARGV;
 
-    # Collect up local extension documentation into the extensions/ dir.
-    sub wanted {
-        if ($File::Find::dir =~ /\/doc\/?$/ &&
-            $_ =~ /\.rst$/)
-        {
-            copy($File::Find::name, "rst/extensions");
-        }
-    };
+    chdir $docparent;
 
+    # Generate extension documentation, both normal and API
+    my $ext_dir = bz_locations()->{'extensionsdir'};
+    my @ext_paths = grep { $_ !~ /\/create\.pl$/ && ! -e "$_/disabled" }
+                    glob("$ext_dir/*");
+    my %extensions;
+    foreach my $item (@ext_paths) {
+        my $basename = basename($item);
+        if (-d "$item/docs/$lang/rst") {
+            $extensions{$basename} = "$item/docs/$lang/rst";
+        }
+    }
+
+    # Collect up local extension documentation into the extensions/ dir.
     # Clear out old extensions docs
-    rmtree('rst/extensions', 0, 1);
-    mkdir('rst/extensions');
-    
-    find({
-        'wanted' => \&wanted,
-        'no_chdir' => 1,
-    }, "$docparent/../extensions");
+    # For the life of me, I cannot get rmtree() to work here. It just returns
+    # silently without deleting anything - no errors.
+    system("rm -rf $lang/rst/extensions/*");
+
+    foreach my $ext_name (keys %extensions) {
+        my $src = $extensions{$ext_name} . "/*";
+        my $dst = "$docparent/$lang/rst/extensions/$ext_name";
+        mkdir($dst) unless -d $dst;
+        rcopy($src, $dst);
+    }
+
+    chdir "$docparent/$lang";
 
     MakeDocs('HTML', 'make html');
     MakeDocs('TXT', 'make text');

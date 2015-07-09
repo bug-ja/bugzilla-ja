@@ -11,7 +11,7 @@ env:
   - TEST_SUITE=webservices DB=mysql
   - TEST_SUITE=selenium DB=mysql
   - TEST_SUITE=webservices DB=pg
-  - TEST_SUITE=selenium DB=pg
+#  - TEST_SUITE=selenium DB=pg
 
 matrix:
   exclude:
@@ -47,7 +47,7 @@ matrix:
       env: TEST_SUITE=selenium DB=pg
 
 before_install:
-  - git clone https://github.com/bugzilla/qa.git -b master qa
+  - git clone https://github.com/bugzilla/qa.git -b 5.0 qa
 
 install: true
 

@@ -216,7 +216,8 @@
     <em>[% target_type FILTER html %]</em> になっています。
  
   [% ELSIF error == "invalid_field_name" %]
-    [% field FILTER html %] をフィールド名に利用できません。
+    [% title = "無効なフィールド名" %]
+    "[% field.truncate(30, "...") FILTER html %]" をフィールド名に利用できません。
 
   [% ELSIF error == "jobqueue_insert_failed" %]
    [% title = "ジョブのキューが失敗" %]
@@ -373,8 +374,9 @@
     post_bug_submit_action の無効な設定です。
 
   [% ELSIF error == "search_field_operator_unsupported" %]
+    [% title = "無効な検索方式" %]
     [% terms.Bugzilla %] では
-    "[% operator FILTER html %]" の検索方式は利用できません。
+    "[% operator.truncate(30, "...") FILTER html %]" の検索方式は利用できません。
 
   [% ELSE %]
     [%# Try to find hooked error messages %]

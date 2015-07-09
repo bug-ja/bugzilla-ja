@@ -26,22 +26,22 @@
 
 [% tabs = [{ name => "settings", label => "一般的な設定",
               link => "userprefs.cgi?tab=settings", saveable => "1",
-              doc_section => "using.html#general-preferences" },
+              doc_section => "using/preferences.html#general-preferences" },
             { name => "email", label => "メール設定", 
               link => "userprefs.cgi?tab=email", saveable => "1",
-              doc_section => "using.html#email-preferences" },
+              doc_section => "using/preferences.html#email-preferences" },
             { name => "saved-searches", label => "保存された検索", 
               link => "userprefs.cgi?tab=saved-searches", saveable => "1",
-              doc_section => "using.html#saved-searches" },
+              doc_section => "using/preferences.html#saved-searches" },
             { name => "account", label => "アカウント情報",
               link => "userprefs.cgi?tab=account", saveable => "1",
-              doc_section => "using.html#account-information" },
+              doc_section => "using/preferences.html#account-information" },
             { name => "apikey", label => "API キー",
               link => "userprefs.cgi?tab=apikey", saveable => "1",
-              doc_section => "using.html#apikey" },
+              doc_section => "using/preferences.html#api-keys" },
             { name => "permissions", label => "権限", 
               link => "userprefs.cgi?tab=permissions", saveable => "0",
-              doc_section => "using.html#permissions" } ] %]
+              doc_section => "using/preferences.html#permissions" } ] %]
 
 [% Hook.process('tabs') %]
 

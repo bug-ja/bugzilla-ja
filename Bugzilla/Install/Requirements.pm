@@ -280,6 +280,8 @@ sub OPTIONAL_MODULES {
         # Fixes various bugs, including 542931 and 552353 + stops
         # throwing warnings with Perl 5.12.
         version => '0.712',
+        # SOAP::Transport::HTTP 1.12 is bogus.
+        blacklist => ['^1\.12$'],
         feature => ['xmlrpc'],
     },
     # Since SOAP::Lite 1.0, XMLRPC::Lite is no longer included
@@ -349,8 +351,8 @@ sub OPTIONAL_MODULES {
     {
         package => 'TheSchwartz',
         module  => 'TheSchwartz',
-        # 1.10 supports declining of jobs.
-        version => 1.10,
+        # 1.07 supports the prioritization of jobs.
+        version => 1.07,
         feature => ['jobqueue'],
     },
     {
@@ -397,12 +399,12 @@ sub OPTIONAL_MODULES {
         feature => ['memcached'],
     },
 
-    # Markdown
+    # Documentation
     {
-        package => 'Text-Markdown',
-        module  => 'Text::Markdown',
-        version => '1.0.26',
-        feature => ['markdown'],
+        package => 'File-Copy-Recursive',
+        module  => 'File::Copy::Recursive',
+        version => 0,
+        feature => ['documentation'],
     }
     );
 
@@ -427,7 +429,6 @@ use constant FEATURE_FILES => (
                       'Bugzilla/JobQueue/*', 'jobqueue.pl'],
     patch_viewer  => ['Bugzilla/Attachment/PatchReader.pm'],
     updates       => ['Bugzilla/Update.pm'],
-    markdown      => ['Bugzilla/Markdown.pm'],
     memcached     => ['Bugzilla/Memcache.pm'],
 );
 

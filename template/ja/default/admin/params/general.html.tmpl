@@ -14,11 +14,6 @@
 [% param_descs = {
   maintainer => "この Bugzilla サイトのメンテナのメールアドレス",
 
-  docs_urlbase => "すべての $terms.Bugzilla ドキュメント URL の先頭に入る" _
-                  "共通の文字列。絶対 URL や <var>urlbase</var> に対する相対 URL が指定可能です。" _
-                  "空白にするとすべてのドキュメントへのリンクが無効化されます。" _
-                  "'%lang%' はユーザに最適な言語 (存在すれば) に置換されます。",
-
   utf8 => "UTF-8 (Unicode) エンコーディングを ${terms.Bugzilla} のすべてのテキストで" _
           "利用します。新規インストールでは文字コード問題を回避するためにこれを設定" _
           "すべきです。<strong>既存のデータベースに関しては、<code>contrib/recode.pl</code>" _

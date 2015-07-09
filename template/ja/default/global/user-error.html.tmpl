@@ -344,8 +344,6 @@
       [% jawords.group_access FILTER html %]
     [% ELSIF object == "groups" %]
       [% jawords.group FILTER html %]
-    [% ELSIF object == "job_queue" %]
-      ジョブキュー
     [% ELSIF object == "keywords" %]
       [% jawords.keyword FILTER html %]
     [% ELSIF object == "milestones" %]
@@ -1363,9 +1361,6 @@
   [% ELSIF error == "login_required" %]
     [%# ウェブベースでない LOGIN_REQUIRED に対してのエラーメッセージです %]
     [% terms.Bugzilla %] のこの部分を利用するにはログインが必要です。
-
-  [% ELSIF error == "markdown_disabled" %]
-    Markdown 機能は有効化されていません。
 
   [% ELSIF error == "migrate_config_created" %]
     ファイル <kbd>[% file FILTER html %]</kbd> に移行前に設定すべき項目が含まれますが、

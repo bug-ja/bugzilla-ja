@@ -193,14 +193,6 @@ use Memoize;
     AUDIT_REMOVE
 
     MOST_FREQUENT_THRESHOLD
-
-    MARKDOWN_TAB_WIDTH
-
-    EMAIL_LIMIT_PER_MINUTE
-    EMAIL_LIMIT_PER_HOUR
-    EMAIL_LIMIT_EXCEPTION
-
-    JOB_QUEUE_VIEW_MAX_JOBS
 );
 
 @Bugzilla::Constants::EXPORT_OK = qw(contenttypes);
@@ -208,7 +200,7 @@ use Memoize;
 # CONSTANTS
 #
 # Bugzilla version
-use constant BUGZILLA_VERSION => "4.5.6+";
+use constant BUGZILLA_VERSION => "5.0rc2";
 
 # A base link to the current REST Documentation. We place it here
 # as it will need to be updated to whatever the current release is.
@@ -642,22 +634,6 @@ use constant AUDIT_REMOVE => '__remove__';
 # The minimum number of duplicates a bug needs to show up
 # on the "Most frequently reported bugs" page.
 use constant MOST_FREQUENT_THRESHOLD => 2;
-
-# The number of spaces used to represent each tab character
-# by Markdown engine
-use constant MARKDOWN_TAB_WIDTH => 2;
-
-# The maximum number of emails per minute and hour a recipient can receive.
-# Email will be queued/backlogged to avoid exceeeding these limits.
-# Setting a limit to 0 will disable this feature.
-use constant EMAIL_LIMIT_PER_MINUTE => 1000;
-use constant EMAIL_LIMIT_PER_HOUR   => 2500;
-# Don't change this exception message.
-use constant EMAIL_LIMIT_EXCEPTION  => "email_limit_exceeded\n";
-
-# The maximum number of jobs to show when viewing the job queue
-# (view_job_queue.cgi).
-use constant JOB_QUEUE_VIEW_MAX_JOBS => 500;
 
 sub bz_locations {
     # Force memoize() to re-compute data per project, to avoid

@@ -410,8 +410,7 @@ use constant ABSTRACT_SCHEMA => {
                                 DEFAULT => 'FALSE'},
             type            => {TYPE => 'INT2', NOTNULL => 1,
                                 DEFAULT => '0'},
-            extra_data      => {TYPE => 'varchar(255)'},
-            is_markdown     => {TYPE => 'BOOLEAN', NOTNULL => 1, DEFAULT => 'FALSE'}
+            extra_data      => {TYPE => 'varchar(255)'}
         ],
         INDEXES => [
             longdescs_bug_id_idx   => [qw(bug_id work_time)],
@@ -1637,18 +1636,6 @@ use constant ABSTRACT_SCHEMA => {
         FIELDS => [
             id      => {TYPE => 'INTSERIAL', PRIMARYKEY => 1, NOTNULL => 1},
             message => {TYPE => 'LONGBLOB', NOTNULL => 1},
-        ],
-    },
-
-    email_rates => {
-        FIELDS => [
-            id         => {TYPE => 'INTSERIAL', NOTNULL => 1,
-                           PRIMARYKEY => 1},
-            recipient  => {TYPE => 'varchar(255)', NOTNULL => 1},
-            message_ts => {TYPE => 'DATETIME', NOTNULL => 1},
-        ],
-        INDEXES => [
-            email_rates_idx => [qw(recipient message_ts)],
         ],
     },
 

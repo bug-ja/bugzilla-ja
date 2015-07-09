@@ -148,11 +148,10 @@ sub get_format {
 # If you want to modify this routine, read the comments carefully
 
 sub quoteUrls {
-    my ($text, $bug, $comment, $user, $bug_link_func, $for_markdown) = @_;
+    my ($text, $bug, $comment, $user, $bug_link_func) = @_;
     return $text unless $text;
     $user ||= Bugzilla->user;
     $bug_link_func ||= \&get_bug_link;
-    $for_markdown ||= 0;
 
     # We use /g for speed, but uris can have other things inside them
     # (http://foo/bug#3 for example). Filtering that out filters valid
@@ -223,11 +222,10 @@ sub quoteUrls {
 
     $text = html_quote($text);
 
-    unless ($for_markdown) {
-        # Color quoted text
-        $text =~ s~^(&gt;.+)$~<span class="quote">$1</span >~mg;
-        $text =~ s~</span >\n<span class="quote">~\n~g;
-    }
+    # Color quoted text
+    $text =~ s~^(&gt;.+)$~<span class="quote">$1</span >~mg;
+    $text =~ s~</span >\n<span class="quote">~\n~g;
+
     # mailto:
     # Use |<nothing> so that $1 is defined regardless
     # &#64; is the encoded '@' character.
@@ -541,7 +539,9 @@ sub _css_url_rewrite {
     # rewrite relative urls as the unified stylesheet lives in a different
     # directory from the source
     $url =~ s/(^['"]|['"]$)//g;
-    return $url if substr($url, 0, 1) eq '/';
+    if (substr($url, 0, 1) eq '/' || substr($url, 0, 5) eq 'data:') {
+        return 'url(' . $url . ')';
+    }
     return 'url(../../' . dirname($source) . '/' . $url . ')';
 }
 
@@ -858,24 +858,6 @@ sub create {
                            1
                          ],
 
-            markdown => [ sub {
-                              my ($context, $bug, $comment, $user) = @_;
-                              return sub {
-                                  my $text = shift;
-                                  return unless $text;
-
-                                  if (Bugzilla->feature('markdown')
-                                      && ((ref($comment) eq 'HASH' && $comment->{is_markdown})
-                                         || (ref($comment) eq 'Bugzilla::Comment' && $comment->is_markdown)))
-                                  {
-                                      return Bugzilla->markdown->markdown($text);
-                                  }
-                                  return quoteUrls($text, $bug, $comment, $user);
-                              };
-                          },
-                          1
-                        ],
-
             bug_link => [ sub {
                               my ($context, $bug, $options) = @_;
                               return sub {
@@ -1055,10 +1037,38 @@ sub create {
             'urlbase' => sub { return Bugzilla::Util::correct_urlbase(); },
 
             # Allow templates to access docs url with users' preferred language
-            'docs_urlbase' => sub { 
-                my $language = Bugzilla->current_language;
-                my $docs_urlbase = Bugzilla->params->{'docs_urlbase'};
-                $docs_urlbase =~ s/\%lang\%/$language/;
+            # We fall back to English if documentation in the preferred
+            # language is not available
+            'docs_urlbase' => sub {
+                my $docs_urlbase;
+                my $lang = Bugzilla->current_language;
+                # Translations currently available on readthedocs.org
+                my @rtd_translations = ('en', 'fr');
+
+                if ($lang ne 'en' && -f "docs/$lang/html/index.html") {
+                    $docs_urlbase = "docs/$lang/html/";
+                }
+                elsif (-f "docs/en/html/index.html") {
+                    $docs_urlbase = "docs/en/html/";
+                }
+                else {
+                    if (!grep { $_ eq $lang } @rtd_translations) {
+                        $lang = "en";
+                    }
+
+                    my $version = BUGZILLA_VERSION;
+                    $version =~ /^(\d+)\.(\d+)/;
+                    if ($2 % 2 == 1) {
+                        # second number is odd; development version
+                        $version = 'latest';
+                    }
+                    else {
+                        $version = "$1.$2";
+                    }
+
+                    $docs_urlbase = "https://bugzilla.readthedocs.org/$lang/$version/";
+                }
+
                 return $docs_urlbase;
             },
 

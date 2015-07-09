@@ -115,6 +115,7 @@ sub connect_shadow {
 }
 
 sub connect_main {
+    my $lc = Bugzilla->localconfig;
     return _connect(Bugzilla->localconfig); 
 }
 
@@ -2320,11 +2321,7 @@ values to.
 
 =item C<$name> - the name of the new column
 
-=item C<$definition> - A hashref abstract column definition for the new column.
-Note, if a  C<REFERENCES> definition is included to create a foreign key
-relationship, it will be created later instead of when the column is added.
-Normally foreign keys are added by C<checksetup.pl> at the end all at the same
-time.
+=item C<\%definition> - Abstract column definition for the new column
 
 =item C<$init_value> (optional) - An initial value to set the column
 to. Required if your column is NOT NULL and has no DEFAULT set.

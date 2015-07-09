@@ -83,6 +83,7 @@ END
 END
     feature_auth_ldap         => 'LDAP 認証',
     feature_auth_radius       => 'RADIUS 認証',
+    feature_documentation     => 'ドキュメント生成',
     feature_graphical_reports => 'グラフレポート',
     feature_html_desc         => 'プロダクト・グループ説明での追加の HTML',
     feature_inbound_email     => 'システム向け Email',
@@ -101,7 +102,6 @@ END
     feature_xmlrpc            => 'XML-RPC インターフェース',
     feature_detect_charset    => 'テキスト添付での自動文字コード検出',
     feature_typesniffer       => '添付の MIME 型を判別',
-    feature_markdown          => 'コメントでの Markdown 形式のサポート',
 
     file_remove => 'ファイル ##name## を削除中...',
     file_rename => 'ファイル名を ##from## から ##to## へ変更中...',

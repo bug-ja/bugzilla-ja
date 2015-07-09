@@ -83,6 +83,7 @@ the documentation of Bugzilla::Extension for details.
 END
     feature_auth_ldap         => 'LDAP Authentication',
     feature_auth_radius       => 'RADIUS Authentication',
+    feature_documentation     => 'Documentation',
     feature_graphical_reports => 'Graphical Reports',
     feature_html_desc         => 'More HTML in Product/Group Descriptions',
     feature_inbound_email     => 'Inbound Email',
@@ -101,7 +102,6 @@ END
     feature_xmlrpc            => 'XML-RPC Interface',
     feature_detect_charset    => 'Automatic charset detection for text attachments',
     feature_typesniffer       => 'Sniff MIME type of attachments',
-    feature_markdown          => 'Markdown syntax support for comments',
 
     file_remove => 'Removing ##name##...',
     file_rename => 'Renaming ##from## to ##to##...',
