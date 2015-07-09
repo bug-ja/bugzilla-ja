@@ -97,17 +97,6 @@ use constant ATTACHMENT_MAPPED_RETURNS => {
     mimetype    => 'content_type',
 };
 
-######################################################
-# Add aliases here for old method name compatibility #
-######################################################
-
-BEGIN { 
-  # In 3.0, get was called get_bugs
-  *get_bugs = \&get;
-  # Before 3.4rc1, "history" was get_history.
-  *get_history = \&history;
-}
-
 ###########
 # Methods #
 ###########
@@ -2143,8 +2132,6 @@ B<STABLE>
 
 Gets information about particular bugs in the database.
 
-Note: Can also be called as "get_bugs" for compatibilty with Bugzilla 3.0 API.
-
 =item B<REST>
 
 To get information about a particular bug using its ID or alias:
@@ -3539,7 +3526,7 @@ C<boolean> Set to true if you specifically want a new flag to be created.
 
 =item B<Returns>
 
-A C<hash> with a single field, "attachment". This points to an array of hashes
+A C<hash> with a single field, "attachments". This points to an array of hashes
 with the following fields:
 
 =over
@@ -4664,9 +4651,5 @@ This method can throw all of the errors that L</get> throws.
 =head1 B<Methods in need of POD>
 
 =over
-
-=item get_bugs
-
-=item get_history
 
 =back
