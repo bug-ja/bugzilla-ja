@@ -46,6 +46,26 @@
 
 <h2 id="v44_point">4.4.x リリースでの更新点</h2>
 
+<h3>4.4.10</h3>
+
+<p>このリリースでは一つのセキュリティー問題の修正が含まれます。詳細は
+  <a href="https://www.bugzilla.org/security/4.2.14/">セキュリティーアドバイザリ</a>
+  をご覧ください。</p>
+
+<p>このリリースでは以下の [% terms.bug %] の修正が含まれます:</p>
+
+<ul>
+  <li><kbd>email_enabled</kbd> 属性が <kbd>User.update</kbd> ウェブサービスメソッドに渡されたときに、
+    正しく解釈されていませんでした。処理用に予約されています。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1162334">[% terms.Bug %] 1162334</a>)</li>
+  <li>Windows では Perl モジュール <kbd>DateTime::TimeZone::Local::Win32</kbd> が正しくタイムゾーンを
+    解釈するために必要となりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1124401">[% terms.Bug %] 1124401</a>)</li>
+  <li>[% terms.Bugzilla %] で XML-RPC API を利用している際に、サービス拒否攻撃を引き起こす可能性のあ
+    るアクセスに対応しました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1031035">[% terms.Bug %] 1031035</a>)</li>
+</ul>
+
 <h3>4.4.9</h3>
 
 <p>このリリースには以下の [% terms.bug %] 修正が含まれています:</p>
