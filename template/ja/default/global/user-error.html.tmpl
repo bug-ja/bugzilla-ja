@@ -298,7 +298,7 @@
 
   [% ELSIF error == "auth_failure" %]
     [% title = BLOCK %] 認証が必要です [% END %]
-    [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
+    [% admindocslinks = {'groups.html#groups' => 'グループセキュリティー'} %]
     [% IF group %]
       あなたは、'[% group FILTER html %]' [% jawords.group_member FILTER html %] ではありません。
     [% END %]
@@ -436,13 +436,13 @@
 
   [% ELSIF error == "bug_access_denied" %]
     [% title = BLOCK %] $terms.Bug アクセスは拒否されました [% END %]
-    [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
+    [% admindocslinks = {'groups.html#groups' => 'グループセキュリティー'} %]
     あなたのアカウントには
     [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
 
   [% ELSIF error == "bug_access_query" %]
     [% title = BLOCK %] $terms.Bug アクセスは拒否されました [% END %]
-    [% docslinks = {'myaccount.html' => 'アカウント作成'} %]
+    [% docslinks = {'administering/users.html#creating-new-users' => 'アカウントの作成'} %]
     あなたのアカウントには
     [% terms.bug %] #[% bug_id FILTER html %] へアクセスする権限がありません。
     この [% terms.bug %] を見るには、まず必要な権限を持った
@@ -484,8 +484,10 @@
 
   [% ELSIF error == "buglist_parameters_required" %]
     [% title = BLOCK %] [% jawords.search_term FILTER html %] が入力されていません [% END %]
-    [% docslinks = {'query.html' => "$terms.bugs の検索",
-                    'query.html#list' => "$terms.Bug リスト"} %]
+    [% docslinks = {'query.html' => "",
+                    'query.html#list' => ""} %]
+    [% docslinks = {'using/finding.html' => "$terms.bugs の検索",
+                    'using/finding.html#bug-lists' => "$terms.Bug リスト"} %]
     [% jawords.search_term FILTER html %] 無しでは、[% jawords.search FILTER html %]
     や [%jawords.search_saved_search_creation FILTER html %] はできません。
 
@@ -678,7 +680,7 @@
   
   [% ELSIF error == "entry_access_denied" %]
     [% title = BLOCK %] 権限がありません [% END %]
-    [% admindocslinks = {'groups.html' => 'グループセキュリティー'} %]
+    [% admindocslinks = {'categorization.html#product-group-controls' => 'グループセキュリティー'} %]
     <em>[% product FILTER html %]</em> は存在しないか、
     あなたのアカウントはこの [% jawords.product FILTER html %] に
     [% terms.abug %] を登録する権限がありません。
@@ -874,10 +876,9 @@
 
   [% ELSIF error == "flag_requestee_unauthorized" %]
     [% title = BLOCK %] $jpword.flag の [% jawords.flag_request_target FILTER html %] のアカウントは認証されていません [% END %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
-                         'groups.html' => 'グループセキュリティー'} %]
-    [% docslinks = {'flags-overview.html' => 'フラグの説明',
-                    'flags.html' => 'フラグの利用方法'} %]
+    [% admindocslinks = {'flags.html' => 'フラグ管理',
+                         'categorization.html#assigning-group-controls-to-products' => 'グループセキュリティー'} %]
+    [% docslinks = {'using/understanding.html#flags' => 'フラグの利用方法'} %]
 
     [% terms.bug %] [%+ bug_id FILTER html -%]
     [% IF attach_id && attach_id > 0 %] の添付 [% attach_id FILTER html %][% END %]
@@ -892,10 +893,9 @@
 
   [% ELSIF error == "flag_requestee_unauthorized_attachment" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.flag_request_target FILTER html %] のアカウントは認証されていません [% END %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
-                         'groups.html' => 'グループセキュリティー'} %]
-    [% docslinks = {'flags-overview.html' => 'フラグの説明',
-                    'flags.html' => 'フラグの利用方法'} %]
+    [% admindocslinks = {'flags.html' => 'フラグ管理',
+                         'categorization.html#assigning-group-controls-to-products' => 'グループセキュリティー'} %]
+    [% docslinks = {'using/understanding.html#flags' => 'フラグの利用方法'} %]
 
     [%+ terms.bug %] [%+ bug_id FILTER html %] の添付
     [% attach_id FILTER html %] で
@@ -930,7 +930,7 @@
 
   [% ELSIF error == "flag_type_cc_list_invalid" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の [% jawords.bug_cc_list FILTER html %] が適当ではありません [% END %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
+    [% admindocslinks = {'flags.html' => 'フラグ管理'} %]
     [% jawords.bug_cc_list FILTER html %] [% cc_list FILTER html %] は 200 文字以下でなければいけません。
 
   [% ELSIF error == "flag_type_component_without_product" %]
@@ -940,12 +940,12 @@
 
   [% ELSIF error == "flag_type_description_invalid" %]
     [% title = BLOCK %] フラグの説明が適当ではありません [% END %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
+    [% admindocslinks = {'flags.html' => 'フラグ管理'} %]
     フラグの説明を入力する必要があります。
 
   [% ELSIF error == "flag_type_name_invalid" %]
     [% title = BLOCK %] [% jawords.flag_name FILTER html %] が適当ではありません [% END %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理'} %]
+    [% admindocslinks = {'flags.html' => 'フラグ管理'} %]
     [% jawords.flag_name FILTER html %] <em>[% name FILTER html %]</em> は 1 ～ 50 文字で、
     スペースやカンマを含むことはできません。
 
@@ -965,17 +965,15 @@
     フラグを更新もしくは追加するには ID を指定してください。
 
   [% ELSIF error == "flag_type_not_multiplicable" %]
-    [% docslinks = {'flags-overview.html' => 'フラグについて',
-                    'flags.html' => 'フラグの利用方法'} %]
+    [% docslinks = {'using/understanding.html#flags' => 'フラグの利用方法'} %]
     複数の <em>[% type.name FILTER html %]</em> フラグを
     この [% IF attachment %] 添付 [% ELSE %] [%+ terms.bug %] [% END %] に設定することはできません。
 
   [% ELSIF error == "flag_update_denied" %]
     [% title = BLOCK %] [% jawords.flag FILTER html %] の編集が拒否されました [% END %]
-    [% admindocslinks = {'flags-overview.html#flags-admin'  => 'フラグ管理',
-                         'groups.html' => 'グループセキュリティー'} %]
-    [% docslinks = {'flags-overview.html' => 'フラグの説明',
-                    'flags.html' => 'フラグの利用方法'} %]
+    [% admindocslinks = {'flags.html' => 'フラグ管理',
+                         'categorization.html#assigning-group-controls-to-products' => 'グループセキュリティー'} %]
+    [% docslinks = {'using/understanding.html#flags' => 'フラグの利用方法'} %]
     [% jawords.flag FILTER html %]
     [% IF status == "+" %]
       [% jawords.flag_grant FILTER html %]
@@ -1059,7 +1057,7 @@
     [% group.name FILTER html %] グループのメンバーを一覧することはできません。
 
   [% ELSIF error == "system_group_not_deletable" %]
-    [% title = BLOCK %] [% jawords.group_system_group FILTER html %] は削除できません [% END %]
+    [% admindocslinks = {'categorization.html#assigning-group-controls-to-products' => 'グループはプロダクトで利用されています'} %]
     <em>[% name FILTER html %]</em> は [% jawords.group_system_group FILTER html %] です。
     この [% jawords.group FILTER html %] は削除できません。
 
@@ -1148,13 +1146,13 @@
     &lt;, &gt;, &amp;.
 
   [% ELSIF error == "illegal_series_creation" %]
-    [% admindocslinks = {'groups.html' => 'グループ権限'} %]
-    [% docslinks = {'reporting.html' => 'レポート'} %]
+    [% admindocslinks = {'categorization.html#assigning-group-controls-to-products' => 'グループ権限'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
     [% jawords.report_series FILTER html %] を作成する権限がありません。
         
   [% ELSIF error == "illegal_series_edit" %]
-    [% admindocslinks = {'groups.html' => 'グループ権限'} %]
-    [% docslinks = {'reporting.html' => 'レポート'} %]
+    [% admindocslinks = {'categorization.html#assigning-group-controls-to-products' => 'グループ権'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
     この [% jawords.report_series FILTER html %] を編集する権限がありません。
     実行には [% jawords.creator FILTER html %] であるか、[% jawords.admin_administrator FILTER html %] 権限が必要です。
 
@@ -1171,7 +1169,7 @@
     エラー内容: [% dberror FILTER html %]
 
   [% ELSIF error == "insufficient_data_points" %]
-    [% docslinks = {'reporting.html' => 'レポート'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
     [% jawords.report_graph FILTER html %] を作成するために十分なデータが (まだ) ありません。
 
   [% ELSIF error == "invalid_attach_id" %]
@@ -1373,8 +1371,8 @@
 
   [% ELSIF error == "milestone_already_exists" %]
     [% title = BLOCK %] 指定された [% jawords.milestone FILTER html %] は既に存在しています [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理',
-                         'milestones.html' => 'マイルストーン'} %]
+    [% admindocslinks = {'categorization.html#products'   => 'プロダクトの管理',
+                         'categorization.html#milestones' => 'マイルストーン'} %]
     [% jawords.milestone FILTER html %] '[% name FILTER html %]' は [% jawords.product FILTER html %]
     '[%- product FILTER html %]' に既に存在しています。
 
@@ -1384,8 +1382,8 @@
 
   [% ELSIF error == "milestone_is_default" %]
     [% title = BLOCK %] [% jawords.milestone_default FILTER html %] は削除できません [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理',
-                         'milestones.html' => 'マイルストーン'} %]
+    [% admindocslinks = {'categorization.html#products'   => 'プロダクトの管理',
+                         'categorization.html#milestones' => 'マイルストーン'} %]
     [% milestone.name FILTER html %] は '[% milestone.product.name FILTER html %]'
     の [% jawords.milestone_default FILTER html %] です。そのため、削除することができません。
 
@@ -1431,8 +1429,8 @@
 
   [% ELSIF error == "missing_component" %]
     [% title = BLOCK %] [% jawords.component FILTER html %] がありません [% END %]
-    [% admindocslinks = {'products.html'   => 'プロダクトの管理',
-                         'components.html' => 'コンポーネントの作成'} %]
+    [% admindocslinks = {'categorization.html#products'   => 'プロダクトの管理',
+                         'categorization.html#milestones' => 'コンポーネントの作成'} %]
     [% jawords.product FILTER html %] <em>[% product.name FILTER html %]</em> に [% terms.abug %]
     を登録するためには、最低一つは利用可能なコンポーネントが存在していなくてはいけません。<br>
     [% IF user.in_group("editcomponents", product.id) %]
@@ -1454,23 +1452,25 @@
 
   [% ELSIF error == "missing_datasets" %]
     [% title = BLOCK %] [% jawords.report_dataset FILTER html %] が選択されていません [% END %]
-    [% docslinks = {'reporting.html' => 'レポート'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
     [% jawords.report_plot FILTER html %] 用の一つ以上の [% jawords.report_dataset FILTER html %] を選択する必要があります。
 
   [% ELSIF error == "missing_frequency" %]
     [% title = BLOCK %] [% jawords.report_frequency FILTER html %] が入力されていません [% END %]
-    [% docslinks = {'reporting.html' => 'レポート'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
     この [% jawords.report_series FILTER html %] に適当な更新頻度が入力されていません。
 
   [% ELSIF error == "missing_name" %]
     [% title = BLOCK %] [% jawords.report_series_name FILTER html %] が入力されていません [% END %]
-    [% docslinks = {'reporting.html' => 'レポート'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
     この[% jawords.report_series_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "missing_query" %]
     [% title = BLOCK %] 指定された [% jawords.saved_search FILTER html %] がありません [% END %]
-    [% docslinks = {'query.html' => "$terms.bugs の検索",
-                    'query.html#list' => "$terms.Bug リスト"} %]
+    [% docslinks = {'query.html' => "",
+                    'query.html#list' => ""} %]
+    [% docslinks = {'using/finding.html' => "$terms.bugs の検索",
+                    'using/finding.html#bug-lists' => "$terms.Bug リスト"} %]
     <em>[% name FILTER html %]</em> という [% jawords.search_saved_search FILTER html %] は
     [% IF sharer_id && sharer_id != user.id %]
       あなたのアカウントから利用できません。
@@ -1493,7 +1493,7 @@
 
   [% ELSIF error == "missing_version" %]
     [% title = BLOCK %] 利用可能なバージョンが登録されていません [% END %]
-    [% admindocslinks = {'versions.html' => 'バージョンの指定'} %]
+    [% admindocslinks = {'categorization.html#versions' => 'バージョンの指定'} %]
     [% terms.abug %] を登録するには、[% jawords.product FILTER html %]
     <em>[% product.name FILTER html %]</em>
     に利用可能なバージョンが最低一つは必要です。<br>
@@ -1509,7 +1509,7 @@
 
   [% ELSIF error == "need_quip" %]
     [% title = BLOCK %] [% jawords.quip FILTER html %] が入力されていません [% END %]
-    [% docslinks = {'quips.html' => 'About quips'} %]
+    [% docslinks = {'administering/quips.html' => 'quip について'} %]
     [% jawords.quip FILTER html %] を [% jawords.text_field FILTER html %] に入力してください。
 
   [% ELSIF error == "new_password_missing" %]
@@ -1518,7 +1518,7 @@
 
   [% ELSIF error == "no_axes_defined" %]
     [% title = BLOCK %] [% jawords.report_axes FILTER html %] が定義されていません [% END %]
-    [% docslinks = {'reporting.html' => 'Reporting'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
     [% jawords.report_plot FILTER html %] する [% jawords.report_axes FILTER html %]  が定義されていません。
 
   [% ELSIF error == "no_bugs_chosen" %]
@@ -1557,9 +1557,11 @@
 
   [% ELSIF error == "no_products" %]
     [% title = BLOCK %] [% jawords.product FILTER html %] がありません [% END %]
-    [% admindocslinks = {'products.html'   => 'プロダクトの設定',
-                         'components.html' => 'プロダクトにコンポーネントを追加する',
-                         'groups.html'     => 'グループセキュリティ'} %]
+    [% admindocslinks = {
+      'categorization.html#creating-new-products'  => 'プロダクトの設定',
+      'categorization.html#components'             => 'プロダクトにコンポーネントを追加する',
+      'categorization.html#product-group-controls' => 'グループセキュリティ'
+    } %]
     入力する [% terms.bugs %] に対する [% jawords.product FILTER html %] が定義されていないか、
     あなたのアカウントにはアクセスする権限がありません。
 
@@ -1673,12 +1675,12 @@
 
   [% ELSIF error == "product_name_already_in_use" %]
     [% title = BLOCK %] 指定された [% jawords.product_name FILTER html %] は既に存在しています [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理'} %]
     [% jawords.product_name FILTER html %] '[% product FILTER html %]' は既に存在しています。
 
   [% ELSIF error == "product_name_diff_in_case" %]
     [% title = BLOCK %] 指定された [% jawords.product_name FILTER html %] は既存のものと大文字・小文字の差異しかありません [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理'} %]
     [% jawords.product_name FILTER html %] '[% product FILTER html %]' は既に存在している
     '[% existing_product FILTER html %]' と大文字・小文字の違いしかありません。
 
@@ -1689,8 +1691,8 @@
 
   [% ELSIF error == "product_must_define_defaultmilestone" %]
     [% title = BLOCK %] 新しい [% jawords.milestone_default FILTER html %] を新規作成してください [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理',
-                         'milestones.html' => 'マイルストーン'} %]
+    [% admindocslinks = {'categorization.html#products'   => 'プロダクトの管理',
+                         'categorization.html#milestones' => 'マイルストーン'} %]
     <a href="editmilestones.cgi?action=add&amp;product=[% product FILTER uri %]">
     マイルストーン '[% milestone FILTER html %]'</a> を
     プロダクト '[% product FILTER html %]' の既定に設定する前に作成する必要があります。
@@ -1701,37 +1703,37 @@
 
   [% ELSIF error == "product_blank_name" %]
     [% title = BLOCK %] [% jawords.product_name FILTER html %] を入力してください [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理'} %]
     プロダクト名を入力する必要があります。
   
   [% ELSIF error == "product_disabled" %]
     [% title = BLOCK %]指定された [% jawords.product FILTER html %] に [% terms.Bug %] の新規登録はできません[% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理'} %]
     [% jawords.product FILTER html %] <em>[% product.name FILTER html %]</em> への
     [% terms.abug %] の新規追加は無効化されています。
 
   [% ELSIF error == "product_edit_denied" %]
     [% title = BLOCK %] [% jawords.product FILTER html %] の編集ができません [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理',
-                         'groups.html'   => 'グループセキュリティー'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理',
+                         'categorization.html#assigning-group-controls-to-products' => 'グループセキュリティー'} %]
     あなたのアカウントは [% jawords.product FILTER html %] [%+ product FILTER html %] の
     [% terms.bugs %] を編集することはできません。
 
   [% ELSIF error == "product_has_bugs" %]
     [% title = BLOCK %][% jawords.product FILTER html %] に [% terms.Bugs %] が存在します[% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理'} %]
     [% nb FILTER html %] 件の [%+ terms.bugs %] がこの [% jawords.product FILTER html %] には存在しています。
     これらの [% terms.bugs %] を別の [% jawords.product FILTER html %] に移動させてから削除してください。
 
   [% ELSIF error == "product_must_have_description" %]
     [% title = BLOCK %] [% jawords.product_description FILTER html %] を入力してください [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理'} %]
     このプロダクトに説明を入力する必要があります。
 
   [% ELSIF error == "product_must_have_version" %]
     [% title = BLOCK %] [% jawords.product FILTER html %] にバージョンを追加してください [% END %]
-    [% admindocslinks = {'products.html' => 'プロダクトの管理',
-                         'versions.html' => 'バージョンの管理'} %]
+    [% admindocslinks = {'categorization.html#products' => 'プロダクトの管理',
+                         'categorization.html#versions' => 'バージョンの管理'} %]
     新規プロダクトには有効なバージョンを追加する必要があります。
 
   [% ELSIF error == "product_unknown_component" %]
@@ -1746,7 +1748,7 @@
 
   [% ELSIF error == "query_name_missing" %]
     [% title = BLOCK %] $jaword.search_name が入力されていません [% END %]
-    [% docslinks = {'query.html#list' => "$terms.Bug lists"} %]
+    [% docslinks = {'using/finding.html#bug-lists' => "$terms.Bug リスト"} %]
     [% jawords.search_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "query_name_too_long" %]
@@ -1853,7 +1855,8 @@
 
   [% ELSIF error == "saved_search_used_by_whines" %]
     [% title = BLOCK %] [% jawords.search_saved_search FILTER html %] は利用されています [% END %]
-    [% docslinks = {'whining.html' => 'Whine について'} %]
+    [% docslinks = {'whining.html' => ''} %]
+    [% docslinks = {'administering/whining.html' => 'Whine について'} %]
     [% jawords.search_saved_search FILTER html %] <em>[% search_name FILTER html %]</em> はすでに
     <a href="editwhines.cgi">whine イベント</a> で
     [%+ subjects FILTER html %] という名前で利用されています。
@@ -1888,7 +1891,7 @@
 
   [% ELSIF error == "series_already_exists" %]
     [% title = BLOCK %] [% jawords.report_series FILTER html %] は既に存在しています [% END %]
-    [% docslinks = {'reporting.html' => 'レポート'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'レポート'} %]
       [% jawords.report_series_name FILTER html %] <em>[% series.category FILTER html %] /
       [%+ series.subcategory FILTER html %] / 
       [%+ series.name FILTER html %]</em>
@@ -1993,7 +1996,7 @@
 
   [% ELSIF error == "version_already_exists" %]
     [% title = BLOCK %] 入力されたバージョンは既に存在しています [% END %]
-    [% admindocslinks = {'versions.html' => 'バージョンの管理'} %]
+    [% admindocslinks = {'categorization.html#versions' => 'バージョンの管理'} %]
     [% jawords.product FILTER html %] '[%- product FILTER html %]' に
     バージョン '[% name FILTER html %]' は既に存在しています。
 
@@ -2014,12 +2017,12 @@
 
   [% ELSIF error == "users_deletion_disabled" %]
     [% title = BLOCK %] アカウントを削除することはできません [% END %]
-    [% admindocslinks = {'useradmin.html' => 'ユーザ管理'} %]
+    [% admindocslinks = {'users.html#deleting-users' => 'ユーザ管理'} %]
     アカウントの削除は許可されていません。
 
   [% ELSIF error == "user_has_responsibility" %]
     [% title = BLOCK %] アカウントを削除することができません [% END %]
-    [% admindocslinks = {'useradmin.html' => 'ユーザ管理'} %]
+    [% admindocslinks = {'users.html#deleting-users' => 'ユーザ管理'} %]
     削除しようとした [% jawords.user FILTER html %] が [% terms.bug %] の
     [% jawords.default_assignee FILTER html %]
     [% IF Param('useqacontact') %]
@@ -2040,7 +2043,7 @@
 
   [% ELSIF error == "user_login_required" %]
     [% title = BLOCK %] [% jawords.login_name FILTER html %] を入力してください [% END %]
-    [% admindocslinks = {'useradmin.html' => 'ユーザ管理'} %]
+    [% admindocslinks = {'users.html' => 'ユーザ管理'} %]
     [% jawords.user FILTER html %] を新規登録する際には、[% jawords.login_name FILTER html %] は必須項目です。
 
   [% ELSIF error == "user_match_failed" %]

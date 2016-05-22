@@ -48,7 +48,7 @@
     [% bug.error FILTER html %] のエラーが発生しました。
 
   [% ELSIF error == "chart_data_not_generated" %]
-    [% admindocslinks = {'extraconfig.html' => 'チャートの設定'} %]
+    [% docslinks = {'using/reports-and-charts.html' => 'Setting up Charting'} %]
     [% IF product.id %]
       <em>[% product.name FILTER html %]</em> プロダクトのチャートは、
       チャートが作成されてからデータの収集がまだ行われていないため、
@@ -280,6 +280,13 @@
     [% title = "無効なパラメータ" %]
     無効なパラメータ <code>[% param FILTER html %]</code> が
     <code>[% function FILTER html %]</code> に渡されました: 数値であるべきです。
+
+  [% ELSIF error == "param_integer_required" %]
+    <code>[% function FILTER html %]</code> 機能には数値パラメータ 
+    <code>[% param FILTER html %]</code> が必須です。
+
+  [% ELSIF error == "param_scalar_array_required" %]
+    <code>[% param FILTER html %]</code> パラメータは値 (数値か文字列) でなければなりません。
 
   [% ELSIF error == "param_required" %]
     [% title = "パラメータがありません" %]

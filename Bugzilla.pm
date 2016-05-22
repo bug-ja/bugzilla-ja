@@ -87,7 +87,7 @@ sub init_page {
             # On Windows, these paths are tainted, preventing
             # File::Spec::Win32->tmpdir from using them. But we need
             # a place to temporary store attachments which are uploaded.
-            foreach my $temp (qw(TMPDIR TMP TEMP)) {
+            foreach my $temp (qw(TMPDIR TMP TEMP WINDIR)) {
                 trick_taint($ENV{$temp}) if $ENV{$temp};
             }
             # Some DLLs used by Strawberry Perl are also in c\bin,
@@ -96,6 +96,7 @@ sub init_page {
                 my $c_path = $path = dirname($^X);
                 $c_path =~ s/\bperl\b(?=\\bin)/c/;
                 $path .= ";$c_path";
+                trick_taint($path);
             }
         }
         # Some environment variables are not taint safe

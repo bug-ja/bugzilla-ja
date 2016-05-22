@@ -868,6 +868,11 @@
       <p>セキュリティー上の理由から、あなたは自動的にログアウトしています。
       保存されているクッキーは削除しました。
     [% END %]
+    <p>
+      管理者であれば
+      <a href="editparams.cgi?section=general">[% terms.Bugzilla %] の再有効化</a>
+      は <kbd>shutdownhtml</kbd> を空にすることで可能です。
+    </p>
 
   [% ELSIF message_tag == "term" %]
     [% terms.$term FILTER html %]
@@ -883,7 +888,7 @@
   [% ELSIF message_tag == "user_match_multiple" %]
     入力されたユーザ名は一人より多いユーザにマッチしましたので、
     [% match_field FILTER html %] フィールドを空白のままにしています。
-
+reactivate
   [% ELSIF message_tag == "version_created" %]
     [% title = "バージョン作成完了" %]
     バージョン <em>[% version.name FILTER html %]</em> がプロダクト
