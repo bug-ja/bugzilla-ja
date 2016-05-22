@@ -10,6 +10,7 @@
       "reruns": 3,
       "maxRunTime": 3000,
       "task": {
+        "expires": "2018-02-18T17:33:38.806Z",
         "metadata": {
           "name": "Basic Sanity Tests"
         },
@@ -25,13 +26,19 @@
             "public/runtests_log": {
               "type": "file",
               "path": "/runtests.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             }
           }
         },
         "extra": {
           "treeherder": {
-            "symbol": "San"
+            "symbol": "San",
+            "machine": {
+                "platform": "linux64"
+            },
+            "build": {
+                "platform": "linux64"
+            }
           }
         }
       }
@@ -40,6 +47,7 @@
       "reruns": 3,
       "maxRunTime": 3000,
       "task": {
+        "expires": "2018-02-18T17:33:38.806Z",
         "metadata": {
           "name": "Documentation Build Test"
         },
@@ -55,13 +63,19 @@
             "public/runtests_log": {
               "type": "file",
               "path": "/runtests.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             }
           }
         },
         "extra": {
           "treeherder": {
-            "symbol": "Doc"
+            "symbol": "Doc",
+            "machine": {
+                "platform": "linux64"
+            },
+            "build": {
+                "platform": "linux64"
+            }
           }
         }
       }
@@ -70,6 +84,7 @@
       "reruns": 3,
       "maxRunTime": 7200,
       "task": {
+        "expires": "2018-02-18T17:33:38.806Z",
         "metadata": {
           "name": "WebService API Tests (MySQL)"
         },
@@ -85,18 +100,24 @@
             "public/runtests_log": {
               "type": "file",
               "path": "/runtests.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             },
             "public/httpd_error_log": {
               "type": "file",
               "path": "/var/log/httpd/error_log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             }
           }
         },
         "extra": {
           "treeherder": {
-            "symbol": "API"
+            "symbol": "API",
+            "machine": {
+                "platform": "linux64"
+            },
+            "build": {
+                "platform": "linux64"
+            }
           }
         }
       }
@@ -105,6 +126,7 @@
       "reruns": 3,
       "maxRunTime": 7200,
       "task": {
+        "expires": "2018-02-18T17:33:38.806Z",
         "metadata": {
           "name": "Selenium Tests (MySQL)"
         },
@@ -120,23 +142,29 @@
             "public/runtests_log": {
               "type": "file",
               "path": "/runtests.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             },
             "public/httpd_error_log": {
               "type": "file",
               "path": "/var/log/httpd/error_log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             },
             "public/selenium_log": {
               "type": "file",
               "path": "/selenium.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             }
           }
         },
         "extra": {
           "treeherder": {
-            "symbol": "Sel"
+            "symbol": "Sel",
+            "machine": {
+                "platform": "linux64"
+            },
+            "build": {
+                "platform": "linux64"
+            }
           }
         }
       }
@@ -145,6 +173,7 @@
       "reruns": 3,
       "maxRunTime": 7200,
       "task": {
+        "expires": "2018-02-18T17:33:38.806Z",
         "metadata": {
           "name": "WebService API Tests (Pg)"
         },
@@ -160,18 +189,24 @@
             "public/runtests_log": {
               "type": "file",
               "path": "/runtests.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             },
             "public/httpd_error_log": {
               "type": "file",
               "path": "/var/log/httpd/error_log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             }
           }
         },
         "extra": {
           "treeherder": {
-            "symbol": "API-Pg"
+            "symbol": "API-Pg",
+            "machine": {
+                "platform": "linux64"
+            },
+            "build": {
+                "platform": "linux64"
+            }
           }
         }
       }
@@ -180,6 +215,7 @@
       "reruns": 3,
       "maxRunTime": 7200,
       "task": {
+        "expires": "2018-02-18T17:33:38.806Z",
         "metadata": {
           "name": "Selenium Tests (Pg)"
         },
@@ -195,23 +231,29 @@
             "public/runtests_log": {
               "type": "file",
               "path": "/runtests.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             },
             "public/httpd_error_log": {
               "type": "file",
               "path": "/var/log/httpd/error_log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             },
             "public/selenium_log": {
               "type": "file",
               "path": "/selenium.log",
-              "expires": "2016-02-17T17:33:38.806Z"
+              "expires": "2018-02-17T17:33:38.806Z"
             }
           }
         },
         "extra": {
           "treeherder": {
-            "symbol": "Sel-Pg"
+            "symbol": "Sel-Pg",
+            "machine": {
+                "platform": "linux64"
+            },
+            "build": {
+                "platform": "linux64"
+            }
           }
         }
       }
