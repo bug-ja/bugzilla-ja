@@ -249,8 +249,8 @@ sub check_font_file {
     $font = trim($font);
     return '' unless $font;
 
-    if ($font !~ /\.ttf$/) {
-        return "The file must point to a TrueType font file (its extension must be .ttf)"
+    if ($font !~ /\.(ttf|otf)$/) {
+        return "The file must point to a TrueType or OpenType font file (its extension must be .ttf or .otf)"
     }
     if (! -f $font) {
         return "The file '$font' cannot be found. Make sure you typed the full path to the file"
@@ -299,7 +299,7 @@ sub check_mail_delivery_method {
     my $check = check_multi(@_);
     return $check if $check;
     my $mailer = shift;
-    if ($mailer eq 'sendmail' and ON_WINDOWS) {
+    if ($mailer eq 'Sendmail' and ON_WINDOWS) {
         # look for sendmail.exe 
         return "Failed to locate " . SENDMAIL_EXE
             unless -e SENDMAIL_EXE;
@@ -345,6 +345,8 @@ sub check_notification {
 sub check_smtp_server {
     my $host = shift;
     my $port;
+
+    return '' unless $host;
 
     if ($host =~ /:/) {
         ($host, $port) = split(/:/, $host, 2);

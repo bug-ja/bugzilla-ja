@@ -275,7 +275,7 @@
 
   [% ELSIF error == "alias_too_long" %]
     [% title = BLOCK %] [% jawords.bug_alias FILTER html %] が長すぎます [% END %]
-    [% terms.Bug FILTER html %] の [% jawords.bug_alias FILTER html %] は 20 文字 (byte) 以上にはできません。
+    [% terms.Bug FILTER html %] の [% jawords.bug_alias FILTER html %] は 40 文字 (byte) 以上にはできません。
     より短いものにしてください。
 
   [% ELSIF error == "api_key_not_valid" %]

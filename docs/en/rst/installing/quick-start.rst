@@ -50,7 +50,7 @@ Install Prerequisites
 
 :command:`apt-get install git nano`
 
-:command:`apt-get install apache2 mysql-server libappconfig-perl libdate-calc-perl libtemplate-perl libmime-perl build-essential libdatetime-timezone-perl libdatetime-perl libemail-sender-perl libemail-mime-perl libemail-mime-modifier-perl libdbi-perl libdbd-mysql-perl libcgi-pm-perl libmath-random-isaac-perl libmath-random-isaac-xs-perl apache2-mpm-prefork libapache2-mod-perl2 libapache2-mod-perl2-dev libchart-perl libxml-perl libxml-twig-perl perlmagick libgd-graph-perl libtemplate-plugin-gd-perl libsoap-lite-perl libhtml-scrubber-perl libjson-rpc-perl libdaemon-generic-perl libtheschwartz-perl libtest-taint-perl libauthen-radius-perl libfile-slurp-perl libencode-detect-perl libmodule-build-perl libnet-ldap-perl libauthen-sasl-perl libtemplate-perl-doc libfile-mimeinfo-perl libhtml-formattext-withlinks-perl libgd-dev lynx-cur python-sphinx`
+:command:`apt-get install apache2 mysql-server libappconfig-perl libdate-calc-perl libtemplate-perl libmime-perl build-essential libdatetime-timezone-perl libdatetime-perl libemail-sender-perl libemail-mime-perl libemail-mime-modifier-perl libdbi-perl libdbd-mysql-perl libcgi-pm-perl libmath-random-isaac-perl libmath-random-isaac-xs-perl apache2-mpm-prefork libapache2-mod-perl2 libapache2-mod-perl2-dev libchart-perl libxml-perl libxml-twig-perl perlmagick libgd-graph-perl libtemplate-plugin-gd-perl libsoap-lite-perl libhtml-scrubber-perl libjson-rpc-perl libdaemon-generic-perl libtheschwartz-perl libtest-taint-perl libauthen-radius-perl libfile-slurp-perl libencode-detect-perl libmodule-build-perl libnet-ldap-perl libauthen-sasl-perl libtemplate-perl-doc libfile-mimeinfo-perl libhtml-formattext-withlinks-perl libgd-dev libmysqlclient-dev lynx-cur graphviz python-sphinx`
 
 This will take a little while. It's split into two commands so you can do
 the next steps (up to step 7) in another terminal while you wait for the
@@ -66,7 +66,7 @@ Get it from our Git repository:
 
 :command:`rm -rf html`
 
-:command:`git clone --branch bugzilla-X.X-stable https://git.mozilla.org/bugzilla/bugzilla html`
+:command:`git clone --branch release-X.X-stable https://git.mozilla.org/bugzilla/bugzilla html`
 
 (where "X.X" is the 2-digit version number of the stable release of Bugzilla
 that you want - e.g. 4.4)
@@ -85,7 +85,7 @@ Set the following values, which increase the maximum attachment size and
 make it possible to search for short words and terms:
 
 * Alter on Line 52: ``max_allowed_packet=100M``
-* Add as new line 31, in the ``[mysqld]`` section: ``ft_min_word_len=2``
+* Add as new line 32, in the ``[mysqld]`` section: ``ft_min_word_len=2``
 
 Save and exit.
 

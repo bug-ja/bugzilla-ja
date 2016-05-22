@@ -40,6 +40,46 @@
   リリースノートをすべて確認してください。<strong>特にそれぞれのリリースノートの
   「アップグレードする際の注意点」の部分は重要です。</strong></p>
 
+<h2 id="point">5.0.x リリースでの更新点</h2>
+
+<h3>5.0.1</h3>
+
+<p>このリリースでは一つのセキュリティー問題の修正が含まれます。詳細は
+  <a href="https://www.bugzilla.org/security/4.2.14/">セキュリティーアドバイザリ</a>
+  をご覧ください。</p>
+
+<p>このリリースでは以下の [% terms.bug %] の修正が含まれます:</p>
+
+<ul>
+  <li>ログイン名がメールアドレスでないユーザが LDAP 認証環境下でログインできない状態でした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1179160">[% terms.Bug %] 1179160</a>)</li>
+  <li>必須のカスタムフィールドが隠されている場合、新規 [% terms.bug %] の作成や既存の編集が不可能に
+    なっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1183398">[% terms.Bug %] 1183398</a>
+    及び <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1196969">[% terms.bug %] 1196969</a>)</li>
+  <li>ログイン名を存在しないメールアドレスに変更する操作を行うと Bugzilla が停止し、サービス拒否攻撃
+    につながる可能性がありました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1194987">[% terms.Bug %] 1194987</a>)</li>
+  <li>トランザクション中にメールを生成しようとすると PostgreSQL の停止を引き起こしていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1186700">[% terms.Bug %] 1186700</a>)</li>
+  <li>2^31 を超える [% terms.bug %] ID をリファレンスに含む [% terms.bugs %] コメントは、
+    PostgreSQL 環境下では表示できなくなります。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1191937">[% terms.Bug %] 1191937</a>)</li>
+  <li>[% terms.Bugzilla %] からのメールが正しい UTF-8 に変換されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=714724">[% terms.Bug %] 714724</a>)</li>
+  <li>"履歴概要" ページの日付選択が動作していませんでした。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1181649">[% terms.Bug %] 1181649</a>)</li>
+  <li>JSON-RPC API に必須となる <kbd>Test::Taint</kbd> やほかの Perl モジュールがインストールされて
+    いないか古い場合にもコメントタグ機能の UI が表示され、タグをつけられるように見えていましたが、
+    実際にはつけられていない状態でした (ページの再読み込みで消えていました)。コメントへのタグ UI 
+    は必要な Perl モジュールの条件が満たされない限り表示されないようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1183227">[% terms.Bug %] 1183227</a>)</li>
+  <li><kbd>INTEGER</kbd> 型のカスタムフィールドで負の整数をサポートしました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1198659">[% terms.Bug %] 1198659</a>)</li>
+  <li>Windows において <kbd>checksetup.pl</kbd> スクリプトが SMTP サーバを必須としなくなりました。
+    インストール完了後に設定可能です。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1191255">[% terms.Bug %] 1191255</a>)</li>
+</ul>
 
 <h2 id="req">動作環境</h2>
 

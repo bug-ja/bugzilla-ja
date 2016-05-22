@@ -506,7 +506,8 @@ function handleVisControllerValueChange(e, args) {
     var controller = args[1];
     var values = args[2];
 
-    var label_container = 
+    var field = document.getElementById(controlled_id);
+    var label_container =
         document.getElementById('field_label_' + controlled_id);
     var field_container =
         document.getElementById('field_container_' + controlled_id);
@@ -521,10 +522,45 @@ function handleVisControllerValueChange(e, args) {
     if (selected) {
         YAHOO.util.Dom.removeClass(label_container, 'bz_hidden_field');
         YAHOO.util.Dom.removeClass(field_container, 'bz_hidden_field');
+        /* If a custom field such as a textarea field contains some text, then
+         * its content is visible by default as a readonly field (assuming that
+         * the field is displayed). But if such a custom field contains no text,
+         * then it's not displayed at all and an (edit) link is displayed instead.
+         * This is problematic if the custom field is mandatory, because at least
+         * Firefox complains that you must enter a value, but is unable to point
+         * to the custom field because this one is hidden, and so the user has
+         * to guess what the web browser is talking about, which is confusing.
+         * So in that case, we display the custom field automatically instead of
+         * the (edit) link, so that the user can enter some text in it.
+         */
+        var field_readonly = document.getElementById(controlled_id + '_readonly');
+
+        if (!field_readonly) {
+            var field_input = document.getElementById(controlled_id + '_input');
+            var edit_container =
+                document.getElementById(controlled_id + '_edit_container');
+
+            if (field_input) {
+                YAHOO.util.Dom.removeClass(field_input, 'bz_default_hidden');
+            }
+            if (edit_container) {
+                YAHOO.util.Dom.addClass(edit_container, 'bz_hidden_field');
+            }
+        }
+        // Restore the 'required' attribute for mandatory fields.
+        if (field.getAttribute('data-required') == "true") {
+            field.setAttribute('required', 'true');
+            field.setAttribute('aria-required', 'true');
+        }
     }
     else {
         YAHOO.util.Dom.addClass(label_container, 'bz_hidden_field');
         YAHOO.util.Dom.addClass(field_container, 'bz_hidden_field');
+        // A hidden field must never be required, because the user cannot set it.
+        if (field.getAttribute('data-required') == "true") {
+            field.removeAttribute('required');
+            field.removeAttribute('aria-required');
+        }
     }
 }
 

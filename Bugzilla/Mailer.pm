@@ -41,6 +41,8 @@ sub MessageToMTA {
         return;
     }
 
+    my $dbh = Bugzilla->dbh;
+
     my $email;
     if (ref $msg) {
         $email = $msg;
@@ -58,11 +60,14 @@ sub MessageToMTA {
     # email immediately, in case the transaction is rolled back. Instead we
     # insert it into the mail_staging table, and bz_commit_transaction calls
     # send_staged_mail() after the transaction is committed.
-    if (! $send_now && Bugzilla->dbh->bz_in_transaction()) {
+    if (! $send_now && $dbh->bz_in_transaction()) {
         # The e-mail string may contain tainted values.
         my $string = $email->as_string;
         trick_taint($string);
-        Bugzilla->dbh->do("INSERT INTO mail_staging (message) VALUES(?)", undef, $string);
+
+        my $sth = $dbh->prepare("INSERT INTO mail_staging (message) VALUES (?)");
+        $sth->bind_param(1, $string, $dbh->BLOB_TYPE);
+        $sth->execute;
         return;
     }
 
@@ -214,17 +219,14 @@ sub build_thread_marker {
 
 sub send_staged_mail {
     my $dbh = Bugzilla->dbh;
-    my @ids;
-    my $emails
-        = $dbh->selectall_arrayref("SELECT id, message FROM mail_staging");
 
-    foreach my $row (@$emails) {
-        MessageToMTA($row->[1]);
-        push(@ids, $row->[0]);
-    }
+    my $emails = $dbh->selectall_arrayref('SELECT id, message FROM mail_staging');
+    my $sth = $dbh->prepare('DELETE FROM mail_staging WHERE id = ?');
 
-    if (@ids) {
-        $dbh->do("DELETE FROM mail_staging WHERE " . $dbh->sql_in('id', \@ids));
+    foreach my $email (@$emails) {
+        my ($id, $message) = @$email;
+        MessageToMTA($message);
+        $sth->execute($id);
     }
 }
 

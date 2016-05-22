@@ -7,11 +7,11 @@
   #%]
 
 From: [% Param('mailfrom') %]
-To: [% emailaddress %]
+To: [% newemailaddress %]
 Subject: [% terms.Bugzilla %] メールアドレス変更要請
 X-Bugzilla-Type: admin
 
-[%+ terms.Bugzilla %] は、アカウント [% oldemailaddress %] の登録メールア
+[%+ terms.Bugzilla %] は、アカウント [% user.email %] の登録メールア
 ドレスを、このメールアドレスに変更する要請を受け取りました。
 
 この変更を許可するなら、次の URL を開いてください :
