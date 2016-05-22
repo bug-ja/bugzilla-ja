@@ -42,6 +42,33 @@
 
 <h2 id="point">5.0.x リリースでの更新点</h2>
 
+<h3>5.0.2</h3>
+
+<p>このリリースでは二つのセキュリティー問題の修正が含まれます。詳細は
+  <a href="https://www.bugzilla.org/security/4.2.15/">セキュリティーアドバイザリ</a>
+  をご覧ください。</p>
+
+<p>このリリースでは以下の [% terms.bug %] の修正が含まれます:</p>
+
+<ul>
+  <li>Apache 2.4 において mod_access_compat が無効の場合にも mod_perl が正常に動作するようになりました。
+    [% terms.Bugzilla %] 4.4.9 で導入された (不完全な) 修正は取り除かれました。<kbd>.htaccess</kbd>
+    ファイルを正しく生成するために、まずすべてのサブディレクトリの既存のファイルを
+    <pre>find . -mindepth 2 -name .htaccess -exec rm -f {} \;</pre>
+    などで削除してください。その後、 <kbd>checksetup.pl</kbd> を再度実行し正しい記法のファイルを作成
+    してください。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1223790">[% terms.Bug %] 1223790</a>)</li>
+  <li>[% terms.Bugzilla %] からのメールが正しい UTF-8 に変換されるようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=714724">[% terms.Bug %] 714724</a>)</li>
+  <li>Windows において Strawberry Perl で完全に動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1089448">[% terms.Bug %] 1089448</a>
+    及び <a href="https://bugzilla.mozilla.org/show_bug.cgi?id=987742">[% terms.bug %] 987742</a>)</li>
+  <li>Windows IIS でも XML-RPC API が動作するようになりました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=708252">[% terms.Bug %] 708252</a>)</li>
+  <li>PostgreSQL でいくつかのクエリが高速化しました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1184431">[% terms.Bug %] 1184431</a>)</li>
+</ul>
+
 <h3>5.0.1</h3>
 
 <p>このリリースでは一つのセキュリティー問題の修正が含まれます。詳細は
@@ -65,8 +92,6 @@
   <li>2^31 を超える [% terms.bug %] ID をリファレンスに含む [% terms.bugs %] コメントは、
     PostgreSQL 環境下では表示できなくなります。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1191937">[% terms.Bug %] 1191937</a>)</li>
-  <li>[% terms.Bugzilla %] からのメールが正しい UTF-8 に変換されるようになりました。
-    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=714724">[% terms.Bug %] 714724</a>)</li>
   <li>"履歴概要" ページの日付選択が動作していませんでした。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1181649">[% terms.Bug %] 1181649</a>)</li>
   <li>JSON-RPC API に必須となる <kbd>Test::Taint</kbd> やほかの Perl モジュールがインストールされて
@@ -334,9 +359,10 @@
     ました。</li>
   <li><kbd>FlagType.get</kbd> が特定のプロダクトやコンポーネントに対して有効なフラ
     グ型を取得するために追加されました。</li>
-  <li>古い <kbd>B[%%]ug.get_bugs</kbd> と <kbd>B[%%]ug.get_history</kbd> メソッドは
-    無効になりました。それぞれ <kbd>B[%%]ug.get</kbd> と <kbd>B[%%]ug.history</kbd> 
-    になっています。</li>
+  <li>古い <kbd>B[%%]ug.get_bugs</kbd>、 <kbd>B[%%]ug.get_history</kbd> と
+    <kbd>Product.get_products</kbd> メソッドは
+    無効になりました。それぞれ <kbd>B[%%]ug.get</kbd>、 <kbd>B[%%]ug.history</kbd> 
+    と <kbd>Product.get</kbd> になっています。</li>
 </ul>
 
 <h2 id="code_changes">カスタマイズ・拡張機能に影響する機能変更</h2>

@@ -120,12 +120,6 @@
         その結果の送り先メールアドレスを定義します。
         これは、サイトでの活動性を維持するためのリマインダとして有用です。</dd>
 
-        [% IF Param('use_mailer_queue') %]
-          [% class = user.in_group('admin') ? "" : "forbidden" %]
-          <dt id="view_job_queue" class="[% class %]"><a href="view_job_queue.cgi">ジョブキュー</a></dt>
-          <dd class="[% class %]">未送信または延期されたジョブ・メールのキューを見る。</dd>
-        [% END %]
-
         <dt id="release_notes">
           <a href="page.cgi?id=release-notes.html">リリースノート</a></dt>
         <dd>Bugzilla のこのリリースについての詳細情報をみる。</dd>

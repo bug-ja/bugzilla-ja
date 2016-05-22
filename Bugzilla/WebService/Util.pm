@@ -219,7 +219,7 @@ sub validate  {
     # sent any parameters at all, and we're getting @keys where
     # $params should be.
     return ($self, undef) if (defined $params and !ref $params);
-    
+
     # If @keys is not empty then we convert any named 
     # parameters that have scalar values to arrayrefs
     # that match.
