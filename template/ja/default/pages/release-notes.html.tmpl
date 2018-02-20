@@ -42,6 +42,28 @@
 
 <h2 id="point">5.0.x リリースでの更新点</h2>
 
+<h3>5.0.4</h3>
+
+<p>このリリースでは一つのセキュリティー問題の修正が含まれます。詳細は
+  <a href="https://www.bugzilla.org/security/4.4.12/">セキュリティーアドバイザリ</a>
+  をご覧ください。</p>
+
+<p>このリリースでは以下の [% terms.bug %] の修正が含まれます:</p>
+
+<ul>
+  <li><kbd>checksetup.pl</kbd> が pre-3.6 から 5.0 へのアップグレードの際に Chart 用の領域のアップグ
+    レードに失敗することがあります。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1273846">[% terms.Bug %] 1273846</a>)</li>
+  <li><kbd>editflagtypes.cgi</kbd> が classification を有効にしている環境下で <kbd>editcomponents</kbd>
+    権限を持たないユーザが実行した場合にクラッシュする可能性があります。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1310728">[% terms.Bug %] 1310728</a>)</li>
+  <li><kbd>File::Slurp</kbd> モジュールが perl 5.24 上で警告を発生させていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1301887">[% terms.Bug %] 1301887</a>)</li>
+  <li>Sqlite 環境下において 'when' カラムのすべての日時入力が日付は正しいながら時間が 
+    00:00 になっていました。
+    (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1303702">[% terms.Bug %] 1303702</a>)</li>
+</ul>
+
 <h3>5.0.3</h3>
 
 <p>このリリースでは一つのセキュリティー問題の修正が含まれます。詳細は
@@ -65,7 +87,7 @@
     を Excel で数式として評価されなくするために空白でエスケープされるようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1259881">[% terms.Bug %] 1259881</a>)</li>
   <li>ユーザ制御のデータを利用する拡張におけるリンクにサニタイズされていないデータに対するXSSの可能性が
-    ありました。[%+ terms. Bugzilla %] は拡張機能の中でのサニタイズに依存しなくなりました。ユーザによる
+    ありました。[%+ terms.Bugzilla %] は拡張機能の中でのサニタイズに依存しなくなりました。ユーザによる
     タブについても標準で対処するようになりました。
     (<a href="https://bugzilla.mozilla.org/show_bug.cgi?id=1250114">[% terms.Bug %] 1250114</a>)</li>
   <li>拡張で [%+ terms.Bugzilla %] サイトの favicon のオーバーライドが簡単にできるようになりました。
@@ -167,7 +189,7 @@
 <h3 id="req_modules">必須 Perl モジュール</h3>
 
 [% INCLUDE req_table reqs = REQUIRED_MODULES
-                     new = ['File-Slurp','JSON-XS', 'Email-Sender']
+                     new = ['JSON-XS', 'Email-Sender']
                      updated = ['DateTime', 'DateTime-TimeZone',
                                 'Template-Toolkit', 'URI'] %]
 
@@ -196,6 +218,7 @@
   モジュールがインストールされているかどうかを検出し通知します。</p>
 
 
+<a name="v50_feat"></a>
 <h2 id="feat">新機能と改善点</h2>
 
 <ul>
